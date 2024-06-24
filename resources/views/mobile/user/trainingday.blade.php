@@ -50,46 +50,6 @@
           
         </div>
         </div>
-    </div>
-    {{-- Local storage Date Set Script --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-            const today = new Date();
-            let todayDay = today.getDay();
-
-            // Adjust todayDay to be in the range 0-6 where Monday is 0 and Sunday is 6
-            todayDay = (todayDay === 0 ? 6 : todayDay - 1);
-
-            const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - todayDay);
-
-            const buttons = document.querySelectorAll('button[id$="-btn"]');
-            buttons.forEach((button, index) => {
-                const dateElement = button.querySelector('.date');
-                const dayDate = new Date(weekStart);
-                dayDate.setDate(weekStart.getDate() + index);
-                const formattedDate = dayDate.toLocaleDateString('en-GB');
-                dateElement.textContent = formattedDate;
-
-                if (index === todayDay) {
-                    button.querySelector('.day').classList.add('border-white');
-                }
-
-                button.addEventListener('click', function () {
-                    buttons.forEach(btn => {
-                        btn.querySelector('.day').classList.remove('border-white');
-                    });
-                    this.querySelector('.day').classList.add('border-white');
-
-                    // Save selected day and date to local storage
-                    localStorage.setItem('selectedDay', days[index]);
-                    localStorage.setItem('selectedDate', formattedDate);
-                });
-            });
-        });
-    </script>
-
     @endsection
 </body>
 
