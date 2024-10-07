@@ -46,7 +46,7 @@
             display: inline-block;
             padding: 10px 20px;
             background-color: #007bff;
-            color: white !important; /* Updated rule to set text color to white */
+            color: white !important;
             text-decoration: none;
             border-radius: 5px;
             font-size: 16px;
@@ -55,6 +55,12 @@
         .note {
             font-size: 14px;
             color: #999;
+        }
+
+        .two-factor-code {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #333;
         }
     </style>
 </head>
@@ -68,6 +74,12 @@
         <h1>Password Reset</h1>
         <p>If you've lost your password or wish to reset it, use the link below to get started.</p>
         <a href="{{ route('resetpassword', ['token' => $token]) }}" class="button">Reset Your Password</a>
+
+        <div class="two-factor-code">
+            <p>Please enter your 2FA code below:</p>
+            <p style="font-weight: bold;">2FA Code: {{ $twoFactorCode }}</p>
+        </div>
+
         <p class="note">If you did not request a password reset, you can safely ignore this email. Only a person with access to your email can reset your account password.</p>
     </div>
 </body>
