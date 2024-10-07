@@ -8,22 +8,42 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use PragmaRX\Google2FA\Google2FA;
+use App\Models\User;
+
+
 
 class PasswordResetMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct()
+    public $google2fa_url;
+
+    public function __construct(User $user)
     {
-        //
+        $google2fa = new Google2FA();
+
+        // Generate a 2FA secret if it's not already set
+        if (!$user->google2fa_secret) {
+            $secret = $google2fa->generateSecretKey();
+            $user->google2fa_secret = $secret;
+            $user->save();
+        }
+
+        // Generate a QR code URL for Google Authenticator
+        $this->google2fa_url = $google2fa->getQRCodeUrl(
+            config('app.name'),
+            $user->email,
+            $user->google2fa_secret
+        );
     }
 
-    /**
-     * Get the message envelope.
-     */
+    public function build()
+    {
+        return $this->subject('Password Reset Mail with 2FA')
+                    ->view('emails.password-reset')
+                    ->with('google2fa_url', $this->google2fa_url);
+    }
     public function envelope(): Envelope
     {
         return new Envelope(
