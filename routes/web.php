@@ -41,11 +41,13 @@ Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 // login
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // logout
-Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('logout', action: [AuthController::class, 'logout'])->name('logout');
 // Display the forget password form
 Route::get('forget/password', function () {
     return view('auth.forget-password');
 })->name('forget.password');
+
+
 
 
 // reset pin nummber
@@ -64,7 +66,7 @@ Route::middleware(['admin'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/user-dashboard', function () {
         // return view user.user.dashboard
-        return redirect('/user/dashboard');
+        return redirect('/user/user/dashboard');  
     })->name('user.dashboard');
 });
 
@@ -251,3 +253,15 @@ Route::get('forgot/password', function () {
 Route::post('send-forgot-password-email', [MailController::class, 'sendForgotPasswordEmail']);
 Route::get('/resetpassword/{token}', [MailController::class, 'resetpassword_index'])->name('resetpassword');
 Route::post('frogot-password/new-pin', [MailController::class, 'insert_new_pin'])->name('frogot-password');
+
+
+use App\Http\Controllers\TwoFactorAuthController;
+
+Route::get('/2fa/setup', [TwoFactorAuthController::class, 'show2FASetupForm'])->name('2fa.setup')->middleware('auth');
+Route::post('/2fa/enable', [TwoFactorAuthController::class, 'enable2FA'])->name('2fa.enable')->middleware('auth');
+Route::post('/2fa/verify', [TwoFactorAuthController::class, 'verify2FA'])->name('2fa.verify')->middleware('auth');
+
+
+Route::group(['middleware' => ['auth', '2fa']], function() {
+    Route::get('/home', [userDashboardController::class, 'index'])->name('home');
+});

@@ -27,7 +27,6 @@
             <form action="/send-forgot-password-email" method="POST">
                 @csrf
                 <!-- Token field -->
-    <input type="hidden" name="token" value="{{ $token }}">
 
     <!-- Email field -->
     <input type="email" class="w-11/12 h-10 mt-5 text-black border sm:w-11/12" name="email"

@@ -84,4 +84,11 @@ class AuthController extends Controller
             return redirect('/mobile/login');
         }
     }
+
+    // In your controller method that shows the reset password form
+    public function showResetForm(Request $request, $token = null)
+    {
+        return view('auth.passwords.reset', ['token' => $token, 'email' => $request->email]);
+    }
+
 }

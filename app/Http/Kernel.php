@@ -78,5 +78,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         // Other middleware
         'checkUserType' => \App\Http\Middleware\CheckUserType::class,
+        '2fa' => \App\Http\Middleware\Check2FA::class,
+
     ];
 }
