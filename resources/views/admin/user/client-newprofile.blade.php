@@ -74,15 +74,15 @@
                             {{-- DOB , Gender and Age  --}}
                             <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 items-center md:border-b">
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
-                                    <label for="dob"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 flex-nowrap">
+                                    <label for="dob" class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 flex-nowrap">
                                         Date of birth <span class="text-red-500">*</span>
                                     </label>
                                 </div>
                                 <div class="w-full md:col-span-1">
                                     <input type="date" id="dob" name="dob" required
-                                        class="form-control w-full border rounded px-4 py-2"
-                                        value="{{ old('dob', isset($member) && $member->dob ? \Carbon\Carbon::parse($member->dob)->format('Y-m-d') : '') }}">
+                                           class="form-control w-full border rounded px-4 py-2"
+                                           value="{{ old('dob', isset($member) && $member->dob ? \Carbon\Carbon::parse($member->dob)->format('Y-m-d') : '') }}"
+                                           oninput="calculateAge()">
                                 </div>
 
 
@@ -104,15 +104,14 @@
                                 </div>
 
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
-                                    <label for="age"
-                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                    <label for="age" class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
                                         Age
                                     </label>
                                 </div>
                                 <div class="w-full md:col-span-1">
                                     <input type="number" id="age" name="age" required
-                                        class="form-control w-full border rounded px-4 py-2"
-                                        value="{{ old('age', isset($member) ? $member->age : '') }}">
+                                           class="form-control w-full border rounded px-4 py-2"
+                                           value="{{ old('age', isset($member) ? $member->age : '') }}" readonly>
                                 </div>
 
                             </div>
@@ -386,6 +385,30 @@
             </div>
         </div>
 
+        {{-- Age calculate --}}
+        <script>
+            function calculateAge() {
+                const dobInput = document.getElementById('dob').value;
+                const ageInput = document.getElementById('age');
+        
+                if (dobInput) {
+                    const dob = new Date(dobInput);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const monthDiff = today.getMonth() - dob.getMonth();
+                    const dayDiff = today.getDate() - dob.getDate();
+        
+                    // Adjust age if the birth month and day haven't occurred yet this year
+                    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+                        age--;
+                    }
+        
+                    ageInput.value = age;
+                } else {
+                    ageInput.value = ''; // Clear age if no DOB is selected
+                }
+            }
+        </script>
         {{-- Upload File Script  --}}
         <script>
             document.addEventListener("DOMContentLoaded", function() {

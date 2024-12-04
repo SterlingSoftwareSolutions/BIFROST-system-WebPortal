@@ -23,7 +23,7 @@
                 <div class="flex ">
                     <div class="text-2xl  font-medium mb-5 font-source-sans w-1/2">Client Management</div>
                     <div class="w-1/2 flex items-center justify-end">
-                        <a href="{{ route('addnewclientview', ['action' => 'add']) }}">
+                        <a href="{{ route('addnewclientedit', ['action' => 'add']) }}">
                             <button class="bg-black text-white p-2 px-4 rounded-md whitespace-nowrap">Add New
                                 Profile</button>
                         </a>
@@ -63,7 +63,11 @@
 
                                     <td dir="rtl" class="p-3 border-y-2 justify-between  border-gray-300 text-left">
                                         <div class="flex space-x">
-                                            <a href="{{ route('addnewclientview', ['action' => 'edit', 'id' => $member->id]) }}" class="mr-8" data-client-id="{{ $member->id }}">
+                                            <a href="{{ route('clientview', ['action' => 'edit', 'id' => $member->id]) }}" class="mr-8" data-client-id="{{ $member->id }}">
+                                                <i class="text-[#fd8300] bi bi-eye"></i>
+                                                <span class="text-black">View</span>
+                                            </a>
+                                            <a href="{{ route('addnewclientedit', ['action' => 'edit', 'id' => $member->id]) }}" class="mr-8" data-client-id="{{ $member->id }}">
                                                 <i class="text-[#fd8300] bi bi-pencil"></i>
                                                 <span class="text-black">Edit</span>
                                             </a>

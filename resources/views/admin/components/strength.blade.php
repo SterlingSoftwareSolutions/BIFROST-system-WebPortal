@@ -60,7 +60,8 @@
                                 duplicateSets.innerHTML = ""; // Clear content
                             }
 
-                            var altDuplicateSets = document.querySelector(".altduplicate-setsstrength");
+                            var altDuplicateSets = document.querySelector(
+                                ".altduplicate-setsstrength");
                             if (altDuplicateSets) {
                                 altDuplicateSets.innerHTML = ""; // Clear content
                             }
@@ -115,7 +116,7 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="weigths_1" class="w-60 block mb-1">Weigth <span
+                            <label for="weigths_1" class="w-60 block mb-1">Weight <span
                                     class="text-red-500">*</span></label>
                             <input type="text" id="weigths_1" name="weigths_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
@@ -207,7 +208,8 @@
                                     </svg>
                                 </button>
                                 <input type="text" id="rests_1" name="rests_1" placeholder="00:00"
-                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                    value="04:00"
+                                    class="bg-gray-50 border-x-0 restsp border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                     readonly />
                                 <button type="button" onclick="changeRestTime(this, 15)"
                                     class="increment bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -256,7 +258,7 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2">
-                            <label for="weigth" class="w-60 block mb-1">Weigth <span
+                            <label for="weigth" class="w-60 block mb-1">Weight <span
                                     class="text-red-500">*</span></label>
                             <input type="text" id="alt-weigths_1" name="alt-weigths_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
@@ -347,7 +349,8 @@
                                     </svg>
                                 </button>
                                 <input type="text" id="alt-rests_1" name="alt-rests_1" placeholder="00:00"
-                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                    value="04:00"
+                                    class="bg-gray-50 border-x-0 restsa border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                     readonly />
                                 <button type="button" onclick="changeRestTime(this, 15)"
                                     class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -533,7 +536,7 @@
         getCategoryS();
     });
 
-    
+
 
     function getstrength(date) {
         console.log("Fetching strength data for date: " + date);
@@ -568,12 +571,13 @@
         const tab = document.getElementById('strenghtTab');
         // Serialize form data
         const formData = $(formId).serialize();
-
+        console.log(formData);
         // AJAX request
         $.ajax({
-            url:'{{ route('updatestrength') }}',
+            url: '{{ route('updatestrength') }}',
             type: 'POST',
             data: formData,
+
             success: function(response) {
                 // Handle the response
                 if (tab) {
@@ -758,9 +762,9 @@
                                         <div class="sets-container">
                                             ${setsHTML}
                                         </div>
-                                        <div class="duplicate-sets" id="duplicate-sets_${item.id}"></div>
+                                        <div class="duplicate-sets-strength" id="duplicate-sets_${item.id}"></div>
                                         <div class="ml-60">
-                                            <button id="addset_${item.id}" onclick="duplicateSet(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
+                                            <button id="addset_${item.id}" onclick="duplicateSetStrength(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
                                                 <i class="fas fa-plus text-[12px]"></i> Add set
                                             </button>
                                         </div>
@@ -830,9 +834,9 @@
                                             <div>
                                                 ${altSetsHTML}
                                             </div>
-                                            <div class="altduplicate-setss" id="alt-duplicate-sets_${item.id}"></div>
+                                            <div class="altduplicate-setsstrength" id="alt-duplicate-sets_${item.id}"></div>
                                             <div class="ml-60">
-                                                <button id="altaddset_${item.id}" onclick="altduplicateSet(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
+                                                <button id="altaddset_${item.id}" onclick="altduplicateSetStrength(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
                                                     <i class="fas fa-plus text-[12px]"></i> Add set
                                                 </button>
                                             </div>
@@ -924,6 +928,14 @@
             el.name = baseName + '_' + index;
             el.id = baseId + '_' + index;
         });
+        let timeElementA = element.querySelector('.restsa');
+        if (timeElementA) {
+            timeElementA.value = '04:00';
+        }
+        let timeElementP = element.querySelector('.restsp');
+        if (timeElementP) {
+            timeElementP.value = '04:00';
+        }
     }
 
     // Function to add a remove button to the cloned element

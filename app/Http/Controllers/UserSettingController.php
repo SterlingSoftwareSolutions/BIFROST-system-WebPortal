@@ -12,18 +12,6 @@ class UserSettingController extends Controller
     //
     public function viewsetting()
     {
-        $userId = Auth::id(); // Get the currently authenticated user's ID
-
-        // Fetch the access record for the user
-        $access = Access::where('user_id', $userId)->first();
-
-        if ($access && $access->settings === 'enable') {
-            // Pass the access type to the view using compact
-            $accessType = $access->access_type;
-            return view('user.user.settings', compact('accessType'));
-        } else {
-            // Redirect to an unauthorized access view
-            return view('error.useruthorized');
-        }
+        return view('user.user.settings');
     }
 }

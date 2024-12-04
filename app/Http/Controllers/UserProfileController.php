@@ -18,70 +18,66 @@ class UserProfileController extends Controller
     // Display user profile if authorized
     public function viewprofile()
     {
-        $userId = Auth::id(); // Get the currently authenticated user's ID
+        $user = Auth::user(); // Get the currently authenticated user
 
-        // Fetch the access record for the user
-        $access = Access::where('user_id', $userId)->first();
-
-        if ($access && $access->profile === 'enable') {
-            // Pass the access type to the view using compact
-            $accessType = $access->access_type;
-
-            // Retrieve searched user details from session
-            $searchedUser = Session::get('searchedUser');
-
-            // Check if $searchedUser is an array and convert it to an object if needed
-            if (is_array($searchedUser)) {
-                $searchedUser = (object) $searchedUser;
-            }
-
-            if ($searchedUser && isset($searchedUser->id)) {
-                $user = User::find($searchedUser->id);
-
-                if (!$user) {
-                    return redirect()->back()->withErrors('User not found.');
-                }
-
-                // Get the current month and two previous months
-                $months = collect();
-                for ($i = 0; $i < 3; $i++) {
-                    $date = Carbon::now()->subMonths($i);
-                    $months->push([
-                        'month' => $date->format('m'),
-                        'year' => $date->format('Y')
-                    ]);
-                }
-
-                // Fetch images for the current and previous two months
-                $images = MonthlyImage::where('user_id', $user->id)
-                    ->where(function ($query) use ($months) {
-                        foreach ($months as $month) {
-                            $query->orWhere(function ($query) use ($month) {
-                                $query->whereMonth('month', $month['month'])
-                                    ->whereYear('month', $month['year']);
-                            });
-                        }
-                    })
-                    ->get()
-                    ->groupBy(function ($item) {
-                        return Carbon::parse($item->month)->format('Y-m'); // Group by year-month
-                    });
-
-                // Pass the data to the view
-                return view('user.user.profile', [
-                    'accessType' => $accessType,
-                    'user' => $user,
-                    'images' => $images,
-                    'months' => $months
-                ]);
-            }
-
-            return view('user.user.profile', compact('accessType'));
-        } else {
-            // Redirect to an unauthorized access view
+        if (!$user) {
+            // If the user is not authenticated, return the unauthorized view
             return view('error.unauthorized');
         }
+
+        $member = Newprofile::where('user_id', $user->id)->first();
+
+        // Decode the image paths if necessary
+        $imagePaths = json_decode($member->image_paths, true);
+
+        // Check if decoding was successful
+        if (is_array($imagePaths) && !empty($imagePaths)) {
+            $profileImage = 'storage/' . $imagePaths[0]; // Assuming you want the first image
+        } else {
+            $profileImage = 'storage/default-profile.png'; // Default image if no image paths
+        }
+
+        // Check if $searchedUser is an array and convert it to an object if needed
+        $searchedUser = $user;
+        if (is_array($searchedUser)) {
+            $searchedUser = (object) $searchedUser;
+        }
+
+        // Get the current month and two previous months
+        $months = collect();
+        for ($i = 0; $i < 3; $i++) {
+            $date = Carbon::now()->subMonths($i);
+            $months->push([
+                'month' => $date->format('m'),
+                'year' => $date->format('Y')
+            ]);
+        }
+
+        // Fetch images for the current and previous two months
+        $images = MonthlyImage::where('user_id', $user->id)
+            ->where(function ($query) use ($months) {
+                foreach ($months as $month) {
+                    $query->orWhere(function ($query) use ($month) {
+                        $query->whereMonth('month', $month['month'])
+                            ->whereYear('month', $month['year']);
+                    });
+                }
+            })
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->month)->format('Y-m'); // Group by year-month
+            });
+
+        // Pass the data to the view
+        return view('user.user.profile', [
+            'user' => $user,
+            'images' => $images,
+            'months' => $months,
+            'profileImage' => $profileImage,
+            'member' => $member
+        ]);
     }
+
 
     public function store(Request $request)
     {
@@ -143,7 +139,7 @@ class UserProfileController extends Controller
                 foreach ($months as $month) {
                     $query->orWhere(function ($query) use ($month) {
                         $query->whereMonth('month', $month['month'])
-                              ->whereYear('month', $month['year']);
+                            ->whereYear('month', $month['year']);
                     });
                 }
             })
@@ -155,11 +151,63 @@ class UserProfileController extends Controller
                     'side_image' => $item->side_image,
                     'back_image' => $item->back_image,
                 ];
-            });
+            })
+            ->sortBy('month') // Sort by month
+            ->values(); // Reindex the array to reset the keys
 
         // Return the images as a JSON response
         return response()->json($images);
     }
+    public function handleNextData(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'date' => 'required|date_format:Y-m-d',
+            'id'   => 'required|integer|exists:users,id'
+        ]);
+
+        // Retrieve the date and user ID from the request
+        $date = $request->input('date');
+        $userId = $request->input('id');
+
+        // Convert the date to a Carbon instance
+        $currentDate = Carbon::parse($date);
+
+        // Get the current month and two next months
+        $months = [];
+        for ($i = 0; $i < 3; $i++) {
+            $months[] = [
+                'year' => $currentDate->copy()->addMonths($i)->format('Y'),
+                'month' => $currentDate->copy()->addMonths($i)->format('m')
+            ];
+        }
+
+        // Fetch images for the current and next two months
+        $images = MonthlyImage::where('user_id', $userId)
+            ->where(function ($query) use ($months) {
+                foreach ($months as $month) {
+                    $query->orWhere(function ($query) use ($month) {
+                        $query->whereMonth('month', $month['month'])
+                            ->whereYear('month', $month['year']);
+                    });
+                }
+            })
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'month' => Carbon::parse($item->month)->format('Y-m'),
+                    'front_image' => $item->front_image,
+                    'side_image' => $item->side_image,
+                    'back_image' => $item->back_image,
+                ];
+            })
+            ->sortBy('month') // Sort by month
+            ->values(); // Reindex the array to reset the keys
+
+        // Return the images as a JSON response
+        return response()->json($images);
+    }
+
     // Display new profile creation form
     public function viewnewprofile()
     {

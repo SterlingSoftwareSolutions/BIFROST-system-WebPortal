@@ -2,12 +2,12 @@
 <div id="test" hidden>
     <input type="text" name="selecttabt" id="selecttabt" hidden>
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 justify-end font-bold text-xl">
-        
+
         <form id="deletefortest">
             @csrf
             @method('DELETE')
             <input type="text" name="selectdatetestDelete" id="selectdatetestDelete" hidden>
-            <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base flex justify-end ml-auto mr-8">Clear</button>
+            <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
         </form>
 
         <script>
@@ -97,16 +97,14 @@
                     <div class="flex items-center border-b">
                         <label for="test-workout_1" class="w-60 block mb-1">Workout <span
                                 class="text-red-500">*</span></label>
-                        <select id="test-workout_1" name="test-workout_1"
-                            class="w-[41%] px-3 py-3 border rounded mb-2">
+                        <select id="test-workout_1" name="test-workout_1" class="w-[41%] px-3 py-3 border rounded mb-2">
                             <option value="" selected disabled>-- Select Workout --</option>
                         </select>
                     </div>
                     <div class="flex items-center border-b">
                         <label for="test-member_1" class="w-60 block mb-1">Member <span
                                 class="text-red-500">*</span></label>
-                        <select id="test-member_1" name="test-member_1"
-                            class="w-[41%] px-3 py-3 border rounded mb-2">
+                        <select id="test-member_1" name="test-member_1" class="w-[41%] px-3 py-3 border rounded mb-2">
                             <option value="" selected disabled>-- Select Member --</option>
                         </select>
                     </div>
@@ -363,33 +361,35 @@
             }
         });
     }
-    function updatest(id) {
-    // Construct the form ID dynamically
-    const formId = `#updatetest_${id}`;
-    const tab = document.getElementById('testTab');
-    
-    // Serialize form data
-    const formData = $(formId).serialize();
 
-    // AJAX request
-    $.ajax({
-        url: '/update-test', // Ensure this matches your route definition
-        type: 'POST',
-        data: formData,
-        success: function(response) {
-            // Handle the response
-            if (tab) {
-                tab.click(); // Trigger tab click if needed
+    function updatest(id) {
+
+        // Construct the form ID dynamically
+        const formId = `#updatetest_${id}`;
+        const tab = document.getElementById('testTab');
+
+        // Serialize form data
+        const formData = $(formId).serialize();
+
+        // AJAX request
+        $.ajax({
+            url: '/update-test', // Ensure this matches your route definition
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                // Handle the response
+                if (tab) {
+                    tab.click(); // Trigger tab click if needed
+                }
+                alert(response.message);
+                $(formId)[0].reset(); // Reset the form
+            },
+            error: function(xhr) {
+                // Handle error
+                console.error(xhr.responseText);
             }
-            alert(response.message);
-            $(formId)[0].reset(); // Reset the form
-        },
-        error: function(xhr) {
-            // Handle error
-            console.error(xhr.responseText);
-        }
-    });
-}
+        });
+    }
 
     function setsTest(Test, categoryOptions, Members) {
         console.log("this is strenght", );
@@ -418,7 +418,7 @@
                 '<option value="" selected disabled>-- Select Member --</option>';
             Members.forEach(member => {
                 memberOptionsHTML +=
-                    `<option value="${member.id}" ${member.id == item.member_id ? 'selected' : ''}>${member.name}</option>`;
+                    `<option value="${member.id}" ${member.id == item.member_id ? 'selected' : ''}>${member.firstname}</option>`;
             });
 
 
@@ -427,7 +427,7 @@
             htmlContent += `
                 <form id="updatetest_${item.id}">
                     @csrf
-                    
+
                     <input name="id_${item.id}" value="${item.id}" hidden>
                     <div class="flex flex-col text-lg p-4 bg-gray-50 mr-8 rounded-md gap-4 mb-4">
                         <div class="flex gap-5 justify-between">
@@ -442,9 +442,9 @@
                                             </select>
 
                                             <div class="flex justify-end items-center ml-auto mr-8"><button type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="updatest(${item.id})">Edit</button></div>
-                                         
+
                                      </div>
-                                     
+
 
                                     <div class="flex items-center border-b">
                                         <label for="workouttest_${item.id}" class="w-60 block mb-1">

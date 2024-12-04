@@ -54,11 +54,11 @@
                                         <select id="type" name="type"
                                             class="p-2 border border-gray-300 rounded flex-1">
                                             <option value="Select" selected>--Select--</option>
-                                            <option value="warmup">Warmup</option>
-                                            <option value="strength">Strength</option>
-                                            <option value="conditioning">Conditioning</option>
-                                            <option value="weightlifting">Weightlifting</option>
-                                            <option value="test">Test</option>
+                                            <option value="Warmup">Warmup</option>
+                                            <option value="Strength">Strength</option>
+                                            <option value="Conditioning">Conditioning</option>
+                                            <option value="Weightlifting">Weightlifting</option>
+                                            <option value="Test">Test</option>
                                         </select>
                                     </div>
 
@@ -135,16 +135,6 @@
                                 <form class="flex flex-col md:flex-row gap-3 px-4 w-1/2" method="GET"
                                     action="{{ route('viewworkoutlibrary') }}">
                                     <td class="pr-2">
-                                        <select id="categoryOption" name="categoryOption"
-                                            class="w-full mb-5 h-10 border-2 border-black focus:outline-none focus:border-border-black text-black rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
-                                            <option value="" selected>--Select Category--</option>
-                                            @foreach ($categoryOptions as $categoryOption)
-                                                <option value="{{ $categoryOption->id }}">
-                                                    {{ $categoryOption->category_name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td class="pr-2">
                                         <select id="type" name="type"
                                             class="w-full mb-5 h-10 border-2 border-black focus:outline-none focus:border-border-black text-black rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
                                             <option value="" selected>--Select Type--</option>
@@ -156,14 +146,24 @@
                                         </select>
                                     </td>
                                     <td class="pr-2">
+                                        <select id="categoryOption" name="categoryOption"
+                                            class="w-full mb-5 h-10 border-2 border-black focus:outline-none focus:border-border-black text-black rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
+                                            <option value="" selected>--Select Category--</option>
+                                            @foreach ($categoryOptions as $categoryOption)
+                                                <option value="{{ $categoryOption->id }}">
+                                                    {{ $categoryOption->category_name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td class="pr-2">
                                         <button type="submit" class="bg-black h-10 px-6 text-white rounded-md mb-5">Search</button>
                                     </td>
                                 </form>
                             </tr>
                             <tr>
-                                <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
+                                <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left">Type</th>
+                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
                                     Category</th>
-                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Type</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Workout</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Link</th>
                                 <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="rtl">
@@ -173,11 +173,11 @@
                         <tbody>
                             @foreach ($workoutLibraries as $index => $workoutLibrary)
                                 <tr class="{{ $index % 2 == 0 ? 'bg-gray-100' : 'bg-white' }}">
-                                    <td dir="ltr" class="p-3 border-s-2 border-y-2 border-gray-300 text-left">
-                                        {{ $workoutLibrary->categoryOption->category_name }}
+                                    <td class="p-3 border-s-2 border-y-2 border-gray-300 text-left">
+                                        {{ ucfirst($workoutLibrary->type) }}
                                     </td>
-                                    <td class="p-3 border-y-2 border-gray-300 text-left">
-                                        {{ $workoutLibrary->type }}
+                                    <td dir="ltr" class="p-3 border-y-2 border-gray-300 text-left">
+                                        {{ $workoutLibrary->categoryOption->category_name }}
                                     </td>
                                     <td class="p-3 border-y-2 border-gray-300 text-left">
                                         {{ $workoutLibrary->workout }}

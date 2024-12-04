@@ -1,6 +1,6 @@
 <div id="warmup" hidden>
 
-    <div class="flex justify-end items-center ml-auto mr-8">
+    <div class="flex justify-end items-center ml-auto mr-8 gap-5 p-4 font-bold text-xl">
         {{-- hidden input field --}}
         <input type="text" name="selecttabw" id="selecttabw" hidden>
         <form id="deleteWarmupsForm">
@@ -122,7 +122,7 @@
                         </div>
                     </div>
                     <div class="flex items-center border-b mt-2">
-                        <label for="weigthw_1" class="w-60 block mb-1">Weigth <span
+                        <label for="weigthw_1" class="w-60 block mb-1">Weight <span
                                 class="text-red-500">*</span></label>
                         <input type="number" id="weigthw_1" name="weigthw_1"
                             class="w-1/3 px-3 py-3 border flex rounded mb-2">

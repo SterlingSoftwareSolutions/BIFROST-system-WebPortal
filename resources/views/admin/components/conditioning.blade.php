@@ -1,8 +1,13 @@
 <div id="conditioning" hidden>
     {{-- hidden input field --}}
     <input type="text" name="selecttabc" id="selecttabc" hidden>
+    <div class="flex justify-end items-center ml-auto mr-8 gap-5 p-4 font-bold text-xl">
+        <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="deleteCond()"
+            type="button">Clear</button>
+    </div>
     <div class="ui-block flex flex-col text-lg pt-4 px-4 bg-gray-50 mr-8 rounded-md">
         <div class="flex-col w-full">
+
             <div class="flex items-center border-b">
                 <label for="roundCond" class="w-60 block">Rounds</label>
                 <div class="relative flex items-center max-w-[8rem] mb-2 w-1/2">
@@ -31,10 +36,6 @@
                     <input type="checkbox" id="amrapCheckboxCon" name="amrapCheckboxCon"
                         class="h-11 w-11 px-3 py-3 border border-gray-300 rounded mb-2 checked:bg-blue-600 checked:border-transparent"
                         onchange="syncCheckboxes()">
-                </div>
-                <div class="flex justify-end items-center ml-auto mr-8">
-                    <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="deleteCond()"
-                        type="button">Clear</button>
                 </div>
             </div>
         </div>
@@ -99,7 +100,7 @@
                         $('#conditioning-form')[0].reset();
                         const showUIC = document.getElementById('showUIC');
                         showUIC.innerHTML = ''; // Clears the content inside the div
-                       
+
                         // Example: Switch tabs or update content
                         const tab = document.getElementById('conditioningTab');
                         if (tab) {
@@ -196,8 +197,8 @@
                                 </svg>
                             </button>
                             <input type="text" id="timeTC_1" name="timeTC_1" data-input-counter
-                                placeholder="00:00"
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                placeholder="00:00" value="04:00"
+                                class="bg-gray-50 timeTC border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                 placeholder="0" readonly required />
                             <button type="button"
                                 onclick="adjustRestTime(this.parentNode.querySelector('input').id, 1)"
@@ -215,7 +216,7 @@
             </div>
         </div>
         <div class="showUIC" id="showUIC"></div>
-        <button id="save-button" type="button"
+        <button id="save-button" type="submit"
             class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700">Save</button>
     </form>
 
@@ -273,6 +274,13 @@
                 el.value = '';
             }
         });
+
+        // Set the value for the element with the class 'timeTC' to '04:00'
+        let timeElement = element.querySelector('.timeTC');
+        if (timeElement) {
+            timeElement.value = '04:00';
+        }
+
     }
 
     function cloneAndAppendUI() {
@@ -550,7 +558,7 @@
                             class="w-1/3 px-3 py-3 border flex rounded mb-2">
                             ${categoryOptionsHTML}
                         </select>
-                        <div class="flex justify-end items-center ml-auto mr-8">   
+                        <div class="flex justify-end items-center ml-auto mr-8">
                             <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" type="button" onclick="conEdit(${item.id})">Edit</button>
                         </div>
                     </div>

@@ -636,11 +636,11 @@ class SessionController extends Controller
                     $reps = $request->input('repswe_' . $weightliftingId . $index);
                     $alt_sets = $request->input('alt-setswe_' . $weightliftingId . $index);
                     $alt_reps = $request->input('alt-repswe_' . $weightliftingId . $index);
-            
+
                     // Debugging statements
                     Log::info("Processing set: setswe_" . $weightliftingId . $index);
                     Log::info("Sets: $sets, Reps: $reps, Alt Sets: $alt_sets, Alt Reps: $alt_reps");
-            
+
                     WeightliftingSet::create([
                         'sets' => $sets,
                         'reps' => $reps,
@@ -650,7 +650,7 @@ class SessionController extends Controller
                     ]);
                 }
             }
-            
+
             // dd("Weightlifting data updated successfully");
             return response()->json(['message' => 'Weightlifting data updated successfully'], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -907,7 +907,8 @@ class SessionController extends Controller
     // updatestrenght
     public function updatestrength(Request $request)
     {
-        // dd($request); 
+
+        Log::info('Request Data dd:', ['request' => $request->all()]);
 
         try {
             $request->validate([
@@ -975,28 +976,42 @@ class SessionController extends Controller
                     ]);
                 }
             }
-
-            // Create new weightlifting sets
+            // Create new  sets
             foreach ($request->all() as $key => $value) {
-                if (preg_match('/^sets_(\d+)(\d+)$/', $key, $matches)) {
+                if (preg_match('/^sets_(\d+)(\d+)$/', $key, $matches) || preg_match('/^alt-sets_(\d+)(\d+)$/', $key, $matches)) {
+                    Log::info("data cheack", ['request' => $request->all()]);
                     $index = $matches[2];
-                    StrengthSetRep::create([
-                        'sets' => $request->input('sets_' . $strengthId . $index),
-                        'reps' => $request->input('reps_' . $strengthId . $index),
-                        'alt_sets' => $request->input('alt-sets_' . $strengthId . $index),
-                        'alt_reps' => $request->input('alt-reps_' . $strengthId . $index),
+
+                    $sets = $request->input('sets_' . $strengthId . $index);
+                    $reps = $request->input('reps_' . $strengthId . $index);
+                    $alt_sets = $request->input('alt-sets_' . $strengthId . $index);
+                    $alt_reps = $request->input('alt-reps_' . $strengthId . $index);
+
+
+                    // Debugging statements
+                    Log::info("Processing set: setswe_" . $strengthId . $index);
+                    Log::info("Sets: $sets, Reps: $reps, Alt Sets: $alt_sets, Alt Reps: $alt_reps");
+
+                    $newSet = StrengthSetRep::create([
+                        'sets' => $sets,
+                        'reps' => $reps,
+                        'alt_sets' => $alt_sets,
+                        'alt_reps' => $alt_reps,
                         'strength_id' => $strength->id,
                     ]);
+
+                    Log::info('New StrengthSetRep created successfully.', ['id' => $newSet->id]);
                 }
             }
-            return response()->json(['message'=>'update suceess']);
+
+            return response()->json(['message' => 'update suceess']);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Handle validation exceptions
-          
+
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
             // Handle other exceptions
-          
+
             return redirect()->back()->with('error', 'An error occurred while updating the weightlifting data.');
         }
     }
@@ -1038,7 +1053,7 @@ class SessionController extends Controller
             'members' => $members->map(function ($member) {
                 return [
                     'id' => $member->id,
-                    'name' => $member->name,
+                    'name' => $member->firstname,
                 ];
             })
         ]);
@@ -1164,23 +1179,24 @@ class SessionController extends Controller
             if (!$testId) {
                 return response()->json(['message' => 'ID not found'], 400);
             }
-            $test=Test::findOrFail($testId);
+            $test = Test::findOrFail($testId);
             $test->update([
                 'category_id' => $request->input('categorytest_' . $testId),
                 'workout_id' => $request->input('workouttest_' . $testId),
-                'member_id'=>$request->input('test-member_' . $testId)
+                'member_id' => $request->input('test-member_' . $testId)
 
             ]);
 
 
-            return response()->json(['message'=>'update suceess']);
+            return response()->json(['message' => 'update suceess']);
         } catch (\Exception $e) {
-            
+
             return redirect()->back()->with('error', 'an error occurred while updateing the test data');
         }
     }
 
-    public function deletealldatatest(Request $request){
+    public function deletealldatatest(Request $request)
+    {
         // dd($request);
         $selectedDate = $request->input('selectdatetestDelete');
         // Validate the selected date
@@ -1200,7 +1216,6 @@ class SessionController extends Controller
             // Redirect back with error message
             return redirect()->back()->with('error', 'An error occurred while deleting Strength sessions.');
         }
-
     }
     // store conditioning
     public function storeconditioning(Request $request)

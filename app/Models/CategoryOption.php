@@ -21,5 +21,14 @@ class CategoryOption extends Model
     {
         return $this->belongsTo(WorkoutLibrary::class, 'workout_id');
     }
+    public function warmups()
+    {
+        return $this->hasMany(Warmup::class, 'category_id');
+    }
+
+    public function strengths()
+    {
+        return $this->hasMany(Strength::class, 'category_id');
+    }
     
 }

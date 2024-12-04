@@ -104,7 +104,9 @@ Route::middleware(['admin'])->group(function () {
     // client management page
     Route::get('/admin/clientmanagement', [ClientManagementController::class, 'viewclientmanagement'])->name('viewadminclientmanagement');
     //fetch data
-    Route::get('/save/newclient/{action?}/{id?}', [ClientManagementController::class, 'newProfileclientShow'])->name('addnewclientview');
+    Route::get('/save/newclient/{action?}/{id?}', [ClientManagementController::class, 'newProfileclientShow'])->name('addnewclientedit');
+
+    Route::get('/view/newclient/{id?}', [ClientManagementController::class, 'clientview'])->name('clientview');
     //add new client
     Route::post('/save/newclient/add', [ClientManagementController::class, 'addnewclient'])->name('newProfileclientsave');
     //editclient
@@ -115,7 +117,7 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/profile/{id}', [ClientManagementController::class, 'deleteProfile'])->name('deleteProfile');
     //edit
     Route::get('/edit/{id}', [ClientManagementController::class, 'editclient'])->name('editclient');
-// Route::get('/edit/{id}', [ClientManagementController::class, 'editclient'])->name('editclient'); function missing
+    // Route::get('/edit/{id}', [ClientManagementController::class, 'editclient'])->name('editclient'); function missing
 
 
     // store
@@ -138,20 +140,20 @@ Route::middleware(['admin'])->group(function () {
     Route::Post('/get-wormup', [SessionController::class, 'getwarmup']);
 
     // store weightlifting
-    Route::post('/store-weightlifting',[SessionController::class,'storeweightlifting']);
+    Route::post('/store-weightlifting', [SessionController::class, 'storeweightlifting']);
     // get Weightlifting
-    Route::post('/get-Weightlifting',[SessionController::class,'getWeightlifting']);
+    Route::post('/get-Weightlifting', [SessionController::class, 'getWeightlifting']);
     // update Weightlifting
     Route::post('/update-Weightlifting', [SessionController::class, 'updateWeightlifting'])->name('updateWeightlifting');
     // delete
     Route::delete('/delete-Weightlifting', [SessionController::class, 'deleteAllBySelectDateWeightlifting'])->name('Weightlifting.deleteAllBySelectDate');
 
     // store conditioning
-    Route::post('/store-conditioning',[SessionController::class,'storeconditioning']);
+    Route::post('/store-conditioning', [SessionController::class, 'storeconditioning']);
     // get conditioning
-    Route::post('/getConditioning',[SessionController::class,'getConditioning']);
+    Route::post('/getConditioning', [SessionController::class, 'getConditioning']);
     // update conditioning
-    Route::post('/update-conditioning',[SessionController::class,'updateConditioning']);
+    Route::post('/update-conditioning', [SessionController::class, 'updateConditioning']);
     // delete conditioning
     Route::post('/delete-conditioning', [SessionController::class, 'deleteConditioning']);
 
@@ -159,21 +161,21 @@ Route::middleware(['admin'])->group(function () {
     //stroe strenght
     Route::post('/save-strength', [SessionController::class, 'strengthstore'])->name('save-strength');
     Route::post('/get-strengthdata', [SessionController::class, 'getstrength'])->name('get-strength');
-    Route::post('/update-strenthdata',[SessionController::class,'updatestrength' ])->name("updatestrength");
+    Route::post('/update-strenthdata', [SessionController::class, 'updatestrength'])->name("updatestrength");
     // Route::get('/update-strenthdata',[SessionController::class,'updatestrength' ])->name("updatestrength");
-    Route::delete('/delete-strengthdata',[SessionController::class, 'deleteAllByDelectDataStrenght'])->name('deletestrength');
+    Route::delete('/delete-strengthdata', [SessionController::class, 'deleteAllByDelectDataStrenght'])->name('deletestrength');
 
     //store test
     //getmembers
     Route::post('/get-members', [SessionController::class, 'getmember'])->name('getmembers');
     // storetest
-    Route::post('/save-test',[SessionController::class, 'storeTest'])->name('storeTest');
+    Route::post('/save-test', [SessionController::class, 'storeTest'])->name('storeTest');
     //gettestdata
     Route::post('/get-testdata', [SessionController::class, 'gettest'])->name('get-testdata');
     //testupdate
-    Route::post('/update-test',[SessionController::class, 'updatest'])->name('update-test');
+    Route::post('/update-test', [SessionController::class, 'updatest'])->name('update-test');
     //testdelete
-    Route::delete('/delete-test',[SessionController::class, 'deletealldatatest'])->name('delete-test');
+    Route::delete('/delete-test', [SessionController::class, 'deletealldatatest'])->name('delete-test');
 
 
 
@@ -197,6 +199,8 @@ Route::middleware(['admin'])->group(function () {
 Route::middleware(['user'])->group(function () {
     // dashboard
     Route::get('/user/dashboard', [UserDashboardController::class, 'viewdashboard'])->name('userdashboard');
+    // Find exercise
+    Route::POST('/find-data',[UserDashboardController::class,'getData'])->name('find-data');
     Route::post('/users/search', [UserDashboardController::class, 'search'])->name('users.search');
 
 
@@ -206,6 +210,7 @@ Route::middleware(['user'])->group(function () {
     Route::post('/monthly-images', [UserProfileController::class, 'store'])->name('monthly_images.store');
     // get Prev Image and Next Image
     Route::post('/prevdata', [UserProfileController::class, 'handlePrevData'])->name('prevdata');
+    Route::post('/nextvdata', [UserProfileController::class, 'handleNextData'])->name('nextvdata');
     // Add new Profile
     Route::get('/user/new-profile', [UserProfileController::class, 'viewnewprofile'])->name('usernewprofile');
     Route::post('/profiles', [UserProfileController::class, 'newProfileShow'])->name('profiles.store');
@@ -232,6 +237,11 @@ Route::post('/mobile/store-readiness', [MobileController::class, 'storescore'])-
 // get workout data
 Route::post('/mobile/class-manager', [ClientManagementController::class, 'getdata'])->name('mobile.class-manager');
 Route::get('/mobile/workout', [MobileController::class, 'workout'])->name('mobile.workout');
+Route::post('/warmup-daily',  [MobileController::class, 'storewarmupdaily']);
+Route::put('/warmup-daily/{id}', [MobileController::class, 'storewarmupdaily'])->name('warmup.daily.update');
+
+Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthdaily']);
+
 Route::get('/mobile/workouttimer', [MobileController::class, 'workouttimer'])->name('mobile.workouttimer');
 Route::get('/mobile/histroyview', [MobileController::class, 'histroyview'])->name('mobile.histroyview');
 

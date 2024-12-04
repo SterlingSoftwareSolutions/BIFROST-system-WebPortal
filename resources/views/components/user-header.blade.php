@@ -39,19 +39,20 @@
                     <div class="flex items-center justify-center bg-black p-2 rounded-lg space-x-4 sm:space-x-1">
                         <!-- Previous day button -->
                         <div class="text-white text-2xl cursor-pointer md:block" id="prev-day">
-                            <i class="bi bi-chevron-left"></i>
+                            <i class="bi bi-chevron-left" onclick="getday(-1)"></i>
                         </div>
                         <!-- Date display section -->
                         <div class="flex items-center flex-grow justify-center">
                             <div class="text-center">
                                 <div class="text-red-500 text-xs sm:text-xs" id="day-week">Day X, WEEK Y</div>
+                                <input type="text" id="dayshort" hidden>
                                 <div class="text-white text-xs sm:text-sm w-48 mx-auto" id="full-date">Today Xth Month,
                                     Year</div>
                             </div>
                         </div>
                         <!-- Next day button -->
                         <div class="text-white text-2xl cursor-pointer w-2" id="next-day">
-                            <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right" onclick="getday(1)"></i>
                         </div>
                     </div>
 
@@ -60,6 +61,7 @@
                             // Get references to HTML elements
                             const dayWeekElement = document.getElementById('day-week');
                             const fullDateElement = document.getElementById('full-date');
+                            const shortDayInput = document.getElementById('dayshort'); // New input field
                             const prevDayButton = document.getElementById('prev-day');
                             const nextDayButton = document.getElementById('next-day');
 
@@ -85,20 +87,35 @@
                                     fullDateElement.textContent = formattedDate;
                                 }
 
-                                // Calculate the week number and display it
+                                // Calculate the week number (starting from Monday)
                                 const startOfYear = new Date(date.getFullYear(), 0, 1);
                                 const dayOfYear = Math.floor((date - startOfYear + (startOfYear.getTimezoneOffset() - date
                                     .getTimezoneOffset()) * 60000) / 86400000) + 1;
-                                const weekNumber = Math.ceil(dayOfYear / 7);
+                                const weekNumber = Math.ceil((dayOfYear + (startOfYear.getDay() + 6) % 7) /
+                                    7); // Adjust for weeks starting from Monday
 
                                 // Update the day-week element
-                                dayWeekElement.textContent = `Day ${date.getDay() + 1}, WEEK ${weekNumber}`;
+                                const dayOfWeek = (date.getDay() + 6) % 7 + 1; // Adjust for Monday being the first day of the week
+                                dayWeekElement.textContent = `Day ${dayOfWeek}, WEEK ${weekNumber}`;
+
+                                // Set the short name of the day (e.g., "Mon" for Monday) in the input field
+                                const shortDay = formatDateAsYYYYMMDD(date);
+                                shortDayInput.value = shortDay;
+                            }
+
+                            // Function to format a date as yyyy-mm-dd
+                            function formatDateAsYYYYMMDD(date) {
+                                const year = date.getFullYear();
+                                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                                const day = String(date.getDate()).padStart(2, '0');
+                                return `${year}-${month}-${day}`;
                             }
 
                             // Function to change the date by a specified number of days
                             function changeDate(days) {
                                 currentDate.setDate(currentDate.getDate() + days);
                                 updateDateDisplay(currentDate);
+                                setDate();
                             }
 
                             // Helper function to check if two dates are the same
@@ -178,7 +195,36 @@
             </div>
         </div>
     </header>
+    <script>
+        window.onload = function() {
+            getday(0);
+        };
 
+        function getday(val) {
+            // Get the date string from the 'dayshort' element
+            var dateString = document.getElementById('dayshort').value;
+
+            // Check if the input field is empty (initial load case)
+            if (!dateString) {
+                // Set default date to today if empty
+                dateString = new Date().toISOString().split('T')[0];
+            }
+
+            // Create a Date object from the date string
+            var date = new Date(dateString);
+
+            // Calculate the new date by adding the offset
+            date.setDate(date.getDate() + val);
+
+            // Format the new date as a string (e.g., YYYY-MM-DD)
+            var newDateString = date.toISOString().split('T')[0];
+
+            console.log(newDateString);
+
+            // Optionally, update the input field or other UI elements here
+            document.getElementById('dayshort').value = newDateString;
+        }
+    </script>
 </body>
 
 </html>

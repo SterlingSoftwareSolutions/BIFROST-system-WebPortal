@@ -47,7 +47,7 @@ class AuthController extends Controller
                 } elseif ($request->type == "web") {
                     if ($user->user_type == "admin" || $user->user_type == "super admin") {
                         return redirect()->route('admin.dashboard');
-                    } elseif ($user->user_type == "worker") {
+                    } elseif ($user->user_type == "client") {
                         return redirect()->route('user.dashboard');
                     } else {
                         return redirect()->back()->with('error', 'Please enter a correct pin number.');

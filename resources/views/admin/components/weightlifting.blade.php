@@ -203,7 +203,7 @@
                                 <label for="restwe_1" class="w-60 block mb-1">Rest <span
                                         class="text-red-500">*</span></label>
                                 <div class="relative flex items-center max-w-[8rem]">
-                                    <button type="button"
+                                    <button type="button" 
                                         onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -212,8 +212,8 @@
                                                 stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                         </svg>
                                     </button>
-                                    <input type="text" id="restwe_1" name="restwe_1" placeholder="00:00"
-                                        class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                    <input type="text" id="restwe_1" name="restwe_1" placeholder="00:00" value="04:00"
+                                        class="bg-gray-50 border-x-0 restTimeP border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         readonly required>
                                     <button type="button"
                                         onclick="incrementRest(this.parentNode.querySelector('input').id)"
@@ -259,7 +259,7 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weigth <span
+                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight <span
                                         class="text-red-500">*</span></label>
                                 <input type="number" id="alt-weigthwe_1" name="alt-weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
@@ -348,8 +348,8 @@
                                                 stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                         </svg>
                                     </button>
-                                    <input type="text" id="alt-restwe_1" name="alt-restwe_1" placeholder="00:00"
-                                        class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                    <input type="text" id="alt-restwe_1" name="alt-restwe_1" placeholder="00:00" value="04:00"
+                                        class="bg-gray-50 border-x-0 restTimeA border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         readonly required>
                                     <button type="button"
                                         onclick="incrementRest(this.parentNode.querySelector('input').id)"
@@ -406,6 +406,14 @@
             el.name = baseName + '_' + index;
             el.id = baseId + '_' + index;
         });
+        let timeElementA = element.querySelector('.restTimeA');
+        if (timeElementA) {
+            timeElementA.value = '04:00';
+        }
+        let timeElementP = element.querySelector('.restTimeP');
+        if (timeElementP) {
+            timeElementP.value = '04:00';
+        }
     }
 
     // Function to add a remove button to the cloned element

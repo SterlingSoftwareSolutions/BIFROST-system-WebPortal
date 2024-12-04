@@ -35,5 +35,8 @@ class Warmup extends Model
     {
         return $this->belongsTo(WorkoutLibrary::class, 'workout_id');
     }
-
+    public function dailyWarmups()
+    {
+        return $this->hasMany(DailyWarmup::class, 'warmup_id');
+    }
 }

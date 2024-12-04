@@ -54,6 +54,13 @@ class ClientManagementController extends Controller
         return view('admin.user.client-newprofile', compact('action', 'member'));
     }
 
+    public function clientview($id)
+    {
+        $member = Newprofile::findOrFail($id);
+        // Return view with data
+        return view('admin.user.client-profileview', compact('member'));
+    }
+
     // add new function
     public function addnewclient(Request $request)
     {

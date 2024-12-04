@@ -39,14 +39,7 @@
                     <form id="myForm" method="POST" action="{{ route('save.goal') }}">
                         @csrf
 
-                        @if (isset($errorMessage))
-                            <div class="alert alert-danger">
-                                {{ $errorMessage }}
-                            </div>
-                        @else
-                            <input type="hidden" name="user_id" value="{{ $searchedUser->id }}">
-                            <!-- rest of your form or content -->
-                        @endif
+
 
 
                         <div class="flex flex-row space-x-4 md:space-y-0 md:space-x-4 w-full mt-8 ">
@@ -135,7 +128,8 @@
                             </div>
                             <div class="w-16 h-20 hidden md:flex items-center justify-center  bg-[#F7D895]"></div>
                             <div class="ml-2 md:ml-5 flex items-center w-[25%] md:w-[20%]">
-                                <input type="text" name="measurable" class="border px-3  border-black flex-1 h-14 my-2 w-full">
+                                <input type="text" name="measurable"
+                                    class="border px-3  border-black flex-1 h-14 my-2 w-full">
                             </div>
                             <div class="ml-2 md:ml-5 flex text-center w-[40%] md:w-[20%] h-20 mt-2 md:mt-0">
                                 <div class="border border-black flex items-center h-14 my-2 w-full md:w-2/3">
@@ -179,7 +173,8 @@
                             <div class="ml-2 md:ml-5 flex text-center w-[40%] md:w-[20%] h-20 mt-2 md:mt-0">
                                 <!-- Display Achievable Goal -->
                                 <div class="border border-black flex items-center h-14 my-2 w-full md:w-2/3">
-                                    <div class="ml-2 mr-2 text-white md:text-4xl text-xs px-2 h-8 w-8 flex items-center justify-center font-bold bg-[#36B4E6]">
+                                    <div
+                                        class="ml-2 mr-2 text-white md:text-4xl text-xs px-2 h-8 w-8 flex items-center justify-center font-bold bg-[#36B4E6]">
                                         A
                                     </div>
                                     <div class="text-xs text-black" id="measurableDisplay">
@@ -188,7 +183,7 @@
                                         @endif
                                     </div>
                                 </div>
-                            
+
                                 <!-- Input field to display or disable -->
                                 <div class="border border-black flex text-center items-center h-14 my-2  w-1/3">
                                     @if (isset($goal))
@@ -197,11 +192,12 @@
                                             value="{{ $goal['achievable_progress'] }}">
                                     @else
                                         <input type="text"
-                                            class="text-xs mx-1 bg-transparent w-full h-full border-none focus:outline-none" disabled>
+                                            class="text-xs mx-1 bg-transparent w-full h-full border-none focus:outline-none"
+                                            disabled>
                                     @endif
                                 </div>
                             </div>
-                            
+
                         </div>
 
                         <!-- Relevant -->
@@ -297,7 +293,8 @@
                                                 value="{{ $goal['time_progress'] }}">
                                         @else
                                             <input type="text"
-                                                class="text-xs mx-1 bg-transparent w-full h-full border-none focus:outline-none" disabled>
+                                                class="text-xs mx-1 bg-transparent w-full h-full border-none focus:outline-none"
+                                                disabled>
                                         @endif
                                     </div>
                                 </div>
