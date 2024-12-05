@@ -420,8 +420,16 @@
             },
             success: function(response) {
                 console.log(response);
-                // Extract the category_options array from the response
-                const categoryOptions = response.category_options || [];
+
+                // Convert category_options object into an array, if it's not an array already
+                let categoryOptions = response.category_options;
+
+                // If category_options is an object, convert it into an array
+                if (categoryOptions && typeof categoryOptions === 'object') {
+                    categoryOptions = Object.values(categoryOptions); // Convert object to array
+                } else {
+                    categoryOptions = [];
+                }
 
                 // Clear existing options in the select elements before adding new ones
                 ['categorys_1', 'alt-categorys_1'].forEach(id => {
@@ -446,6 +454,7 @@
             }
         });
     }
+
 
     // Function to sort select options alphabetically
     function sortSelectOptions(selectElement) {
