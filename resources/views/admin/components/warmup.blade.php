@@ -146,6 +146,7 @@
 </div>
 <script>
     // Function to set category options for warmup
+    // Function to set category options for warmup categories
     function setCategoryW(id, categoryName) {
         const categorySelectW = document.getElementById('categoryw_1');
         const option = document.createElement('option');
@@ -166,8 +167,17 @@
                 _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
             },
             success: function(response) {
-                // Extract the category_options array from the response
-                const categoryOptionsW = response.category_options || [];
+                console.log(response);
+
+                // Convert category_optionsW object into an array, if it's not already an array
+                let categoryOptionsW = response.category_options || [];
+
+                // If categoryOptionsW is an object, convert it into an array
+                if (categoryOptionsW && typeof categoryOptionsW === 'object') {
+                    categoryOptionsW = Object.values(categoryOptionsW); // Convert object to array
+                } else {
+                    categoryOptionsW = [];
+                }
 
                 // Clear existing options in the select element before adding new ones
                 const categorySelectW = document.getElementById('categoryw_1');
@@ -187,6 +197,7 @@
             }
         });
     }
+
 
     // Function to sort warmup select options alphabetically
     function sortSelectOptionsW(selectElement) {
