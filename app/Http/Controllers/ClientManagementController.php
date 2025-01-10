@@ -80,7 +80,7 @@ class ClientManagementController extends Controller
                 'bmr' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
-                'profile_image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
+                'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
             ]);
 
             // Check if the email already exists
