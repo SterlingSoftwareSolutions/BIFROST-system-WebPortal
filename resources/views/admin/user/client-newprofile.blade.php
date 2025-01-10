@@ -241,8 +241,8 @@
                                 </div>
                             </div>
                             {{-- Progress Photo --}}
-                            <div class=" flex">
-                                <div class="w-1/2 h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class=" flex mt-5">
+                                {{-- <div class="w-1/2 h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
                                     <div
                                         class="form-group block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
                                         <label for="progress-photos"
@@ -275,19 +275,17 @@
                                         </div>
                                     </div>
 
-                                </div>
+                                </div> --}}
 
-                                <div class="w-1/2 ">
+                                <div class="w-full">
                                     <label for="primary-goal"
-                                        class=" text-gray-700 font-bold w-full border  mb-1 md:mb-0 pr-4">
+                                        class=" text-gray-700 font-bold w-full text-xl mb-1 md:mb-0 pr-4">
                                         Payment Method
                                         <span class="text-red-500 w-full ">
                                             <form class="w-full  ">
                                                 <div class="flex">
                                                     <div class="mb-4 w-1/2">
-                                                        <label class=" text-sm  text-gray-700 font-bold">Credit /
-                                                            Debit
-                                                            Card</label>
+                                                        <label class=" text-sm  text-gray-700 font-bold">Credit /Debit Card</label>
                                                         <div class="flex items-center mt-2">
                                                             <input type="radio" name="cardType" id="visa"
                                                                 class="mr-2">
@@ -368,7 +366,7 @@
                                         class="block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
                                         <!-- Empty label left as it is -->
                                     </label>
-                                    <div class="w-full md:w-[26%]">
+                                    <div class="w-full md:w-[26%] ">
                                         <button type="submit" id="submit" required
                                             class="form-control w-1/4 md:w-[50%] p-2 text-center border rounded px-4 py-2 bg-black text-white">
                                             Submit
@@ -390,19 +388,19 @@
             function calculateAge() {
                 const dobInput = document.getElementById('dob').value;
                 const ageInput = document.getElementById('age');
-        
+
                 if (dobInput) {
                     const dob = new Date(dobInput);
                     const today = new Date();
                     let age = today.getFullYear() - dob.getFullYear();
                     const monthDiff = today.getMonth() - dob.getMonth();
                     const dayDiff = today.getDate() - dob.getDate();
-        
+
                     // Adjust age if the birth month and day haven't occurred yet this year
                     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
                         age--;
                     }
-        
+
                     ageInput.value = age;
                 } else {
                     ageInput.value = ''; // Clear age if no DOB is selected
