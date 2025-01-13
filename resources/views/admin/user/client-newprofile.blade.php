@@ -230,9 +230,22 @@
                                         Subscription Level<span class="text-red-500">*</span>
                                     </label>
                                     <div class="w-full md:w-[66%]">
-                                        <input type="text" id="subscription_level" name="subscription_level" required
+                                        <select id="subscription_level" name="subscription_level"
+                                            class="form-control w-full rounded px-4 py-2 border" required>
+                                            <option value="">Select Subscription Level</option>
+                                            <option value="10 Pack"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === '10 Pack' ? 'selected' : '') }}>
+                                                10 Pack</option>
+                                            <option value="Unlimited"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === 'Unlimited' ? 'selected' : '') }}>
+                                                Unlimited</option>
+                                            <option value="Online"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === 'Online' ? 'selected' : '') }}>
+                                                Online</option>
+                                        </select>
+                                        {{-- <input type="text" id="subscription_level" name="subscription_level" required
                                             class="form-control w-full border rounded px-4 py-2"
-                                            value="{{ old('subscription_level', isset($member) ? $member->subscription_level : '') }}">
+                                            value="{{ old('subscription_level', isset($member) ? $member->subscription_level : '') }}"> --}}
 
                                     </div>
                                 </div>
