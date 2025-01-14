@@ -27,6 +27,8 @@ return new class extends Migration
             $table->decimal('bmr');
             $table->string('primary_goal');
             $table->string('subscription_level');
+            $table->date('startdate');
+            $table->boolean('is_subsactive')->default(false);
             $table->string('image_paths')->nullable();
             $table->timestamps();
         });
