@@ -222,8 +222,7 @@
                             </div>
                         </div>
                         <div class="flex items-center border-b ">
-                            <label for="intensity" class="w-60 block mb-1">Intensity <span
-                                    class="text-red-500">*</span></label>
+                            <label for="intensity" class="w-60 block mb-1">Intensity</label>
                             <select id="intensitys_1" name="intensitys_1"
                                 class="w-1/3 px-3 py-3 border flex rounded my-2">
                                 <option value=""selected disabled>-- Select Intensity --
@@ -363,8 +362,7 @@
                             </div>
                         </div>
                         <div class="flex items-center border-b">
-                            <label for="alt-intensitys" class="w-60 block mb-1">Intensity <span
-                                    class="text-red-500">*</span></label>
+                            <label for="alt-intensitys" class="w-60 block mb-1">Intensity</label>
                             <select id="alt-intensitys_1" name="alt-intensitys_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2">
                                 <option value="" selected disabled>-- Select Intensity --
@@ -488,10 +486,10 @@
         } else if (isCategory) {
             workoutSelectId = `workouts_${remainingPart}`;
         } else if (isECategory) {
-            workoutSelectId = `workoutstrength_${remainingPart}`;
-        } else if (isEAltCategory) {
+            workoutSelectId = `workoutstrength_${remainingPart}`;        }else if (isEAltCategory) {
             workoutSelectId = `altworkoutstrengths_${remainingPart}`;
         }
+
 
         console.log(`Constructed workoutSelectId: ${workoutSelectId}`);
 
@@ -500,6 +498,9 @@
         if (!workoutSelect) {
             console.error(`Element with ID ${workoutSelectId} not found in the DOM.`);
             return;
+
+            // Fetch workouts via AJAX
+            fetchWorkouts(selectId, workoutSelect);
         }
 
         $.ajax({
@@ -625,16 +626,13 @@
             });
 
             // Create a string with the alternative category options
-            let strengthaltCategoryOptionsHTML = '';
-            if (item.alt_category_id) {
-                strengthaltCategoryOptionsHTML =
-                    '<option value="" selected disabled>-- Select Category --</option>';
-                categoryOptions.forEach(category => {
-                    strengthaltCategoryOptionsHTML +=
-                        `<option value="${category.id}" ${category.id == item.alt_category_id ? 'selected' : ''}>${category.category_name}</option>`;
-                });
-            }
-
+            let strengthaltCategoryOptionsHTML =
+                '<option value="" selected disabled>-- Select Category --</option>';
+            categoryOptions.forEach(category => {
+                strengthaltCategoryOptionsHTML +=
+                    `<option value="${category.id}" ${item.alt_category_id == category.id ? 'selected' : ''}>${category.category_name}</option>`;
+            });
+            
             // Build the setsHTML for each set in the item
             const setsHTML = Array.isArray(item.sets) ? item.sets.map((set, index) => {
                 // Check if sets or reps are null and set visibility accordingly
@@ -811,7 +809,7 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-                                ${strengthaltCategoryOptionsHTML ? `
+                                
                                     <div class="flex items-center border-b mt-4">
                                         <label for=altcategorystrength_${item.id}" class="w-60 block mb-1">AlterNative Category <span class="text-red-500">*</span></label>
                                         <select id="altcategorystrength_${item.id}" name="altcategorystrength_${item.id}" onchange="getworkoutS(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
@@ -819,7 +817,7 @@
                                         </select>
                                         <button type="button" onclick="updatestrength(${item.id})" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Edit</button>
                                     </div>
-                                ` : ''}
+                                    
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutstrengths_${item.category_id}" class="w-60 block mb-1">
                                         Workout<span class="text-red-500">*</span>
@@ -875,6 +873,8 @@
                                     <select id="altintensitystrength_${item.id}" name="altintensitystrength_${item.id}"
                                         class="w-1/3 px-3 py-3 border flex rounded my-2" required>
                                         <!-- Dynamically setting the selected option based on item.alt_intensity -->
+                                        <option value="" selected disabled>-- Select Intensity --
+                                </option>
                                         <option value="low" ${item.alt_intensity === 'low' ? 'selected' : ''}>Low</option>
                                         <option value="medium" ${item.alt_intensity === 'medium' ? 'selected' : ''}>Medium</option>
                                         <option value="high" ${item.alt_intensity === 'high' ? 'selected' : ''}>High</option>

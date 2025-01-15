@@ -183,11 +183,11 @@ class ClientManagementController extends Controller
                     $imageName = time() . '-' . $file->getClientOriginalName();
                     $filePath = $file->storeAs('profile_images', $imageName, 'public');
                     $imagePaths[] = $filePath;
-                    \Log::info('Uploaded file path: ' . $filePath);
+                    Log::info('Uploaded file path: ' . $filePath);
                 }
             }
 
-            \Log::info('Image paths before update: ', $imagePaths);
+            Log::info('Image paths before update: ', $imagePaths);
 
             // Update the profile data
             $updateSuccessful = $profile->update([
@@ -206,7 +206,7 @@ class ClientManagementController extends Controller
                 'image_paths' => json_encode($imagePaths),
             ]);
 
-            \Log::info('Profile data after update: ', $profile->toArray());
+            Log::info('Profile data after update: ', $profile->toArray());
 
             if ($updateSuccessful) {
                 return redirect()->route('viewadminclientmanagement')->with('success', 'Profile updated successfully!');
@@ -214,7 +214,7 @@ class ClientManagementController extends Controller
                 return redirect()->back()->withErrors(['error' => 'Profile update failed.'])->withInput();
             }
         } catch (\Exception $e) {
-            \Log::error('Error updating profile: ' . $e->getMessage());
+            Log::error('Error updating profile: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
         }
     }
