@@ -61,11 +61,11 @@ class Strength extends Model
         $strengthing->weight = $data['weigths'];
         $strengthing->rest = $data['rests'] ?? '00:00:00'; // Use default if not provided
         $strengthing->intensity = $data['intensitys'];
-        $strengthing->alt_category_id = $data['alt-categorys'];
-        $strengthing->alt_workout_id = $data['alt-workouts'];
-        $strengthing->altweight = $data['alt-weigths'];
+        $strengthing->alt_category_id = $data['alt-categorys'] ?? null;
+        $strengthing->alt_workout_id = $data['alt-workouts']?? null;
+        $strengthing->altweight = $data['alt-weigths']?? null;
         $strengthing->altrest = $data['alt-rests'] ?? '00:00:00'; // Use default if not provided
-        $strengthing->altintensity = $data['alt-intensitys'];
+        $strengthing->altintensity = $data['alt-intensitys']?? null;
         $strengthing->date = $data['date'];
 
         // Save the model to the database
@@ -73,6 +73,8 @@ class Strength extends Model
 
         return $strengthing;
     }
+
+    
     public function sets()
     {
         return $this->hasMany(StrengthSetRep::class, 'strength_id');

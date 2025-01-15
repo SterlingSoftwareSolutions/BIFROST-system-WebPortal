@@ -345,6 +345,7 @@ class SessionController extends Controller
     //  Store Weightlifting
     public function storeweightlifting(Request $request)
     {
+        Log::info('Incoming Weightlifting Request Data: ', $request->all());
         // dd($request);
         // Validate the request data
         $request->validate([
@@ -356,16 +357,16 @@ class SessionController extends Controller
             'repswe_*' => 'required|integer',
             // Add restwe_* validation
             'restwe_*' => 'required|date_format:H:i:s',
-            'intensitywe_*' => 'required|string',
+            'intensitywe_*' => 'string|nullable',
 
-            'alt-categorywe_*' => 'required|integer|exists:category_options,id',
-            'alt-workoutwe_*' => 'required|integer|exists:workout_libraries,id',
-            'alt-weigthwe_*' => 'required|integer',
-            'alt-setswe_*' => 'required|integer',
-            'alt-repswe_*' => 'required|integer',
+            'alt-categorywe_*' => 'integer|exists:category_options,id',
+            'alt-workoutwe_*' => 'integer|exists:workout_libraries,id',
+            'alt-weigthwe_*' => 'integer',
+            'alt-setswe_*' => 'integer',
+            'alt-repswe_*' => 'integer',
             // Add alt-restwe_* validation
-            'alt-restwe_*' => 'required|date_format:H:i:s',
-            'alt-intensitywe_*' => 'required|string',
+            'alt-restwe_*' => 'date_format:H:i:s',
+            'alt-intensitywe_*' => 'string',
         ]);
         try {
             $requestData = $request->all();
@@ -708,17 +709,17 @@ class SessionController extends Controller
             'workout_*' => 'required|exists:workout_libraries,id',
             'weight_*' => 'required',
             'rest_*' => 'nullable',
-            'intensity_*' => 'required',
-            'alt_category_*' => 'required|exists:category_options,id',
-            'alt_workout_*' => 'required|exists:workout_libraries,id',
-            'alt_weight_*' => 'required',
+            'intensity_*' => 'nullable',
+            'alt_category_*' => 'nullable|exists:category_options,id',
+            'alt_workout_*' => 'nullable|exists:workout_libraries,id',
+            'alt_weight_*' => 'nullable',
             'alt_rest_*' => 'nullable',
-            'alt_intensity_*' => 'required',
+            'alt_intensity_*' => 'nullable',
             'selectdate_*' => 'required',
             'sets_*' => 'required',
             'reps_*' => 'required',
-            'alt_sets_*' => 'required',
-            'alt_reps_*' => 'required',
+            'alt_sets_*' => 'nullable',
+            'alt_reps_*' => 'nullable',
         ]);
 
         $requestData = $request->all();

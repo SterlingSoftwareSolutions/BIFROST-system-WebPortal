@@ -227,8 +227,7 @@
                                 </div>
                             </div>
                             <div class="flex items-center border-b ">
-                                <label for="intensitywe_1" class="w-60 block mb-1">Intensity <span
-                                        class="text-red-500">*</span></label>
+                                <label for="intensitywe_1" class="w-60 block mb-1">Intensity</label>
                                 <select id="intensitywe_1" name="intensitywe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded my-2" required>
                                     <option value="" selected disabled>-- Select Intensity --</option>
@@ -246,7 +245,7 @@
                                 <label for="alt-categorywe_1" class="w-60 block mb-1">Category <span
                                         class="text-red-500">*</span></label>
                                 <select id="alt-categorywe_1" name="alt-categorywe_1" onchange="getworkoutWe(this)"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" >
                                     <option value="" selected disabled>-- Select Category --</option>
                                 </select>
                             </div>
@@ -254,7 +253,7 @@
                                 <label for="alt-workoutwe_1" class="w-60 block mb-1">Workout <span
                                         class="text-red-500">*</span></label>
                                 <select id="alt-workoutwe_1" name="alt-workoutwe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" >
                                     <option value="" selected disabled>-- Select Workout --</option>
                                 </select>
                             </div>
@@ -262,7 +261,7 @@
                                 <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight <span
                                         class="text-red-500">*</span></label>
                                 <input type="number" id="alt-weigthwe_1" name="alt-weigthwe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" >
                                 <label for="" class="border bg-white py-3 px-3 mb-2">%</label>
                             </div>
                             <div class="border-b" id="altduplicateSetUI">
@@ -284,7 +283,7 @@
                                             <input type="text" id="alt-setswe_1" name="alt-setswe_1"
                                                 data-input-counter
                                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full my-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
+                                                placeholder="0" readonly  />
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input').id)"
                                                 class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -314,7 +313,7 @@
                                             <input type="text" id="alt-repswe_1" name="alt-repswe_1"
                                                 data-input-counter
                                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
+                                                placeholder="0" readonly  />
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input').id)"
                                                 class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -363,10 +362,9 @@
                                 </div>
                             </div>
                             <div class="flex items-center border-b">
-                                <label for="alt-intensitywe_1" class="w-60 block mb-1 ">Intensity <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-intensitywe_1" class="w-60 block mb-1 ">Intensity</label>
                                 <select id="alt-intensitywe_1" name="alt-intensitywe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2" >
                                     <option value="" selected disabled>-- Select Intensity --</option>
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
@@ -517,6 +515,8 @@
     document.querySelectorAll(".duplicateBtn").forEach(function(button) {
         button.addEventListener("click", handleUiDuplication);
     });
+
+    
 </script>
 
 

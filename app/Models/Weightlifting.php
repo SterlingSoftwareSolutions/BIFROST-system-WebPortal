@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Models\CategoryOption;
+use App\Models\WeightliftingSet;
+use App\Models\WorkoutLibrary;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Weightlifting extends Model
 {
@@ -57,17 +61,18 @@ class Weightlifting extends Model
     public static function store($data)
     {
         // dd($data);
+        Log::info("message for weightlifting data",$data);
         $weightlifting = new self();
         $weightlifting->category_id = $data['category'];
         $weightlifting->workout_id = $data['workout'];
         $weightlifting->weight = $data['weigth'];
         $weightlifting->rest = $data['rest'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->intensity = $data['intensity'];
-        $weightlifting->alt_category_id = $data['alt-category'];
-        $weightlifting->alt_workout_id = $data['alt-workout'];
-        $weightlifting->alt_weight = $data['alt-weigth'];
+        $weightlifting->alt_category_id = $data['alt-category']?? null;
+        $weightlifting->alt_workout_id = $data['alt-workout']?? null;
+        $weightlifting->alt_weight = $data['alt-weigth']?? null;
         $weightlifting->alt_rest = $data['alt-rest'] ?? '00:00:00'; // Use default if not provided
-        $weightlifting->alt_intensity = $data['alt-intensity'];
+        $weightlifting->alt_intensity = $data['alt-intensity']?? null;
         $weightlifting->date =  $data['date'];
 
         // Save the model to the database

@@ -21,9 +21,9 @@ return new class extends Migration
 
             $table->foreignId('alt_category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('alt_workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
-            $table->float('alt_weight');
-            $table->time('alt_rest');
-            $table->string('alt_intensity'); 
+            $table->float('alt_weight')->nullable();
+            $table->time('alt_rest')->nullable();
+            $table->string('alt_intensity')->nullable(); 
             
             $table->string('date');
             $table->timestamps();
