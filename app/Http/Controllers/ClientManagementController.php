@@ -80,6 +80,8 @@ class ClientManagementController extends Controller
                 'bmr' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
+                'is_subsactive' => 'boolean',
+                'startdate' => 'required|date',
                 'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
             ]);
 
@@ -87,7 +89,7 @@ class ClientManagementController extends Controller
             if (User::where('email', $validatedData['email'])->exists()) {
                 return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
             }
-
+            //dd($validatedData);
             // Handle image uploads
             $imagePaths = [];
             if ($request->hasFile('profile_image')) {
@@ -125,6 +127,8 @@ class ClientManagementController extends Controller
             $profile->bmr = $validatedData['bmr'];
             $profile->primary_goal = $validatedData['primary-goal'];
             $profile->subscription_level = $validatedData['subscription_level'];
+            $profile->is_subsactive = $validatedData['is_subsactive'];
+            $profile->startdate = Carbon::parse($validatedData['startdate']);
             $profile->image_paths = json_encode($imagePaths); // Store image paths in JSON format
             $profile->save();
 
@@ -154,6 +158,8 @@ class ClientManagementController extends Controller
                 'bmr' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
+                'is_subsactive' => 'boolean',
+                'startdate' => 'required|date',
                 'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -203,6 +209,8 @@ class ClientManagementController extends Controller
                 'bmr' => $validatedData['bmr'],
                 'primary_goal' => $validatedData['primary-goal'],
                 'subscription_level' => $validatedData['subscription_level'],
+                'is_subsactive' => $validatedData['is_subsactive'],
+                'startdate' => Carbon::parse($validatedData['startdate']),
                 'image_paths' => json_encode($imagePaths),
             ]);
 

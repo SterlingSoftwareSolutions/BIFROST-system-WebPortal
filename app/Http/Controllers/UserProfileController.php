@@ -233,6 +233,8 @@ class UserProfileController extends Controller
             'bmr' => 'required|numeric|min:0',
             'primary-goal' => 'required|string|max:255',
             'subscription-level' => 'required|string|max:255',
+            'startdate' => 'required|date',
+            'is_subsactive' => 'boolean',
             'profile_image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
         ]);
 
@@ -273,6 +275,8 @@ class UserProfileController extends Controller
         $profile->bmr = $validatedData['bmr'];
         $profile->primary_goal = $validatedData['primary-goal'];
         $profile->subscription_level = $validatedData['subscription-level'];
+        $profile->startdate = $validatedData['startdate'];
+        $profile->is_subsactive = $validatedData['is_subsactive'];
         $profile->image_paths = json_encode($imagePaths); // Store image paths in JSON format
         // dd($profile);
         $profile->save();

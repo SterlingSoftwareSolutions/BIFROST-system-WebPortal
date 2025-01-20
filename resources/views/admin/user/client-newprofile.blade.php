@@ -222,15 +222,15 @@
                                 </div>
                             </div>
                             {{-- Subscription Level --}}
-                            <div
-                                class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4 whitespace-nowrap md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
                                     <label for="subscription_level"
-                                        class="block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
-                                        Subscription Level<span class="text-red-500">*</span>
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
+                                        Subscription Level <span class="text-red-500">*</span>
                                     </label>
-                                    <div class="w-full md:w-[66%]">
-                                        <select id="subscription_level" name="subscription_level"
+                                </div>
+                                <div class="w-full md:col-span-1">
+                                    <select id="subscription_level" name="subscription_level"
                                             class="form-control w-full rounded px-4 py-2 border" required>
                                             <option value="">Select Subscription Level</option>
                                             <option value="10 Pack"
@@ -243,16 +243,39 @@
                                                 {{ old('subscription_level', isset($member) && $member->subscription_level === 'Online' ? 'selected' : '') }}>
                                                 Online</option>
                                         </select>
-                                        {{-- <input type="text" id="subscription_level" name="subscription_level" required
-                                            class="form-control w-full border rounded px-4 py-2"
-                                            value="{{ old('subscription_level', isset($member) ? $member->subscription_level : '') }}"> --}}
 
-                                    </div>
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
-                                    <!-- Additional content can be added here -->
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                    <label for="startdate"
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        Subscription start date<span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <div class="w-full md:col-span-1">
+                                    <input type="date" id="startdate" name="startdate" required
+                                        class="form-control w-full border rounded px-4 py-2"
+                                        value="{{ old('startdate', isset($member) && $member->startdate ? \Carbon\Carbon::parse($member->startdate)->format('Y-m-d') : '') }}">
+
+                                </div>
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                    <label for="is_subsactive"
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        Subscription start <span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <div class="w-full md:col-span-1 mt-1">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="hidden" name="is_subsactive" value="0">
+                                        <input type="checkbox"
+                                               class="sr-only peer"
+                                               name="is_subsactive"
+                                               value="1"
+                                               {{ isset($member) && $member->is_subsactive ? 'checked' : '' }}>
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
                                 </div>
                             </div>
+
                             {{-- Progress Photo --}}
                             <div class=" flex mt-5">
                                 {{-- <div class="w-1/2 h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">

@@ -131,7 +131,7 @@
                                 </div>
 
                                 {{-- Primary Goal and Subscription Level --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                     <div class="form-group">
                                         <label for="primary-goal" class="text-gray-700 font-semibold block mb-1">Primary
                                             Goal</label>
@@ -146,6 +146,28 @@
                                             {{ old('subscription_level', isset($member) ? $member->subscription_level : 'N/A') }}
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="startdate" class="text-gray-700 font-semibold block mb-1">Subscription Start Date</label>
+                                        <div class="flex items-center space-x-4 rounded border px-4 py-2 bg-gray-100 gap-24">
+                                            <!-- Start Date -->
+                                            <div class="text-gray-900">
+                                                {{ old('startdate', isset($member) ? $member->startdate : 'N/A') }}
+                                            </div>
+
+                                            <!-- Checkbox -->
+                                            <div class="flex items-center">
+                                                <input type="hidden" name="is_subsactive" value="0">
+                                                <input type="checkbox"
+                                                       name="is_subsactive"
+                                                       value="1"
+                                                       class="sr-only peer"
+                                                       {{ $member->is_subsactive ? 'checked' : '' }}
+                                                       @disabled(true)>
+                                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -245,7 +267,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                         </div>
