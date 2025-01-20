@@ -39,7 +39,20 @@
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Last Name</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Contact Number</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Subscription Level</th>
-                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Subscription Start</th>
+                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left relative">
+                                    Subscription Start
+                                    <span class="p-3 cursor-pointer relative" onclick="toggleDropdown(this)">
+                                        <i class="fa fa-sort" aria-hidden="true"></i>
+                                        <!-- Dropdown menu -->
+                                        <div class="hidden dropdown absolute mt-2 right-0 w-40 bg-white border border-gray-300 shadow-md rounded-md z-10">
+                                            <ul class="text-sm">
+                                                <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('on')">Subscription On</li>
+                                                <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('off')">Subscription Off</li>
+                                            </ul>
+                                        </div>
+                                    </span>
+                                </th>
+
                                 <th class="p-3  border-y-2 border-gray-300 bg-white text-left" dir="rtl">
                                     Member Since</th>
                                 <th class="p-3  border-y-2 px justify-end  border-gray-300 bg-white text-left"
@@ -99,6 +112,47 @@
 
             </div>
         </div>
+        <script>
+            // Toggle dropdown visibility
+            function toggleDropdown(element) {
+                const dropdown = element.querySelector('.dropdown');
+                // Hide any other open dropdowns
+                document.querySelectorAll('.dropdown').forEach((el) => {
+                    if (el !== dropdown) el.classList.add('hidden');
+                });
+                // Toggle the clicked dropdown
+                dropdown.classList.toggle('hidden');
+            }
+
+            // Sort table based on subscription status
+            function sortTable(status) {
+                const rows = Array.from(document.querySelectorAll('tbody tr'));
+                const tbody = document.querySelector('tbody');
+                const sortedRows = rows.sort((a, b) => {
+                    const aStatus = a.querySelector('input[type="checkbox"]').checked;
+                    const bStatus = b.querySelector('input[type="checkbox"]').checked;
+                    if (status === 'on') {
+                        return bStatus - aStatus; // Sort by subscription "On" first
+                    } else {
+                        return aStatus - bStatus; // Sort by subscription "Off" first
+                    }
+                });
+                // Append sorted rows back to the table
+                tbody.innerHTML = '';
+                sortedRows.forEach((row) => tbody.appendChild(row));
+            }
+
+        </script>
+        <style>
+            .dropdown.hidden {
+                display: none;
+            }
+
+            .dropdown {
+                display: block;
+            }
+        </style>
+
     @endsection
 
 
