@@ -1,3 +1,4 @@
+console.log("admin.js loaded");
 // Access page
 // edit button acction
 function editAction(id, access) {
@@ -111,6 +112,43 @@ function resetAction(id, access) {
         alert("Error: Access type could not reset pin.");
         // Optional: Handle access denied scenario as needed
     }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("admin.js loaded");
+
+    const resetButton = document.getElementById("resetPinAction");
+    if (resetButton) {
+        resetButton.addEventListener("click", function () {
+            const userId = this.getAttribute("data-user-id");
+            console.log("Button clicked, user ID:", userId);
+            resetPin(userId);
+        });
+    } else {
+        console.error("Reset button not found in the DOM");
+    }
+});
+
+function resetPin(id) {
+    console.log("rrrrrrrrrrrrrrrrrrrrrrrrrr");
+        $.ajax({
+            url: "/resetUserPin",
+            type: "POST",
+            data: {
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                console.log('ssssss',response);
+                location.reload(); // Reload the page after successful reset
+                alert("Success: reset pin.");
+            },
+            error: function (xhr, status, error) {
+                console.log('eeeee',error);
+                console.error(error); // Handle error
+                alert("Error: could not reset pin.");
+            },
+        });
 }
 
 // chane access type

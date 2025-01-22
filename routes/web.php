@@ -118,6 +118,8 @@ Route::middleware(['admin'])->group(function () {
     //edit
     Route::get('/edit/{id}', [ClientManagementController::class, 'editclient'])->name('editclient');
     // Route::get('/edit/{id}', [ClientManagementController::class, 'editclient'])->name('editclient'); function missing
+    //reset pin for user in ckient management
+    Route::post('/resetUserPin', [ClientManagementController::class, 'resetUserPin']);
 
 
     // store
