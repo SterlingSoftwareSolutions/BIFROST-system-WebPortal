@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('category_options_id'); // Foreign key to category_options table
             $table->string('type'); // Type of the workout
             $table->string('workout'); // Workout description or name
-            $table->string('link'); // Link to the workout resource
+            $table->string('link')->nullable(); // Link to the workout resource
             $table->timestamps();
             // Define the foreign key constraint
             $table->foreign('category_options_id')->references('id')->on('category_options')->onDelete('cascade');
