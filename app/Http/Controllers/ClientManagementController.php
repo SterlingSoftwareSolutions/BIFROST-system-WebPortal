@@ -61,8 +61,10 @@ class ClientManagementController extends Controller
     public function clientview($id)
     {
         $member = Newprofile::findOrFail($id);
+        $user = User::find($member->user_id);
+        $pin = $user->pin;
         // Return view with data
-        return view('admin.user.client-profileview', compact('member'));
+        return view('admin.user.client-profileview', compact('member', 'pin'));
     }
 
     // add new function
@@ -86,6 +88,7 @@ class ClientManagementController extends Controller
                 'subscription_level' => 'required|string|max:255',
                 'is_subsactive' => 'boolean',
                 'startdate' => 'required|date',
+                'pin' => 'required|integer|min:0',
                 'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
             ]);
 
@@ -103,10 +106,7 @@ class ClientManagementController extends Controller
                     $imagePaths[] = $filePath;
                 }
             }
-
-            // Generate 4-digit PIN
-            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
-
+            $pin = $validatedData['pin'] ?? str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
             // Create new user
             $user = new User();
             $user->name = $validatedData['firstname'];
@@ -282,5 +282,16 @@ class ClientManagementController extends Controller
             'pin' => $pin,
             'user' => $user
         ]);
+    }
+
+    public function generateUserPin()
+    {
+        // Generate a unique 4-digit random PIN
+        do {
+            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+        } while (User::where('pin', $pin)->exists());
+
+        // Return the generated PIN
+        return response()->json(['pin' => $pin], 200);
     }
 }

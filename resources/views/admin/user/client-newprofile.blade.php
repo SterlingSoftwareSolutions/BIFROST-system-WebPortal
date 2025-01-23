@@ -84,11 +84,13 @@
                                 <div class="w-full md:col-span-1 flex items-center space-x-2">
                                     <input type="text" id="pin" name="pin"
                                            class="form-control flex-grow border rounded px-4 py-2"
-                                           disabled
+                                           readonly
                                            value="{{ old('pin', isset($member) ? $pin : '') }}">
-                                    <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex items-center justify-center"
+                                    <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
+                                         data-action="{{ $action }}"
+                                         data-user-id="{{ isset($member) && $member->user_id ? $member->user_id : '' }}"
                                         @if (isset($member) && $member->user_id)
-                                        onclick="resetPin({{ $member->user_id }}, '{{ $action }}')"
+
                                         @endif>
                                         <i class="fa-solid fa-rotate-right mr-1"></i>
                                         <span>
@@ -575,28 +577,6 @@
                         fileList.items.add(file);
                     });
                     fileInput.files = fileList.files;
-                }
-
-                function resetPin(id) {
-                    console.log("rrrrrrrrrrrrrrrrrrrrrrrrrr");
-                        $.ajax({
-                            url: "/resetUserPin",
-                            type: "POST",
-                            data: {
-                                id: id,
-                                _token: $('meta[name="csrf-token"]').attr("content"),
-                            },
-                            success: function (response) {
-                                console.log('ssssss',response);
-                                location.reload(); // Reload the page after successful reset
-                                alert("Success: reset pin.");
-                            },
-                            error: function (xhr, status, error) {
-                                console.log('eeeee',error);
-                                console.error(error); // Handle error
-                                alert("Error: could not reset pin.");
-                            },
-                        });
                 }
             });
         </script>

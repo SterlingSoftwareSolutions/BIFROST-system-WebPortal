@@ -121,16 +121,17 @@ document.addEventListener("DOMContentLoaded", function () {
     if (resetButton) {
         resetButton.addEventListener("click", function () {
             const userId = this.getAttribute("data-user-id");
+            const action = this.getAttribute("data-action");
             console.log("Button clicked, user ID:", userId);
-            resetPin(userId);
+            resetPin(userId, action);
         });
     } else {
         console.error("Reset button not found in the DOM");
     }
 });
 
-function resetPin(id) {
-    console.log("rrrrrrrrrrrrrrrrrrrrrrrrrr");
+function resetPin(id, action) {
+    if (action == 'edit') {
         $.ajax({
             url: "/resetUserPin",
             type: "POST",
@@ -139,16 +140,33 @@ function resetPin(id) {
                 _token: $('meta[name="csrf-token"]').attr("content"),
             },
             success: function (response) {
-                console.log('ssssss',response);
                 location.reload(); // Reload the page after successful reset
                 alert("Success: reset pin.");
             },
             error: function (xhr, status, error) {
-                console.log('eeeee',error);
                 console.error(error); // Handle error
                 alert("Error: could not reset pin.");
             },
         });
+    } else {
+        // Generate a new PIN and update the input field
+        $.ajax({
+            url: "/generateUserPin",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                console.log('Generate success:', response);
+                $('#pin').val(response.pin); // Update the input field with the new PIN
+                alert("Success: New PIN generated.");
+            },
+            error: function (xhr, status, error) {
+                console.log('Generate error:', error);
+                alert("Error: Could not generate pin.");
+            },
+        });
+    }
 }
 
 // chane access type
