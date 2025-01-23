@@ -51,7 +51,7 @@
                     <!-- Icon -->
                     <i class="bi bi-person-gear w-5 h-5 m-3" onclick="toggleSidebar()"></i>
                     <!-- Text -->
-                    <span class="sidebar-item-text whitespace-nowrap">Workout Library</span>
+                    <span class="sidebar-item-text whitespace-nowrap">Exercise Library</span>
                 </a>
                 <hr class="border-t border-black" />
             </li>

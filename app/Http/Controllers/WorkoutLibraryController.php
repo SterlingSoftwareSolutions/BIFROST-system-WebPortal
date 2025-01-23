@@ -14,30 +14,30 @@ class WorkoutLibraryController extends Controller
     public function viewworkoutlibrary(Request $request)
     {
         $userId = Auth::id(); // Get the currently authenticated user's ID
-    
+
         // Fetch the access record for the user
         $access = Access::where('user_id', $userId)->first();
         $categoryOptions = CategoryOption::all();
-    
+
         if ($access && $access->workout_library === 'enable') {
             // Pass the access type to the view using compact
             $accessType = $access->access_type;
-    
+
             // Initialize the query for WorkoutLibrary
             $query = WorkoutLibrary::query();
-    
+
             // Apply filters if request parameters are present
             if ($request->has('categoryOption') && $request->categoryOption != '') {
                 $query->where('category_options_id', $request->categoryOption);
             }
-    
+
             if ($request->has('type') && $request->type != '') {
                 $query->where('type', $request->type);
             }
-    
+
             // Get the filtered or unfiltered workout libraries
             $workoutLibraries = $query->with('categoryOption')->get();
-    
+
             // Return the view with the data
             return view('admin.user.workout_library', compact('accessType', 'categoryOptions', 'workoutLibraries'));
         } else {
@@ -53,7 +53,7 @@ class WorkoutLibraryController extends Controller
             'category' => 'required|exists:category_options,id',
             'type' => 'required|string',
             'workout' => 'required|string',
-            'link' => 'required|url',
+            'link' => 'nullable|url',
         ]);
 
         // Check if the request has an 'id' for updating an existing entry

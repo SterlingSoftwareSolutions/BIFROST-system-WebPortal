@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <title>Workout Library</title>
+    <title>Exercise Library</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 
@@ -18,11 +18,11 @@
         <div class="container mx-4 mt-24 flex-grow min-h-screen" id="container">
             <div class="breadcrumb text-sm mb-4">
                 <a href="#" class="text-gray-500 hover:underline ml-4">Home</a> / <span><strong
-                        class="font-source-sans"> Workout
+                        class="font-source-sans"> Exercise
                         Library </strong></span>
 
                 <div class="flex justify-between p-5">
-                    <h1 class="text-2xl  font-medium font-source-sans"> Workout Library</h1>
+                    <h1 class="text-2xl  font-medium font-source-sans"> Exercise Library</h1>
 
                     @if ($accessType == 'write')
                         <button id="openPopupBtn" class="bg-black h-10 px-6 text-white rounded-md">+ ADD</button>
@@ -83,8 +83,7 @@
                                     </div>
 
                                     <div class="flex items-center space-x-4">
-                                        <label for="link" class="w-32 font-semibold">Link <span
-                                                class="text-red-500">*</span></label>
+                                        <label for="link" class="w-32 font-semibold">Link </label>
                                         <input type="url" id="link" name="link"
                                             class="p-2 border border-gray-300 rounded flex-1">
                                     </div>
