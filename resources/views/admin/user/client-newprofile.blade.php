@@ -7,7 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ asset('js/admin.js') }}" defer></script>
     <title>Document</title>
 </head>
 
@@ -54,22 +57,52 @@
                         @csrf
                         <div class="text-xs">
                             {{-- firstname and lastname Row --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-2 md:border-b gap-4">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
                                     <label for="firstname"
-                                        class="block text-gray-700 font-bold w-full md:w-[38%] mb-1 md:mb-0 pr-4">First Name <span
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">First Name <span
                                             class="text-red-500">*</span></label>
+                                </div>
+                                <div class="w-full md:col-span-1">
                                     <input type="text" id="firstname" name="firstname"
-                                        class="form-control w-full md:w-3/4 rounded px-4 py-2 border" required
+                                        class="form-control w-full md:w-full rounded px-4 py-2 border" required
                                         value="{{ old('firstname', isset($member) ? $member->firstname : '') }}">
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
                                     <label for="lastname"
-                                        class="block text-gray-700 font-bold w-full md:w-1/3 mb-1 md:mb-0 pr-4 md:ml-4">Last Name</label>
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Last Name</label>
+                                </div>
+                                <div class="w-full md:col-span-1">
                                     <input type="text" id="lastname" name="lastname"
-                                        class="form-control w-full md:w-3/4 border rounded px-4 py-2"
+                                        class="form-control w-full md:w-full border rounded px-4 py-2"
                                         value="{{ old('lastname', isset($member) ? $member->lastname : '') }}">
                                 </div>
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:w-3/4 md:col-span-1">
+                                    <label for="pin"
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Pin</label>
+                                </div>
+                                <div class="w-full md:col-span-1 flex items-center space-x-2">
+                                    <input type="text" id="pin" name="pin"
+                                           class="form-control flex-grow border rounded px-4 py-2"
+                                           readonly
+                                           value="{{ old('pin', isset($member) ? $pin : '') }}">
+                                    <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
+                                         data-action="{{ $action }}"
+                                         data-user-id="{{ isset($member) && $member->user_id ? $member->user_id : '' }}"
+                                        @if (isset($member) && $member->user_id)
+
+                                        @endif>
+                                        <i class="fa-solid fa-rotate-right mr-1"></i>
+                                        <span>
+                                            @if ($action == 'edit')
+                                                Reset
+                                            @else
+                                                Generate
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+
                             </div>
                             {{-- DOB , Gender and Age  --}}
                             <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 items-center md:border-b">

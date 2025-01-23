@@ -44,7 +44,7 @@
                             {{-- User Profile View Page --}}
                             <div class="p-4">
                                 {{-- First Name and Last Name Row --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                     <div class="form-group">
                                         <label for="firstname" class="text-gray-700 font-semibold block mb-1">First
                                             Name</label>
@@ -57,6 +57,12 @@
                                             Name</label>
                                         <div class="form-control rounded border px-4 py-2 bg-gray-100">
                                             {{ old('lastname', isset($member) ? $member->lastname : '') }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastname" class="text-gray-700 font-semibold block mb-1">Pin</label>
+                                        <div class="form-control rounded border px-4 py-2 bg-gray-100">
+                                            {{ old('pin', isset($member) ? $pin : '') }}
                                         </div>
                                     </div>
                                 </div>
