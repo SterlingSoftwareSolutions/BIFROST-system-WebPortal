@@ -16,12 +16,16 @@ class Weightlifting extends Model
         'category_id',
         'workout_id',
         'weight',
-        'rest',
+        'restredwe',
+        'restyellowwe',
+        'restgreenwe',
+        'altrestredwe',
+        'altrestyellowwe',
+        'altrestgreenwe',
         'intensity',
         'alt_category_id',
         'alt_workout_id',
         'alt_weight',
-        'alt_rest',
         'alt_intensity',
         'date',
     ];
@@ -66,12 +70,16 @@ class Weightlifting extends Model
         $weightlifting->category_id = $data['category'];
         $weightlifting->workout_id = $data['workout'];
         $weightlifting->weight = $data['weigth'];
-        $weightlifting->rest = $data['rest'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->restredwe = $data['restred'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->restyellowwe = $data['restyellow'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->restgreenwe = $data['restgreen'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->intensity = $data['intensity'];
         $weightlifting->alt_category_id = $data['alt-category']?? null;
         $weightlifting->alt_workout_id = $data['alt-workout']?? null;
         $weightlifting->alt_weight = $data['alt-weigth']?? null;
-        $weightlifting->alt_rest = $data['alt-rest'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->altrestredwe = $data['alt-restred'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->altrestyellowwe = $data['alt-restyellow'] ?? '00:00:00'; // Use default if not provided
+        $weightlifting->altrestgreenwe = $data['alt-restgreen'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->alt_intensity = $data['alt-intensity']?? null;
         $weightlifting->date =  $data['date'];
 

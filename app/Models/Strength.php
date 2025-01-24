@@ -14,14 +14,18 @@ class Strength extends Model
         'workout_id',
         'weight',
         'sets',
-        'rest',
+        'restred',
+        'restyellow',
+        'restgreen',
+        'altrestred',
+        'altrestyellow',
+        'altrestgreen',
         'reps',
         'intensity',
         'alt_category_id',
         'alt_workout_id',
         'altweight',
         'altsets',
-        'altrest',
         'altreps',
         'altintensity',
         'date'
@@ -59,13 +63,17 @@ class Strength extends Model
         $strengthing->category_id = $data['categorys'];
         $strengthing->workout_id = $data['workouts'];
         $strengthing->weight = $data['weigths'];
-        $strengthing->rest = $data['rests'] ?? '00:00:00'; // Use default if not provided
+        $strengthing->restred = $data['restreds'] ?? '00:00:00';
+        $strengthing->restyellow = $data['restyellows'] ?? '00:00:00';
+        $strengthing->restgreen = $data['restgreens'] ?? '00:00:00'; // Use default if not provided
         $strengthing->intensity = $data['intensitys'];
         $strengthing->alt_category_id = $data['alt-categorys'] ?? null;
-        $strengthing->alt_workout_id = $data['alt-workouts']?? null;
-        $strengthing->altweight = $data['alt-weigths']?? null;
-        $strengthing->altrest = $data['alt-rests'] ?? '00:00:00'; // Use default if not provided
-        $strengthing->altintensity = $data['alt-intensitys']?? null;
+        $strengthing->alt_workout_id = $data['alt-workouts'] ?? null;
+        $strengthing->altweight = $data['alt-weigths'] ?? null;
+        $strengthing->altrestred = $data['alt-restredwe'] ?? '00:00:00';
+        $strengthing->altrestyellow = $data['alt-restyellows'] ?? '00:00:00'; 
+        $strengthing->altrestgreen = $data['alt-restgreens'] ?? '00:00:00';// Use default if not provided
+        $strengthing->altintensity = $data['alt-intensitys'] ?? null;
         $strengthing->date = $data['date'];
 
         // Save the model to the database
@@ -74,10 +82,9 @@ class Strength extends Model
         return $strengthing;
     }
 
-    
+
     public function sets()
     {
         return $this->hasMany(StrengthSetRep::class, 'strength_id');
     }
 }
-
