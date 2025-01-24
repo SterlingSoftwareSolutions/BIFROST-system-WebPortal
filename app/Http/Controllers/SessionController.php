@@ -356,7 +356,10 @@ class SessionController extends Controller
             'setswe_*' => 'required|integer',
             'repswe_*' => 'required|integer',
             // Add restwe_* validation
-            'restwe_*' => 'required|date_format:H:i:s',
+            'restredwe_*' => 'nullable',
+            'restyellowwe_*' => 'nullable',
+            'restgreenwe_*' => 'nullable',
+
             'intensitywe_*' => 'string|nullable',
 
             'alt-categorywe_*' => 'integer|exists:category_options,id',
@@ -365,7 +368,9 @@ class SessionController extends Controller
             'alt-setswe_*' => 'integer',
             'alt-repswe_*' => 'integer',
             // Add alt-restwe_* validation
-            'alt-restwe_*' => 'date_format:H:i:s',
+            'alt-restredwe_*' => 'nullable',
+            'alt-restyellowwe_*' => 'nullable',
+            'alt-restgreenwe_*' => 'nullable',
             'alt-intensitywe_*' => 'string',
         ]);
         try {
@@ -411,7 +416,7 @@ class SessionController extends Controller
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout', 'weigth', 'rest', 'intensity', 'alt-category', 'alt-workout', 'alt-weigth', 'alt-rest', 'alt-intensity'];
+        $fields = ['category', 'workout', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -532,7 +537,11 @@ class SessionController extends Controller
                     'workout_type' => $item->workout ? $item->workout->workout : null,
 
                     'weight' => $item->weight,
-                    'rest' => $item->rest,
+
+                    'restwered' => $item->restredwe,
+                    'restweyellow' => $item->restyellowwe,
+                    'restwegreen' => $item->restgreenwe,
+
                     'intensity' => $item->intensity,
 
                     'alt_category_id' => $item->alt_category_id,
@@ -542,7 +551,11 @@ class SessionController extends Controller
                     'alt_workout_type' => $item->altWorkout ? $item->altWorkout->workout : null,
 
                     'alt_weight' => $item->alt_weight,
-                    'alt_rest' => $item->alt_rest,
+
+                    'alt_restwered' => $item->altrestredwe,
+                    'alt_restweyellow' => $item->altrestyellowwe,
+                    'alt_restwegreen' => $item->altrestgreenwe,
+
                     'alt_intensity' => $item->alt_intensity,
 
                     'date' => $item->date,
@@ -572,14 +585,18 @@ class SessionController extends Controller
                 'weigthweight_*' => 'required|integer',
                 'setsweight_*' => 'required|integer',
                 'repsweight_*' => 'required|integer',
-                'restweight_*' => 'required|date_format:H:i:s',
+                'restredweight_*' => 'required|date_format:H:i:s',
+                'restyellowweight_*' => 'required|date_format:H:i:s',
+                'restgreenweight_*' => 'required|date_format:H:i:s',
                 'intensityweight_*' => 'required|string',
                 'altcategoryweight_*' => 'required|integer|exists:category_options,id',
                 'altworkoutweight_*' => 'required|integer|exists:workout_libraries,id',
                 'altweigthweight_*' => 'required|integer',
                 'altsetsweight_*' => 'required|integer',
                 'altrepsweight_*' => 'required|integer',
-                'altrestweight_*' => 'required|date_format:H:i:s',
+                'altrestredweight_*' => 'required|date_format:H:i:s',
+                'altrestyellowweight_*' => 'required|date_format:H:i:s',
+                'altrestgreenweight_*' => 'required|date_format:H:i:s',
                 'altintensityweight_*' => 'required|string',
             ]);
 
@@ -605,12 +622,16 @@ class SessionController extends Controller
                 'category_id' => $request->input('categoryweight_' . $weightliftingId),
                 'workout_id' => $request->input('workoutweight_' . $weightliftingId),
                 'weight' => $request->input('weigthweight_' . $weightliftingId),
-                'rest' => $request->input('restweight_' . $weightliftingId),
+                'restredwe' => $request->input('restredweight_' . $weightliftingId),
+                'restyellowwe' => $request->input('restyellowweight_' . $weightliftingId),
+                'restgreenwe' => $request->input('restgreenweight_' . $weightliftingId),
                 'intensity' => $request->input('intensityweight_' . $weightliftingId),
                 'alt_category_id' => $request->input('altcategoryweight_' . $weightliftingId),
                 'alt_workout_id' => $request->input('altworkoutweight_' . $weightliftingId),
                 'alt_weight' => $request->input('altweigthweight_' . $weightliftingId),
-                'alt_rest' => $request->input('altrestweight_' . $weightliftingId),
+                'altrestredwe' => $request->input('altrestredweight_' . $weightliftingId),
+                'altrestyellowwe' => $request->input('altrestyellowweight_' . $weightliftingId),
+                'altrestgreenwe' => $request->input('altrestgreenweight_' . $weightliftingId),
                 'alt_intensity' => $request->input('altintensityweight_' . $weightliftingId),
             ]);
 
@@ -708,12 +729,16 @@ class SessionController extends Controller
             'category_*' => 'required|exists:category_options,id',
             'workout_*' => 'required|exists:workout_libraries,id',
             'weight_*' => 'required',
-            'rest_*' => 'nullable',
+            'restred_*' => 'nullable',
+            'restyellow_*'=>'nullable',
+            'restgreen_*'=>'nullable',
             'intensity_*' => 'nullable',
             'alt_category_*' => 'nullable|exists:category_options,id',
             'alt_workout_*' => 'nullable|exists:workout_libraries,id',
             'alt_weight_*' => 'nullable',
-            'alt_rest_*' => 'nullable',
+            'alt_restred_*' => 'nullable',
+            'alt_restyellow_*'=>'nullable',
+            'alt_restgreen_*'=>'nullable',
             'alt_intensity_*' => 'nullable',
             'selectdate_*' => 'required',
             'sets_*' => 'required',
@@ -752,7 +777,7 @@ class SessionController extends Controller
         $parsedData = [];
         $setParsedData = [];
         // Extract the indexed values from the input data
-        $fields = ['categorys', 'workouts', 'weigths', 'rests', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-rests', 'alt-intensitys'];
+        $fields = ['categorys', 'workouts', 'weigths', 'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
 
         foreach ($fields as $field) {
             $key = $field . '_' . $index;
@@ -872,7 +897,9 @@ class SessionController extends Controller
                     'workout_type' => $item->workout ? $item->workout->workout : null,
 
                     'weight' => $item->weight,
-                    'rest' => $item->rest,
+                    'restred' => $item->restred,
+                    'restyellow'=>$item->restyellow,
+                    'restgreen'=>$item->restgreen,
                     'intensity' => $item->intensity,
 
 
@@ -885,7 +912,9 @@ class SessionController extends Controller
 
 
                     'alt_weight' => $item->altweight,
-                    'alt_rest' => $item->altrest,
+                    'alt_restred' => $item->altrestred,
+                    'alt_restyellow'=>$item->altrestyellow,
+                    'alt_restgreen'=>$item->altrestgreen,
                     'alt_intensity' => $item->altintensity,
 
                     'date' => $item->date,
@@ -919,7 +948,9 @@ class SessionController extends Controller
                 'weigthstrength_*' => 'required|integer',
                 'setsstrength_*' => 'required|integer',
                 'repsstrength_*' => 'required|integer',
-                'reststrength_*' => 'required|date_format:H:i:s',
+                'restredstrength_*' => 'required|date_format:H:i:s',
+                'restyellowstrength_*' => 'required|date_format:H:i:s',
+                'restgreenstrength_*' => 'required|date_format:H:i:s',
 
                 'intensitystrength_*' => 'required|string',
 
@@ -928,7 +959,9 @@ class SessionController extends Controller
                 'altweigthstrength_*' => 'required|integer',
                 'altsetsstrength_*' => 'required|integer',
                 'altrepssstrength_*' => 'required|integer',
-                'altreststrength_*' => 'required|date_format:H:i:s',
+                'altrestredstrength_*' => 'required|date_format:H:i:s',
+                'altrestyellowstrength_*' => 'required|date_format:H:i:s',
+                'altrestgreenstrength_*' => 'required|date_format:H:i:s',
                 'altintensitystrength_*' => 'required|string',
 
             ]);
@@ -954,12 +987,17 @@ class SessionController extends Controller
                 'category_id' => $request->input('categorystrength_' . $strengthId),
                 'workout_id' => $request->input('workoutstrength_' . $strengthId),
                 'weight' => $request->input('weigthstrength_' . $strengthId),
-                'rest' => $request->input('reststrength_' . $strengthId),
+                'restred' => $request->input('restredstrength_' . $strengthId),
+                'restyellow' => $request->input('restyellowstrength_' . $strengthId),
+                'restgreen' => $request->input('restgreenstrength_' . $strengthId),
+
                 'intensity' => $request->input('intensitystrength_' . $strengthId),
                 'alt_category_id' => $request->input('altcategorystrength_' . $strengthId),
                 'alt_workout_id' => $request->input('altworkoutstrengths_' . $strengthId),
                 'altweight' => $request->input('altweigthstrength_' . $strengthId),
-                'altrest' => $request->input('altreststrength_' . $strengthId),
+                'altrestred' => $request->input('altrestredstrength_' . $strengthId),
+                'altrestyellow' => $request->input('altrestyellowstrength_' . $strengthId),
+                'altrestgreen' => $request->input('altrestgreenstrength_' . $strengthId),
                 'altintensity' => $request->input('altintensitystrength_' . $strengthId),
             ]);
             // dd($strength);
