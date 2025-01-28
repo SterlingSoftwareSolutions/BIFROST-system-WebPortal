@@ -308,7 +308,7 @@
 
 
     // set warmup
-    function setwarmup(array, categoryOptionsArray) {
+    function setwarmup(array, categoryArray) {
         console.log(array);
 
         // Get the container where the information will be displayed
@@ -316,6 +316,8 @@
 
         // Clear any existing content
         warmupInfoDiv.innerHTML = '';
+
+        const categoryOptionsArray = Object.values(categoryArray);
 
         // Build HTML content
         let htmlContent = '';
@@ -345,7 +347,7 @@
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 ${categoryOptionsHTML}
                             </select>
-                            <div class="flex justify-end items-center ml-auto mr-8">   
+                            <div class="flex justify-end items-center ml-auto mr-8">
                                 <button type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="editWarmup(${item.id})">Edit</button>
                             </div>
                         </div>

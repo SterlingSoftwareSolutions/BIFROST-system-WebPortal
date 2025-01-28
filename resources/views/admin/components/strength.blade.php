@@ -713,14 +713,18 @@
         });
     }
 
-    function setstrengthing(Strength, categoryOptions) {
+    function setstrengthing(Strength, categoryArray) {
         console.log("this is strength", Strength);
+        console.log("this is categoryOptions", categoryArray);
 
         // Get the container where the information will be displayed
         const container = document.getElementById('strength-container');
 
         // Clear the container
         container.innerHTML = '';
+
+        // Convert categoryOptions to an array
+        const categoryOptions = Object.values(categoryArray);
 
         // Initialize the htmlContent variable
         let htmlContent = '';
@@ -752,7 +756,7 @@
                 return `
                     <div>
                         <input name="setsid_${index}" value="${set.id}" hidden>
-                        
+
                         ${isSetsVisible ? `
                         <div class="flex items-center sets-view">
                             <label for="custom-numberstrength_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -800,7 +804,7 @@
                 const isAltRepsVisible = set.alt_reps !== null && set.alt_reps !== undefined;
 
                 return `
-                <div>                    
+                <div>
                     ${isAltSetsVisible ? `
                     <div class="flex items-center sets-view">
                         <label for="altcustomnumberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -818,7 +822,7 @@
                             </button>
                         </div>
                     </div>` : ''}
-                    
+
                     ${isAltRepsVisible ? `
                     <div class="flex items-center border-b">
                         <label for="altrepssstrength_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
@@ -844,7 +848,7 @@
             htmlContent += `
                 <form  id="updatestrenght_${item.id}">
                     @csrf
-                    
+
                     <input name="id_${item.id}" value="${item.id}" hidden>
                     <div class="flex flex-col text-lg p-4 bg-gray-50 mr-8 rounded-md gap-4 mb-4">
                         <div class="flex gap-5 justify-between">
@@ -934,7 +938,7 @@
                                         </div>
                                         </div>
                                     </div>
-                                     
+
                                     <div class="flex items-center border-b">
                                         <label for="intensitystrength_${item.id}" class="w-60 block mb-1">
                                             Intensity <span class="text-red-500">*</span>
@@ -952,7 +956,7 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-                                
+
                                     <div class="flex items-center border-b mt-4">
                                         <label for=altcategorystrength_${item.id}" class="w-60 block mb-1">AlterNative Category <span class="text-red-500">*</span></label>
                                         <select id="altcategorystrength_${item.id}" name="altcategorystrength_${item.id}" onchange="getworkoutS(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
@@ -960,7 +964,7 @@
                                         </select>
                                         <button type="button" onclick="updatestrength(${item.id})" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Edit</button>
                                     </div>
-                                    
+
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutstrengths_${item.category_id}" class="w-60 block mb-1">
                                         Workout<span class="text-red-500">*</span>
@@ -1312,7 +1316,7 @@
                     </svg>
                 </button>
             </div>
-            
+
         </div>
         <div class="flex items-center border-b">
                                     <label for="reps_${remainingfind}${ setCounterstrength}" class="w-60 block mb-1">REPS <span
@@ -1341,12 +1345,12 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    
+
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
                     Remove
                 </button>
                                 </div>
-                                
+
         `;
         // Add functionality to the remove button
         setuiElement.querySelector('.remove-set').addEventListener('click', function() {
