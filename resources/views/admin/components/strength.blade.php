@@ -294,24 +294,21 @@
                         <!-- Alternate Category and Workouts -->
 
                         <div class="flex items-center border-b ">
-                            <label for="alt-categorys_1" class="w-60 block mb-1">Category <span
-                                    class="text-red-500">*</span></label>
+                            <label for="alt-categorys_1" class="w-60 block mb-1">Category </label>
                             <select id="alt-categorys_1" name="alt-categorys_1" onchange="getworkoutS(this)"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 <option value="" selected disabled>-- Select Category --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="alt-workouts_1" class="w-60 block mb-1">Workout <span
-                                    class="text-red-500">*</span></label>
+                            <label for="alt-workouts_1" class="w-60 block mb-1">Workout </label>
                             <select id="alt-workouts_1" name="alt-workouts_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 <option value="" selected disabled>-- Select Workout --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2">
-                            <label for="weigth" class="w-60 block mb-1">Weight <span
-                                    class="text-red-500">*</span></label>
+                            <label for="weigth" class="w-60 block mb-1">Weight </label>
                             <input type="text" id="alt-weigths_1" name="alt-weigths_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
                             <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
@@ -321,8 +318,7 @@
                         <div class="border-b" id="altduplicateSetUIStrength">
                             <div class="">
                                 <div class="flex items-center">
-                                    <label for="alt-sets" class="w-60 block">SETS <span
-                                            class="text-red-500">*</span></label>
+                                    <label for="alt-sets" class="w-60 block">SETS </label>
                                     <div class="relative flex items-center max-w-[8rem] my-1">
                                         <button type="button"
                                             onclick="decrement(this.parentNode.querySelector('input').id)"
@@ -350,8 +346,7 @@
                                 </div>
                                 {{-- Altertnative reps --}}
                                 <div class="flex items-center border-b">
-                                    <label for="alt-reps" class="w-60 block mb-1">REPS <span
-                                            class="text-red-500">*</span></label>
+                                    <label for="alt-reps" class="w-60 block mb-1">REPS </label>
                                     <div class="relative flex items-center max-w-[8rem] my-2">
                                         <button type="button"
                                             onclick="decrement(this.parentNode.querySelector('input').id)"
@@ -390,8 +385,7 @@
                         {{-- alternate Rest --}}
 
                         <div class="flex items-center border-b mt-4">
-                            <label for="alt-rest" class="w-60 block mb-1">Rest <span
-                                    class="text-red-500">*</span></label>
+                            <label for="alt-rest" class="w-60 block mb-1">Rest </label>
                             <div class="">
                                 <!-- Red Section -->
                                 <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
@@ -941,7 +935,7 @@
 
                                     <div class="flex items-center border-b">
                                         <label for="intensitystrength_${item.id}" class="w-60 block mb-1">
-                                            Intensity <span class="text-red-500">*</span>
+                                            Intensity 
                                         </label>
                                         <select id="intensitystrength_${item.id}" name="intensitystrength_${item.id}"
                                             class="w-1/3 px-3 py-3 border flex rounded my-2" required>
@@ -958,7 +952,7 @@
                             <div class="flex-col w-full">
 
                                     <div class="flex items-center border-b mt-4">
-                                        <label for=altcategorystrength_${item.id}" class="w-60 block mb-1">AlterNative Category <span class="text-red-500">*</span></label>
+                                        <label for=altcategorystrength_${item.id}" class="w-60 block mb-1">Category </label>
                                         <select id="altcategorystrength_${item.id}" name="altcategorystrength_${item.id}" onchange="getworkoutS(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
                                             ${strengthaltCategoryOptionsHTML}
                                         </select>
@@ -967,7 +961,7 @@
 
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutstrengths_${item.category_id}" class="w-60 block mb-1">
-                                        Workout<span class="text-red-500">*</span>
+                                        Workout
                                     </label>
                                     <select id="altworkoutstrengths_${item.id}" name="altworkoutstrengths_${item.id}" class="w-1/3 px-3 py-3 mt-2 border flex rounded mb-2">
                                         <option value="" selected disabled>-- Select Workout --</option>
@@ -976,8 +970,7 @@
                                     </select>
                                 </div>
                                 <div class="flex items-center border-b mt-2">
-                                    <label for="altweigthstrength_${item.id}" class="w-60 block mb-1">Weight <span
-                                            class="text-red-500">*</span></label>
+                                    <label for="altweigthstrength_${item.id}" class="w-60 block mb-1">Weight </label>
                                     <input type="number" id="altweigthstrength_${item.id}" name="altweigthstrength_${item.id}" value="${item.alt_weight}"
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                     <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
@@ -999,7 +992,7 @@
                                 ` : ''}
 
                                 <div class="flex items-center border-b">
-                                    <label for="altrestredstrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                    <label for="altrestredstrength_${item.id}" class="w-60 block mb-1">Rest </label>
                                       <div class="">
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
                                          <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
@@ -1050,7 +1043,7 @@
                                 </div>
                                <div class="flex items-center border-b">
                                     <label for="altintensitystrength_${item.id}" class="w-60 block mb-1">
-                                        Intensity <span class="text-red-500">*</span>
+                                        Intensity
                                     </label>
                                     <select id="altintensitystrength_${item.id}" name="altintensitystrength_${item.id}"
                                         class="w-1/3 px-3 py-3 border flex rounded my-2" required>
