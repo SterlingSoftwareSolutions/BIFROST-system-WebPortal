@@ -16,14 +16,19 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
             $table->float('weight');
-            $table->time('rest');
+            $table->time('restredwe');
+            $table->time('restyellowwe');
+            $table->time('restgreenwe');
+
             $table->string('intensity'); 
 
             $table->foreignId('alt_category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('alt_workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
-            $table->float('alt_weight');
-            $table->time('alt_rest');
-            $table->string('alt_intensity'); 
+            $table->float('alt_weight')->nullable();
+            $table->time('altrestredwe')->nullable();
+            $table->time('altrestyellowwe')->nullable();
+            $table->time('altrestgreenwe')->nullable();
+            $table->string('alt_intensity')->nullable(); 
             
             $table->string('date');
             $table->timestamps();

@@ -45,20 +45,26 @@ class ClientManagementController extends Controller
         // Fetch data if editing an existing profile
         if ($action == 'edit' && $id) {
             $member = Newprofile::findOrFail($id);
+            $user = User::find($member->user_id);
+            $pin = $user->pin;
+            //dd( $userpin);
         } else {
             // Set $member to null or create a new instance if adding a new profile
             $member = null;
+            $pin = null;
         }
 
         // Return view with data
-        return view('admin.user.client-newprofile', compact('action', 'member'));
+        return view('admin.user.client-newprofile', compact('action', 'member', 'pin'));
     }
 
     public function clientview($id)
     {
         $member = Newprofile::findOrFail($id);
+        $user = User::find($member->user_id);
+        $pin = $user->pin;
         // Return view with data
-        return view('admin.user.client-profileview', compact('member'));
+        return view('admin.user.client-profileview', compact('member', 'pin'));
     }
 
     // add new function
@@ -80,14 +86,17 @@ class ClientManagementController extends Controller
                 'bmr' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
-                'profile_image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
+                'is_subsactive' => 'boolean',
+                'startdate' => 'required|date',
+                'pin' => 'required|integer|min:0',
+                'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Max 2MB per file
             ]);
 
             // Check if the email already exists
             if (User::where('email', $validatedData['email'])->exists()) {
                 return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
             }
-
+            //dd($validatedData);
             // Handle image uploads
             $imagePaths = [];
             if ($request->hasFile('profile_image')) {
@@ -97,10 +106,7 @@ class ClientManagementController extends Controller
                     $imagePaths[] = $filePath;
                 }
             }
-
-            // Generate 4-digit PIN
-            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
-
+            $pin = $validatedData['pin'] ?? str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
             // Create new user
             $user = new User();
             $user->name = $validatedData['firstname'];
@@ -125,6 +131,8 @@ class ClientManagementController extends Controller
             $profile->bmr = $validatedData['bmr'];
             $profile->primary_goal = $validatedData['primary-goal'];
             $profile->subscription_level = $validatedData['subscription_level'];
+            $profile->is_subsactive = $validatedData['is_subsactive'];
+            $profile->startdate = Carbon::parse($validatedData['startdate']);
             $profile->image_paths = json_encode($imagePaths); // Store image paths in JSON format
             $profile->save();
 
@@ -154,6 +162,8 @@ class ClientManagementController extends Controller
                 'bmr' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
+                'is_subsactive' => 'boolean',
+                'startdate' => 'required|date',
                 'profile_image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             ]);
 
@@ -183,11 +193,11 @@ class ClientManagementController extends Controller
                     $imageName = time() . '-' . $file->getClientOriginalName();
                     $filePath = $file->storeAs('profile_images', $imageName, 'public');
                     $imagePaths[] = $filePath;
-                    \Log::info('Uploaded file path: ' . $filePath);
+                    Log::info('Uploaded file path: ' . $filePath);
                 }
             }
 
-            \Log::info('Image paths before update: ', $imagePaths);
+            Log::info('Image paths before update: ', $imagePaths);
 
             // Update the profile data
             $updateSuccessful = $profile->update([
@@ -203,10 +213,12 @@ class ClientManagementController extends Controller
                 'bmr' => $validatedData['bmr'],
                 'primary_goal' => $validatedData['primary-goal'],
                 'subscription_level' => $validatedData['subscription_level'],
+                'is_subsactive' => $validatedData['is_subsactive'],
+                'startdate' => Carbon::parse($validatedData['startdate']),
                 'image_paths' => json_encode($imagePaths),
             ]);
 
-            \Log::info('Profile data after update: ', $profile->toArray());
+            Log::info('Profile data after update: ', $profile->toArray());
 
             if ($updateSuccessful) {
                 return redirect()->route('viewadminclientmanagement')->with('success', 'Profile updated successfully!');
@@ -214,7 +226,7 @@ class ClientManagementController extends Controller
                 return redirect()->back()->withErrors(['error' => 'Profile update failed.'])->withInput();
             }
         } catch (\Exception $e) {
-            \Log::error('Error updating profile: ' . $e->getMessage());
+            Log::error('Error updating profile: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
         }
     }
@@ -236,5 +248,50 @@ class ClientManagementController extends Controller
             // Redirect with an error message
             return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
+    }
+
+    public function resetUserPin(Request $request)
+    {
+        $id = $request->input('id');
+        // $User = User::find($id);
+
+        // if (!$User) {
+        //     return response()->json([
+        //         'message' => 'Access record not found'
+        //     ], 404);
+        // }
+
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+        // Generate a unique 4-digit random PIN
+        do {
+            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+        } while (User::where('pin', $pin)->exists());
+
+        // Assuming you have a 'pin' field in your User model to store the PIN
+        $user->pin = $pin;
+        $user->save();
+
+        return response()->json([
+            'message' => 'PIN reset successfully',
+            'pin' => $pin,
+            'user' => $user
+        ]);
+    }
+
+    public function generateUserPin()
+    {
+        // Generate a unique 4-digit random PIN
+        do {
+            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+        } while (User::where('pin', $pin)->exists());
+
+        // Return the generated PIN
+        return response()->json(['pin' => $pin], 200);
     }
 }

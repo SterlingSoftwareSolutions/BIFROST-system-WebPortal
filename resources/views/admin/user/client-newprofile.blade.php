@@ -7,7 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="{{ asset('js/admin.js') }}" defer></script>
     <title>Document</title>
 </head>
 
@@ -54,22 +57,52 @@
                         @csrf
                         <div class="text-xs">
                             {{-- firstname and lastname Row --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-2 md:border-b gap-4">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
                                     <label for="firstname"
-                                        class="block text-gray-700 font-bold w-full md:w-[38%] mb-1 md:mb-0 pr-4">First Name <span
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">First Name <span
                                             class="text-red-500">*</span></label>
+                                </div>
+                                <div class="w-full md:col-span-1">
                                     <input type="text" id="firstname" name="firstname"
-                                        class="form-control w-full md:w-3/4 rounded px-4 py-2 border" required
+                                        class="form-control w-full md:w-full rounded px-4 py-2 border" required
                                         value="{{ old('firstname', isset($member) ? $member->firstname : '') }}">
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
                                     <label for="lastname"
-                                        class="block text-gray-700 font-bold w-full md:w-1/3 mb-1 md:mb-0 pr-4 md:ml-4">Last Name</label>
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Last Name</label>
+                                </div>
+                                <div class="w-full md:col-span-1">
                                     <input type="text" id="lastname" name="lastname"
-                                        class="form-control w-full md:w-3/4 border rounded px-4 py-2"
+                                        class="form-control w-full md:w-full border rounded px-4 py-2"
                                         value="{{ old('lastname', isset($member) ? $member->lastname : '') }}">
                                 </div>
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:w-3/4 md:col-span-1">
+                                    <label for="pin"
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Pin</label>
+                                </div>
+                                <div class="w-full md:col-span-1 flex items-center space-x-2">
+                                    <input type="text" id="pin" name="pin"
+                                           class="form-control flex-grow border rounded px-4 py-2"
+                                           readonly
+                                           value="{{ old('pin', isset($member) ? $pin : '') }}">
+                                    <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
+                                         data-action="{{ $action }}"
+                                         data-user-id="{{ isset($member) && $member->user_id ? $member->user_id : '' }}"
+                                        @if (isset($member) && $member->user_id)
+
+                                        @endif>
+                                        <i class="fa-solid fa-rotate-right mr-1"></i>
+                                        <span>
+                                            @if ($action == 'edit')
+                                                Reset
+                                            @else
+                                                Generate
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+
                             </div>
                             {{-- DOB , Gender and Age  --}}
                             <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 items-center md:border-b">
@@ -222,27 +255,63 @@
                                 </div>
                             </div>
                             {{-- Subscription Level --}}
-                            <div
-                                class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4 whitespace-nowrap md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
                                     <label for="subscription_level"
-                                        class="block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
-                                        Subscription Level<span class="text-red-500">*</span>
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
+                                        Subscription Level <span class="text-red-500">*</span>
                                     </label>
-                                    <div class="w-full md:w-[66%]">
-                                        <input type="text" id="subscription_level" name="subscription_level" required
-                                            class="form-control w-full border rounded px-4 py-2"
-                                            value="{{ old('subscription_level', isset($member) ? $member->subscription_level : '') }}">
-
-                                    </div>
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full">
-                                    <!-- Additional content can be added here -->
+                                <div class="w-full md:col-span-1">
+                                    <select id="subscription_level" name="subscription_level"
+                                            class="form-control w-full rounded px-4 py-2 border" required>
+                                            <option value="">Select Subscription Level</option>
+                                            <option value="10 Pack"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === '10 Pack' ? 'selected' : '') }}>
+                                                10 Pack</option>
+                                            <option value="Unlimited"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === 'Unlimited' ? 'selected' : '') }}>
+                                                Unlimited</option>
+                                            <option value="Online"
+                                                {{ old('subscription_level', isset($member) && $member->subscription_level === 'Online' ? 'selected' : '') }}>
+                                                Online</option>
+                                        </select>
+
+                                </div>
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                    <label for="startdate"
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        Subscription start date<span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <div class="w-full md:col-span-1">
+                                    <input type="date" id="startdate" name="startdate" required
+                                        class="form-control w-full border rounded px-4 py-2"
+                                        value="{{ old('startdate', isset($member) && $member->startdate ? \Carbon\Carbon::parse($member->startdate)->format('Y-m-d') : '') }}">
+
+                                </div>
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                    <label for="is_subsactive"
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        Subscription start <span class="text-red-500">*</span>
+                                    </label>
+                                </div>
+                                <div class="w-full md:col-span-1 mt-1">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="hidden" name="is_subsactive" value="0">
+                                        <input type="checkbox"
+                                               class="sr-only peer"
+                                               name="is_subsactive"
+                                               value="1"
+                                               {{ isset($member) && $member->is_subsactive ? 'checked' : '' }}>
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
                                 </div>
                             </div>
+
                             {{-- Progress Photo --}}
-                            <div class=" flex">
-                                <div class="w-1/2 h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class=" flex mt-5">
+                                {{-- <div class="w-1/2 h-full p-2 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
                                     <div
                                         class="form-group block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
                                         <label for="progress-photos"
@@ -275,19 +344,17 @@
                                         </div>
                                     </div>
 
-                                </div>
+                                </div> --}}
 
-                                <div class="w-1/2 ">
+                                <div class="w-full">
                                     <label for="primary-goal"
-                                        class=" text-gray-700 font-bold w-full border  mb-1 md:mb-0 pr-4">
+                                        class=" text-gray-700 font-bold w-full text-xl mb-1 md:mb-0 pr-4">
                                         Payment Method
                                         <span class="text-red-500 w-full ">
                                             <form class="w-full  ">
                                                 <div class="flex">
                                                     <div class="mb-4 w-1/2">
-                                                        <label class=" text-sm  text-gray-700 font-bold">Credit /
-                                                            Debit
-                                                            Card</label>
+                                                        <label class=" text-sm  text-gray-700 font-bold">Credit /Debit Card</label>
                                                         <div class="flex items-center mt-2">
                                                             <input type="radio" name="cardType" id="visa"
                                                                 class="mr-2">
@@ -368,7 +435,7 @@
                                         class="block text-gray-700 font-bold w-full md:w-[34%] mb-1 md:mb-0 pr-4">
                                         <!-- Empty label left as it is -->
                                     </label>
-                                    <div class="w-full md:w-[26%]">
+                                    <div class="w-full md:w-[26%] ">
                                         <button type="submit" id="submit" required
                                             class="form-control w-1/4 md:w-[50%] p-2 text-center border rounded px-4 py-2 bg-black text-white">
                                             Submit
@@ -390,19 +457,19 @@
             function calculateAge() {
                 const dobInput = document.getElementById('dob').value;
                 const ageInput = document.getElementById('age');
-        
+
                 if (dobInput) {
                     const dob = new Date(dobInput);
                     const today = new Date();
                     let age = today.getFullYear() - dob.getFullYear();
                     const monthDiff = today.getMonth() - dob.getMonth();
                     const dayDiff = today.getDate() - dob.getDate();
-        
+
                     // Adjust age if the birth month and day haven't occurred yet this year
                     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
                         age--;
                     }
-        
+
                     ageInput.value = age;
                 } else {
                     ageInput.value = ''; // Clear age if no DOB is selected

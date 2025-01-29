@@ -88,7 +88,7 @@
                                             {{ $user->workout_library == 'enable' ? 'checked' : '' }}
                                             onclick="accesspage({{ $user->id }}, this.name, '{{ $user->access_type }}')"
                                             {{ in_array($user->user_type, ['client', 'worker']) ? 'disabled' : '' }} />
-                                        <label for="workoutLibrary_{{ $user->id }}">Workout Library</label>
+                                        <label for="workoutLibrary_{{ $user->id }}">Exercise Library</label>
                                     </div>
                                     <div class="input-container mb-0">
                                         <input type="checkbox" id="session_{{ $user->id }}" name="session"

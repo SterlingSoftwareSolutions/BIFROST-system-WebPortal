@@ -23,6 +23,8 @@ class Newprofile extends Model
         'bmr',
         'primary-goal',
         'subscription_level',
+        'startdate',
+        'is_subsactive',
         'image_paths',
         'user_id'
     ];

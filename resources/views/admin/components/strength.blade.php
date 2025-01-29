@@ -198,32 +198,84 @@
                         <div class="flex items-center border-b mt-4">
                             <label for="rest" class="w-60 block mb-1">Rest <span
                                     class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem]">
-                                <button type="button" onclick="changeRestTime(this, -15)"
-                                    class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M1 1h16" />
-                                    </svg>
-                                </button>
-                                <input type="text" id="rests_1" name="rests_1" placeholder="00:00"
-                                    value="04:00"
-                                    class="bg-gray-50 border-x-0 restsp border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                    readonly />
-                                <button type="button" onclick="changeRestTime(this, 15)"
-                                    class="increment bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M9 1v16M1 9h16" />
-                                    </svg>
-                                </button>
+                            <div class="">
+                                <div class="relative flex items-center max-w-[12rem] mb-4">
+                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                    <button type="button" onclick="changeRestTime(this, -15)"
+                                        class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="restreds_1" name="restreds_1" placeholder="00:00"
+                                        value="04:00"
+                                        class="bg-gray-50 border-x-0 restspred border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="relative flex items-center max-w-[12rem] mb-4">
+                                    <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                    <button type="button" onclick="changeRestTime(this, -15)"
+                                        class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="restyellows_1" name="restyellows_1" placeholder="00:00"
+                                        value="04:00"
+                                        class="bg-gray-50 border-x-0 restspyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+
+                                <div class="relative flex items-center max-w-[12rem] mb-4">
+                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                    <button type="button" onclick="changeRestTime(this, -15)"
+                                        class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="restgreens_1" name="restgreens_1" placeholder="00:00"
+                                        value="04:00"
+                                        class="bg-gray-50 border-x-0 restspgreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
                         <div class="flex items-center border-b ">
-                            <label for="intensity" class="w-60 block mb-1">Intensity <span
-                                    class="text-red-500">*</span></label>
+                            <label for="intensity" class="w-60 block mb-1">Intensity</label>
                             <select id="intensitys_1" name="intensitys_1"
                                 class="w-1/3 px-3 py-3 border flex rounded my-2">
                                 <option value=""selected disabled>-- Select Intensity --
@@ -336,35 +388,90 @@
                         </div>
 
                         {{-- alternate Rest --}}
+
                         <div class="flex items-center border-b mt-4">
                             <label for="alt-rest" class="w-60 block mb-1">Rest <span
                                     class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem] my-2">
-                                <button type="button"onclick="changeRestTime(this, -15)"
-                                    class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M1 1h16" />
-                                    </svg>
-                                </button>
-                                <input type="text" id="alt-rests_1" name="alt-rests_1" placeholder="00:00"
-                                    value="04:00"
-                                    class="bg-gray-50 border-x-0 restsa border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                    readonly />
-                                <button type="button" onclick="changeRestTime(this, 15)"
-                                    class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M9 1v16M1 9h16" />
-                                    </svg>
-                                </button>
+                            <div class="">
+                                <!-- Red Section -->
+                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                    <button type="button"onclick="changeRestTime(this, -15)"
+                                        class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="alt-restreds_1" name="alt-restreds_1"
+                                        placeholder="00:00" value="04:00"
+                                        class="bg-gray-50 border-x-0 restsared border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {{-- Yellow Section --}}
+                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                    <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                    <button type="button"onclick="changeRestTime(this, -15)"
+                                        class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="alt-restyellows_1" name="alt-restyellows_1"
+                                        placeholder="00:00" value="04:00"
+                                        class="bg-gray-50 border-x-0 restsayellow border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {{-- green section --}}
+                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                    <button type="button"onclick="changeRestTime(this, -15)"
+                                        class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="alt-restgreens_1" name="alt-restgreens_1"
+                                        placeholder="00:00" value="04:00"
+                                        class="bg-gray-50 border-x-0 restsagreen border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                        readonly />
+                                    <button type="button" onclick="changeRestTime(this, 15)"
+                                        class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round"
+                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
+
                         <div class="flex items-center border-b">
-                            <label for="alt-intensitys" class="w-60 block mb-1">Intensity <span
-                                    class="text-red-500">*</span></label>
+                            <label for="alt-intensitys" class="w-60 block mb-1">Intensity</label>
                             <select id="alt-intensitys_1" name="alt-intensitys_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2">
                                 <option value="" selected disabled>-- Select Intensity --
@@ -493,6 +600,7 @@
             workoutSelectId = `altworkoutstrengths_${remainingPart}`;
         }
 
+
         console.log(`Constructed workoutSelectId: ${workoutSelectId}`);
 
         const workoutSelect = document.getElementById(workoutSelectId);
@@ -500,6 +608,9 @@
         if (!workoutSelect) {
             console.error(`Element with ID ${workoutSelectId} not found in the DOM.`);
             return;
+
+            // Fetch workouts via AJAX
+            fetchWorkouts(selectId, workoutSelect);
         }
 
         $.ajax({
@@ -602,14 +713,18 @@
         });
     }
 
-    function setstrengthing(Strength, categoryOptions) {
+    function setstrengthing(Strength, categoryArray) {
         console.log("this is strength", Strength);
+        console.log("this is categoryOptions", categoryArray);
 
         // Get the container where the information will be displayed
         const container = document.getElementById('strength-container');
 
         // Clear the container
         container.innerHTML = '';
+
+        // Convert categoryOptions to an array
+        const categoryOptions = Object.values(categoryArray);
 
         // Initialize the htmlContent variable
         let htmlContent = '';
@@ -625,15 +740,12 @@
             });
 
             // Create a string with the alternative category options
-            let strengthaltCategoryOptionsHTML = '';
-            if (item.alt_category_id) {
-                strengthaltCategoryOptionsHTML =
-                    '<option value="" selected disabled>-- Select Category --</option>';
-                categoryOptions.forEach(category => {
-                    strengthaltCategoryOptionsHTML +=
-                        `<option value="${category.id}" ${category.id == item.alt_category_id ? 'selected' : ''}>${category.category_name}</option>`;
-                });
-            }
+            let strengthaltCategoryOptionsHTML =
+                '<option value="" selected disabled>-- Select Category --</option>';
+            categoryOptions.forEach(category => {
+                strengthaltCategoryOptionsHTML +=
+                    `<option value="${category.id}" ${item.alt_category_id == category.id ? 'selected' : ''}>${category.category_name}</option>`;
+            });
 
             // Build the setsHTML for each set in the item
             const setsHTML = Array.isArray(item.sets) ? item.sets.map((set, index) => {
@@ -644,7 +756,7 @@
                 return `
                     <div>
                         <input name="setsid_${index}" value="${set.id}" hidden>
-                        
+
                         ${isSetsVisible ? `
                         <div class="flex items-center sets-view">
                             <label for="custom-numberstrength_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -692,7 +804,7 @@
                 const isAltRepsVisible = set.alt_reps !== null && set.alt_reps !== undefined;
 
                 return `
-                <div>                    
+                <div>
                     ${isAltSetsVisible ? `
                     <div class="flex items-center sets-view">
                         <label for="altcustomnumberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -710,7 +822,7 @@
                             </button>
                         </div>
                     </div>` : ''}
-                    
+
                     ${isAltRepsVisible ? `
                     <div class="flex items-center border-b">
                         <label for="altrepssstrength_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
@@ -736,7 +848,7 @@
             htmlContent += `
                 <form  id="updatestrenght_${item.id}">
                     @csrf
-                    
+
                     <input name="id_${item.id}" value="${item.id}" hidden>
                     <div class="flex flex-col text-lg p-4 bg-gray-50 mr-8 rounded-md gap-4 mb-4">
                         <div class="flex gap-5 justify-between">
@@ -778,22 +890,55 @@
                                             </button>
                                         </div>
                                     </div>
+
                                     <div class="flex items-center border-b">
-                                        <label for="reststrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
+                                        <label for="restredstrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                        <div class="">
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                            <label class=" text-red-500 font-bold w-16 text-right pr-8">Red</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button>
-                                            <input type="text" value="${item.rest}" id="reststrength_${item.id}" name="reststrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <input type="text" value="${item.restred}" id="restredstrength_${item.id}" name="restredstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
                                             <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                            <label class=" text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                            <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" value="${item.restyellow}" id="restyellowstrength_${item.id}" name="restyellowstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                            <label class=" text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                            <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" value="${item.restgreen}" id="restgreenstrength_${item.id}" name="restgreenstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        </div>
                                     </div>
+
                                     <div class="flex items-center border-b">
                                         <label for="intensitystrength_${item.id}" class="w-60 block mb-1">
                                             Intensity <span class="text-red-500">*</span>
@@ -811,7 +956,7 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-                                ${strengthaltCategoryOptionsHTML ? `
+
                                     <div class="flex items-center border-b mt-4">
                                         <label for=altcategorystrength_${item.id}" class="w-60 block mb-1">AlterNative Category <span class="text-red-500">*</span></label>
                                         <select id="altcategorystrength_${item.id}" name="altcategorystrength_${item.id}" onchange="getworkoutS(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
@@ -819,7 +964,7 @@
                                         </select>
                                         <button type="button" onclick="updatestrength(${item.id})" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Edit</button>
                                     </div>
-                                ` : ''}
+
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutstrengths_${item.category_id}" class="w-60 block mb-1">
                                         Workout<span class="text-red-500">*</span>
@@ -852,21 +997,56 @@
                                         </div>
                                     </div>
                                 ` : ''}
+
                                 <div class="flex items-center border-b">
-                                    <label for="altreststrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
-                                    <div class="relative flex items-center max-w-[8rem]">
+                                    <label for="altrestredstrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                      <div class="">
+                                    <div class="relative flex items-center max-w-[12rem]  py-2">
+                                         <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
-                                        <input type="text" value="${item.alt_rest}" id="altreststrength_${item.id}" name="altreststrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <input type="text" value="${item.alt_restred}" id="altrestredstrength_${item.id}" name="altrestredstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
                                         <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
                                         </button>
                                     </div>
+
+                                     <div class="relative flex items-center max-w-[12rem] ">
+                                         <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" value="${item.alt_restyellow}" id="altrestyellowstrength_${item.id}" name="altrestyellowstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" value="${item.alt_restgreen}" id="altrestgreenstrength_${item.id}" name="altrestgreenstrength_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                                 </div>
                                <div class="flex items-center border-b">
                                     <label for="altintensitystrength_${item.id}" class="w-60 block mb-1">
@@ -875,6 +1055,8 @@
                                     <select id="altintensitystrength_${item.id}" name="altintensitystrength_${item.id}"
                                         class="w-1/3 px-3 py-3 border flex rounded my-2" required>
                                         <!-- Dynamically setting the selected option based on item.alt_intensity -->
+                                        <option value="" selected disabled>-- Select Intensity --
+                                </option>
                                         <option value="low" ${item.alt_intensity === 'low' ? 'selected' : ''}>Low</option>
                                         <option value="medium" ${item.alt_intensity === 'medium' ? 'selected' : ''}>Medium</option>
                                         <option value="high" ${item.alt_intensity === 'high' ? 'selected' : ''}>High</option>
@@ -931,20 +1113,28 @@
 <script>
     // Function to update input names and IDs for the cloned element
     function updateNamesAndIdss(element, index) {
+        // Update names and IDs for inputs, selects, and buttons
         element.querySelectorAll("input, select, button").forEach(function(el) {
             var baseName = el.name.split('_')[0];
             var baseId = el.id.split('_')[0];
             el.name = baseName + '_' + index;
             el.id = baseId + '_' + index;
         });
-        let timeElementA = element.querySelector('.restsa');
-        if (timeElementA) {
-            timeElementA.value = '04:00';
-        }
-        let timeElementP = element.querySelector('.restsp');
-        if (timeElementP) {
-            timeElementP.value = '04:00';
-        }
+
+        // List of class names to update values for
+        const timeClassNames = [
+            'restsa', 'restsp',
+            'restspred', 'restspyellow', 'restspgreen',
+            'restsared', 'restsayellow', 'restsagreen'
+        ];
+
+        // Update values for elements with specific classes
+        timeClassNames.forEach(className => {
+            let timeElement = element.querySelector(`.${className}`);
+            if (timeElement) {
+                timeElement.value = '04:00';
+            }
+        });
     }
 
     // Function to add a remove button to the cloned element
@@ -1053,7 +1243,6 @@
 </script>
 
 
-
 {{-- create duplicate sets and reps --}}
 <script>
     // Function to clear existing workout options
@@ -1127,7 +1316,7 @@
                     </svg>
                 </button>
             </div>
-            
+
         </div>
         <div class="flex items-center border-b">
                                     <label for="reps_${remainingfind}${ setCounterstrength}" class="w-60 block mb-1">REPS <span
@@ -1156,12 +1345,12 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    
+
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
                     Remove
                 </button>
                                 </div>
-                                
+
         `;
         // Add functionality to the remove button
         setuiElement.querySelector('.remove-set').addEventListener('click', function() {

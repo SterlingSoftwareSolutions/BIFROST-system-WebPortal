@@ -44,7 +44,7 @@
                             {{-- User Profile View Page --}}
                             <div class="p-4">
                                 {{-- First Name and Last Name Row --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                     <div class="form-group">
                                         <label for="firstname" class="text-gray-700 font-semibold block mb-1">First
                                             Name</label>
@@ -57,6 +57,12 @@
                                             Name</label>
                                         <div class="form-control rounded border px-4 py-2 bg-gray-100">
                                             {{ old('lastname', isset($member) ? $member->lastname : '') }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="lastname" class="text-gray-700 font-semibold block mb-1">Pin</label>
+                                        <div class="form-control rounded border px-4 py-2 bg-gray-100">
+                                            {{ old('pin', isset($member) ? $pin : '') }}
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +137,7 @@
                                 </div>
 
                                 {{-- Primary Goal and Subscription Level --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                                     <div class="form-group">
                                         <label for="primary-goal" class="text-gray-700 font-semibold block mb-1">Primary
                                             Goal</label>
@@ -146,12 +152,34 @@
                                             {{ old('subscription_level', isset($member) ? $member->subscription_level : 'N/A') }}
                                         </div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="startdate" class="text-gray-700 font-semibold block mb-1">Subscription Start Date</label>
+                                        <div class="flex items-center space-x-4 rounded border px-4 py-2 bg-gray-100 gap-24">
+                                            <!-- Start Date -->
+                                            <div class="text-gray-900">
+                                                {{ old('startdate', isset($member) ? $member->startdate : 'N/A') }}
+                                            </div>
+
+                                            <!-- Checkbox -->
+                                            <div class="flex items-center">
+                                                <input type="hidden" name="is_subsactive" value="0">
+                                                <input type="checkbox"
+                                                       name="is_subsactive"
+                                                       value="1"
+                                                       class="sr-only peer"
+                                                       {{ $member->is_subsactive ? 'checked' : '' }}
+                                                       @disabled(true)>
+                                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
                             {{-- Progress Photo --}}
                             <div class="flex flex-col md:flex-row gap-4 px-4">
-                                <div class="w-full md:w-1/2 px-4 bg-white">
+                                {{-- <div class="w-full md:w-1/2 px-4 bg-white">
                                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Profile Photos</h2>
                                     <div
                                         class="progress-photos flex flex-col items-center justify-center min-h-40 rounded w-full h-80 p-4 border-2 border-dashed border-gray-300">
@@ -165,11 +193,11 @@
                                             <p class="text-gray-600">No images uploaded.</p>
                                         @endif
                                     </div>
-                                </div>
+                                </div> --}}
 
                                 <div class="w-full md:w-1/2 p-4 bg-white rounded-lg shadow">
                                     <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Information</h2>
-                                    
+
                                     <div class="mb-4">
                                         <label class="text-sm text-gray-700 font-bold">Credit / Debit Card</label>
                                         <div class="flex items-center mt-2 mb-4">
@@ -182,70 +210,70 @@
                                             <span class="text-gray-700"></span>
                                         </div>
                                     </div>
-                                
+
                                     <div class="form-group mb-4">
                                         <label for="nameOnCard" class="text-gray-700 font-semibold block mb-1">Name on Card</label>
                                         <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                            <input type="text" id="nameOnCard" 
-                                                class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                placeholder="John Doe" 
+                                            <input type="text" id="nameOnCard"
+                                                class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                placeholder="John Doe"
                                                 value="" readonly>
                                         </div>
                                     </div>
-                                
+
                                     <div class="form-group mb-4">
                                         <label for="cardNumber" class="text-gray-700 font-semibold block mb-1">Card Number</label>
                                         <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                            <input type="text" id="cardNumber" 
-                                                class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                placeholder="4111 1111 1111 1111" 
+                                            <input type="text" id="cardNumber"
+                                                class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                placeholder="4111 1111 1111 1111"
                                                 value="" readonly>
                                         </div>
                                     </div>
-                                
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                         <div class="form-group mb-4">
                                             <label for="cvv" class="text-gray-700 font-semibold block mb-1">CVV</label>
                                             <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                                <input type="text" id="cvv" 
-                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                    placeholder="123" 
+                                                <input type="text" id="cvv"
+                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                    placeholder="123"
                                                     value="" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group mb-4">
                                             <label for="exp" class="text-gray-700 font-semibold block mb-1">Expiration Date</label>
                                             <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                                <input type="text" id="exp" 
-                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                    placeholder="12/26" 
+                                                <input type="text" id="exp"
+                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                    placeholder="12/26"
                                                     value="" readonly>
                                             </div>
                                         </div>
                                     </div>
-                                
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div class="form-group">
                                             <label for="firstBillableDate" class="text-gray-700 font-semibold block mb-1">First Billable Date</label>
                                             <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                                <input type="text" id="firstBillableDate" 
-                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                    placeholder="01/11/2024" 
+                                                <input type="text" id="firstBillableDate"
+                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                    placeholder="01/11/2024"
                                                     value="" readonly>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="commencement" class="text-gray-700 font-semibold block mb-1">Commencement</label>
                                             <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                                <input type="text" id="commencement" 
-                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default" 
-                                                    placeholder="01/10/2024" 
+                                                <input type="text" id="commencement"
+                                                    class="w-full bg-transparent border-0 focus:outline-none cursor-default"
+                                                    placeholder="01/10/2024"
                                                     value="" readonly>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
+
                             </div>
 
                         </div>

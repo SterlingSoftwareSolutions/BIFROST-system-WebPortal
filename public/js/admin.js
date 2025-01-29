@@ -1,3 +1,4 @@
+console.log("admin.js loaded");
 // Access page
 // edit button acction
 function editAction(id, access) {
@@ -110,6 +111,61 @@ function resetAction(id, access) {
     } else {
         alert("Error: Access type could not reset pin.");
         // Optional: Handle access denied scenario as needed
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("admin.js loaded");
+
+    const resetButton = document.getElementById("resetPinAction");
+    if (resetButton) {
+        resetButton.addEventListener("click", function () {
+            const userId = this.getAttribute("data-user-id");
+            const action = this.getAttribute("data-action");
+            console.log("Button clicked, user ID:", userId);
+            resetPin(userId, action);
+        });
+    } else {
+        console.error("Reset button not found in the DOM");
+    }
+});
+
+function resetPin(id, action) {
+    if (action == 'edit') {
+        $.ajax({
+            url: "/resetUserPin",
+            type: "POST",
+            data: {
+                id: id,
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                location.reload(); // Reload the page after successful reset
+                alert("Success: reset pin.");
+            },
+            error: function (xhr, status, error) {
+                console.error(error); // Handle error
+                alert("Error: could not reset pin.");
+            },
+        });
+    } else {
+        // Generate a new PIN and update the input field
+        $.ajax({
+            url: "/generateUserPin",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr("content"),
+            },
+            success: function (response) {
+                console.log('Generate success:', response);
+                $('#pin').val(response.pin); // Update the input field with the new PIN
+                alert("Success: New PIN generated.");
+            },
+            error: function (xhr, status, error) {
+                console.log('Generate error:', error);
+                alert("Error: Could not generate pin.");
+            },
+        });
     }
 }
 

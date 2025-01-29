@@ -200,35 +200,96 @@
 
 
                             <div class="flex items-center border-b">
-                                <label for="restwe_1" class="w-60 block mb-1">Rest <span
+                                <label for="restredwe_1" class="w-60 block mb-1">Rest <span
                                         class="text-red-500">*</span></label>
-                                <div class="relative flex items-center max-w-[8rem]">
-                                    <button type="button" 
-                                        onclick="decrementRest(this.parentNode.querySelector('input').id)"
-                                        class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                            <path stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                        </svg>
-                                    </button>
-                                    <input type="text" id="restwe_1" name="restwe_1" placeholder="00:00" value="04:00"
-                                        class="bg-gray-50 border-x-0 restTimeP border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                        readonly required>
-                                    <button type="button"
-                                        onclick="incrementRest(this.parentNode.querySelector('input').id)"
-                                        class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                            <path stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                        </svg>
-                                    </button>
+                                <div class="">
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restredwe_1" name="restredwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restwered border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restyellowwe_1" name="restyellowwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restweyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restgreenwe_1" name="restgreenwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restwegreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="flex items-center border-b ">
-                                <label for="intensitywe_1" class="w-60 block mb-1">Intensity <span
-                                        class="text-red-500">*</span></label>
+                                <label for="intensitywe_1" class="w-60 block mb-1">Intensity</label>
                                 <select id="intensitywe_1" name="intensitywe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded my-2" required>
                                     <option value="" selected disabled>-- Select Intensity --</option>
@@ -246,7 +307,7 @@
                                 <label for="alt-categorywe_1" class="w-60 block mb-1">Category <span
                                         class="text-red-500">*</span></label>
                                 <select id="alt-categorywe_1" name="alt-categorywe_1" onchange="getworkoutWe(this)"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                     <option value="" selected disabled>-- Select Category --</option>
                                 </select>
                             </div>
@@ -254,7 +315,7 @@
                                 <label for="alt-workoutwe_1" class="w-60 block mb-1">Workout <span
                                         class="text-red-500">*</span></label>
                                 <select id="alt-workoutwe_1" name="alt-workoutwe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                     <option value="" selected disabled>-- Select Workout --</option>
                                 </select>
                             </div>
@@ -262,7 +323,7 @@
                                 <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight <span
                                         class="text-red-500">*</span></label>
                                 <input type="number" id="alt-weigthwe_1" name="alt-weigthwe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 <label for="" class="border bg-white py-3 px-3 mb-2">%</label>
                             </div>
                             <div class="border-b" id="altduplicateSetUI">
@@ -284,7 +345,7 @@
                                             <input type="text" id="alt-setswe_1" name="alt-setswe_1"
                                                 data-input-counter
                                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full my-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
+                                                placeholder="0" readonly />
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input').id)"
                                                 class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -314,7 +375,7 @@
                                             <input type="text" id="alt-repswe_1" name="alt-repswe_1"
                                                 data-input-counter
                                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
+                                                placeholder="0" readonly />
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input').id)"
                                                 class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -335,38 +396,102 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="flex items-center border-b">
+
+                            {{-- alternaterest --}}
+                            <div class="flex items-center border-b ">
                                 <label for="alt-restwe_1" class="w-60 block mb-1">Rest <span
                                         class="text-red-500">*</span></label>
-                                <div class="relative flex items-center max-w-[8rem] my-2">
-                                    <button type="button"
-                                        onclick="decrementRest(this.parentNode.querySelector('input').id)"
-                                        class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                            <path stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                        </svg>
-                                    </button>
-                                    <input type="text" id="alt-restwe_1" name="alt-restwe_1" placeholder="00:00" value="04:00"
-                                        class="bg-gray-50 border-x-0 restTimeA border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                        readonly required>
-                                    <button type="button"
-                                        onclick="incrementRest(this.parentNode.querySelector('input').id)"
-                                        class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                            <path stroke="currentColor" stroke-linecap="round"
-                                                stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                        </svg>
-                                    </button>
+                                <div class="">
+                                    <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="alt-restredwe_1" name="alt-restredwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restaltwered border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="alt-restyellowwe_1" name="alt-restyellowwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restaltweyellow border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <button type="button"
+                                            onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="alt-restgreenwe_1" name="alt-restgreenwe_1"
+                                            placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restaltgreen border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button"
+                                            onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="flex items-center border-b">
-                                <label for="alt-intensitywe_1" class="w-60 block mb-1 ">Intensity <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-intensitywe_1" class="w-60 block mb-1 ">Intensity</label>
                                 <select id="alt-intensitywe_1" name="alt-intensitywe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2">
                                     <option value="" selected disabled>-- Select Intensity --</option>
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
@@ -406,14 +531,19 @@
             el.name = baseName + '_' + index;
             el.id = baseId + '_' + index;
         });
-        let timeElementA = element.querySelector('.restTimeA');
-        if (timeElementA) {
-            timeElementA.value = '04:00';
-        }
-        let timeElementP = element.querySelector('.restTimeP');
-        if (timeElementP) {
-            timeElementP.value = '04:00';
-        }
+        // List of class names to update values for
+        const timeClassNames = [
+            'restwered', 'restweyellow', 'restwegreen',
+            'restaltwered', 'restaltgreen', 'restaltweyellow'
+        ];
+
+        // Update values for elements with specific classes
+        timeClassNames.forEach(className => {
+            let timeElement = element.querySelector(`.${className}`);
+            if (timeElement) {
+                timeElement.value = '04:00';
+            }
+        });
     }
 
     // Function to add a remove button to the cloned element
@@ -1004,14 +1134,13 @@
             });
 
             // Create a string with the alternative category options
-            let altCategoryOptionsHTML = '';
-            if (item.alt_category_id) {
-                altCategoryOptionsHTML = '<option value="" selected disabled>-- Select Category --</option>';
-                categoryOptions.forEach(category => {
-                    altCategoryOptionsHTML +=
-                        `<option value="${category.id}" ${category.id == item.alt_category_id ? 'selected' : ''}>${category.category_name}</option>`;
-                });
-            }
+            let altCategoryOptionsHTML =
+                '<option value="" selected disabled>-- Select Category --</option>';
+            categoryOptions.forEach(category => {
+                altCategoryOptionsHTML +=
+                    `<option value="${category.id}" ${category.id == item.alt_category_id ? 'selected' : ''}>${category.category_name}</option>`;
+            });
+
 
             // Build the setsHTML for each set in the item
             const setsHTML = Array.isArray(item.sets) ? item.sets.map((set, index) => {
@@ -1156,22 +1285,63 @@
                                             </button>
                                         </div>
                                     </div>
+
                                     <div class="flex items-center border-b">
-                                        <label for="restweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
+                                        <label for="restredweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                        <div class="">
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                             <label class=" text-red-500 font-bold w-16 text-right pr-8">Red</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button>
-                                            <input type="text" value="${item.rest}" id="restweight_${item.id}" name="restweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <input type="text" value="${item.restwered}" id="restredweight_${item.id}" name="restredweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
                                             <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
+
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                             <label class=" text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                            <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" value="${item.restweyellow}" id="restyellowweight_${item.id}" name="restyellowweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+
+                                        <div class="relative flex items-center max-w-[12rem] mb-4">
+                                             <label class=" text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                            <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" value="${item.restwegreen}" id="restgreenweight_${item.id}" name="restgreenweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                            <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+
+                                        </div>
+
+
                                     </div>
+
+
                                     <div class="flex items-center border-b">
                                         <label for="intensityweight_${item.id}" class="w-60 block mb-1">
                                             Intensity <span class="text-red-500">*</span>
@@ -1189,7 +1359,7 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-                                ${altCategoryOptionsHTML ? `
+                              
                                     <div class="flex items-center border-b mt-4">
                                         <label for="altcategoryweight_${item.id}" class="w-60 block mb-1">Alternative Category <span class="text-red-500">*</span></label>
                                         <select id="altcategoryweight_${item.id}" name="altcategoryweight_${item.id}" onchange="getworkoutWe(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
@@ -1197,7 +1367,7 @@
                                         </select>
                                         <button type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="updateweightlifting(${item.id})">Edit</button>
                                     </div>
-                                ` : ''}
+                                
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutweight_${item.category_id}" class="w-60 block mb-1">
                                         Workout<span class="text-red-500">*</span>
@@ -1231,20 +1401,55 @@
                                     </div>
                                 ` : ''}
                                 <div class="flex items-center border-b">
-                                    <label for="altrestweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
-                                    <div class="relative flex items-center max-w-[8rem]">
+                                    <label for="altrestredweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                    <div class="">
+                                    <div class="relative flex items-center max-w-[12rem]  py-2">
+                                          <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
-                                        <input type="text" value="${item.alt_rest}" id="altrestweight_${item.id}" name="altrestweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <input type="text" value="${item.alt_restwered}" id="altrestredweight_${item.id}" name="altrestredweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
                                         <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
                                         </button>
                                     </div>
+
+                                    <div class="relative flex items-center max-w-[12rem]  py-2">
+                                         <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" value="${item.alt_restweyellow}" id="altrestyellowweight_${item.id}" name="altrestyellowweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="relative flex items-center max-w-[12rem]  py-2">
+                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" value="${item.alt_restwegreen}" id="altrestgreenweight_${item.id}" name="altrestgreenweight_${item.id}" placeholder="00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)" class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                 </div>
                                 </div>
                                <div class="flex items-center border-b">
                                     <label for="altintensityweight_${item.id}" class="w-60 block mb-1">

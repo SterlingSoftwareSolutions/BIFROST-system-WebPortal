@@ -25,7 +25,7 @@
             <div class="breadcrumb text-sm mb-4">
                 <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Client
                         </strong></span></div>
-                <div class="text-3xl mt-3">Class Manager</div>
+                <div class="text-3xl mt-3">Workout Builder</div>
             </div>
             <div class="border rounded-b-lg bg-white shadow-md mt-10 text-sm">
                 <div>
