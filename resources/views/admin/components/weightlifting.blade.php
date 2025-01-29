@@ -291,7 +291,7 @@
                             <div class="flex items-center border-b ">
                                 <label for="intensitywe_1" class="w-60 block mb-1">Intensity</label>
                                 <select id="intensitywe_1" name="intensitywe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded my-2" required>
+                                    class="w-1/3 px-3 py-3 border flex rounded my-2">
                                     <option value="" selected disabled>-- Select Intensity --</option>
                                     <option value="low">Low</option>
                                     <option value="medium">Medium</option>
@@ -304,24 +304,21 @@
                         <div class="flex-col w-full">
                             <!-- Alternate Category and Workouts -->
                             <div class="flex items-center border-b">
-                                <label for="alt-categorywe_1" class="w-60 block mb-1">Category <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-categorywe_1" class="w-60 block mb-1">Category </label>
                                 <select id="alt-categorywe_1" name="alt-categorywe_1" onchange="getworkoutWe(this)"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                     <option value="" selected disabled>-- Select Category --</option>
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="alt-workoutwe_1" class="w-60 block mb-1">Workout <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-workoutwe_1" class="w-60 block mb-1">Workout </label>
                                 <select id="alt-workoutwe_1" name="alt-workoutwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                     <option value="" selected disabled>-- Select Workout --</option>
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight </label>
                                 <input type="number" id="alt-weigthwe_1" name="alt-weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 <label for="" class="border bg-white py-3 px-3 mb-2">%</label>
@@ -329,8 +326,7 @@
                             <div class="border-b" id="altduplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center">
-                                        <label for="alt-setswe_1" class="w-60 block">SETS <span
-                                                class="text-red-500">*</span></label>
+                                        <label for="alt-setswe_1" class="w-60 block">SETS </label>
                                         <div class="relative flex items-center max-w-[8rem] my-1">
                                             <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input').id)"
@@ -359,8 +355,7 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center border-b">
-                                        <label for="alt-repswe_1" class="w-60 block mb-1">REPS <span
-                                                class="text-red-500">*</span></label>
+                                        <label for="alt-repswe_1" class="w-60 block mb-1">REPS </label>
                                         <div class="relative flex items-center max-w-[8rem] my-2">
                                             <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input').id)"
@@ -399,8 +394,7 @@
 
                             {{-- alternaterest --}}
                             <div class="flex items-center border-b ">
-                                <label for="alt-restwe_1" class="w-60 block mb-1">Rest <span
-                                        class="text-red-500">*</span></label>
+                                <label for="alt-restwe_1" class="w-60 block mb-1">Rest </label>
                                 <div class="">
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
                                         <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
@@ -917,7 +911,7 @@
                     </svg>
                 </button>
             </div>
-            
+
         </div>
         <div class="flex items-center border-b">
             <label for="repswe_${remainingfind}${setCounter}" class="w-60 block mb-1">REPS <span
@@ -946,12 +940,12 @@
                     </svg>
                 </button>
             </div>
-                                    
+
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
                     Remove
             </button>
                                 </div>
-                                
+
         `;
         // Add functionality to the remove button
         setuiElement.querySelector('.remove-set').addEventListener('click', function() {
@@ -1151,7 +1145,7 @@
                 return `
                     <div>
                         <input name="setsid_${index}" value="${set.id}" hidden>
-                        
+
                         ${isSetsVisible ? `
                         <div class="flex items-center sets-view">
                             <label for="custom-numberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -1199,7 +1193,7 @@
                 const isAltRepsVisible = set.alt_reps !== null && set.alt_reps !== undefined;
 
                 return `
-                <div>                    
+                <div>
                     ${isAltSetsVisible ? `
                     <div class="flex items-center sets-view">
                         <label for="altcustomnumberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
@@ -1217,7 +1211,7 @@
                             </button>
                         </div>
                     </div>` : ''}
-                    
+
                     ${isAltRepsVisible ? `
                     <div class="flex items-center border-b">
                         <label for="altrepsweight_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
@@ -1243,7 +1237,7 @@
             htmlContent += `
                 <form action="{{ route('updateWeightlifting') }}" method="POST" id="updateWeightlifting_${item.id}">
                     @csrf
-                    
+
                     <input name="id_${item.id}" value="${item.id}" hidden>
                     <div class="flex flex-col text-lg p-4 bg-gray-50 mr-8 rounded-md gap-4 mb-4">
                         <div class="flex gap-5 justify-between">
@@ -1359,18 +1353,18 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-                              
+
                                     <div class="flex items-center border-b mt-4">
-                                        <label for="altcategoryweight_${item.id}" class="w-60 block mb-1">Alternative Category <span class="text-red-500">*</span></label>
+                                        <label for="altcategoryweight_${item.id}" class="w-60 block mb-1">Category </label>
                                         <select id="altcategoryweight_${item.id}" name="altcategoryweight_${item.id}" onchange="getworkoutWe(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>
                                             ${altCategoryOptionsHTML}
                                         </select>
                                         <button type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base" onclick="updateweightlifting(${item.id})">Edit</button>
                                     </div>
-                                
+
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutweight_${item.category_id}" class="w-60 block mb-1">
-                                        Workout<span class="text-red-500">*</span>
+                                        Workout
                                     </label>
                                     <select id="altworkoutweight_${item.id}" name="altworkoutweight_${item.id}" class="w-1/3 px-3 py-3 mt-2 border flex rounded mb-2">
                                         <option value="" selected disabled>-- Select Workout --</option>
@@ -1379,8 +1373,7 @@
                                     </select>
                                 </div>
                                 <div class="flex items-center border-b mt-2">
-                                    <label for="altweigthweight_${item.id}" class="w-60 block mb-1">Weight <span
-                                            class="text-red-500">*</span></label>
+                                    <label for="altweigthweight_${item.id}" class="w-60 block mb-1">Weight </label>
                                     <input type="number" id="altweigthweight_${item.id}" name="altweigthweight_${item.id}" value="${item.alt_weight}"
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                     <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
@@ -1401,7 +1394,7 @@
                                     </div>
                                 ` : ''}
                                 <div class="flex items-center border-b">
-                                    <label for="altrestredweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                    <label for="altrestredweight_${item.id}" class="w-60 block mb-1">Rest </label>
                                     <div class="">
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
                                           <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
@@ -1453,7 +1446,7 @@
                                 </div>
                                <div class="flex items-center border-b">
                                     <label for="altintensityweight_${item.id}" class="w-60 block mb-1">
-                                        Intensity <span class="text-red-500">*</span>
+                                        Intensity
                                     </label>
                                     <select id="altintensityweight_${item.id}" name="altintensityweight_${item.id}"
                                         class="w-1/3 px-3 py-3 border flex rounded my-2" required>

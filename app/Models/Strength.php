@@ -66,12 +66,12 @@ class Strength extends Model
         $strengthing->restred = $data['restreds'] ?? '00:00:00';
         $strengthing->restyellow = $data['restyellows'] ?? '00:00:00';
         $strengthing->restgreen = $data['restgreens'] ?? '00:00:00'; // Use default if not provided
-        $strengthing->intensity = $data['intensitys'];
+        $strengthing->intensity = $data['intensitys']?? null;
         $strengthing->alt_category_id = $data['alt-categorys'] ?? null;
         $strengthing->alt_workout_id = $data['alt-workouts'] ?? null;
         $strengthing->altweight = $data['alt-weigths'] ?? null;
         $strengthing->altrestred = $data['alt-restredwe'] ?? '00:00:00';
-        $strengthing->altrestyellow = $data['alt-restyellows'] ?? '00:00:00'; 
+        $strengthing->altrestyellow = $data['alt-restyellows'] ?? '00:00:00';
         $strengthing->altrestgreen = $data['alt-restgreens'] ?? '00:00:00';// Use default if not provided
         $strengthing->altintensity = $data['alt-intensitys'] ?? null;
         $strengthing->date = $data['date'];

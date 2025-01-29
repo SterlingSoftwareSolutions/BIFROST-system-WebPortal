@@ -73,7 +73,7 @@ class Weightlifting extends Model
         $weightlifting->restredwe = $data['restred'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->restyellowwe = $data['restyellow'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->restgreenwe = $data['restgreen'] ?? '00:00:00'; // Use default if not provided
-        $weightlifting->intensity = $data['intensity'];
+        $weightlifting->intensity = $data['intensity']?? null;
         $weightlifting->alt_category_id = $data['alt-category']?? null;
         $weightlifting->alt_workout_id = $data['alt-workout']?? null;
         $weightlifting->alt_weight = $data['alt-weigth']?? null;

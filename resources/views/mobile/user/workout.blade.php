@@ -158,7 +158,7 @@
                                                                             data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
                                                                             onclick="saveStrengthWorkout(this)">
                                                                         <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
+                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
                                                                         </div>
                                                                     </label>
                                                                 </td>
@@ -231,7 +231,7 @@
                                                                             data-weight-id="alweight-{{ $strengthIndex }}-{{ $setNumberalt }}"
                                                                             onclick="saveStrengthWorkout(this)">
                                                                         <div id="toggleBackground{{ $strengthIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
+                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
                                                                         </div>
                                                                     </label>
                                                                 </td>
@@ -324,7 +324,7 @@
                                                                             value="" class="sr-only peer timer-checkbox"
                                                                             data-rest-time="{{ $weightdetail->rest }}">
                                                                         <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
+                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
                                                                         </div>
                                                                     </label>
                                                                 </td>
@@ -389,7 +389,7 @@
                                                                             value="" class="sr-only peer timer-checkbox"
                                                                             data-rest-time="{{ $weightdetail->alt_rest }}">
                                                                         <div id="toggleBackground{{ $weightIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
+                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600">
                                                                         </div>
                                                                     </label>
                                                                 </td>
@@ -703,36 +703,42 @@
         {{-- end strenght save and colur change --}}
 
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.querySelectorAll('.primary-btn').forEach(function(button) {
-                    button.addEventListener('click', function() {
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('.primary-btn').forEach(function (button) {
+                    button.addEventListener('click', function () {
                         const targetId = button.getAttribute('data-target');
-                        // Adjusted ID selection based on targetId
-                        const primaryId = targetId.replace('#alt-', '#primary-');
-                        const primaryBody = document.querySelector(primaryId);
-                        const altBody = document.querySelector(targetId);
-                        primaryBody.classList.remove('hidden');
-                        altBody.classList.add('hidden');
-                        primaryBody.classList.add('block');
-                        altBody.classList.remove('block');
+                        const primaryBody = document.querySelector(targetId); // Primary table body
+                        const altBody = document.querySelector(targetId.replace('#primary-', '#alt-')); // Alternate table body
+
+                        if (primaryBody && altBody) {
+                            primaryBody.classList.remove('hidden');
+                            primaryBody.classList.add('block');
+                            altBody.classList.add('hidden');
+                            altBody.classList.remove('block');
+                        } else {
+                            console.error(`Element with ID ${targetId} or its alternate not found.`);
+                        }
                     });
                 });
 
-                document.querySelectorAll('.alt-btn').forEach(function(button) {
-                    button.addEventListener('click', function() {
+                document.querySelectorAll('.alt-btn').forEach(function (button) {
+                    button.addEventListener('click', function () {
                         const targetId = button.getAttribute('data-target');
-                        // Adjusted ID selection based on targetId
-                        const altId = targetId;
-                        const primaryId = targetId.replace('#alt-', '#primary-');
-                        const altBody = document.querySelector(altId);
-                        const primaryBody = document.querySelector(primaryId);
-                        altBody.classList.remove('hidden');
-                        primaryBody.classList.add('hidden');
-                        primaryBody.classList.remove('block');
-                        altBody.classList.add('block');
+                        const altBody = document.querySelector(targetId); // Alternate table body
+                        const primaryBody = document.querySelector(targetId.replace('#alt-', '#primary-')); // Primary table body
+
+                        if (primaryBody && altBody) {
+                            altBody.classList.remove('hidden');
+                            altBody.classList.add('block');
+                            primaryBody.classList.add('hidden');
+                            primaryBody.classList.remove('block');
+                        } else {
+                            console.error(`Element with ID ${targetId} or its primary not found.`);
+                        }
                     });
                 });
             });
+
 
 
 
