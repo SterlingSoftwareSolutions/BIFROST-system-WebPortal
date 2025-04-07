@@ -113,11 +113,11 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="workoutwe_1" class="w-60 block mb-1">Workout <span
+                                <label for="workoutwe_1" class="w-60 block mb-1">Exercise <span
                                         class="text-red-500">*</span></label>
                                 <select id="workoutwe_1" name="workoutwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                    <option value="" selected disabled>-- Select Workout --</option>
+                                    <option value="" selected disabled>-- Select Exercise --</option>
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
@@ -311,10 +311,10 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="alt-workoutwe_1" class="w-60 block mb-1">Workout </label>
+                                <label for="alt-workoutwe_1" class="w-60 block mb-1">Exercise </label>
                                 <select id="alt-workoutwe_1" name="alt-workoutwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                                    <option value="" selected disabled>-- Select Workout --</option>
+                                    <option value="" selected disabled>-- Select Exercise --</option>
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
@@ -1253,10 +1253,10 @@
                                     </div>
                                     <div class="flex items-center border-b">
                                         <label for="workoutweight_${item.id}" class="w-60 block mb-1">
-                                            Workout<span class="text-red-500">*</span>
+                                            Exercise<span class="text-red-500">*</span>
                                         </label>
                                         <select id="workoutweight_${item.id}" name="workoutweight_${item.id}" class="w-1/3 px-3 py-3 border mt-2 flex rounded mb-2">
-                                            <option value="" selected disabled>-- Select Workout --</option>
+                                            <option value="" selected disabled>-- Select Exercise --</option>
                                             <!-- Populate options dynamically -->
                                             <option value="${item.workout_id}" selected>${item.workout_type}</option>
                                         </select>
@@ -1364,10 +1364,10 @@
 
                                 <div class="flex items-center border-b">
                                     <label for="altworkoutweight_${item.category_id}" class="w-60 block mb-1">
-                                        Workout
+                                        Exercise
                                     </label>
                                     <select id="altworkoutweight_${item.id}" name="altworkoutweight_${item.id}" class="w-1/3 px-3 py-3 mt-2 border flex rounded mb-2">
-                                        <option value="" selected disabled>-- Select Workout --</option>
+                                        <option value="" selected disabled>-- Select Exercise --</option>
                                         <!-- Populate options dynamically -->
                                         <option value="${item.alt_workout_id}" selected>${item.alt_workout_type}</option>
                                     </select>
