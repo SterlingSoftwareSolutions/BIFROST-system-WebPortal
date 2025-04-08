@@ -104,6 +104,12 @@
                     <div class="flex gap-5 justify-between">
                         {{-- Primary Category and Workouts --}}
                         <div class="flex-col w-full border-r border-r-black">
+                            <div class="flex items-center border-b mt-2">
+                                <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
+                                <input type="text" id="namewe_1" name="namewe_1"
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+
+                            </div>
                             <div class="flex items-center border-b">
                                 <label for="categorywe_1" class="w-60 block mb-1">Category <span
                                         class="text-red-500">*</span></label>
@@ -303,6 +309,11 @@
 
                         <div class="flex-col w-full">
                             <!-- Alternate Category and Workouts -->
+                            <div class="flex items-center border-b mt-2">
+                                <label for="alt-namewe_1" class="w-60 block mb-1">Workout Name </label>
+                                <input type="text" id="alt-namewe_1" name="alt-namewe_1"
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2">
+                            </div>
                             <div class="flex items-center border-b">
                                 <label for="alt-categorywe_1" class="w-60 block mb-1">Category </label>
                                 <select id="alt-categorywe_1" name="alt-categorywe_1" onchange="getworkoutWe(this)"
@@ -1097,6 +1108,7 @@
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                 setWeightlifting(response.weightlifting, response.categoryOptions);
+                console.log('aaaaaaaaaa',response.weightlifting);
                 // });
             },
 
@@ -1245,6 +1257,11 @@
                             <div class="flex-col w-full border-r border-r-black">
                                 <div class="item-container">
                                     <div hidden><h3>Item ID: ${item.id}</h3></div>
+                                    <div class="flex items-center border-b mt-2">
+                                        <label for="nameweight_${item.id}" class="w-60 block mb-1">Workout Name </label>
+                                        <input type="test" id="nameweight_${item.id}" name="nameweight_${item.id}" value="${item.workoutname}"
+                                            class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                    </div>
                                     <div class="flex border-b mt-4">
                                     <label for="categoryweight_${item.id}" class="w-60 block mb-1">Category <span class="text-red-500">*</span></label>
                                     <select id="categoryweight_${item.id}" name="categoryweight_${item.id}" onchange="getworkoutWe(this)" class="w-1/3 px-3 py-3 border rounded mb-2" required>
@@ -1353,7 +1370,11 @@
                             </div>
                             {{-- Alternate Category and Workouts --}}
                             <div class="flex-col w-full">
-
+                                <div class="flex items-center border-b mt-2">
+                                    <label for="altnameweight_${item.id}" class="w-60 block mb-1">Workout Name </label>
+                                    <input type="text" id="altnameweight_${item.id}" name="altnameweight_${item.id}" value="${item.alt_workoutname}"
+                                        class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                </div>
                                     <div class="flex items-center border-b mt-4">
                                         <label for="altcategoryweight_${item.id}" class="w-60 block mb-1">Category </label>
                                         <select id="altcategoryweight_${item.id}" name="altcategoryweight_${item.id}" onchange="getworkoutWe(this)" class="w-1/3 px-3 py-3 border rounded mb-2 mr-5" required>

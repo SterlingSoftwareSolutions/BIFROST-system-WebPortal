@@ -15,6 +15,7 @@ class Weightlifting extends Model
     protected $fillable = [
         'category_id',
         'workout_id',
+        'workoutname',
         'weight',
         'restredwe',
         'restyellowwe',
@@ -25,6 +26,7 @@ class Weightlifting extends Model
         'intensity',
         'alt_category_id',
         'alt_workout_id',
+        'alt_workoutname',
         'alt_weight',
         'alt_intensity',
         'date',
@@ -69,6 +71,7 @@ class Weightlifting extends Model
         $weightlifting = new self();
         $weightlifting->category_id = $data['category'];
         $weightlifting->workout_id = $data['workout'];
+        $weightlifting->workoutname = $data['name']?? null;
         $weightlifting->weight = $data['weigth'];
         $weightlifting->restredwe = $data['restred'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->restyellowwe = $data['restyellow'] ?? '00:00:00'; // Use default if not provided
@@ -77,6 +80,7 @@ class Weightlifting extends Model
         $weightlifting->alt_category_id = $data['alt-category']?? null;
         $weightlifting->alt_workout_id = $data['alt-workout']?? null;
         $weightlifting->alt_weight = $data['alt-weigth']?? null;
+        $weightlifting->alt_workoutname = $data['alt-name']?? null;
         $weightlifting->altrestredwe = $data['alt-restred'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->altrestyellowwe = $data['alt-restyellow'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->altrestgreenwe = $data['alt-restgreen'] ?? '00:00:00'; // Use default if not provided

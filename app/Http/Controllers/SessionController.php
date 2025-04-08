@@ -350,6 +350,7 @@ class SessionController extends Controller
         // Validate the request data
         $request->validate([
             'selectdatewe' => 'required',
+            'namewe_*' => 'string|nullable',
             'categorywe_*' => 'required|integer|exists:category_options,id',
             'workoutwe_*' => 'required|integer|exists:workout_libraries,id',
             'weigthwe_*' => 'required|integer',
@@ -362,6 +363,7 @@ class SessionController extends Controller
 
             'intensitywe_*' => 'string|nullable',
 
+            'alt-namewe_*' => 'string|nullable',
             'alt-categorywe_*' => 'integer|exists:category_options,id',
             'alt-workoutwe_*' => 'integer|exists:workout_libraries,id',
             'alt-weigthwe_*' => 'integer',
@@ -416,7 +418,7 @@ class SessionController extends Controller
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
+        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt_name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -506,6 +508,7 @@ class SessionController extends Controller
     // get Weightlifting Start
     public function getWeightlifting(Request $request)
     {
+
         try {
             $date = $request->input("date");
 
@@ -532,7 +535,7 @@ class SessionController extends Controller
 
                     'category_id' => $item->category_id,
                     'category_name' => $item->category ? $item->category->category_name : null,
-
+                    'workoutname' => $item->workoutname,
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->workout : null,
 
@@ -546,7 +549,7 @@ class SessionController extends Controller
 
                     'alt_category_id' => $item->alt_category_id,
                     'alt_category_name' => $item->altCategory ? $item->altCategory->category_name : null,
-
+                    'alt_workoutname' => $item->alt_workoutname,
                     'alt_workout_id' => $item->alt_workout_id,
                     'alt_workout_type' => $item->altWorkout ? $item->altWorkout->workout : null,
 
@@ -562,11 +565,12 @@ class SessionController extends Controller
                     'sets' => $sets, // Include the sets in the result
                 ];
             });
-
+            Log::info('return Weightlifting Request Data: ', $result->all());
             return response()->json([
                 'weightlifting' => $result,
                 'categoryOptions' => $categoryOptions,
             ]);
+
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -582,6 +586,7 @@ class SessionController extends Controller
                 'id_*' => 'required|integer|exists:weightliftings,id',
                 'categoryweight_*' => 'required|integer|exists:category_options,id',
                 'workoutweight_*' => 'required|integer|exists:workout_libraries,id',
+                'nameweight_*' => 'string',
                 'weigthweight_*' => 'required|integer',
                 'setsweight_*' => 'required|integer',
                 'repsweight_*' => 'required|integer',
@@ -591,6 +596,7 @@ class SessionController extends Controller
                 'intensityweight_*' => 'required|string',
                 'altcategoryweight_*' => 'required|integer|exists:category_options,id',
                 'altworkoutweight_*' => 'required|integer|exists:workout_libraries,id',
+                'altnameweight_*' => 'string',
                 'altweigthweight_*' => 'required|integer',
                 'altsetsweight_*' => 'required|integer',
                 'altrepsweight_*' => 'required|integer',
@@ -621,6 +627,7 @@ class SessionController extends Controller
             $weightlifting->update([
                 'category_id' => $request->input('categoryweight_' . $weightliftingId),
                 'workout_id' => $request->input('workoutweight_' . $weightliftingId),
+                'workoutname' => $request->input('nameweight_' . $weightliftingId),
                 'weight' => $request->input('weigthweight_' . $weightliftingId),
                 'restredwe' => $request->input('restredweight_' . $weightliftingId),
                 'restyellowwe' => $request->input('restyellowweight_' . $weightliftingId),
@@ -628,6 +635,7 @@ class SessionController extends Controller
                 'intensity' => $request->input('intensityweight_' . $weightliftingId),
                 'alt_category_id' => $request->input('altcategoryweight_' . $weightliftingId),
                 'alt_workout_id' => $request->input('altworkoutweight_' . $weightliftingId),
+                'alt_workoutname' => $request->input('altnameweight_' . $weightliftingId),
                 'alt_weight' => $request->input('altweigthweight_' . $weightliftingId),
                 'altrestredwe' => $request->input('altrestredweight_' . $weightliftingId),
                 'altrestyellowwe' => $request->input('altrestyellowweight_' . $weightliftingId),
