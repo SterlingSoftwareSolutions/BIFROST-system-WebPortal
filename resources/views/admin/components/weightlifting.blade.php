@@ -136,9 +136,13 @@
                             <div class="border-b" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="custom-numberwe_1" class="w-60 block mb-1">SETS <span
+                                        <label for="custom-numberwe_1" class="w-60 block mb-1">SET <span
                                                 class="text-red-500">*</span></label>
                                         <div class="relative flex items-center max-w-[8rem]">
+                                            <input type="number" id="repswe_1" name="repswe_1"
+                                                class="h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-20 py-2.5  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" min="0" required />
+                                            <label for="repswe_1" class="text-sm mr-2">REPS:</label>
                                             <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input').id)"
                                                 class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
