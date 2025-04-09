@@ -133,71 +133,46 @@
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                 <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                             </div>
-                            <div class="border-b" id="duplicateSetUI">
+                            <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="custom-numberwe_1" class="w-60 block mb-1">SET <span
-                                                class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
-                                            <input type="number" id="repswe_1" name="repswe_1"
-                                                class="h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-20 py-2.5  dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" min="0" required />
-                                            <label for="repswe_1" class="text-sm mr-2">REPS:</label>
+                                        <label for="repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="repsnowe_1" name="repsnowe_1" value="1" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <label for="repswe_1" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Decrement Button -->
                                             <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
-                                                class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                onclick="decrement(this.parentNode.querySelector('input#repswe_1').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button>
-                                            <input type="text" id="setswe_1" name="setswe_1" data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="repswe_1" name="repswe_1" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
                                             <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
-                                                class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                onclick="increment(this.parentNode.querySelector('input#repswe_1').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center border-b">
-                                        <label for="repswe_1" class="w-60 block mb-1">REPS <span
-                                                class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
-                                            <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
-                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                                </svg>
-                                            </button>
-                                            <input type="text" id="repswe_1" name="repswe_1" data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
-                                            <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
-                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
                                     <div class="duplicate-sets" id="duplicate-sets_1"></div>
                                     <div class="ml-60">
                                         <button id="addset_1" onclick="duplicateSet(this.id)" type="button"
@@ -206,8 +181,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
 
                             <div class="flex items-center border-b">
                                 <label for="restredwe_1" class="w-60 block mb-1">Rest <span
@@ -909,56 +882,52 @@
         // Create a new element from the setui string and append it to the duplicate-sets container
         const setuiElement = document.createElement('div');
         setuiElement.innerHTML = `
-        <div class="flex items-center sets-view">
-            <label for="custom-numberwe_${remainingfind}${setCounter}" class="w-60 block mb-1">
-                SETS <span class="text-red-500">*</span>
-            </label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button" class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"  onclick="decrement(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="setswe_${remainingfind}${setCounter}" name="setswe_${remainingfind}${setCounter}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly />
-                <button type="button" class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"  onclick="increment(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
+        <div class="flex items-center sets-view mt-1">
+                                        <div class="w-60 block mb-1"></div>
+        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="repsnowe_${remainingfind}${setCounter}" name="repsnowe_${remainingfind}${setCounter}" value="${setCounter}" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
 
-        </div>
-        <div class="flex items-center border-b">
-            <label for="repswe_${remainingfind}${setCounter}" class="w-60 block mb-1">REPS <span
-                    class="text-red-500">*</span></label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button"
-                    onclick="decrement(this.parentNode.querySelector('input').id)"
-                    class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="repswe_${remainingfind}${setCounter}" name="repswe_${remainingfind}${setCounter}" data-input-counter
-                    class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="0" readonly />
-                <button type="button"
-                    onclick="increment(this.parentNode.querySelector('input').id)"
-                    class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
+                                            <label for="repsnowe_${remainingfind}${setCounter}" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Decrement Button -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#repswe_${remainingfind}${setCounter}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="repswe_${remainingfind}${setCounter}" name="repswe_${remainingfind}${setCounter}" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#repswe_${remainingfind}${setCounter}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+
+
+
+
 
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
                     Remove
             </button>
+        </div>
                                 </div>
 
         `;
