@@ -109,10 +109,10 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="workouts_1" class="w-60 block mb-1">Workout <span
+                            <label for="workouts_1" class="w-60 block mb-1">Exercise <span
                                     class="text-red-500">*</span></label>
                             <select id="workouts_1" name="workouts_1" class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                                <option value="" selected disabled>-- Select Workout --</option>
+                                <option value="" selected disabled>-- Select Exercise --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
@@ -301,10 +301,10 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="alt-workouts_1" class="w-60 block mb-1">Workout </label>
+                            <label for="alt-workouts_1" class="w-60 block mb-1">Exercise </label>
                             <select id="alt-workouts_1" name="alt-workouts_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                                <option value="" selected disabled>-- Select Workout --</option>
+                                <option value="" selected disabled>-- Select Exercise --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2">
@@ -935,7 +935,7 @@
 
                                     <div class="flex items-center border-b">
                                         <label for="intensitystrength_${item.id}" class="w-60 block mb-1">
-                                            Intensity 
+                                            Intensity
                                         </label>
                                         <select id="intensitystrength_${item.id}" name="intensitystrength_${item.id}"
                                             class="w-1/3 px-3 py-3 border flex rounded my-2" required>
