@@ -413,12 +413,13 @@ class SessionController extends Controller
 
     public function filterdata($processedData, $index, $date)
     {
+        Log::info('processedData Weightlifting Request Data: ', $processedData);
         // Initialize an array to hold the parsed data
         $parsedData = [];
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt_name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
+        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -465,7 +466,7 @@ class SessionController extends Controller
             // Check for setswe keys
             if (strpos($key, 'setswe_') === 0) {
                 $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $sets[$suffix] = $value;
+                $sets[$suffix] = 1;
             } elseif (strpos($key, 'repswe_') === 0) {
                 $suffix = explode('_', $key)[1]; // Extract numeric suffix
                 $reps[$suffix] = $value;
