@@ -29,7 +29,13 @@
                     </strong></span>
             </div>
             <div>
-                <h1 class="text-2xl font-bold mb-5"> Access</h1>
+                <h1 class="text-2xl font-bold mb-3"> Access</h1>
+            </div>
+            <div class="flex items-center justify-end mb-2">
+                <a href="{{ route('addnewadminedit', ['action' => 'add']) }}">
+                    <button class="bg-black text-white p-2 px-4 rounded-md whitespace-nowrap">Add New
+                        Admin</button>
+                </a>
             </div>
             @foreach ($users as $user)
                 <div class="card bg-white p-4 rounded-lg shadow-md border mb-4">

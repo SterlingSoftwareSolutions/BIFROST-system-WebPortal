@@ -95,8 +95,10 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/users/{user}', [AccessController::class, 'nextShow'])->name('user.show');
     // previous button
     Route::get('/previous-show/{id}', [AccessController::class, 'previousShow'])->name('previous.show');
-
-
+    // fetch admin user
+    Route::get('/save/newadmin/{action?}/{id?}', [AccessController::class, 'newAdminShow'])->name('addnewadminedit');
+    //add new admin user
+    Route::post('/save/newadmin/add', [AccessController::class, 'addnewadmin'])->name('newaminsave');
 
     // financial
     Route::get('/admin/financial', [FinancialController::class, 'viewfinancial'])->name('adminfinancial');

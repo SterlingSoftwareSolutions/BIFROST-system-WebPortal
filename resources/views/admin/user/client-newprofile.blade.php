@@ -13,7 +13,7 @@
     <script src="{{ asset('js/admin.js') }}" defer></script>
     <title>Document</title>
 </head>
-
+                           
 <body class="font-sans">
     @extends('layout.layout')
     @section('content')
