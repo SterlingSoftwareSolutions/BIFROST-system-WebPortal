@@ -251,4 +251,65 @@ class AccessController extends Controller
 
         return view('admin.user.access', compact('users'));
     }
+
+    //add new admin user
+    public function newAdminShow($action = 'add', $id = null)
+    {
+        // Debug to see what's being passed
+        // dd($action, $id);
+
+        // Fetch data if editing an existing profile
+        if ($action == 'edit' && $id) {
+            $user = User::findOrFail($id);
+            //$user = User::find($member->user_id);
+            $pin = $user->pin;
+            //dd( $userpin);
+        } else {
+            // Set $member to null or create a new instance if adding a new profile
+            $user = null;
+            $pin = null;
+        }
+        //dd( $user);
+        // Return view with data
+        return view('admin.user.admin-newuser', compact('action', 'user', 'pin'));
+    }
+
+    public function addnewadmin(Request $request)
+    {
+        try {
+            //dd($request);
+            // Validate incoming request data
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'user_type' => 'required|string|max:255',
+                'pin' => 'required|integer|min:0',
+            ]);
+
+            // Check if the email already exists
+            if (User::where('email', $validatedData['email'])->exists()) {
+                return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
+            }
+            //dd($validatedData);
+
+            $pin = $validatedData['pin'] ?? str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+            // Create new user
+            $user = new User();
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->pin = $pin;
+            $user->user_type = $validatedData['user_type'];
+            $user->save();
+
+
+            $access = new Access();
+            $access->user_id = $user->id;
+            $access->save();
+
+            // Optionally, you can return a response or redirect
+            return redirect()->route('admindaaccess')->with('success', 'Profile created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
+        }
+    }
 }
