@@ -200,7 +200,7 @@
                                     class="text-red-500">*</span></label>
                             <div class="">
                                 <div class="relative flex items-center max-w-[12rem] mb-4">
-                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                     <button type="button" onclick="changeRestTime(this, -15)"
                                         class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -224,7 +224,7 @@
                                 </div>
 
                                 <div class="relative flex items-center max-w-[12rem] mb-4">
-                                    <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                    <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                     <button type="button" onclick="changeRestTime(this, -15)"
                                         class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -249,7 +249,7 @@
 
 
                                 <div class="relative flex items-center max-w-[12rem] mb-4">
-                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                     <button type="button" onclick="changeRestTime(this, -15)"
                                         class="decrement bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -389,7 +389,7 @@
                             <div class="">
                                 <!-- Red Section -->
                                 <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                    <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                     <button type="button"onclick="changeRestTime(this, -15)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -439,7 +439,7 @@
 
                                 {{-- green section --}}
                                 <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                    <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                     <button type="button"onclick="changeRestTime(this, -15)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                         <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
@@ -867,7 +867,7 @@
                                         </select>
                                     </div>
                                     <div class="flex items-center border-b mt-2">
-                                        <label for="weigthstrength_${item.id}" class="w-60 block mb-1">Weight <span
+                                        <label for="weigthstrength_${item.id}" class="w-60 block mb-1">Weight Precentage <span
                                                 class="text-red-500">*</span></label>
                                         <input type="number" id="weigthstrength_${item.id}" name="weigthstrength_${item.id}" value="${item.weight}"
                                             class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
@@ -889,7 +889,7 @@
                                         <label for="restredstrength_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
                                         <div class="">
                                         <div class="relative flex items-center max-w-[12rem] mb-4">
-                                            <label class=" text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                            <label class=" text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -917,7 +917,7 @@
                                             </button>
                                         </div>
                                         <div class="relative flex items-center max-w-[12rem] mb-4">
-                                            <label class=" text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                            <label class=" text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -970,7 +970,7 @@
                                     </select>
                                 </div>
                                 <div class="flex items-center border-b mt-2">
-                                    <label for="altweigthstrength_${item.id}" class="w-60 block mb-1">Weight </label>
+                                    <label for="altweigthstrength_${item.id}" class="w-60 block mb-1">Weight Precentage </label>
                                     <input type="number" id="altweigthstrength_${item.id}" name="altweigthstrength_${item.id}" value="${item.alt_weight}"
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                     <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
@@ -995,7 +995,7 @@
                                     <label for="altrestredstrength_${item.id}" class="w-60 block mb-1">Rest </label>
                                       <div class="">
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
-                                         <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                         <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1026,7 +1026,7 @@
 
 
                                      <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
