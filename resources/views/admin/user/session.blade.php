@@ -73,10 +73,15 @@
                     </div>
 
                     {{-- Top Week and year display --}}
-                    <div class="flex justify-center text-2xl font-semibold gap-4 mb-6">
-                        <p class="cursor-pointer" id="prevWeek">&larr;</p>
-                        <h2 id="weekDisplay"></h2>
-                        <p class="cursor-pointer" id="nextWeek">&rarr;</p>
+                    <div class="flex flex-col items-center  gap-2 mb-6">
+                        <div class="flex justify-center text-2xl font-semibold items-center gap-4">
+                            <p class="cursor-pointer" id="prevWeek">&larr;</p>
+                            <h2 id="weekDisplay"></h2>
+                            <p class="cursor-pointer" id="nextWeek">&rarr;</p>
+                        </div>
+                        <div class="text-lg">
+                            <h2 id="weekRangeDisplay"></h2>
+                        </div>
                     </div>
                 </div>
                 <div class="w-full flex mx-4">
@@ -299,6 +304,21 @@
 
             // Get the start date of the current week (Monday)
             const firstDayOfWeek = getStartOfWeek(currentDate);
+
+            // Calculate the end date of the week (Sunday)
+            const lastDayOfWeek = new Date(firstDayOfWeek);
+            lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+            // Format week range as DD/MM/YY - DD/MM/YY
+            const formatRangeDate = (date) => {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+                const year = String(date.getFullYear()).slice(-2); // Get last 2 digits
+                return `${day}/${month}/${year}`;
+            };
+
+            const weekRange = `${formatRangeDate(firstDayOfWeek)} - ${formatRangeDate(lastDayOfWeek)}`;
+            document.getElementById('weekRangeDisplay').innerText = weekRange;
 
             // Populate dates for the current week
             for (let i = 0; i < 7; i++) {
