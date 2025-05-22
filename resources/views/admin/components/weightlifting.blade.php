@@ -474,10 +474,10 @@
         <div id="cloneDisplayContainer"></div>
         <div class=" flex flex-col gap-5">
             {{-- Clone UI button --}}
-            <button id="cloneButton"type="button"
+            {{-- <button id="cloneButton"type="button"
                 class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base w-32">
                 Another
-            </button>
+            </button> --}}
             {{-- Save Button --}}
             <button id="submitButton" type="submit"
                 class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24">Save</button>
