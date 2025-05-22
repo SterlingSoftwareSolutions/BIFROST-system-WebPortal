@@ -3,7 +3,7 @@
     {{-- hidden input field --}}
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
         <div class="flex justify-center text-center items-center w-1/2">Primary</div>
-        <div class="flex justify-center text-center items-center w-1/2">Alternate</div>
+        {{-- <div class="flex justify-center text-center items-center w-1/2">Alternate</div> --}}
         <form id="deleteforstrenght">
             @csrf
             @method('DELETE')
@@ -99,7 +99,7 @@
 
                 <div class="flex gap-5 justify-between ">
                     {{-- start primary --}}
-                    <div class=" flex-col w-full border-r border-r-black">
+                    <div class=" flex-col w-full  ">
                         <div class="flex items-center border-b ">
                             <label for="categorys_1" class="w-60 block mb-1">Category <span
                                     class="text-red-500">*</span></label>
@@ -290,10 +290,10 @@
                     {{-- end primary --}}
 
                     {{-- start alternative --}}
-                    <div class="flex-col w-full">
+                    {{-- <div class="flex-col w-full"> --}}
                         <!-- Alternate Category and Workouts -->
 
-                        <div class="flex items-center border-b ">
+                       {{--<div class="flex items-center border-b ">
                             <label for="alt-categorys_1" class="w-60 block mb-1">Category </label>
                             <select id="alt-categorys_1" name="alt-categorys_1" onchange="getworkoutS(this)"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
@@ -312,10 +312,10 @@
                             <input type="text" id="alt-weigths_1" name="alt-weigths_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
                             <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
-                        </div>
+                        </div>--}}
 
                         {{-- alternate sets --}}
-                        <div class="border-b" id="altduplicateSetUIStrength">
+                        {{-- <div class="border-b" id="altduplicateSetUIStrength">
                             <div class="">
                                 <div class="flex items-center">
                                     <label for="alt-sets" class="w-60 block">SETS </label>
@@ -343,9 +343,9 @@
                                             </svg>
                                         </button>
                                     </div>
-                                </div>
+                                </div> --}}
                                 {{-- Altertnative reps --}}
-                                <div class="flex items-center border-b">
+                                {{-- <div class="flex items-center border-b">
                                     <label for="alt-reps" class="w-60 block mb-1">REPS </label>
                                     <div class="relative flex items-center max-w-[8rem] my-2">
                                         <button type="button"
@@ -380,15 +380,15 @@
                                         <i class="fas fa-plus text-[12px]"></i> Add set</button>
                                 </div>
                             </div>
-                        </div>
+                        </div> --}}
 
                         {{-- alternate Rest --}}
 
-                        <div class="flex items-center border-b mt-4">
+                        {{-- <div class="flex items-center border-b mt-4">
                             <label for="alt-rest" class="w-60 block mb-1">Rest </label>
-                            <div class="">
+                            <div class=""> --}}
                                 <!-- Red Section -->
-                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                {{-- <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
                                     <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                     <button type="button"onclick="changeRestTime(this, -15)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -410,10 +410,10 @@
                                                 stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                         </svg>
                                     </button>
-                                </div>
+                                </div> --}}
 
                                 {{-- Yellow Section --}}
-                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                {{-- <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
                                     <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
                                     <button type="button"onclick="changeRestTime(this, -15)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -435,10 +435,10 @@
                                                 stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                         </svg>
                                     </button>
-                                </div>
+                                </div> --}}
 
                                 {{-- green section --}}
-                                <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
+                                {{-- <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
                                     <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                     <button type="button"onclick="changeRestTime(this, -15)"
                                         class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -476,7 +476,7 @@
                                 <option value="extreme">Extreme</option>
                             </select>
                         </div>
-                    </div>
+                    </div> --}}
                     {{-- end  alternative --}}
                 </div>
 

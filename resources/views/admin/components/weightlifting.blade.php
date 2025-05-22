@@ -5,7 +5,7 @@
 
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
         <div class="flex justify-center text-center items-center w-1/2">Primary</div>
-        <div class="flex justify-center text-center items-center w-1/2">Alternate</div>
+        {{-- <div class="flex justify-center text-center items-center w-1/2">Alternate</div> --}}
         <form id="deleteFormWe">
             @csrf
             @method('DELETE')
@@ -105,7 +105,7 @@
                     <!-- Your UI block content here -->
                     <div class="flex gap-5 justify-between">
                         {{-- Primary Category and Workouts --}}
-                        <div class="flex-col w-full border-r border-r-black">
+                        <div class="flex-col w-full">
                             <div class="flex items-center border-b mt-2">
                                 <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="namewe_1" name="namewe_1"
@@ -286,9 +286,9 @@
                             </div>
                         </div>
 
-                        <div class="flex-col w-full">
+                        {{-- <div class="flex-col w-full"> --}}
                             <!-- Alternate Category and Workouts -->
-                            <div class="flex items-center border-b mt-2">
+                            {{-- <div class="flex items-center border-b mt-2">
                                 <label for="alt-namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="alt-namewe_1" name="alt-namewe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
@@ -318,31 +318,31 @@
                                 <div class="">
                                     <div class="flex items-center sets-view">
                                         <label for="alt-repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI"> --}}
                                             <!-- Optional extra input (first one) -->
-                                            <input type="text" id="alt-repsnowe_1" name="alt-repsnowe_1" value="1" data-input-counter
+                                            {{-- <input type="text" id="alt-repsnowe_1" name="alt-repsnowe_1" value="1" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
-                                            <label for="alt-repswe" class="text-sm mr-2">REPS</label>
+                                            <label for="alt-repswe" class="text-sm mr-2">REPS</label> --}}
 
                                             <!-- Decrement Button -->
-                                            <button type="button"
+                                            {{-- <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                     fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
-                                            </button>
+                                            </button> --}}
 
                                             <!-- REPS Counter Input -->
-                                            <input type="text" id="alt-repswe_1" name="alt-repswe_1" data-input-counter
+                                            {{-- <input type="text" id="alt-repswe_1" name="alt-repswe_1" data-input-counter
                                                 class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
+                                                placeholder="0" readonly required /> --}}
 
                                             <!-- Increment Button -->
-                                            <button type="button"
+                                            {{-- <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -361,11 +361,11 @@
                                             <i class="fas fa-plus text-[12px]"></i> Add set</button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
 
                             {{-- alternaterest --}}
-                            <div class="flex items-center border-b ">
+                            {{-- <div class="flex items-center border-b ">
                                 <label for="alt-restwe_1" class="w-60 block mb-1">Rest </label>
                                 <div class="">
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
@@ -464,8 +464,8 @@
                                     <option value="high">High</option>
                                     <option value="extreme">Extreme</option>
                                 </select>
-                            </div>
-                        </div>
+                            </div> --}}
+                        {{-- </div> --}}
                     </div>
                 </div>
             </div>
