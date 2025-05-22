@@ -181,8 +181,8 @@
                         </select>
                     </div>
 
-                    <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
-                        onclick="addAnotherClick()" id="idfake_1">Another</button>
+                    {{-- <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
+                        onclick="addAnotherClick()" id="idfake_1">Another</button> --}}
                     <div class="flex items-center border-b mt-2">
                         <label for="timeTC_1" class="w-60 block mb-1">Time To Complete<span
                                 class="text-red-500">*</span></label>

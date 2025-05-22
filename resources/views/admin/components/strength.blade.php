@@ -485,8 +485,8 @@
 
         <div id="cloneDisplayContainerStrength"></div>
         <div class=" flex flex-col gap-5">
-            <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
-                id="cloneButtonstrength">Another</a>
+            {{-- <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
+                id="cloneButtonstrength">Another</a> --}}
             <button type="submit"
                 class="bg-[#FB1018] text-white py-2 px-4  rounded mb-2 hover:bg-red-700 w-24">Save</button>
         </div>
