@@ -23,9 +23,9 @@
         <!-- Main content (Dashboard) -->
         <div class="container transition-width mt-24 flex-grow mx-4" id="container">
             <div class="breadcrumb text-sm mb-4">
-                <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Builder
+                <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Manager
                         </strong></span></div>
-                <div class="text-3xl mt-3">Workout Builder</div>
+                <div class="text-3xl mt-3">Workout Manager</div>
             </div>
             <div class="border rounded-b-lg bg-white shadow-md mt-10 text-sm">
                 <div>
