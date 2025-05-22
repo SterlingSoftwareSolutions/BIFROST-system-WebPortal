@@ -61,7 +61,7 @@
                     <!-- Icon -->
                     <i class="bi bi-list-check w-5 h-5 m-3" onclick="toggleSidebar()"></i>
                     <!-- Text -->
-                    <span class="sidebar-item-text whitespace-nowrap">Workout Builder</span>
+                    <span class="sidebar-item-text whitespace-nowrap">Workout Manager</span>
                 </a>
                 <hr class="border-t border-black" />
             </li>
