@@ -706,12 +706,12 @@
                 _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
             },
             success: function(response) {
-                console.log(response);
+                console.log('weeeeeeee',response);
                 // Extract the category_options array from the response
                 const categoryOptions = response.category_options || [];
 
                 // Clear existing options in the select elements before adding new ones
-                ['categorywe_1', 'alt-categorywe_1'].forEach(id => {
+                ['categorywe_1'].forEach(id => {
                     const categoryweelect = document.getElementById(id);
                     categoryweelect.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
@@ -720,11 +720,11 @@
                 // Loop through each category_option and call the setCategory() function
                 categoryOptions.forEach(option => {
                     setCategory(option.id, option.category_name, 'categorywe_1');
-                    setCategory(option.id, option.category_name, 'alt-categorywe_1');
+
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categorywe_1', 'alt-categorywe_1'].forEach(id => {
+                ['categorywe_1'].forEach(id => {
                     sortSelectOptions(document.getElementById(id));
                 });
             },

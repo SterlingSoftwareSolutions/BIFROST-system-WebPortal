@@ -943,6 +943,8 @@ class SessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    
     // updatestrenght
     public function updatestrength(Request $request)
     {
