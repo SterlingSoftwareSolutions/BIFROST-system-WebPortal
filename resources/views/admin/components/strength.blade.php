@@ -8,7 +8,7 @@
             @csrf
             @method('DELETE')
             <input type="text" name="selectdatestrenghtDelete" id="selectdatestrenghtDelete" hidden>
-            <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            {{-- <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
             $(document).ready(function() {
@@ -124,8 +124,8 @@
                             <div class="flex items-start space-x-6 mt-3">
                                 <!-- Name Field -->
                                 <div class="flex flex-row items-center flex-[2] space-x-2">
-                                    <label for="weigths_1" class="w-28">Name Search</label>
-                                    <input type="text" id="weigths_1" name="weigths_1"
+                                    <label for="name_1" class="w-28">Name Search</label>
+                                    <input type="text" id="name_1" name="name_1"
                                         class="flex-1 px-3 py-2 border rounded mb-2">
                                 </div>
 
@@ -412,7 +412,7 @@
                         <div class="flex flex-col gap-5 mt-5">
                             {{-- <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
                                 id="cloneButtonstrength">Another</a> --}}
-                            <button type="submit"
+                            <button type="submit" id="savebtn"
                                 class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 self-end">Save</button>
                         </div>
                     </div>
@@ -771,9 +771,7 @@
         selectElement.innerHTML = '<option value="" selected disabled>-- Select Workout --</option>';
     }
 
-
-
-
+    let allStrengthData = [];
 
     function getstrength(date) {
         console.log("Fetching strength data for date: " + date);
@@ -786,6 +784,7 @@
             },
             success: function(response) {
                 console.log("this is strenth response", response);
+                allStrengthData = response.Strength;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                     setstrengths(response.Strength, response.categoryOptions);
@@ -858,7 +857,7 @@
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
                         <div class="space-x-2">
-                            <button class="">
+                            <button class="edit-strength-btn" data-id="${item.id}">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -909,8 +908,59 @@
             `;
 
             container.append(html);
+
+            // Bind the Edit button after appending
+            container.find('.edit-strength-btn').off('click').on('click', function () {
+                const strengthId = $(this).data('id');
+                populateStrengthForm(strengthId);
+            });
+
         });
     }
+
+    function populateStrengthForm(strengthId) {
+
+        const data = allStrengthData.find(item => item.id == strengthId);
+        console.log('dataaaaaa',data);
+
+        if (!data) {
+            console.warn("No strength data found for ID:", strengthId);
+            return;
+        }
+
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categorys_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workouts_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+        // Set weight
+        document.getElementById('weigths_1').value = data.weight;
+
+        if (data.sets.length > 0) {
+            const setData = data.sets[0]; // Get first item
+
+            const setsInput = document.getElementById('sets_1');
+            const repsInput = document.getElementById('reps_1');
+
+            if (setsInput) setsInput.value = setData.sets;
+            if (repsInput) repsInput.value = setData.reps;
+        }
+
+        document.getElementById('restreds_1').value = data.restred;
+        document.getElementById('restyellows_1').value = data.restyellow;
+        document.getElementById('restgreens_1').value = data.restgreen;
+        document.getElementById('restgreens_1').value = data.restgreen;
+        document.getElementById('intensitys_1').value = data.intensity;
+        document.getElementById('savebtn').innerHTML = "Edit";
+
+    }
+
 
     function setstrengthing(Strength, categoryArray) {
         console.log("this is strength", Strength);
