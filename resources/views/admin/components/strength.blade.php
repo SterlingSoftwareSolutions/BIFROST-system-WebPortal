@@ -983,9 +983,12 @@
             success: function (response) {
                 console.log("this is filteerd strenth response", response);
                 allStrengthData = response.Strength;
+                const strengthArray = Object.values(response.Strength);
+                const categoryArray = Object.values(response.categoryOptions);
+                setstrengths(strengthArray, categoryArray);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                    setstrengths(response.Strength, response.categoryOptions);
+                    //setstrengths(response.Strength, response.categoryOptions);
                 // });
             },
             error: function (xhr) {
