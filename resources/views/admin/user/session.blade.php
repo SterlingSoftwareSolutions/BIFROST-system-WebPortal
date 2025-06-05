@@ -86,7 +86,7 @@
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
-                    <div class="w-1/4">
+                    <div class="w-1/6">
                         <div class="flex flex-col text-lg weekday">
                             <button
                                 class="border-l border-t border-b border-r border-black w-2/3 px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
@@ -111,7 +111,7 @@
                                 id="7day">Day 7</button>
                         </div>
                     </div>
-                    <div class="w-3/4 tabs">
+                    <div class="w-5/6 tabs">
                         @include('admin.components.warmup')
                         @include('admin.components.strength')
                         @include('admin.components.conditioning')

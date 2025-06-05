@@ -171,6 +171,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-strenthdata', [SessionController::class, 'updatestrength'])->name("updatestrength");
     // Route::get('/update-strenthdata',[SessionController::class,'updatestrength' ])->name("updatestrength");
     Route::delete('/delete-strengthdata', [SessionController::class, 'deleteAllByDelectDataStrenght'])->name('deletestrength');
+    Route::post('/search-setstrength', [SessionController::class, 'searchSetStrength'])->name('search.setstrength');
+
 
     //store test
     //getmembers

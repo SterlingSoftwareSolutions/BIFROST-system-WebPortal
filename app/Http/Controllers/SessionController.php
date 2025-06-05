@@ -943,6 +943,107 @@ class SessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    // serach strength
+    public function searchSetStrength(Request $request)
+    {
+
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $strengthRecords = Strength::with(['category', 'workout', 'setstrengthsetsreps', 'altCategory', 'altWorkout'])
+            ->where('date', $date) // date is mandatory
+            ->get();
+            Log::info('Response filtered data strength: ', ['Strength' => $strengthRecords]);
+            // Further in-memory filtering
+            // if ($name) {
+            //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
+            //         return stripos($item->workout->workout ?? '', $name) !== false;
+            //     });
+            // }
+            if ($categoryId && $workoutId) {
+                $strengthRecords = $strengthRecords->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId);
+            }
+
+            elseif ($categoryId) {
+                $strengthRecords = $strengthRecords->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $strengthRecords = $strengthRecords->where('workout_id', $workoutId);
+            }
+
+            $workouts = WorkoutLibrary::where('type', 'Strength')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $strengthRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'category_id' => $item->category_id,
+                    'category_name' => optional($item->category)->category_name,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => optional($item->workout)->workout,
+                    'weight' => $item->weight,
+                    'restred' => $item->restred,
+                    'restyellow' => $item->restyellow,
+                    'restgreen' => $item->restgreen,
+                    'intensity' => $item->intensity,
+
+                    'alt_category_id' => $item->alt_category_id,
+                    'alt_category_name' => optional($item->altCategory)->category_name,
+                    'alt_workout_id' => $item->alt_workout_id,
+                    'alt_workout_type' => optional($item->altWorkout)->workout,
+                    'alt_weight' => $item->altweight,
+                    'alt_restred' => $item->altrestred,
+                    'alt_restyellow' => $item->altrestyellow,
+                    'alt_restgreen' => $item->altrestgreen,
+                    'alt_intensity' => $item->altintensity,
+
+                    'date' => $item->date,
+                    'sets' => $item->setstrengthsetsreps,
+                ];
+            });
+
+            return response()->json([
+                'Strength' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getstrength: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+
+
+
+
+        // $date = $request->input("date");
+        // $query = Strength::query();
+
+        // // if ($request->filled('name')) {
+        // //     $query->where('name', 'like', '%' . $request->name . '%');
+        // // }
+
+        // if ($request->filled('category_id')) {
+        //     $query->where('category_id', $request->category_id);
+        // }
+
+        // if ($request->filled('workout_id')) {
+        //     $query->where('workout_id', $request->workout_id);
+        // }
+
+        // $setStrengths = $query->get();
+
+        // $html = view('partials.setstrength-cards', compact('setStrengths'))->render();
+
+        // return response()->json(['html' => $html]);
+    }
+
     // updatestrenght
     public function updatestrength(Request $request)
     {

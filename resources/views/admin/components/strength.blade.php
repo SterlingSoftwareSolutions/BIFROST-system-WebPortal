@@ -2,13 +2,13 @@
     <input type="text" name="selecttabss" id="selecttabss" hidden>
     {{-- hidden input field --}}
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
-        <div class="flex justify-center text-center items-center w-1/2">Primary</div>
-        {{-- <div class="flex justify-center text-center items-center w-1/2">Alternate</div> --}}
+        <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
+        <div class="flex justify-center text-center items-center w-1/2">Create</div>
         <form id="deleteforstrenght">
             @csrf
             @method('DELETE')
             <input type="text" name="selectdatestrenghtDelete" id="selectdatestrenghtDelete" hidden>
-            <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            {{-- <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
             $(document).ready(function() {
@@ -93,13 +93,136 @@
         <input type="text" name="selecttabs" id="selecttabs" hidden>
 
         <div class="duplicateUiStrength" data-index="1" id="uiContainerStrength">
-            <div class="ui-block flex flex-col text-lg p-4 bg-gray-50 mr-8 rounded-md gap-4 mb-4 ">
+            <div class="ui-block flex flex-col text-lg p-4 mr-8 rounded-md gap-4 mb-4 ">
 
                 <!-- Your UI block content here -->
 
-                <div class="flex gap-5 justify-between ">
+                <div class="flex gap-6 justify-between ">
+                    {{-- start alternative --}}
+                    <div class="flex-col w-full">
+                        <div class="bg-gray-50 p-4">
+                            <div class="flex items-start space-x-6">
+                                <!-- Category Field -->
+                                <div class="flex flex-row items-center w-1/2 space-x-2">
+                                    <label for="categorys_2" class="w-28">Category</label>
+                                    <select id="categorys_2" name="categorys_2" onchange="getworkoutS(this)"
+                                        class="flex-1 px-3 py-2 border rounded">
+                                        <option value="" selected disabled>-- Select Category --</option>
+                                    </select>
+                                </div>
+
+                                <!-- Exercise Field -->
+                                <div class="flex flex-row items-center w-1/2 space-x-2">
+                                    <label for="workouts_2" class="w-28">Exercise</label>
+                                    <select id="workouts_2" name="workouts_2"
+                                        class="flex-1 px-3 py-2 border rounded">
+                                        <option value="" selected disabled>-- Select Exercise --</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-6 mt-3">
+                                <!-- Name Field -->
+                                <div class="flex flex-row items-center flex-[2] space-x-2">
+                                    <label for="name_1" class="w-28">Name Search</label>
+                                    <input type="text" id="name_1" name="name_1"
+                                        class="flex-1 px-3 py-2 border rounded mb-2">
+                                </div>
+
+                                <!-- Go Button -->
+                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                    <button id="addsetstrength_1" onclick="filterStrength(date)"
+                                        type="button"
+                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scroll Section -->
+                        <div id="setstrengths" class="mt-4 max-h-96 overflow-y-auto space-y-4">
+                            {{-- <!-- Assigned border / one card -->
+                            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                                <div class="border border-black rounded-xl shadow p-4 bg-white">
+                                    <div class="pb-2 mb-2 flex justify-between items-center">
+                                        <div class=" text-gray-700">Workout Name - Test Workout</div>
+                                        <div class="space-x-2">
+                                            <button class="">
+                                                <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                            </button>
+                                            <button class="">
+                                                <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12    c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12    C10.5117188,22.9023438,10.2558594,23,10,23z"/></g><g><path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625    s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625    C22.5117188,22.9023438,22.2558594,23,22,23z"/></g></g></svg>
+
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-2 text-gray-800 font-semibold">Deadlift at 80% for 5 sets</div>
+
+                                    <div class="grid grid-cols-2 gap-4  text-gray-700">
+                                        <!-- Set Details -->
+                                        <div>
+                                            <table class="w-full text-left ">
+                                                <tbody>
+                                                    <tr class="">
+                                                        <td class="py-1 pr-4">Set 1</td>
+                                                        <td class="py-1">8 Reps</td>
+                                                    </tr>
+                                                    <tr class="">
+                                                        <td class="py-1 pr-4">Set 2</td>
+                                                        <td class="py-1">8 Reps</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1 pr-4">Set 3</td>
+                                                        <td class="py-1">6 Reps</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <!-- Rest Stages -->
+                                        <div>
+                                            <table class="w-full text-left ">
+                                                <thead>
+                                                    <tr class="">
+                                                        <th class="py-1 ">Rest:</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="">
+                                                        <td class="py-1 pr-4">Stage 1</td>
+                                                        <td class="py-1">4 min</td>
+                                                    </tr>
+                                                    <tr class="">
+                                                        <td class="py-1 pr-4">Stage 2</td>
+                                                        <td class="py-1">4 min</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1 pr-4">Stage 3</td>
+                                                        <td class="py-1">4 min</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 flex justify-end">
+                                        <label class="inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" value="" class="sr-only peer">
+                                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                                          </label>
+                                    </div>
+                                </div>
+                            </div> --}}
+                        </div>
+
+                    </div>
+
+
+
+                    {{-- end primary --}}
                     {{-- start primary --}}
-                    <div class=" flex-col w-full  ">
+                    <div class=" flex-col w-full bg-gray-50 p-4">
                         <div class="flex items-center border-b ">
                             <label for="categorys_1" class="w-60 block mb-1">Category <span
                                     class="text-red-500">*</span></label>
@@ -285,6 +408,12 @@
                                 <option value="high">High</option>
                                 <option value="extreme">Extreme</option>
                             </select>
+                        </div>
+                        <div class="flex flex-col gap-5 mt-5">
+                            {{-- <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
+                                id="cloneButtonstrength">Another</a> --}}
+                            <button type="submit" id="savebtn"
+                                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 self-end">Save</button>
                         </div>
                     </div>
                     {{-- end primary --}}
@@ -484,12 +613,12 @@
         </div>
 
         <div id="cloneDisplayContainerStrength"></div>
-        <div class=" flex flex-col gap-5">
-            {{-- <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
-                id="cloneButtonstrength">Another</a> --}}
+        {{-- <div class="flex flex-col gap-5">
+            <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
+                id="cloneButtonstrength">Another</a>
             <button type="submit"
-                class="bg-[#FB1018] text-white py-2 px-4  rounded mb-2 hover:bg-red-700 w-24">Save</button>
-        </div>
+                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 mr-8 self-end">Save</button>
+        </div> --}}
 
     </form>
 
@@ -501,6 +630,7 @@
 <script>
     // Function to set category options
     function setCategory(id, categoryName, selectId) {
+        console.log('first')
         const categorySelect = document.getElementById(selectId);
         const option = document.createElement('option');
         option.value = id;
@@ -520,7 +650,7 @@
                 _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
             },
             success: function(response) {
-                console.log(response);
+                console.log('catttttttttttt',response);
 
                 // Convert category_options object into an array, if it's not an array already
                 let categoryOptions = response.category_options;
@@ -533,7 +663,7 @@
                 }
 
                 // Clear existing options in the select elements before adding new ones
-                ['categorys_1', 'alt-categorys_1'].forEach(id => {
+                ['categorys_1','categorys_2'].forEach(id => {
                     const categorySelect = document.getElementById(id);
                     categorySelect.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
@@ -542,11 +672,11 @@
                 // Loop through each category_option and call the setCategory() function
                 categoryOptions.forEach(option => {
                     setCategory(option.id, option.category_name, 'categorys_1');
-                    setCategory(option.id, option.category_name, 'alt-categorys_1');
+                    setCategory(option.id, option.category_name, 'categorys_2');
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categorys_1', 'alt-categorys_1'].forEach(id => {
+                ['categorys_1','categorys_2'].forEach(id => {
                     sortSelectOptions(document.getElementById(id));
                 });
             },
@@ -578,20 +708,16 @@
         // Get the remaining part after the base
         const remainingPart = idParts.slice(1).join('_');
         const isCategory = selectElement.id === `categorys_${remainingPart}`;
-        const isAltCategory = selectElement.id === `alt-categorys_${remainingPart}`;
+
         const isECategory = selectElement.id === `categorystrength_${remainingPart}`;
-        const isEAltCategory = selectElement.id === `altcategorystrength_${remainingPart}`;
+
 
         let workoutSelectId;
 
-        if (isAltCategory) {
-            workoutSelectId = `alt-workouts_${remainingPart}`;
-        } else if (isCategory) {
+        if (isCategory) {
             workoutSelectId = `workouts_${remainingPart}`;
         } else if (isECategory) {
             workoutSelectId = `workoutstrength_${remainingPart}`;
-        } else if (isEAltCategory) {
-            workoutSelectId = `altworkoutstrengths_${remainingPart}`;
         }
 
 
@@ -645,12 +771,7 @@
         selectElement.innerHTML = '<option value="" selected disabled>-- Select Workout --</option>';
     }
 
-    // Call getCategoryS on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        getCategoryS();
-    });
-
-
+    let allStrengthData = [];
 
     function getstrength(date) {
         console.log("Fetching strength data for date: " + date);
@@ -663,9 +784,10 @@
             },
             success: function(response) {
                 console.log("this is strenth response", response);
+                allStrengthData = response.Strength;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                setstrengthing(response.Strength, response.categoryOptions);
+                    setstrengths(response.Strength, response.categoryOptions);
                 // });
             },
 
@@ -703,6 +825,171 @@
             error: function(xhr) {
                 // Handle error
                 console.error(xhr.responseText);
+            }
+        });
+    }
+
+    function setstrengths(strengthData, categoryOptions) {
+        const container = $("#setstrengths"); // Replace with your actual container class or ID
+        container.empty(); // Clear previous content
+
+        strengthData.forEach((item, index) => {
+            let setsHTML = '';
+            console.log('ndnvdnldnvv',)
+            if (Array.isArray(item.sets) && item.sets.length > 0) {
+                const setObj = item.sets[0]; // usually only one object with `sets` and `reps`
+
+                for (let i = 0; i < setObj.sets; i++) {
+                    setsHTML += `
+                        <tr>
+                            <td class="py-1 pr-4">Set ${i + 1}</td>
+                            <td class="py-1">${setObj.reps} Reps</td>
+                        </tr>
+                    `;
+                }
+            } else {
+                setsHTML = '<tr><td colspan="2">No set data</td></tr>';
+            }
+
+            let html = `
+            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                <div class="border border-black rounded-xl shadow p-4 bg-white">
+                    <div class="pb-2 mb-2 flex justify-between items-center">
+                        <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
+                        <div class="space-x-2">
+                            <button class="edit-strength-btn" data-id="${item.id}" type="button">
+                                <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+
+                            <button class="" type="button">
+                                <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
+                                        <path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625C22.5117188,22.9023438,22.2558594,23,22,23z"/>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets[0]?.sets || 0} sets</div>
+
+                    <div class="grid grid-cols-2 gap-4 text-gray-700">
+                        <div>
+                            <table class="w-full text-left">
+                                <tbody>
+                                    ${setsHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="w-full text-left">
+                                <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
+                                <tbody>
+                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restred || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restyellow || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restgreen || '-'} min</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer">
+                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            container.append(html);
+
+            // Bind the Edit button after appending
+            container.find('.edit-strength-btn').off('click').on('click', function () {
+                const strengthId = $(this).data('id');
+                populateStrengthForm(strengthId);
+            });
+
+        });
+    }
+
+    function populateStrengthForm(strengthId) {
+
+        const data = allStrengthData.find(item => item.id == strengthId);
+        console.log('dataaaaaa',data);
+
+        if (!data) {
+            console.warn("No strength data found for ID:", strengthId);
+            return;
+        }
+
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categorys_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workouts_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+        // Set weight
+        document.getElementById('weigths_1').value = data.weight;
+
+        if (data.sets.length > 0) {
+            const setData = data.sets[0]; // Get first item
+
+            const setsInput = document.getElementById('sets_1');
+            const repsInput = document.getElementById('reps_1');
+
+            if (setsInput) setsInput.value = setData.sets;
+            if (repsInput) repsInput.value = setData.reps;
+        }
+
+        document.getElementById('restreds_1').value = data.restred;
+        document.getElementById('restyellows_1').value = data.restyellow;
+        document.getElementById('restgreens_1').value = data.restgreen;
+        document.getElementById('restgreens_1').value = data.restgreen;
+        document.getElementById('intensitys_1').value = data.intensity;
+        document.getElementById('savebtn').innerHTML = "Edit";
+
+    }
+
+    function filterStrength(date) {
+        const dateOnClick = document.getElementById('selectdatestrenghtDelete').value;
+        console.log('first',dateOnClick)
+
+        //console.log('bbbbbbbb',buttonId)
+        let categoryId = document.getElementById("categorys_2").value;
+        let exerciseId = document.getElementById("workouts_2").value;
+        let nameSearch = document.getElementById("name_1").value;
+
+        $.ajax({
+            url: "/search-setstrength",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                date: dateOnClick,
+                name: nameSearch,
+                category_id: categoryId,
+                workout_id: exerciseId
+            },
+            success: function (response) {
+                console.log("this is filteerd strenth response", response);
+                allStrengthData = response.Strength;
+                // Assuming response is an array of arrays
+                // response.forEach(subArray => {
+                    setstrengths(response.Strength, response.categoryOptions);
+                // });
+            },
+            error: function (xhr) {
+                alert("Error occurred: " + xhr.responseText);
             }
         });
     }
@@ -1455,12 +1742,8 @@
         console.log(`Duplicated Set ID: ${altinputs.length > 0 ? altinputs[0].id : 'N/A'}`);
     }
 
-
-
-
-
-    // Call getcategorywe on page load
+    // Call getCategoryS on page load
     document.addEventListener('DOMContentLoaded', function() {
-        getcategorywe();
+        getCategoryS();
     });
 </script>
