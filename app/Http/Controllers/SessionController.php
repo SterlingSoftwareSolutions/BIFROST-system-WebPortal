@@ -577,6 +577,88 @@ class SessionController extends Controller
         }
     }
 
+    // serach weightlifting
+    public function searchSetWeightlifting(Request $request)
+    {
+
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $weightliftingRecords = Weightlifting::with(['category', 'workout', 'sets', 'altCategory', 'altWorkout'])
+            ->where('date', $date) // date is mandatory
+            ->get();
+            Log::info('Response filtered data weightlifting: ', ['Weightlifting' => $weightliftingRecords]);
+            // Further in-memory filtering
+            // if ($name) {
+            //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
+            //         return stripos($item->workout->workout ?? '', $name) !== false;
+            //     });
+            // }
+            if ($categoryId && $workoutId && $name) {
+                $sweightliftingRecords = $weightliftingRecords->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->where('workoutname', $name);
+            }
+
+            elseif ($name) {
+                $weightliftingRecords = $weightliftingRecords->where('workoutname', 'like', '%' . $name . '%');
+            }
+
+            elseif ($categoryId) {
+                $weightliftingRecords = $weightliftingRecords->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $weightliftingRecords = $weightliftingRecords->where('workout_id', $workoutId);
+            }
+
+            $workouts = WorkoutLibrary::where('type', 'Weightlifting')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $weightliftingRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'category_id' => $item->category_id,
+                    'category_name' => optional($item->category)->category_name,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => optional($item->workout)->workout,
+                    'workoutname' => $item->workoutname,
+                    'weight' => $item->weight,
+                    'restwered' => $item->restredwe,
+                    'restweyellow' => $item->restyellowwe,
+                    'restwegreen' => $item->restgreenwe,
+                    'intensity' => $item->intensity,
+
+                    'alt_category_id' => $item->alt_category_id,
+                    'alt_category_name' => optional($item->altCategory)->category_name,
+                    'alt_workout_id' => $item->alt_workout_id,
+                    'alt_workout_type' => optional($item->altWorkout)->workout,
+                    'alt_weight' => $item->altweight,
+                    'alt_restred' => $item->altrestred,
+                    'alt_restyellow' => $item->altrestyellow,
+                    'alt_restgreen' => $item->altrestgreen,
+                    'alt_intensity' => $item->altintensity,
+
+                    'date' => $item->date,
+                    'sets' => $item->sets,
+                ];
+            });
+
+            return response()->json([
+                'weightlifting' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getweightlifting: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
+
     // update weightlifting
     public function updateWeightlifting(Request $request)
     {

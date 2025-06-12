@@ -154,6 +154,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-Weightlifting', [SessionController::class, 'updateWeightlifting'])->name('updateWeightlifting');
     // delete
     Route::delete('/delete-Weightlifting', [SessionController::class, 'deleteAllBySelectDateWeightlifting'])->name('Weightlifting.deleteAllBySelectDate');
+    // search Weightlifting
+    Route::post('/search-setweightlifting', [SessionController::class, 'searchSetWeightlifting'])->name('search.setweightlifting');
 
     // store conditioning
     Route::post('/store-conditioning', [SessionController::class, 'storeconditioning']);
@@ -171,6 +173,7 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-strenthdata', [SessionController::class, 'updatestrength'])->name("updatestrength");
     // Route::get('/update-strenthdata',[SessionController::class,'updatestrength' ])->name("updatestrength");
     Route::delete('/delete-strengthdata', [SessionController::class, 'deleteAllByDelectDataStrenght'])->name('deletestrength');
+    // serach Strength
     Route::post('/search-setstrength', [SessionController::class, 'searchSetStrength'])->name('search.setstrength');
 
 

@@ -130,14 +130,14 @@
                                 <div class="flex items-start space-x-6 mt-3">
                                     <!-- Name Field -->
                                     <div class="flex flex-row items-center flex-[2] space-x-2">
-                                        <label for="namewe_1" class="w-28">Name Search</label>
-                                        <input type="text" id="namewe_1" name="namewe_1"
+                                        <label for="namewe_2" class="w-28">Name Search</label>
+                                        <input type="text" id="namewe_2" name="namewe_2"
                                             class="flex-1 px-3 py-2 border rounded mb-2">
                                     </div>
 
                                     <!-- Go Button -->
                                     <div class="flex flex-row items-center flex-1 space-x-2">
-                                        <button id="addsetstrength_1" onclick="filterStrength(date)"
+                                        <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
                                             type="button"
                                             class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
                                     </div>
@@ -598,7 +598,7 @@
                 Another
             </button> --}}
             {{-- Save Button --}}
-            <button id="submitButton" type="submit"
+            <button id="savebtnwe" type="submit"
                 class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 mr-8 self-end">Save</button>
         </div>
     </form>
@@ -1161,6 +1161,7 @@
 
 {{-- get weightlifting --}}
 <script>
+    let allWeightliftingData = [];
     function getWeightlifting(date) {
         console.log(date);
         console.log("get Weightlifting date: " + date);
@@ -1173,6 +1174,7 @@
             },
             success: function(response) {
                 // console.log(response);
+                allWeightliftingData = response.weightlifting;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                     setWeightliftings(response.weightlifting, response.categoryOptions);
@@ -1549,6 +1551,7 @@
 
     }
 
+    
     function filterWeightlifting(date) {
         const dateOnClick = document.getElementById('selectdateweDelete').value;
         console.log('first',dateOnClick)
@@ -1556,10 +1559,10 @@
         //console.log('bbbbbbbb',buttonId)
         let categoryId = document.getElementById("categorywe_2").value;
         let exerciseId = document.getElementById("workoutwe_2").value;
-        let nameSearch = document.getElementById("namewe_1").value;
+        let nameSearch = document.getElementById("namewe_2").value;
 
         $.ajax({
-            url: "/search-weightlifting",
+            url: "/search-setweightlifting",
             type: "POST",
             data: {
                 _token: $('meta[name="csrf-token"]').attr('content'),
@@ -1646,9 +1649,9 @@
                             <table class="w-full text-left">
                                 <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
                                 <tbody>
-                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restred || '-'} min</td></tr>
-                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restyellow || '-'} min</td></tr>
-                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restgreen || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restwered || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restweyellow || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restwegreen || '-'} min</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1669,10 +1672,54 @@
             // Bind the Edit button after appending
             container.find('.edit-weightlifting-btn').off('click').on('click', function () {
                 const weightliftingId = $(this).data('id');
-                populateStrengthForm(weightliftingId);
+                populateWeightliftingForm(weightliftingId);
             });
 
         });
+    }
+
+    // get editing details to form
+    function populateWeightliftingForm(weightliftingId) {
+
+        const data = allWeightliftingData.find(item => item.id == weightliftingId);
+        console.log('dataaaaaa',data);
+
+        if (!data) {
+            console.warn("No strength data found for ID:", weightliftingId);
+            return;
+        }
+
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categorywe_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workoutwe_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+        // Set weight
+        document.getElementById('weigthwe_1').value = data.weight;
+
+        if (data.sets.length > 0) {
+            const setData = data.sets[0]; // Get first item
+
+            const setsInput = document.getElementById('repsnowe_1');
+            const repsInput = document.getElementById('repswe_1');
+
+            if (setsInput) setsInput.value = setData.sets;
+            if (repsInput) repsInput.value = setData.reps;
+        }
+
+        document.getElementById('restredwe_1').value = data.restwered;
+        document.getElementById('restyellowwe_1').value = data.restweyellow;
+        document.getElementById('restgreenwe_1').value = data.restwegreen;
+        document.getElementById('intensitywe_1').value = data.intensity;
+        document.getElementById('namewe_1').value = data.workoutname;
+        document.getElementById('savebtnwe').innerHTML = "Edit";
+
     }
 
     function updateweightlifting(id) {
