@@ -4,13 +4,13 @@
 
 
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
-        <div class="flex justify-center text-center items-center w-1/2">Primary</div>
-        {{-- <div class="flex justify-center text-center items-center w-1/2">Alternate</div> --}}
+        <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
+        <div class="flex justify-center text-center items-center w-1/2">Create</div>
         <form id="deleteFormWe">
             @csrf
             @method('DELETE')
             <input type="text" name="selectdateweDelete" id="selectdateweDelete" hidden>
-            <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            {{-- <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
             $(document).ready(function() {
@@ -99,11 +99,130 @@
     <form id="storeFromWe">
         @csrf
         <input type="text" name="selectdatewe" id="selectdatewe" hidden>
-        <div class="duplicateUi flex flex-col text-lg  bg-gray-50 mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
+        <div class="duplicateUi flex flex-col text-lg mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
             <div class="" data-index="1">
-                <div class="ui-block flex flex-col text-lg p-4 bg-gray-50  rounded-md gap-4 mb-4 ">
+                <div class="ui-block flex flex-col text-lg p-4 rounded-md gap-4 mb-4 ">
                     <!-- Your UI block content here -->
                     <div class="flex gap-5 justify-between">
+                        {{-- Serach Section --}}
+                        <div class="flex-col w-full">
+                            <div class="bg-gray-50 p-4">
+                                <div class="flex items-start space-x-6">
+                                    <!-- Category Field -->
+                                    <div class="flex flex-row items-center w-1/2 space-x-2">
+                                        <label for="categorywe_2" class="w-28">Category</label>
+                                        <select id="categorywe_2" name="categorywe_2" onchange="getworkoutWe(this)"
+                                            class="flex-1 px-3 py-2 border rounded">
+                                            <option value="" selected disabled>-- Select Category --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Exercise Field -->
+                                    <div class="flex flex-row items-center w-1/2 space-x-2">
+                                        <label for="workoutwe_2" class="w-28">Exercise</label>
+                                        <select id="workoutwe_2" name="workoutwe_2"
+                                            class="flex-1 px-3 py-2 border rounded">
+                                            <option value="" selected disabled>-- Select Exercise --</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-6 mt-3">
+                                    <!-- Name Field -->
+                                    <div class="flex flex-row items-center flex-[2] space-x-2">
+                                        <label for="namewe_2" class="w-28">Name Search</label>
+                                        <input type="text" id="namewe_2" name="namewe_2"
+                                            class="flex-1 px-3 py-2 border rounded mb-2">
+                                    </div>
+
+                                    <!-- Go Button -->
+                                    <div class="flex flex-row items-center flex-1 space-x-2">
+                                        <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
+                                            type="button"
+                                            class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scroll Section -->
+                            <div id="setweights" class="mt-4 max-h-96 overflow-y-auto space-y-4">
+                                {{-- <!-- Assigned border / one card -->
+                                <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                                    <div class="border border-black rounded-xl shadow p-4 bg-white">
+                                        <div class="pb-2 mb-2 flex justify-between items-center">
+                                            <div class=" text-gray-700">Workout Name - Test Workout</div>
+                                            <div class="space-x-2">
+                                                <button class="">
+                                                    <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                </button>
+                                                <button class="">
+                                                    <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12    c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12    C10.5117188,22.9023438,10.2558594,23,10,23z"/></g><g><path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625    s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625    C22.5117188,22.9023438,22.2558594,23,22,23z"/></g></g></svg>
+
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2 text-gray-800 font-semibold">Deadlift at 80% for 5 sets</div>
+
+                                        <div class="grid grid-cols-2 gap-4  text-gray-700">
+                                            <!-- Set Details -->
+                                            <div>
+                                                <table class="w-full text-left ">
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Set 1</td>
+                                                            <td class="py-1">8 Reps</td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Set 2</td>
+                                                            <td class="py-1">8 Reps</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-1 pr-4">Set 3</td>
+                                                            <td class="py-1">6 Reps</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Rest Stages -->
+                                            <div>
+                                                <table class="w-full text-left ">
+                                                    <thead>
+                                                        <tr class="">
+                                                            <th class="py-1 ">Rest:</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Stage 1</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Stage 2</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-1 pr-4">Stage 3</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 flex justify-end">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" value="" class="sr-only peer">
+                                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                                              </label>
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            </div>
+
+                        </div>
                         {{-- Primary Category and Workouts --}}
                         <div class="flex-col w-full">
                             <div class="flex items-center border-b mt-2">
@@ -479,8 +598,8 @@
                 Another
             </button> --}}
             {{-- Save Button --}}
-            <button id="submitButton" type="submit"
-                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24">Save</button>
+            <button id="savebtnwe" type="submit"
+                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 mr-8 self-end">Save</button>
         </div>
     </form>
 </div>
@@ -711,7 +830,7 @@
                 const categoryOptions = response.category_options || [];
 
                 // Clear existing options in the select elements before adding new ones
-                ['categorywe_1'].forEach(id => {
+                ['categorywe_1','categorywe_2'].forEach(id => {
                     const categoryweelect = document.getElementById(id);
                     categoryweelect.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
@@ -720,11 +839,11 @@
                 // Loop through each category_option and call the setCategory() function
                 categoryOptions.forEach(option => {
                     setCategory(option.id, option.category_name, 'categorywe_1');
-
+                    setCategory(option.id, option.category_name, 'categorywe_2');
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categorywe_1'].forEach(id => {
+                ['categorywe_1','categorywe_2'].forEach(id => {
                     sortSelectOptions(document.getElementById(id));
                 });
             },
@@ -754,20 +873,14 @@
         // Get the remaining part after the base
         const remainingPart = idParts.slice(1).join('_');
         const isCategory = selectElement.id === `categorywe_${remainingPart}`;
-        const isAltCategory = selectElement.id === `alt-categorywe_${remainingPart}`;
         const isECategory = selectElement.id === `categoryweight_${remainingPart}`;
-        const isEAltCategory = selectElement.id === `altcategoryweight_${remainingPart}`;
 
         let workoutSelectId;
 
-        if (isAltCategory) {
-            workoutSelectId = `alt-workoutwe_${remainingPart}`;
-        } else if (isCategory) {
+        if (isCategory) {
             workoutSelectId = `workoutwe_${remainingPart}`;
         } else if (isECategory) {
             workoutSelectId = `workoutweight_${remainingPart}`;
-        } else if (isEAltCategory) {
-            workoutSelectId = `altworkoutweight_${remainingPart}`;
         }
 
         console.log(`Constructed workoutSelectId: ${workoutSelectId}`);
@@ -1048,6 +1161,7 @@
 
 {{-- get weightlifting --}}
 <script>
+    let allWeightliftingData = [];
     function getWeightlifting(date) {
         console.log(date);
         console.log("get Weightlifting date: " + date);
@@ -1060,9 +1174,10 @@
             },
             success: function(response) {
                 // console.log(response);
+                allWeightliftingData = response.weightlifting;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                setWeightlifting(response.weightlifting, response.categoryOptions);
+                    setWeightliftings(response.weightlifting, response.categoryOptions);
                 console.log('aaaaaaaaaa',response.weightlifting);
                 // });
             },
@@ -1433,6 +1548,177 @@
         container.innerHTML = htmlContent;
 
 
+
+    }
+
+    
+    function filterWeightlifting(date) {
+        const dateOnClick = document.getElementById('selectdateweDelete').value;
+        console.log('first',dateOnClick)
+
+        //console.log('bbbbbbbb',buttonId)
+        let categoryId = document.getElementById("categorywe_2").value;
+        let exerciseId = document.getElementById("workoutwe_2").value;
+        let nameSearch = document.getElementById("namewe_2").value;
+
+        $.ajax({
+            url: "/search-setweightlifting",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                date: dateOnClick,
+                name: nameSearch,
+                category_id: categoryId,
+                workout_id: exerciseId
+            },
+            success: function (response) {
+                console.log("this is filteerd weightlifting response", response);
+                allWeightliftingData = response.weightlifting;
+                const weightliftingArray = Object.values(response.weightlifting);
+                const categoryArray = Object.values(response.categoryOptions);
+                setWeightliftings(weightliftingArray, categoryArray);
+                // Assuming response is an array of arrays
+                // response.forEach(subArray => {
+                    //setstrengths(response.Strength, response.categoryOptions);
+                // });
+            },
+            error: function (xhr) {
+                alert("Error occurred: " + xhr.responseText);
+            }
+        });
+    }
+
+    // get filterd weigths
+    function setWeightliftings(weightlifting, categoryOptions) {
+        const container = $("#setweights"); // Replace with your actual container class or ID
+        container.empty(); // Clear previous content
+
+        weightlifting.forEach((item, index) => {
+            let setsHTML = '';
+            console.log('fffgfgf',)
+            if (Array.isArray(item.sets) && item.sets.length > 0) {
+                const setObj = item.sets[0]; // usually only one object with `sets` and `reps`
+
+                for (let i = 0; i < setObj.sets; i++) {
+                    setsHTML += `
+                        <tr>
+                            <td class="py-1 pr-4">Set ${i + 1}</td>
+                            <td class="py-1">${setObj.reps} Reps</td>
+                        </tr>
+                    `;
+                }
+            } else {
+                setsHTML = '<tr><td colspan="2">No set data</td></tr>';
+            }
+
+            let html = `
+            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                <div class="border border-black rounded-xl shadow p-4 bg-white">
+                    <div class="pb-2 mb-2 flex justify-between items-center">
+                        <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
+                        <div class="space-x-2">
+                            <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
+                                <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+
+                            <button class="" type="button">
+                                <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
+                                        <path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625C22.5117188,22.9023438,22.2558594,23,22,23z"/>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets[0]?.sets || 0} sets</div>
+
+                    <div class="grid grid-cols-2 gap-4 text-gray-700">
+                        <div>
+                            <table class="w-full text-left">
+                                <tbody>
+                                    ${setsHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="w-full text-left">
+                                <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
+                                <tbody>
+                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restwered || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restweyellow || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restwegreen || '-'} min</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer">
+                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            container.append(html);
+
+            // Bind the Edit button after appending
+            container.find('.edit-weightlifting-btn').off('click').on('click', function () {
+                const weightliftingId = $(this).data('id');
+                populateWeightliftingForm(weightliftingId);
+            });
+
+        });
+    }
+
+    // get editing details to form
+    function populateWeightliftingForm(weightliftingId) {
+
+        const data = allWeightliftingData.find(item => item.id == weightliftingId);
+        console.log('dataaaaaa',data);
+
+        if (!data) {
+            console.warn("No strength data found for ID:", weightliftingId);
+            return;
+        }
+
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categorywe_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workoutwe_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+        // Set weight
+        document.getElementById('weigthwe_1').value = data.weight;
+
+        if (data.sets.length > 0) {
+            const setData = data.sets[0]; // Get first item
+
+            const setsInput = document.getElementById('repsnowe_1');
+            const repsInput = document.getElementById('repswe_1');
+
+            if (setsInput) setsInput.value = setData.sets;
+            if (repsInput) repsInput.value = setData.reps;
+        }
+
+        document.getElementById('restredwe_1').value = data.restwered;
+        document.getElementById('restyellowwe_1').value = data.restweyellow;
+        document.getElementById('restgreenwe_1').value = data.restwegreen;
+        document.getElementById('intensitywe_1').value = data.intensity;
+        document.getElementById('namewe_1').value = data.workoutname;
+        document.getElementById('savebtnwe').innerHTML = "Edit";
 
     }
 
