@@ -86,32 +86,36 @@
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
-                    <div class="w-1/6">
-                        <div class="flex flex-col text-lg weekday">
+                    <div class="w-1/4">
+                        <div class="flex flex-col text-lg weekday pr-5">
                             <button
-                                class="border-l border-t border-b border-r border-black w-2/3 px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
+                                class="border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
                                 id="1day">Day 1</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover:text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                                 id="2day">Day 2</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover:text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                                 id="3day">Day 3</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="4day">Day 4</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="5day">Day 5</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="6day">Day 6</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
                                 id="7day">Day 7</button>
                         </div>
+                        {{-- Classess --}}
+                        <div class="mt-5 mb-5">
+                            @include('admin.components.classes', ['classes' => $classes])
+                        </div>
                     </div>
-                    <div class="w-5/6 tabs">
+                    <div class="w-3/4 tabs">
                         @include('admin.components.warmup')
                         @include('admin.components.strength')
                         @include('admin.components.conditioning')

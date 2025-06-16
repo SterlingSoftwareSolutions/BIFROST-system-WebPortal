@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClientManagementController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\DashboardController;
@@ -189,6 +190,14 @@ Route::middleware(['admin'])->group(function () {
     //testdelete
     Route::delete('/delete-test', [SessionController::class, 'deletealldatatest'])->name('delete-test');
 
+    // get classes
+    Route::get('/classes', [ClassesController::class, 'index'])->name('classes.index');
+    // store classes
+    Route::post('/classes', [ClassesController::class, 'store'])->name('classes.store');
+    // delete classes
+    Route::delete('/classes/{id}', [ClassesController::class, 'delete'])->name('classes.delete');
+    // update toggle in classes
+    Route::post('/classes/{id}/toggle-workout', [ClassesController::class, 'toggleWorkout'])->name('classes.toggleWorkout');
 
 
     // store
