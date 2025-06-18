@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Access;
+use App\Models\Classes;
 use App\Models\ClientManagement;
 
 use App\Models\Newprofile;
@@ -32,11 +33,12 @@ class SessionController extends Controller
 
         // Fetch the access record for the user
         $access = Access::where('user_id', $userId)->first();
-
+        $classes = Classes::all();
+        
         if ($access && $access->session === 'enable') {
             // Pass the access type to the view using compact
             $accessType = $access->access_type;
-            return view('admin.user.session', compact('accessType'));
+            return view('admin.user.session', compact('accessType','classes'));
         } else {
             // Redirect to an unauthorized access view
             return view('error.unauthorized');
