@@ -12,7 +12,6 @@ class Classes extends Model
         'time',
         'duration',
         'spots',
-        'workout_assigned',
-        'date'
+        'workout_assigned'
     ];
 }

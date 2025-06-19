@@ -59,7 +59,6 @@
       <h2 class="text-xl font-bold mb-4">Add New Class</h2>
       <form method="POST" action="{{ route('classes.store') }}" class="space-y-4">
         @csrf
-        <input type="text" name="selectdatecla" id="selectdatecla" hidden>
         <div>
             <label class="block font-medium">Time</label>
             <input name="time" type="time" required class="w-full border rounded px-3 py-2 mt-1" />
@@ -87,12 +86,3 @@
 
     </div>
   </div>
-
-  <script>
-    function getdateName(dayName){
-        var selectdateName = dayName;
-        console.log("nameeeeeeeeeeee",selectdateName);
-        document.getElementById('selectdatecla').value = selectdateName;
-    }
-
-  </script>
