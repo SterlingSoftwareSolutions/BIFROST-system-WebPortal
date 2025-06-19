@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('duration');
             $table->integer('spots');
             $table->boolean('workout_assigned');
+            $table->string('date');
             $table->timestamps();
         });
     }

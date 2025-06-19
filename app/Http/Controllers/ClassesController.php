@@ -21,13 +21,15 @@ class ClassesController extends Controller
             'time' => 'required',
             'duration' => 'required|integer',
             'spots' => 'required|integer',
+            'selectdatecla' => 'required',
         ]);
 
         Classes::create([
             'time' => $request->time,
             'duration' => $request->duration,
             'spots' => $request->spots,
-            'workout_assigned' => $request->has('workout_assigned')
+            'workout_assigned' => $request->has('workout_assigned'),
+            'date' => $request->selectdatecla,
         ]);
 
         return redirect()->back()->with('success', 'Class added successfully.');
