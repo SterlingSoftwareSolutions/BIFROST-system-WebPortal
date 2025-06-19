@@ -20,33 +20,54 @@
 
     <!-- Define content section -->
     @section('content')
-        <div class="w-full flex flex-col justify-between min-h-screen h-full ">
-            <!-- Background image container -->
-            <div class="flex-grow items-center justify-center m-0 p-4 bg-cover bg-center bg-no-repeat"
-                style="background-image: url('{{ asset('img/valhalla-bg.jpg') }}');">
-                <!-- Day buttons container -->
-                <div class="flex flex-col justify-center items-center gap-2.5 pt-32 text-white">
-                    <!-- Loop through days -->
-                    @php
-                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                    @endphp
-                    @foreach ($days as $index => $day)
-                        @php
-                            $date = $dates[$index];
-                            $isSelected = $date == $selectedDay ? 'border-white' : 'border-black';
-                        @endphp
-                        <!-- Day button -->
-                        <button id="{{ strtolower($date) }}" onclick="selctDate(this)">
-                            <div
-                                class="day bg-transparent border w-72 {{ $isSelected }} hover:border-white text-white p-5 rounded-lg flex justify-between items-center transition duration-300 ease-in-out">
-                                <span class="day-name text-lg font-bold">{{ $day }}</span>
-                                <span class="date text-sm" id="{{ strtolower($day) }}-date">{{ $date }}</span>
+                <div class="w-full flex flex-col justify-between min-h-screen h-full ">
+                    <!-- Background image container -->
+                    <div class="flex-grow items-center justify-center m-0 p-4 bg-cover bg-center bg-no-repeat"
+                        style="background-image: url('{{ asset('img/valhalla-bg.jpg') }}');">
+                        <!-- Day buttons container -->
+                        <div class="flex flex-col justify-center items-center gap-2 pt-32 text-white">
+                            <div class="flex gap-2 mb-6">
+                                <button class="border border-black text-white rounded-lg px-4 py-2 font-semibold hover:bg-gray-200 hover:text-black transition">
+                                    6am<br>class
+                                </button>
+                                <button class="border border-black text-white rounded-lg px-4 py-2 font-semibold hover:bg-gray-200 hover:text-black transition">
+                                    6am<br>class
+                                </button>
+                                <button class="border border-black text-white rounded-lg px-4 py-2 font-semibold hover:bg-gray-200 hover:text-black transition">
+                                    6am<br>class
+                                </button>
+                                <button class="border border-black text-white rounded-lg px-4 py-2 font-semibold hover:bg-gray-200 hover:text-black transition">
+                                    6am<br>class
+                                </button>
                             </div>
-                        </button>
-                    @endforeach
+                            <!-- Loop through days -->
+        @php
+            $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        @endphp
+        @foreach ($days as $index => $day)
+            @php
+                $date = $dates[$index];
+                $isSelected = $date == $selectedDay ? 'border-white' : 'border-black';
+            @endphp
+            <!-- Day button -->
+            <button id="{{ strtolower($date) }}" onclick="selctDate(this)">
+                <div
+                    class="day bg-transparent border w-72 {{ $isSelected }} hover:border-white text-white p-5 rounded-lg flex flex-col gap-2 justify-between items-center transition duration-300 ease-in-out">
+                    <div class="w-full flex justify-between items-center">
+                        <span class="day-name text-lg font-bold">{{ $day }}</span>
+                        <span class="date text-sm" id="{{ strtolower($day) }}-date">{{ $date }}</span>
+                    </div>
+                    <div class="w-full flex justify-between items-center">
+                        <span class="slots text-sm text-white">20 slots available</span>
+                        <span class="text-sm text-white px-3 py-1 rounded-xl border border-white">Reserve</span>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </button>
+        @endforeach
+
+                        </div>
+                    </div>
+                </div>
     @endsection
 
     <!-- JavaScript -->
