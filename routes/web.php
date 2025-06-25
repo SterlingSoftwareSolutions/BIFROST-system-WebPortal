@@ -198,6 +198,9 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/classes/{id}', [ClassesController::class, 'delete'])->name('classes.delete');
     // update toggle in classes
     Route::post('/classes/{id}/toggle-workout', [ClassesController::class, 'toggleWorkout'])->name('classes.toggleWorkout');
+    // get classes by date
+    Route::get('/get-classes-by-day', [ClassesController::class, 'getByDay'])->name('classes.getByDay');
+
 
 
     // store
@@ -251,6 +254,11 @@ Route::get('/mobile/forgetpin', [MobileController::class, 'forgetpin'])->name('m
 
 Route::get('/mobile/trainingday', [MobileController::class, 'trainingday'])->name('mobile.trainingday');
 Route::post('/select-day',  [MobileController::class, 'selectday']);
+Route::get('/get-class-slots', [MobileController::class, 'getClassSlots']);
+//class reserve
+Route::post('reserve', [MobileController::class, 'reserve'])->name('class.reserve');
+Route::post('/cancel', [MobileController::class, 'cancel'])->name('class.cancel');
+
 
 Route::get('/mobile/readinessscore', [MobileController::class, 'readinessscore'])->name('mobile.readinessscore');
 Route::post('/mobile/store-readiness', [MobileController::class, 'storescore'])->name('mobile.storescore');

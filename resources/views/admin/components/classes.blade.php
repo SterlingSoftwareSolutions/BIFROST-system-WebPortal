@@ -12,36 +12,43 @@
             <th class="px-4 py-2"></th>
           </tr>
         </thead>
-        <tbody class="bg-white">
+        <tbody class="bg-white" id="classesTableBody">
+            <input type="text" name="selectdatecla" id="selectdateclae" hidden >
+            {{-- @php
+                $selectedDate = "<script>document.getElementById('selectdateclae').value</script>";
+            @endphp
+
             @foreach($classes as $class)
-            <tr class="border-t">
-              <td class="px-4 py-2">{{ \Carbon\Carbon::parse($class->time)->format('g:i a') }}</td>
-              <td class="px-4 py-2">{{ $class->duration }}<span class="ml-2">hr</span></td>
-              <td class="px-4 py-2">{{ $class->spots }}</td>
-              <td class="px-4 py-2">
-                <form method="POST" action="{{ route('classes.toggleWorkout', $class->id) }}">
+                @if($class->date == $selectedDate)
+                <tr class="border-t">
+                <td class="px-4 py-2">{{ \Carbon\Carbon::parse($class->time)->format('g:i a') }}</td>
+                <td class="px-4 py-2">{{ $class->duration }}<span class="ml-2">hr</span></td>
+                <td class="px-4 py-2">{{ $class->spots }}</td>
+                <td class="px-4 py-2">
+                    <form method="POST" action="{{ route('classes.toggleWorkout', $class->id) }}">
+                        @csrf
+                        <label class="inline-flex items-center cursor-pointer">
+                        <input type="hidden" name="workout_assigned_{{ $class->id }}" value="0">
+                        <input type="checkbox"
+                                class="sr-only peer"
+                                name="workout_assigned_{{ $class->id }}"
+                                value="1"
+                                onchange="this.form.submit()"
+                                {{ $class->workout_assigned ? 'checked' : '' }} >
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                        </label>
+                    </form>
+                </td>
+                <td class="px-4 py-2">
+                    <form method="POST" action="{{ route('classes.delete', $class->id) }}" onsubmit="return confirm('Are you sure?');">
                     @csrf
-                    <label class="inline-flex items-center cursor-pointer">
-                    <input type="hidden" name="workout_assigned_{{ $class->id }}" value="0">
-                    <input type="checkbox"
-                            class="sr-only peer"
-                            name="workout_assigned_{{ $class->id }}"
-                            value="1"
-                            onchange="this.form.submit()"
-                            {{ $class->workout_assigned ? 'checked' : '' }} >
-                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                    </label>
-                </form>
-              </td>
-              <td class="px-4 py-2">
-                <form method="POST" action="{{ route('classes.delete', $class->id) }}" onsubmit="return confirm('Are you sure?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="text-red-500">X</button>
-                </form>
-              </td>
-            </tr>
-          @endforeach
+                    @method('DELETE')
+                    <button type="submit" class="text-red-500">X</button>
+                    </form>
+                </td>
+                </tr>
+                @endif
+          @endforeach --}}
         </tbody>
       </table>
 
@@ -90,9 +97,62 @@
 
   <script>
     function getdateName(dayName){
-        var selectdateName = dayName;
-        console.log("nameeeeeeeeeeee",selectdateName);
-        document.getElementById('selectdatecla').value = selectdateName;
+         var selectdateName = dayName;
+        // console.log("nameeeeeeeeeeee",selectdateName);
+         document.getElementById('selectdatecla').value = selectdateName;
+        // document.getElementById('selectdateclae').value = selectdateName;
+
+        console.log("Fetching classes for:", dayName);
+
+        fetch(`/get-classes-by-day?day=${encodeURIComponent(dayName)}`)
+            .then(response => response.json())
+            .then(classes => {
+                const tbody = document.getElementById('classesTableBody');
+                tbody.innerHTML = ''; // Clear previous rows
+
+                if (classes.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No classes found</td></tr>';
+                    return;
+                }
+
+                classes.forEach(cls => {
+                    const time = new Date('1970-01-01T' + cls.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    const row = `
+                        <tr class="border-t">
+                            <td class="px-4 py-2">${time}</td>
+                            <td class="px-4 py-2">${cls.duration} <span class="ml-2">hr</span></td>
+                            <td class="px-4 py-2">${cls.spots}</td>
+                            <td class="px-4 py-2">
+                                <form method="POST" action="/classes/toggle-workout/${cls.id}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input type="hidden" name="workout_assigned_${cls.id}" value="0">
+                                        <input type="checkbox"
+                                            class="sr-only peer"
+                                            name="workout_assigned_${cls.id}"
+                                            value="1"
+                                            onchange="this.form.submit()"
+                                            ${cls.workout_assigned ? 'checked' : ''}>
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                    </label>
+                                </form>
+                            </td>
+                            <td class="px-4 py-2">
+                                <form method="POST" action="/classes/delete/${cls.id}" onsubmit="return confirm('Are you sure?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="text-red-500">X</button>
+                                </form>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', row);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching classes:", error);
+        });
     }
 
   </script>
