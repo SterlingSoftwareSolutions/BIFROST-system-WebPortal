@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classes;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ClassesController extends Controller
 {
@@ -50,4 +52,25 @@ class ClassesController extends Controller
 
         return redirect()->back()->with('success', 'Workout assignment updated.');
     }
+
+    public function getByDay(Request $request)
+    {
+        $dayName = $request->query('day');
+        Log::info('Day received:', ['day' => $dayName]);
+
+        $classes = Classes::where('date', $dayName)->get();
+
+        return response()->json($classes);
+    }
+
+    public function reserve(Request $request)
+    {
+        $classId = $request->input('class_id');
+
+        // Reserve logic here
+        // e.g., mark the user as registered
+
+        return redirect()->back()->with('success', 'Class reserved successfully!');
+    }
+
 }

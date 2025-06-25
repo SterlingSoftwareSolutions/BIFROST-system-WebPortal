@@ -266,7 +266,7 @@
                     let tabName = this.getAttribute("href");
                     selectedTab = tabName;
                     changeui(selectedTab, selectedDate);
-                    getdate(selectedDate);
+                    //getdate(selectedDate);
                     date = document.getElementById(selectedDate);
 
                 });
@@ -285,7 +285,7 @@
                     let dateId = this.getAttribute("id");
                     selectedDate = dateId;
                     changeui(selectedTab, selectedDate);
-                    getdate(selectedDate);
+                    //getdate(selectedDate);
                 });
             });
 
@@ -298,7 +298,7 @@
             currentDate.setDate(currentDate.getDate() + weekChange * 7);
             updateWeekAndDates();
             logSelection(selectedTab, selectedDate);
-            getdate(selectedDate);
+            //getdate(selectedDate);
         }
 
         // Function to update the week and dates display
@@ -394,7 +394,7 @@
             // Log selected tab and date
             logSelection(tabName, selectedDate);
             changeTab(tabName, selectedDate);
-            getdate(selectedDate);
+            //getdate(selectedDate);
         }
 
         function changeTab(tabName, selectedDate) {
@@ -453,7 +453,7 @@
                     break;
             }
             getdateName(dayName);
-            getdate(selectedDate);
+            //getdate(selectedDate);
             // Call AJAX function here if needed
             // getdata(tabName, dayName);
         }
