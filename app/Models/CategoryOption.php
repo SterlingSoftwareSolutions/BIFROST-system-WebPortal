@@ -14,7 +14,7 @@ class CategoryOption extends Model
     
     public function workout()
     {
-        return $this->hasMany(WorkoutLibrary::class);
+        return $this->hasMany(workoutLibrary::class);
         
     }
     public function workoutLibrary()
@@ -29,6 +29,11 @@ class CategoryOption extends Model
     public function strengths()
     {
         return $this->hasMany(Strength::class, 'category_id');
+    }
+
+    public function conditioning()
+    {
+        return $this->hasMany(Conditioning::class, 'category_id');
     }
     
 }
