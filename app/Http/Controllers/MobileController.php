@@ -6,6 +6,7 @@ use App\Models\Classes;
 use App\Models\ClientManagement;
 use App\Models\Conditioning;
 use App\Models\DailyStrength;
+use App\Models\Test;
 use App\Models\DailyWarmup;
 use App\Models\Newprofile;
 use App\Models\ReservationSession;
@@ -260,7 +261,7 @@ class MobileController extends Controller
         // Combine day name and date
         $dayWithDate = $formattedDate . ' ' . $dayName;
 
-        //get warup details for specific date
+        //get warmup details for specific date
         $tabwarmup = 'warmup';
         $date = $dayWithDate;
         $detailswarmup = Warmup::where('date', $dayWithDate)
@@ -268,7 +269,7 @@ class MobileController extends Controller
             ->with('workouts.categoryOption')
             ->get();
 
-        // //get warup details for specific date
+        // //get strength details for specific date
         $tabstrength = 'strength';
         $date = $dayWithDate;
         $detailsstrength = Strength::where('date', $date)
@@ -278,14 +279,13 @@ class MobileController extends Controller
             ->with('workout.categoryOption')
             ->get();
 
-        //  //get warup details for specific date
-        //  $tabconditioning = 'conditioning';
-        //  $date = $dayWithDate;
-        //  $detailsconditioning = ClientManagement::where('tab', $tabconditioning)
-        //      ->where('date', $date)
-        //      ->with('workouts')
-        //      ->get();
-
+         //get conditioning details for specific date
+         $tabconditioning = 'conditioning';
+         $date = $dayWithDate;
+         $detailsconditioning = Conditioning::where('date', $date)
+             ->with('workout')
+             ->with('workout.categoryOption')
+             ->get();
 
         //  //get warup details for specific date
         $tabweightweight = 'weightlifting';
@@ -297,6 +297,13 @@ class MobileController extends Controller
             ->with('workouts.categoryOption')
             ->get();
 
+        $tabtest = 'Test';
+        $date = $dayWithDate;
+        $detailstest = Test::where('date', $date)
+            ->with('member')
+            ->get();
+
+
         //  foreach ($detailsweight as $weightlifting) {
         //     foreach ($weightlifting->sets as $set) {
         //         dd($set->sets, $set->reps); // Dump and display the values of sets and reps
@@ -304,8 +311,8 @@ class MobileController extends Controller
         // }
 
         //dd($detailsstrength);
-        //return view('mobile.user.workout', compact('dayWithDate','detailswarmup','detailsstrength','detailsconditioning','detailsweight'));
-        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsweight'));
+
+        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight','detailstest'));
     }
 
     //store daily warmup workout after clicking
