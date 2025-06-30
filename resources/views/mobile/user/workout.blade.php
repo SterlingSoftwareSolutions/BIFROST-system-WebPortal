@@ -457,7 +457,6 @@
                                 </table>
                             </div>
                         </div>                        
-                        {{-- My code endddddd--}}
 
                         <button id="resetButton" class="px-4 rounded w-full">RESET TIMER</button>
 
