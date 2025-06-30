@@ -8,7 +8,7 @@
         <div class="dot w-4 h-4 bg-transparent border border-white rounded-full transition duration-300 ease-in-out cursor-pointer"></div>
         <div class="dot w-4 h-4 bg-transparent border border-white rounded-full transition duration-300 ease-in-out cursor-pointer"></div>
         {{-- <div class="dot w-4 h-4 bg-transparent border border-white rounded-full transition duration-300 ease-in-out cursor-pointer"></div> --}}
-        <div class="dot w-4 h-4 bg-transparent border border-white rounded-full transition duration-300 ease-in-out cursor-pointer"></div>
+        {{-- <div class="dot w-4 h-4 bg-transparent border border-white rounded-full transition duration-300 ease-in-out cursor-pointer"></div> --}}
         <div id="right-arrow" class="arrow w-16 md:w-20 cursor-pointer">
             <img src="{{ asset('images/next.png') }}" alt="Next" class="w-4 h-4" />
         </div>
@@ -27,7 +27,7 @@
             '{{ route('mobile.readinessscore') }}',
             '{{ route('mobile.workout') }}',
             // '{{ route('mobile.workouttimer') }}',
-            '{{ route('mobile.histroyview') }}',
+            // '{{ route('mobile.histroyview') }}',
            
         ];
 
