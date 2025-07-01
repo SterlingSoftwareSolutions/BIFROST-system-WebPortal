@@ -19,11 +19,6 @@
                 <div id="ring" class="border border-gray-600 rounded-3xl flex items-start">
                     <div class="flex w-full flex-col justify-center items-center gap-2.5 p-5 text-white">
 
-                        <div class="flex justify-between items-center text-xs">
-                            <button class=" px-4 py-2 rounded">DEADLIFT</button>
-                            <button class=" px-4 py-2 border rounded">ALT</button>
-                        </div>
-
                     {{-- Category Icons (Static) --}}
                     <div class="flex gap-4 justify-center mb-6">
                         <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-0 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-warmup">
@@ -59,7 +54,7 @@
                             {{-- Warmup --}}
                             <div id="section-warmup" class="category-section hidden">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                   
+
                                 <table class="w-full text-white ">
                                     <thead class="justify-between">
                                         <tr>
@@ -109,15 +104,11 @@
                                 <div class="content pt-4 text-white">
                                     @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
                                         <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                            <div class="flex justify-between items-center text-base font-bold w-full max-w-xl">
                                                 <button class="px-4 py-2 rounded primary-btn bg-white text-black"
                                                     data-target="#primary-weight-{{ $strengthIndex }}">
                                                     {{ $strengthdetail->workout->categoryOption->category_name }} -
                                                     {{ $strengthdetail->workout->workout }}
                                                 </button>
-                                                <button class="px-4 py-2 border rounded alt-btn border-white"
-                                                    data-target="#alt-weight-{{ $strengthIndex }}">ALT</button>
-                                            </div>
                                         </div>
 
                                         {{-- Primary Table --}}
@@ -181,66 +172,6 @@
                                             @endforeach
                                         </div>
 
-                                        {{-- Alt Table --}}
-                                        <div id="alt-weight-{{ $strengthIndex }}" class="table-body alt-body hidden">
-                                            @foreach ($strengthdetail->sets as $setIndex => $setdetail)
-                                                @php
-                                                    $altBaseWeight = $strengthdetail->altweight;
-                                                    $totalPercentageIncreasealt = 0.7;
-                                                    $numberOfAltSets = $setdetail->alt_sets;
-                                                    $percentageIncreasePerSetalt = $numberOfAltSets > 1 ? $totalPercentageIncreasealt / ($numberOfAltSets - 1) : 0;
-                                                    $altPercentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSetalt * $i, range(0, $numberOfAltSets - 1));
-                                                @endphp
-                                                <table class="w-full text-white tablee my-4">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="py-2">Set</th>
-                                                            <th class="py-2">Weight</th>
-                                                            <th class="px-2">Rep</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @for ($setNumberalt = 1; $setNumberalt <= $numberOfAltSets; $setNumberalt++)
-                                                            @php
-                                                                $setPercentagealt = $altPercentages[$setNumberalt - 1] ?? 0.3;
-                                                                $calculatedAltWeight = $altBaseWeight * $setPercentagealt;
-                                                            @endphp
-                                                            <tr class="border-b border-gray-300">
-                                                                <td class="py-4">{{ $setNumberalt }}</td>
-                                                                <td id="alweight-{{ $strengthIndex }}-{{ $setNumberalt }}" class="py-4 text-center">
-                                                                    {{ number_format($calculatedAltWeight, 2) }}
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <div class="flex items-center justify-center space-x-4">
-                                                                        <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                        <span
-                                                                            class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
-                                                                            id="alt-repsValue{{ $strengthIndex }}-{{ $setNumberalt }}">{{ $setdetail->alt_reps }}</span>
-                                                                        <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <label class="inline-flex items-center cursor-pointer">
-                                                                        <input type="checkbox"
-                                                                            id="toggleTimer{{ $strengthIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="sr-only peer timer-checkbox"
-                                                                            data-rest-time="{{ $strengthdetail->altrest }}"
-                                                                            data-strength-detail-id="{{ $strengthdetail->id }}"
-                                                                            data-type="Alternative"
-                                                                            data-weight-id="alweight-{{ $strengthIndex }}-{{ $setNumberalt }}"
-                                                                            onclick="saveStrengthWorkout(this)">
-                                                                        <div id="toggleBackground{{ $strengthIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                        </div>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        @endfor
-                                                    </tbody>
-                                                </table>
-                                            @endforeach
-                                        </div>
                                     @endforeach
                                 </div>
                             </div>
@@ -253,15 +184,11 @@
                                 <div class="content pt-4 text-white">
                                     @foreach ($detailsweight as $weightIndex => $weightdetail)
                                         <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                            <div class="flex justify-between items-center text-base font-bold w-full max-w-xl">
                                                 <button class="px-4 py-2 rounded primary-btn bg-white text-black"
                                                     data-target="#primary-weight-{{ $weightIndex }}">
                                                     {{ $weightdetail->workouts->categoryOption->category_name }} -
                                                     {{ $weightdetail->workouts->workout }}
                                                 </button>
-                                                <button class="px-4 py-2 border rounded alt-btn border-white"
-                                                    data-target="#alt-weight-{{ $weightIndex }}">ALT</button>
-                                            </div>
                                         </div>
 
                                         {{-- Primary Table --}}
@@ -319,70 +246,16 @@
                                             @endforeach
                                         </div>
 
-                                        {{-- Alternative Table --}}
-                                        <div id="alt-weight-{{ $weightIndex }}" class="table-body alt-body hidden">
-                                            @foreach ($weightdetail->sets as $setIndex => $setdetail)
-                                                @php
-                                                    $altBaseWeight = $weightdetail->alt_weight;
-                                                    $totalPercentageIncreasealt = 0.7;
-                                                    $numberOfAltSets = $setdetail->alt_sets;
-                                                    $percentageIncreasePerSetalt = $numberOfAltSets > 1 ? $totalPercentageIncreasealt / ($numberOfAltSets - 1) : 0;
-                                                    $altPercentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSetalt * $i, range(0, $numberOfAltSets - 1));
-                                                @endphp
-                                                <table class="w-full text-white tablee my-4">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="py-2">Set</th>
-                                                            <th class="py-2">Weight</th>
-                                                            <th class="px-2">Rep</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @for ($setNumberalt = 1; $setNumberalt <= $numberOfAltSets; $setNumberalt++)
-                                                            @php
-                                                                $setPercentagealt = $altPercentages[$setNumberalt - 1] ?? 0.3;
-                                                                $calculatedAltWeight = $altBaseWeight * $setPercentagealt;
-                                                            @endphp
-                                                            <tr class="border-b border-gray-300">
-                                                                <td class="py-4">{{ $setNumberalt }}</td>
-                                                                <td class="py-4 text-center">
-                                                                    {{ number_format($calculatedAltWeight, 2) }}
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <div class="flex items-center justify-center space-x-4">
-                                                                        <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                        <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">{{ $setdetail->alt_reps }}</span>
-                                                                        <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <label class="inline-flex items-center cursor-pointer">
-                                                                        <input type="checkbox"
-                                                                            id="toggleTimer{{ $weightIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="sr-only peer timer-checkbox"
-                                                                            data-rest-time="{{ $weightdetail->alt_rest }}">
-                                                                        <div id="toggleBackground{{ $weightIndex }}-alt-{{ $setNumberalt }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                        </div>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        @endfor
-                                                    </tbody>
-                                                </table>
-                                            @endforeach
-                                        </div>
                                     @endforeach
                                 </div>
                             </div>
                         </div>
 
 
-                            {{-- Conditioning --}}                           
+                            {{-- Conditioning --}}
                             <div id="section-conditioning" class="category-section hidden">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                   
+
                                 <table class="w-full text-white ">
                                     <thead class="justify-between">
                                         <tr>
@@ -393,7 +266,7 @@
 
                                         </tr>
                                     </thead>
-                                    <tbody class="table-body"> 
+                                    <tbody class="table-body">
                                         @foreach ($detailsconditioning as $conditioningdetail)
                                             <tr class="border-b border-gray-300">
                                                 {{-- Category --}}
@@ -424,7 +297,7 @@
                                 </div>
                             </div>
 
-                    {{--  Test --}} 
+                    {{--  Test --}}
                         <div id="section-test" class="category-section hidden">
                             <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
                               <table class="w-full text-white ">
@@ -456,11 +329,11 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>                        
+                        </div>
 
                         <button id="resetButton" class="px-4 rounded w-full">RESET TIMER</button>
 
-                        <div id="timer" class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-10">
+                        <div id="timer" class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
                             00:00:00
                         </div>
                     </div>
