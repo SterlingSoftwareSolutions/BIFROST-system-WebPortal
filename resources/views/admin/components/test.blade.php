@@ -7,7 +7,7 @@
             @csrf
             @method('DELETE')
             <input type="text" name="selectdatetestDelete" id="selectdatetestDelete" hidden>
-            <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            <button class="bg-black text-white py-2 px-4 rounded mt-2 text-base">Clear</button>
         </form>
 
         <script>
@@ -112,8 +112,8 @@
             </div>
         </div>
         <div id="cloneDisplayContainerTest"></div>
-        <button class="bg-black text-white py-2 px-4 rounded mb-2 text-base" id="clonebuttonTest"
-            type="button">Another</button>
+        {{-- <button class="bg-black text-white py-2 px-4 rounded mb-2 text-base" id="clonebuttonTest"
+            type="button">Another</button> --}}
         <button id="submitButton" type="submit"
             class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24">Save</button>
     </form>

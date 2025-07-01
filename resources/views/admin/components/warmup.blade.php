@@ -132,8 +132,8 @@
                 </div>
             </div>
         </div>
-        <a class="duplicateBtn bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base cursor-pointer">Another</a>
-        <div class="flex mt-12">
+        {{-- <a class="duplicateBtn bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base cursor-pointer">Another</a> --}}
+        <div class="flex mt-5">
             @if ($accessType == 'write')
                 <button type="button" class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700"
                     onclick="storeWarmup()">Save</button>

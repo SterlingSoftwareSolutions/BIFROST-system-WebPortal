@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Access;
+use App\Models\Classes;
 use App\Models\ClientManagement;
 
 use App\Models\Newprofile;
@@ -32,11 +33,12 @@ class SessionController extends Controller
 
         // Fetch the access record for the user
         $access = Access::where('user_id', $userId)->first();
-
+        $classes = Classes::all();
+        
         if ($access && $access->session === 'enable') {
             // Pass the access type to the view using compact
             $accessType = $access->access_type;
-            return view('admin.user.session', compact('accessType'));
+            return view('admin.user.session', compact('accessType','classes'));
         } else {
             // Redirect to an unauthorized access view
             return view('error.unauthorized');
@@ -413,12 +415,13 @@ class SessionController extends Controller
 
     public function filterdata($processedData, $index, $date)
     {
+        Log::info('processedData Weightlifting Request Data: ', $processedData);
         // Initialize an array to hold the parsed data
         $parsedData = [];
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt_name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
+        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -465,7 +468,7 @@ class SessionController extends Controller
             // Check for setswe keys
             if (strpos($key, 'setswe_') === 0) {
                 $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $sets[$suffix] = $value;
+                $sets[$suffix] = 1;
             } elseif (strpos($key, 'repswe_') === 0) {
                 $suffix = explode('_', $key)[1]; // Extract numeric suffix
                 $reps[$suffix] = $value;
@@ -574,6 +577,88 @@ class SessionController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    // serach weightlifting
+    public function searchSetWeightlifting(Request $request)
+    {
+
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $weightliftingRecords = Weightlifting::with(['category', 'workout', 'sets', 'altCategory', 'altWorkout'])
+            ->where('date', $date) // date is mandatory
+            ->get();
+            Log::info('Response filtered data weightlifting: ', ['Weightlifting' => $weightliftingRecords]);
+            // Further in-memory filtering
+            // if ($name) {
+            //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
+            //         return stripos($item->workout->workout ?? '', $name) !== false;
+            //     });
+            // }
+            if ($categoryId && $workoutId && $name) {
+                $sweightliftingRecords = $weightliftingRecords->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->where('workoutname', $name);
+            }
+
+            elseif ($name) {
+                $weightliftingRecords = $weightliftingRecords->where('workoutname', 'like', '%' . $name . '%');
+            }
+
+            elseif ($categoryId) {
+                $weightliftingRecords = $weightliftingRecords->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $weightliftingRecords = $weightliftingRecords->where('workout_id', $workoutId);
+            }
+
+            $workouts = WorkoutLibrary::where('type', 'Weightlifting')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $weightliftingRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'category_id' => $item->category_id,
+                    'category_name' => optional($item->category)->category_name,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => optional($item->workout)->workout,
+                    'workoutname' => $item->workoutname,
+                    'weight' => $item->weight,
+                    'restwered' => $item->restredwe,
+                    'restweyellow' => $item->restyellowwe,
+                    'restwegreen' => $item->restgreenwe,
+                    'intensity' => $item->intensity,
+
+                    'alt_category_id' => $item->alt_category_id,
+                    'alt_category_name' => optional($item->altCategory)->category_name,
+                    'alt_workout_id' => $item->alt_workout_id,
+                    'alt_workout_type' => optional($item->altWorkout)->workout,
+                    'alt_weight' => $item->altweight,
+                    'alt_restred' => $item->altrestred,
+                    'alt_restyellow' => $item->altrestyellow,
+                    'alt_restgreen' => $item->altrestgreen,
+                    'alt_intensity' => $item->altintensity,
+
+                    'date' => $item->date,
+                    'sets' => $item->sets,
+                ];
+            });
+
+            return response()->json([
+                'weightlifting' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getweightlifting: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
     }
 
     // update weightlifting
@@ -942,6 +1027,107 @@ class SessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    // serach strength
+    public function searchSetStrength(Request $request)
+    {
+
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $strengthRecords = Strength::with(['category', 'workout', 'setstrengthsetsreps', 'altCategory', 'altWorkout'])
+            ->where('date', $date) // date is mandatory
+            ->get();
+            Log::info('Response filtered data strength: ', ['Strength' => $strengthRecords]);
+            // Further in-memory filtering
+            // if ($name) {
+            //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
+            //         return stripos($item->workout->workout ?? '', $name) !== false;
+            //     });
+            // }
+            if ($categoryId && $workoutId) {
+                $strengthRecords = $strengthRecords->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId);
+            }
+
+            elseif ($categoryId) {
+                $strengthRecords = $strengthRecords->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $strengthRecords = $strengthRecords->where('workout_id', $workoutId);
+            }
+
+            $workouts = WorkoutLibrary::where('type', 'Strength')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $strengthRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'category_id' => $item->category_id,
+                    'category_name' => optional($item->category)->category_name,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => optional($item->workout)->workout,
+                    'weight' => $item->weight,
+                    'restred' => $item->restred,
+                    'restyellow' => $item->restyellow,
+                    'restgreen' => $item->restgreen,
+                    'intensity' => $item->intensity,
+
+                    'alt_category_id' => $item->alt_category_id,
+                    'alt_category_name' => optional($item->altCategory)->category_name,
+                    'alt_workout_id' => $item->alt_workout_id,
+                    'alt_workout_type' => optional($item->altWorkout)->workout,
+                    'alt_weight' => $item->altweight,
+                    'alt_restred' => $item->altrestred,
+                    'alt_restyellow' => $item->altrestyellow,
+                    'alt_restgreen' => $item->altrestgreen,
+                    'alt_intensity' => $item->altintensity,
+
+                    'date' => $item->date,
+                    'sets' => $item->setstrengthsetsreps,
+                ];
+            });
+
+            return response()->json([
+                'Strength' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getstrength: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+
+
+
+
+        // $date = $request->input("date");
+        // $query = Strength::query();
+
+        // // if ($request->filled('name')) {
+        // //     $query->where('name', 'like', '%' . $request->name . '%');
+        // // }
+
+        // if ($request->filled('category_id')) {
+        //     $query->where('category_id', $request->category_id);
+        // }
+
+        // if ($request->filled('workout_id')) {
+        //     $query->where('workout_id', $request->workout_id);
+        // }
+
+        // $setStrengths = $query->get();
+
+        // $html = view('partials.setstrength-cards', compact('setStrengths'))->render();
+
+        // return response()->json(['html' => $html]);
+    }
+
     // updatestrenght
     public function updatestrength(Request $request)
     {

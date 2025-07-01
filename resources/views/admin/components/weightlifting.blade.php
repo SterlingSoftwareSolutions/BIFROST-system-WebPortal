@@ -4,13 +4,13 @@
 
 
     <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
-        <div class="flex justify-center text-center items-center w-1/2">Primary</div>
-        <div class="flex justify-center text-center items-center w-1/2">Alternate</div>
+        <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
+        <div class="flex justify-center text-center items-center w-1/2">Create</div>
         <form id="deleteFormWe">
             @csrf
             @method('DELETE')
             <input type="text" name="selectdateweDelete" id="selectdateweDelete" hidden>
-            <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            {{-- <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
             $(document).ready(function() {
@@ -42,6 +42,8 @@
 
             $(document).ready(function() {
                 const tab = document.getElementById('weightliftingTab');
+                const formDataArray = $(this).serializeArray();
+                console.log('Form data as object:', formDataArray);
 
                 $('#storeFromWe').on('submit', function(event) {
                     event.preventDefault(); // Prevent the default form submission
@@ -97,13 +99,132 @@
     <form id="storeFromWe">
         @csrf
         <input type="text" name="selectdatewe" id="selectdatewe" hidden>
-        <div class="duplicateUi flex flex-col text-lg  bg-gray-50 mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
+        <div class="duplicateUi flex flex-col text-lg mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
             <div class="" data-index="1">
-                <div class="ui-block flex flex-col text-lg p-4 bg-gray-50  rounded-md gap-4 mb-4 ">
+                <div class="ui-block flex flex-col text-lg p-4 rounded-md gap-4 mb-4 ">
                     <!-- Your UI block content here -->
                     <div class="flex gap-5 justify-between">
+                        {{-- Serach Section --}}
+                        <div class="flex-col w-full">
+                            <div class="bg-gray-50 p-4">
+                                <div class="flex items-start space-x-6">
+                                    <!-- Category Field -->
+                                    <div class="flex flex-row items-center w-1/2 space-x-2">
+                                        <label for="categorywe_2" class="w-28">Category</label>
+                                        <select id="categorywe_2" name="categorywe_2" onchange="getworkoutWe(this)"
+                                            class="flex-1 px-3 py-2 border rounded">
+                                            <option value="" selected disabled>-- Select Category --</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Exercise Field -->
+                                    <div class="flex flex-row items-center w-1/2 space-x-2">
+                                        <label for="workoutwe_2" class="w-28">Exercise</label>
+                                        <select id="workoutwe_2" name="workoutwe_2"
+                                            class="flex-1 px-3 py-2 border rounded">
+                                            <option value="" selected disabled>-- Select Exercise --</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-6 mt-3">
+                                    <!-- Name Field -->
+                                    <div class="flex flex-row items-center flex-[2] space-x-2">
+                                        <label for="namewe_2" class="w-28">Name Search</label>
+                                        <input type="text" id="namewe_2" name="namewe_2"
+                                            class="flex-1 px-3 py-2 border rounded mb-2">
+                                    </div>
+
+                                    <!-- Go Button -->
+                                    <div class="flex flex-row items-center flex-1 space-x-2">
+                                        <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
+                                            type="button"
+                                            class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Scroll Section -->
+                            <div id="setweights" class="mt-4 max-h-96 overflow-y-auto space-y-4">
+                                {{-- <!-- Assigned border / one card -->
+                                <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                                    <div class="border border-black rounded-xl shadow p-4 bg-white">
+                                        <div class="pb-2 mb-2 flex justify-between items-center">
+                                            <div class=" text-gray-700">Workout Name - Test Workout</div>
+                                            <div class="space-x-2">
+                                                <button class="">
+                                                    <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                </button>
+                                                <button class="">
+                                                    <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><g><path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12    c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12    C10.5117188,22.9023438,10.2558594,23,10,23z"/></g><g><path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625    s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625    C22.5117188,22.9023438,22.2558594,23,22,23z"/></g></g></svg>
+
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-2 text-gray-800 font-semibold">Deadlift at 80% for 5 sets</div>
+
+                                        <div class="grid grid-cols-2 gap-4  text-gray-700">
+                                            <!-- Set Details -->
+                                            <div>
+                                                <table class="w-full text-left ">
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Set 1</td>
+                                                            <td class="py-1">8 Reps</td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Set 2</td>
+                                                            <td class="py-1">8 Reps</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-1 pr-4">Set 3</td>
+                                                            <td class="py-1">6 Reps</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!-- Rest Stages -->
+                                            <div>
+                                                <table class="w-full text-left ">
+                                                    <thead>
+                                                        <tr class="">
+                                                            <th class="py-1 ">Rest:</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Stage 1</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                        <tr class="">
+                                                            <td class="py-1 pr-4">Stage 2</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="py-1 pr-4">Stage 3</td>
+                                                            <td class="py-1">4 min</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-4 flex justify-end">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" value="" class="sr-only peer">
+                                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                                              </label>
+                                        </div>
+                                    </div>
+                                </div> --}}
+                            </div>
+
+                        </div>
                         {{-- Primary Category and Workouts --}}
-                        <div class="flex-col w-full border-r border-r-black">
+                        <div class="flex-col w-full">
                             <div class="flex items-center border-b mt-2">
                                 <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="namewe_1" name="namewe_1"
@@ -127,73 +248,52 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="weigthwe_1" class="w-60 block mb-1">Weight <span
+                                <label for="weigthwe_1" class="w-60 block mb-1">Weight Precentage <span
                                         class="text-red-500">*</span></label>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                 <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                             </div>
-                            <div class="border-b" id="duplicateSetUI">
+                            <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="custom-numberwe_1" class="w-60 block mb-1">SETS <span
-                                                class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
+                                        <label for="repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="repsnowe_1" name="repsnowe_1" value="1" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <label for="repswe_1" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Decrement Button -->
                                             <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
-                                                class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                onclick="decrement(this.parentNode.querySelector('input#repswe_1').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button>
-                                            <input type="text" id="setswe_1" name="setswe_1" data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="repswe_1" name="repswe_1" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
                                             <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
-                                                class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                onclick="increment(this.parentNode.querySelector('input#repswe_1').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
                                     </div>
 
-                                    <div class="flex items-center border-b">
-                                        <label for="repswe_1" class="w-60 block mb-1">REPS <span
-                                                class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[8rem]">
-                                            <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
-                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                                </svg>
-                                            </button>
-                                            <input type="text" id="repswe_1" name="repswe_1" data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly required />
-                                            <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
-                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
                                     <div class="duplicate-sets" id="duplicate-sets_1"></div>
                                     <div class="ml-60">
                                         <button id="addset_1" onclick="duplicateSet(this.id)" type="button"
@@ -203,14 +303,12 @@
                                 </div>
                             </div>
 
-
-
                             <div class="flex items-center border-b">
                                 <label for="restredwe_1" class="w-60 block mb-1">Rest <span
                                         class="text-red-500">*</span></label>
                                 <div class="">
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -238,7 +336,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -266,7 +364,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -307,9 +405,9 @@
                             </div>
                         </div>
 
-                        <div class="flex-col w-full">
+                        {{-- <div class="flex-col w-full"> --}}
                             <!-- Alternate Category and Workouts -->
-                            <div class="flex items-center border-b mt-2">
+                            {{-- <div class="flex items-center border-b mt-2">
                                 <label for="alt-namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="alt-namewe_1" name="alt-namewe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
@@ -329,71 +427,52 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight </label>
+                                <label for="alt-weigthwe_1" class="w-60 block mb-1">Weight Precentage </label>
                                 <input type="number" id="alt-weigthwe_1" name="alt-weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2">
                                 <label for="" class="border bg-white py-3 px-3 mb-2">%</label>
                             </div>
-                            <div class="border-b" id="altduplicateSetUI">
+
+                            <div class="border-b mt-2" id="altduplicateSetUI">
                                 <div class="">
-                                    <div class="flex items-center">
-                                        <label for="alt-setswe_1" class="w-60 block">SETS </label>
-                                        <div class="relative flex items-center max-w-[8rem] my-1">
-                                            <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
-                                                class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                                </svg>
-                                            </button>
-                                            <input type="text" id="alt-setswe_1" name="alt-setswe_1"
-                                                data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full my-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly />
-                                            <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
-                                                class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center border-b">
-                                        <label for="alt-repswe_1" class="w-60 block mb-1">REPS </label>
-                                        <div class="relative flex items-center max-w-[8rem] my-2">
-                                            <button type="button"
-                                                onclick="decrement(this.parentNode.querySelector('input').id)"
+                                    <div class="flex items-center sets-view">
+                                        <label for="alt-repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI"> --}}
+                                            <!-- Optional extra input (first one) -->
+                                            {{-- <input type="text" id="alt-repsnowe_1" name="alt-repsnowe_1" value="1" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <label for="alt-repswe" class="text-sm mr-2">REPS</label> --}}
+
+                                            <!-- Decrement Button -->
+                                            {{-- <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
-                                            </button>
-                                            <input type="text" id="alt-repswe_1" name="alt-repswe_1"
-                                                data-input-counter
-                                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                                placeholder="0" readonly />
-                                            <button type="button"
-                                                onclick="increment(this.parentNode.querySelector('input').id)"
+                                            </button> --}}
+
+                                            <!-- REPS Counter Input -->
+                                            {{-- <input type="text" id="alt-repswe_1" name="alt-repswe_1" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required /> --}}
+
+                                            <!-- Increment Button -->
+                                            {{-- <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
                                     </div>
+
                                     <div class="altduplicate-setss" id="alt-duplicate-sets_1"></div>
                                     <div class="ml-60">
                                         <button id="altaddset_1" onclick="altduplicateSet(this.id)" type="button"
@@ -401,14 +480,15 @@
                                             <i class="fas fa-plus text-[12px]"></i> Add set</button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
+
 
                             {{-- alternaterest --}}
-                            <div class="flex items-center border-b ">
+                            {{-- <div class="flex items-center border-b ">
                                 <label for="alt-restwe_1" class="w-60 block mb-1">Rest </label>
                                 <div class="">
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -436,7 +516,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -465,7 +545,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -503,8 +583,8 @@
                                     <option value="high">High</option>
                                     <option value="extreme">Extreme</option>
                                 </select>
-                            </div>
-                        </div>
+                            </div> --}}
+                        {{-- </div> --}}
                     </div>
                 </div>
             </div>
@@ -513,13 +593,13 @@
         <div id="cloneDisplayContainer"></div>
         <div class=" flex flex-col gap-5">
             {{-- Clone UI button --}}
-            <button id="cloneButton"type="button"
+            {{-- <button id="cloneButton"type="button"
                 class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base w-32">
                 Another
-            </button>
+            </button> --}}
             {{-- Save Button --}}
-            <button id="submitButton" type="submit"
-                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24">Save</button>
+            <button id="savebtnwe" type="submit"
+                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 mr-8 self-end">Save</button>
         </div>
     </form>
 </div>
@@ -745,12 +825,12 @@
                 _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
             },
             success: function(response) {
-                console.log(response);
+                console.log('weeeeeeee',response);
                 // Extract the category_options array from the response
                 const categoryOptions = response.category_options || [];
 
                 // Clear existing options in the select elements before adding new ones
-                ['categorywe_1', 'alt-categorywe_1'].forEach(id => {
+                ['categorywe_1','categorywe_2'].forEach(id => {
                     const categoryweelect = document.getElementById(id);
                     categoryweelect.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
@@ -759,11 +839,11 @@
                 // Loop through each category_option and call the setCategory() function
                 categoryOptions.forEach(option => {
                     setCategory(option.id, option.category_name, 'categorywe_1');
-                    setCategory(option.id, option.category_name, 'alt-categorywe_1');
+                    setCategory(option.id, option.category_name, 'categorywe_2');
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categorywe_1', 'alt-categorywe_1'].forEach(id => {
+                ['categorywe_1','categorywe_2'].forEach(id => {
                     sortSelectOptions(document.getElementById(id));
                 });
             },
@@ -793,20 +873,14 @@
         // Get the remaining part after the base
         const remainingPart = idParts.slice(1).join('_');
         const isCategory = selectElement.id === `categorywe_${remainingPart}`;
-        const isAltCategory = selectElement.id === `alt-categorywe_${remainingPart}`;
         const isECategory = selectElement.id === `categoryweight_${remainingPart}`;
-        const isEAltCategory = selectElement.id === `altcategoryweight_${remainingPart}`;
 
         let workoutSelectId;
 
-        if (isAltCategory) {
-            workoutSelectId = `alt-workoutwe_${remainingPart}`;
-        } else if (isCategory) {
+        if (isCategory) {
             workoutSelectId = `workoutwe_${remainingPart}`;
         } else if (isECategory) {
             workoutSelectId = `workoutweight_${remainingPart}`;
-        } else if (isEAltCategory) {
-            workoutSelectId = `altworkoutweight_${remainingPart}`;
         }
 
         console.log(`Constructed workoutSelectId: ${workoutSelectId}`);
@@ -905,56 +979,47 @@
         // Create a new element from the setui string and append it to the duplicate-sets container
         const setuiElement = document.createElement('div');
         setuiElement.innerHTML = `
-        <div class="flex items-center sets-view">
-            <label for="custom-numberwe_${remainingfind}${setCounter}" class="w-60 block mb-1">
-                SETS <span class="text-red-500">*</span>
-            </label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button" class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"  onclick="decrement(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="setswe_${remainingfind}${setCounter}" name="setswe_${remainingfind}${setCounter}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly />
-                <button type="button" class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"  onclick="increment(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
+        <div class="flex items-center sets-view mt-1">
+                                        <div class="w-60 block mb-1"></div>
+        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="repsnowe_${remainingfind}${setCounter}" name="repsnowe_${remainingfind}${setCounter}" value="${setCounter}" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
 
-        </div>
-        <div class="flex items-center border-b">
-            <label for="repswe_${remainingfind}${setCounter}" class="w-60 block mb-1">REPS <span
-                    class="text-red-500">*</span></label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button"
-                    onclick="decrement(this.parentNode.querySelector('input').id)"
-                    class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="repswe_${remainingfind}${setCounter}" name="repswe_${remainingfind}${setCounter}" data-input-counter
-                    class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                    placeholder="0" readonly />
-                <button type="button"
-                    onclick="increment(this.parentNode.querySelector('input').id)"
-                    class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
+                                            <label for="repsnowe_${remainingfind}${setCounter}" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Decrement Button -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#repswe_${remainingfind}${setCounter}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="repswe_${remainingfind}${setCounter}" name="repswe_${remainingfind}${setCounter}" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#repswe_${remainingfind}${setCounter}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
 
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
                     Remove
             </button>
+        </div>
                                 </div>
 
         `;
@@ -1011,45 +1076,48 @@
         // Create new HTML for the set and append it to the container
         const altsetuiElement = document.createElement('div');
         altsetuiElement.innerHTML = `
-        <div class="flex items-center sets-view">
-            <label for="alt-custom-numberwe_${remainingfind}${altsetCounter}" class="w-60 block mb-1">
-                SETS <span class="text-red-500">*</span>
-            </label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button" class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none" onclick="decrement(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="alt-setswe_${remainingfind}${altsetCounter}" name="alt-setswe_${remainingfind}${altsetCounter}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly />
-                <button type="button" class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none" onclick="increment(this.parentNode.querySelector('input').id)">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div class="flex items-center border-b">
-            <label for="alt-repswe_${remainingfind}${altsetCounter}" class="w-60 block mb-1">
-                REPS <span class="text-red-500">*</span>
-            </label>
-            <div class="relative flex items-center max-w-[8rem]">
-                <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                    </svg>
-                </button>
-                <input type="text" id="alt-repswe_${remainingfind}${altsetCounter}" name="alt-repswe_${remainingfind}${altsetCounter}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly />
-                <button type="button" onclick="increment(this.parentNode.querySelector('input').id)" class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                    </svg>
-                </button>
-            </div>
-            <button type="button" class="altremove-button bg-red-500 text-white p-2 rounded ml-2">
-                Remove
+        <div class="flex items-center sets-view mt-1">
+                                        <div class="w-60 block mb-1"></div>
+        <div class="relative flex items-center max-w-[12rem] gap-2" id="altduplicateSetUI">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="alt-repsnowe_${remainingfind}${altsetCounter}" name="alt-repsnowe_${remainingfind}${altsetCounter}" value="${altsetCounter}" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <label for="repsnowe_${remainingfind}${altsetCounter}" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Decrement Button -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#alt-repswe_${remainingfind}${altsetCounter}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="alt-repswe_${remainingfind}${altsetCounter}" name="alt-repswe_${remainingfind}${altsetCounter}" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#alt-repswe_${remainingfind}${altsetCounter}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+            <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
+                    Remove
             </button>
         </div>
+                                </div>
     `;
 
         // Add the new set UI element to the container
@@ -1093,6 +1161,7 @@
 
 {{-- get weightlifting --}}
 <script>
+    let allWeightliftingData = [];
     function getWeightlifting(date) {
         console.log(date);
         console.log("get Weightlifting date: " + date);
@@ -1105,9 +1174,10 @@
             },
             success: function(response) {
                 // console.log(response);
+                allWeightliftingData = response.weightlifting;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                setWeightlifting(response.weightlifting, response.categoryOptions);
+                    setWeightliftings(response.weightlifting, response.categoryOptions);
                 console.log('aaaaaaaaaa',response.weightlifting);
                 // });
             },
@@ -1156,43 +1226,27 @@
 
                 return `
                     <div>
-                        <input name="setsid_${index}" value="${set.id}" hidden>
-
-                        ${isSetsVisible ? `
-                        <div class="flex items-center sets-view">
-                            <label for="custom-numberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem]">
-                                <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                    </svg>
-                                </button>
-                                <input type="text" value="${set.sets}" id="setsweight_${index}" name="setsweight_${index}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center my-2 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly required />
-                                <button type="button" onclick="increment(this.parentNode.querySelector('input').id)" class="increment-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>` : ''}
-
                         ${isRepsVisible ? `
-                        <div class="flex items-center border-b">
-                            <label for="repsweight_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem]">
-                                <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                    </svg>
-                                </button>
-                                <input type="text" value="${set.reps}" id="repsweight_${index}" name="repsweight_${index}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly required />
-                                <button type="button" onclick="increment(this.parentNode.querySelector('input').id)" class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>` : ''}
+                        <input name="setsid_${index}" value="${set.id}" hidden>
+                            <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                <input type="text" id="repsnowe_${index}" name="repsnowe_${index}" value="${index}" data-input-counter
+                                                    class="mb-1 w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                    placeholder="0" readonly required />
+                                <label for="custom-numberweight_${index}" class="w-60 block mb-1 text-sm">REPS </label>
+
+                                    <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                        </svg>
+                                    </button>
+                                    <input type="text" value="${set.reps}" id="repsweight_${index}" name="repsweight_${index}" data-input-counter class="bg-gray-50 border-x-0 border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none" placeholder="0" readonly required />
+                                    <button type="button" onclick="increment(this.parentNode.querySelector('input').id)" class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                        <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                        </svg>
+                                    </button>
+                            </div>` : ''}
+
                     </div>
                 `;
             }).join('') : '';
@@ -1279,19 +1333,22 @@
                                         </select>
                                     </div>
                                     <div class="flex items-center border-b mt-2">
-                                        <label for="weigthweight_${item.id}" class="w-60 block mb-1">Weight <span
+                                        <label for="weigthweight_${item.id}" class="w-60 block mb-1">Weight Precentage <span
                                                 class="text-red-500">*</span></label>
                                         <input type="number" id="weigthweight_${item.id}" name="weigthweight_${item.id}" value="${item.weight}"
                                             class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                                         <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                                     </div>
                                     <div class="border-b" id="duplicateSetUI">
-                                        <div class="sets-container">
-                                            ${setsHTML}
+                                        <div class="flex items-center">
+                                            <label for="setswe_1" class="w-60 block">SETS <span class="text-red-500">*</span></label>
+                                            <div class="sets-container">
+                                                ${setsHTML}
+                                            </div>
+                                            <div class="duplicate-setsClone" id="duplicate-sets_${item.id}"></div>
                                         </div>
-                                        <div class="duplicate-setsClone" id="duplicate-sets_${item.id}"></div>
-                                        <div class="ml-60">
-                                            <button id="addset_${item.id}" onclick="duplicateSet(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
+                                        <div class="ml-60 mt-2"> <!-- move button to separate row -->
+                                            <button id="addset_${item.id}" onclick="duplicateSet(this.id)" type="button" class="bg-black text-white py-2 px-4 rounded mb-2 text-base">
                                                 <i class="fas fa-plus text-[12px]"></i> Add set
                                             </button>
                                         </div>
@@ -1301,7 +1358,7 @@
                                         <label for="restredweight_${item.id}" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
                                         <div class="">
                                         <div class="relative flex items-center max-w-[12rem] mb-4">
-                                             <label class=" text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                             <label class=" text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1316,7 +1373,7 @@
                                         </div>
 
                                         <div class="relative flex items-center max-w-[12rem] mb-4">
-                                             <label class=" text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                             <label class=" text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1332,7 +1389,7 @@
 
 
                                         <div class="relative flex items-center max-w-[12rem] mb-4">
-                                             <label class=" text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                             <label class=" text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                             <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1418,7 +1475,7 @@
                                     <label for="altrestredweight_${item.id}" class="w-60 block mb-1">Rest </label>
                                     <div class="">
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
-                                          <label class="text-red-500 font-bold w-16 text-right pr-8">Red</label>
+                                          <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1433,7 +1490,7 @@
                                     </div>
 
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
-                                         <label class="text-yellow-500 font-bold w-16 text-right pr-8">Yellow</label>
+                                         <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1448,7 +1505,7 @@
                                     </div>
 
                                     <div class="relative flex items-center max-w-[12rem]  py-2">
-                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Green</label>
+                                         <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                         <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)" class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1491,6 +1548,177 @@
         container.innerHTML = htmlContent;
 
 
+
+    }
+
+    
+    function filterWeightlifting(date) {
+        const dateOnClick = document.getElementById('selectdateweDelete').value;
+        console.log('first',dateOnClick)
+
+        //console.log('bbbbbbbb',buttonId)
+        let categoryId = document.getElementById("categorywe_2").value;
+        let exerciseId = document.getElementById("workoutwe_2").value;
+        let nameSearch = document.getElementById("namewe_2").value;
+
+        $.ajax({
+            url: "/search-setweightlifting",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                date: dateOnClick,
+                name: nameSearch,
+                category_id: categoryId,
+                workout_id: exerciseId
+            },
+            success: function (response) {
+                console.log("this is filteerd weightlifting response", response);
+                allWeightliftingData = response.weightlifting;
+                const weightliftingArray = Object.values(response.weightlifting);
+                const categoryArray = Object.values(response.categoryOptions);
+                setWeightliftings(weightliftingArray, categoryArray);
+                // Assuming response is an array of arrays
+                // response.forEach(subArray => {
+                    //setstrengths(response.Strength, response.categoryOptions);
+                // });
+            },
+            error: function (xhr) {
+                alert("Error occurred: " + xhr.responseText);
+            }
+        });
+    }
+
+    // get filterd weigths
+    function setWeightliftings(weightlifting, categoryOptions) {
+        const container = $("#setweights"); // Replace with your actual container class or ID
+        container.empty(); // Clear previous content
+
+        weightlifting.forEach((item, index) => {
+            let setsHTML = '';
+            console.log('fffgfgf',)
+            if (Array.isArray(item.sets) && item.sets.length > 0) {
+                const setObj = item.sets[0]; // usually only one object with `sets` and `reps`
+
+                for (let i = 0; i < setObj.sets; i++) {
+                    setsHTML += `
+                        <tr>
+                            <td class="py-1 pr-4">Set ${i + 1}</td>
+                            <td class="py-1">${setObj.reps} Reps</td>
+                        </tr>
+                    `;
+                }
+            } else {
+                setsHTML = '<tr><td colspan="2">No set data</td></tr>';
+            }
+
+            let html = `
+            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
+                <div class="border border-black rounded-xl shadow p-4 bg-white">
+                    <div class="pb-2 mb-2 flex justify-between items-center">
+                        <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
+                        <div class="space-x-2">
+                            <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
+                                <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+
+                            <button class="" type="button">
+                                <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                    <g>
+                                        <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
+                                        <path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625C22.5117188,22.9023438,22.2558594,23,22,23z"/>
+                                    </g>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets[0]?.sets || 0} sets</div>
+
+                    <div class="grid grid-cols-2 gap-4 text-gray-700">
+                        <div>
+                            <table class="w-full text-left">
+                                <tbody>
+                                    ${setsHTML}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="w-full text-left">
+                                <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
+                                <tbody>
+                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restwered || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restweyellow || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restwegreen || '-'} min</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-end">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="checkbox" value="" class="sr-only peer">
+                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            `;
+
+            container.append(html);
+
+            // Bind the Edit button after appending
+            container.find('.edit-weightlifting-btn').off('click').on('click', function () {
+                const weightliftingId = $(this).data('id');
+                populateWeightliftingForm(weightliftingId);
+            });
+
+        });
+    }
+
+    // get editing details to form
+    function populateWeightliftingForm(weightliftingId) {
+
+        const data = allWeightliftingData.find(item => item.id == weightliftingId);
+        console.log('dataaaaaa',data);
+
+        if (!data) {
+            console.warn("No strength data found for ID:", weightliftingId);
+            return;
+        }
+
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categorywe_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workoutwe_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+        // Set weight
+        document.getElementById('weigthwe_1').value = data.weight;
+
+        if (data.sets.length > 0) {
+            const setData = data.sets[0]; // Get first item
+
+            const setsInput = document.getElementById('repsnowe_1');
+            const repsInput = document.getElementById('repswe_1');
+
+            if (setsInput) setsInput.value = setData.sets;
+            if (repsInput) repsInput.value = setData.reps;
+        }
+
+        document.getElementById('restredwe_1').value = data.restwered;
+        document.getElementById('restyellowwe_1').value = data.restweyellow;
+        document.getElementById('restgreenwe_1').value = data.restwegreen;
+        document.getElementById('intensitywe_1').value = data.intensity;
+        document.getElementById('namewe_1').value = data.workoutname;
+        document.getElementById('savebtnwe').innerHTML = "Edit";
 
     }
 

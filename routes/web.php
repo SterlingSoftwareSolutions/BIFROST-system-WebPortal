@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccessController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClientManagementController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\DashboardController;
@@ -95,8 +96,10 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/users/{user}', [AccessController::class, 'nextShow'])->name('user.show');
     // previous button
     Route::get('/previous-show/{id}', [AccessController::class, 'previousShow'])->name('previous.show');
-
-
+    // fetch admin user
+    Route::get('/save/newadmin/{action?}/{id?}', [AccessController::class, 'newAdminShow'])->name('addnewadminedit');
+    //add new admin user
+    Route::post('/save/newadmin/add', [AccessController::class, 'addnewadmin'])->name('newaminsave');
 
     // financial
     Route::get('/admin/financial', [FinancialController::class, 'viewfinancial'])->name('adminfinancial');
@@ -152,6 +155,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-Weightlifting', [SessionController::class, 'updateWeightlifting'])->name('updateWeightlifting');
     // delete
     Route::delete('/delete-Weightlifting', [SessionController::class, 'deleteAllBySelectDateWeightlifting'])->name('Weightlifting.deleteAllBySelectDate');
+    // search Weightlifting
+    Route::post('/search-setweightlifting', [SessionController::class, 'searchSetWeightlifting'])->name('search.setweightlifting');
 
     // store conditioning
     Route::post('/store-conditioning', [SessionController::class, 'storeconditioning']);
@@ -169,6 +174,9 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-strenthdata', [SessionController::class, 'updatestrength'])->name("updatestrength");
     // Route::get('/update-strenthdata',[SessionController::class,'updatestrength' ])->name("updatestrength");
     Route::delete('/delete-strengthdata', [SessionController::class, 'deleteAllByDelectDataStrenght'])->name('deletestrength');
+    // serach Strength
+    Route::post('/search-setstrength', [SessionController::class, 'searchSetStrength'])->name('search.setstrength');
+
 
     //store test
     //getmembers
@@ -181,6 +189,17 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-test', [SessionController::class, 'updatest'])->name('update-test');
     //testdelete
     Route::delete('/delete-test', [SessionController::class, 'deletealldatatest'])->name('delete-test');
+
+    // get classes
+    Route::get('/classes', [ClassesController::class, 'index'])->name('classes.index');
+    // store classes
+    Route::post('/classes', [ClassesController::class, 'store'])->name('classes.store');
+    // delete classes
+    Route::delete('/classes/{id}', [ClassesController::class, 'delete'])->name('classes.delete');
+    // update toggle in classes
+    Route::post('/classes/{id}/toggle-workout', [ClassesController::class, 'toggleWorkout'])->name('classes.toggleWorkout');
+    // get classes by date
+    Route::get('/get-classes-by-day', [ClassesController::class, 'getByDay'])->name('classes.getByDay');
 
 
 
@@ -235,6 +254,11 @@ Route::get('/mobile/forgetpin', [MobileController::class, 'forgetpin'])->name('m
 
 Route::get('/mobile/trainingday', [MobileController::class, 'trainingday'])->name('mobile.trainingday');
 Route::post('/select-day',  [MobileController::class, 'selectday']);
+Route::get('/get-class-slots', [MobileController::class, 'getClassSlots']);
+//class reserve
+Route::post('reserve', [MobileController::class, 'reserve'])->name('class.reserve');
+Route::post('/cancel', [MobileController::class, 'cancel'])->name('class.cancel');
+
 
 Route::get('/mobile/readinessscore', [MobileController::class, 'readinessscore'])->name('mobile.readinessscore');
 Route::post('/mobile/store-readiness', [MobileController::class, 'storescore'])->name('mobile.storescore');

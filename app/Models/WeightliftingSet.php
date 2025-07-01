@@ -33,7 +33,7 @@ class WeightliftingSet extends Model
 
         // Create and save a new WeightliftingSet record
         return self::create([
-            'sets' => $data[0] ?? null,
+            'sets' => 1,
             'reps' => $data[1] ?? null,
             'alt_sets' => $data[2] ?? null,
             'alt_reps' => $data[3] ?? null,

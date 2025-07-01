@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Classes;
 use App\Models\ClientManagement;
 use App\Models\Conditioning;
 use App\Models\DailyStrength;
+use App\Models\Test;
 use App\Models\DailyWarmup;
 use App\Models\Newprofile;
+use App\Models\ReservationSession;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Score;
@@ -36,23 +39,149 @@ class MobileController extends Controller
     public function trainingday(Request $request)
     {
         // Check if 'selected_day' is null and store today's date if it is
-        if (!Session::has('selected_day')) {
-            session(['selected_day' => Carbon::now()->format('d/m/Y')]);
-        }
+        // if (!Session::has('selected_day')) {
+        //     session(['selected_day' => Carbon::now()->format('d/m/Y')]);
+        // }
+
+        // $dates = [];
+        // $startOfWeek = Carbon::now()->startOfWeek(); // Get Monday
+
+        // for ($i = 0; $i < 7; $i++) {
+        //     $dates[] = $startOfWeek->copy()->addDays($i)->format('d/m/Y');
+        // }
+
+        // // Get the selected day from the session
+        // $selectedDay = session('selected_day');
+
+        // return view("mobile.user.trainingday", compact('dates', 'selectedDay'));
 
         $dates = [];
-        $startOfWeek = Carbon::now()->startOfWeek(); // Get Monday
+        $today = Carbon::now()->startOfDay();
 
         for ($i = 0; $i < 7; $i++) {
-            $dates[] = $startOfWeek->copy()->addDays($i)->format('d/m/Y');
+            $dates[] = $today->copy()->addDays($i);
         }
 
-        // Get the selected day from the session
-        $selectedDay = session('selected_day');
+        // Get 6AM classes for each date
+        $classesByDate = [];
+        foreach ($dates as $date) {
+            //$date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
+            $formattedDate = $date->format('d/m/Y'); // Format the date
 
-        return view("mobile.user.trainingday", compact('dates', 'selectedDay'));
+            // Combine day name and date
+            $dayWithDate = $date->format('d/m/y') . ' ' . $dayName;
+            //$formattedDate = $date->format('d/m/Y');
+            //dd($formattedDate);
+            $class = Classes::where('date', $dayWithDate)
+                ->where('time', '06:00:00')
+                ->first(); // use `first()` if you're expecting a single class
+
+            $classesByDate[$formattedDate] = $class;
+            //dd($classesByDate);
+        }
+
+        return view('mobile.user.trainingday', [
+            'dates' => $dates, // still Carbon objects — good
+            'classesByDate' => $classesByDate,
+            'defaultTime' => '06:00:00'
+        ]);
     }
 
+    public function getClassSlots(Request $request)
+    {
+        $time = $request->query('time');
+        $today = Carbon::now()->startOfDay();
+        $slots = [];
+
+        for ($i = 0; $i < 7; $i++) {
+            $date = $today->copy()->addDays($i);
+
+            $class = Classes::where('date', $date->format('d/m/y l'))
+                ->where('time', $time)
+                ->first();
+
+            $userReservation = null;
+            if ($class) {
+                $userReservation = \App\Models\ReservationSession::where('user_id', auth()->id())
+                    ->where('classes_id', $class->id)
+                    ->exists();
+            }
+
+            $slots[] = [
+                'id' => $class?->id,
+                'date' => $date->format('d/m/Y'),
+                'day_name' => $date->format('l'),
+                'is_today' => $date->isToday(),
+                'class' => $class ? [
+                    'time' => \Carbon\Carbon::parse($class->time)->format('g:i A'),
+                    'duration' => $class->duration,
+                    'spots' => $class->spots,
+                ] : null,
+                'reserved' => $userReservation,
+            ];
+        }
+
+        return response()->json($slots);
+    }
+
+    public function reserve(Request $request)
+    {
+        $request->validate([
+            'class_id' => 'required|exists:classes,id',
+        ]);
+
+        $class = Classes::find($request->class_id);
+
+        // Check if spots are available
+        if ($class->spots <= 0) {
+            return back()->with('error', 'No spots available for this class.');
+        }
+
+        // Check if user already reserved this class (optional)
+        $existing = ReservationSession::where('user_id', Auth::id())
+                    ->where('classes_id', $class->id)
+                    ->first();
+
+        if ($existing) {
+            return back()->with('info', 'You have already reserved this class.');
+        }
+
+        // Create reservation
+        ReservationSession::create([
+            'user_id' => Auth::id(),
+            'classes_id' => $class->id,
+            'is_reserved' => true
+        ]);
+
+        // Decrease spot count
+        $class->decrement('spots');
+
+        return back()->with('success', 'Reservation successful!');
+    }
+
+    public function cancel(Request $request)
+    {
+        $request->validate([
+            'class_id' => 'required|exists:classes,id',
+        ]);
+
+        $reservation = ReservationSession::where('user_id', Auth::id())
+            ->where('classes_id', $request->class_id)
+            ->first();
+
+        if ($reservation) {
+            $reservation->delete();
+
+            // Increase the spot count
+            $class = Classes::find($request->class_id);
+            $class->increment('spots');
+
+            return back()->with('success', 'Reservation cancelled.');
+        }
+
+        return back()->with('error', 'No reservation found.');
+    }
     // Training Day select date
     public function selectday(Request $request)
     {
@@ -74,6 +203,11 @@ class MobileController extends Controller
     {
         // Retrieve the day from the session
         $storedDay = session('selected_day');
+
+        if (!$storedDay) {
+            $storedDay = Carbon::now()->format('d/m/Y');
+            session(['selected_day' => $storedDay]);
+        }
 
         // Format the stored day to the desired format
         $date = Carbon::createFromFormat('d/m/Y', $storedDay);
@@ -118,7 +252,12 @@ class MobileController extends Controller
     public function workout()
     {
         $storedDay = session('selected_day');
-        //dd($storedDay);
+        
+        if (!$storedDay) {
+            $storedDay = Carbon::now()->format('d/m/Y');
+            session(['selected_day' => $storedDay]);
+        }
+        
         // Format the stored day to the desired format
         $date = Carbon::createFromFormat('d/m/Y', $storedDay);
         $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
@@ -127,7 +266,7 @@ class MobileController extends Controller
         // Combine day name and date
         $dayWithDate = $formattedDate . ' ' . $dayName;
 
-        //get warup details for specific date
+        //get warmup details for specific date
         $tabwarmup = 'warmup';
         $date = $dayWithDate;
         $detailswarmup = Warmup::where('date', $dayWithDate)
@@ -135,7 +274,7 @@ class MobileController extends Controller
             ->with('workouts.categoryOption')
             ->get();
 
-        // //get warup details for specific date
+        // //get strength details for specific date
         $tabstrength = 'strength';
         $date = $dayWithDate;
         $detailsstrength = Strength::where('date', $date)
@@ -145,14 +284,13 @@ class MobileController extends Controller
             ->with('workout.categoryOption')
             ->get();
 
-        //  //get warup details for specific date
-        //  $tabconditioning = 'conditioning';
-        //  $date = $dayWithDate;
-        //  $detailsconditioning = ClientManagement::where('tab', $tabconditioning)
-        //      ->where('date', $date)
-        //      ->with('workouts')
-        //      ->get();
-
+         //get conditioning details for specific date
+         $tabconditioning = 'conditioning';
+         $date = $dayWithDate;
+         $detailsconditioning = Conditioning::where('date', $date)
+             ->with('workout')
+             ->with('workout.categoryOption')
+             ->get();
 
         //  //get warup details for specific date
         $tabweightweight = 'weightlifting';
@@ -164,6 +302,13 @@ class MobileController extends Controller
             ->with('workouts.categoryOption')
             ->get();
 
+        $tabtest = 'Test';
+        $date = $dayWithDate;
+        $detailstest = Test::where('date', $date)
+            ->with('member')
+            ->get();
+
+
         //  foreach ($detailsweight as $weightlifting) {
         //     foreach ($weightlifting->sets as $set) {
         //         dd($set->sets, $set->reps); // Dump and display the values of sets and reps
@@ -171,8 +316,8 @@ class MobileController extends Controller
         // }
 
         //dd($detailsstrength);
-        //return view('mobile.user.workout', compact('dayWithDate','detailswarmup','detailsstrength','detailsconditioning','detailsweight'));
-        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsweight'));
+
+        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight','detailstest'));
     }
 
     //store daily warmup workout after clicking

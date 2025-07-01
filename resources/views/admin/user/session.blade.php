@@ -23,9 +23,9 @@
         <!-- Main content (Dashboard) -->
         <div class="container transition-width mt-24 flex-grow mx-4" id="container">
             <div class="breadcrumb text-sm mb-4">
-                <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Builder
+                <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Manager
                         </strong></span></div>
-                <div class="text-3xl mt-3">Workout Builder</div>
+                <div class="text-3xl mt-3">Workout Manager</div>
             </div>
             <div class="border rounded-b-lg bg-white shadow-md mt-10 text-sm">
                 <div>
@@ -73,37 +73,46 @@
                     </div>
 
                     {{-- Top Week and year display --}}
-                    <div class="flex justify-center text-2xl font-semibold gap-4 mb-6">
-                        <p class="cursor-pointer" id="prevWeek">&larr;</p>
-                        <h2 id="weekDisplay"></h2>
-                        <p class="cursor-pointer" id="nextWeek">&rarr;</p>
+                    <div class="flex flex-col items-center  gap-2 mb-6">
+                        <div class="flex justify-center text-2xl font-semibold items-center gap-4">
+                            <p class="cursor-pointer" id="prevWeek">&larr;</p>
+                            <h2 id="weekDisplay"></h2>
+                            <p class="cursor-pointer" id="nextWeek">&rarr;</p>
+                        </div>
+                        <div class="text-lg">
+                            <h2 id="weekRangeDisplay"></h2>
+                        </div>
                     </div>
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
                     <div class="w-1/4">
-                        <div class="flex flex-col text-lg weekday">
+                        <div class="flex flex-col text-lg weekday pr-5">
                             <button
-                                class="border-l border-t border-b border-r border-black w-2/3 px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
+                                class="border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
                                 id="1day">Day 1</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover:text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                                 id="2day">Day 2</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover:text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                                 id="3day">Day 3</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="4day">Day 4</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="5day">Day 5</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
                                 id="6day">Day 6</button>
                             <button
-                                class="weekday border-l border-t border-b border-r border-black w-2/3 px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
+                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
                                 id="7day">Day 7</button>
+                        </div>
+                        {{-- Classess --}}
+                        <div class="mt-5 mb-5">
+                            @include('admin.components.classes', ['classes' => $classes])
                         </div>
                     </div>
                     <div class="w-3/4 tabs">
@@ -257,6 +266,7 @@
                     let tabName = this.getAttribute("href");
                     selectedTab = tabName;
                     changeui(selectedTab, selectedDate);
+                    //getdate(selectedDate);
                     date = document.getElementById(selectedDate);
 
                 });
@@ -275,6 +285,7 @@
                     let dateId = this.getAttribute("id");
                     selectedDate = dateId;
                     changeui(selectedTab, selectedDate);
+                    //getdate(selectedDate);
                 });
             });
 
@@ -287,6 +298,7 @@
             currentDate.setDate(currentDate.getDate() + weekChange * 7);
             updateWeekAndDates();
             logSelection(selectedTab, selectedDate);
+            //getdate(selectedDate);
         }
 
         // Function to update the week and dates display
@@ -299,6 +311,21 @@
 
             // Get the start date of the current week (Monday)
             const firstDayOfWeek = getStartOfWeek(currentDate);
+
+            // Calculate the end date of the week (Sunday)
+            const lastDayOfWeek = new Date(firstDayOfWeek);
+            lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
+
+            // Format week range as DD/MM/YY - DD/MM/YY
+            const formatRangeDate = (date) => {
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+                const year = String(date.getFullYear()).slice(-2); // Get last 2 digits
+                return `${day}/${month}/${year}`;
+            };
+
+            const weekRange = `${formatRangeDate(firstDayOfWeek)} - ${formatRangeDate(lastDayOfWeek)}`;
+            document.getElementById('weekRangeDisplay').innerText = weekRange;
 
             // Populate dates for the current week
             for (let i = 0; i < 7; i++) {
@@ -367,6 +394,7 @@
             // Log selected tab and date
             logSelection(tabName, selectedDate);
             changeTab(tabName, selectedDate);
+            //getdate(selectedDate);
         }
 
         function changeTab(tabName, selectedDate) {
@@ -424,7 +452,8 @@
                     console.log("Unknown tabId: " + tabId);
                     break;
             }
-
+            getdateName(dayName);
+            //getdate(selectedDate);
             // Call AJAX function here if needed
             // getdata(tabName, dayName);
         }
