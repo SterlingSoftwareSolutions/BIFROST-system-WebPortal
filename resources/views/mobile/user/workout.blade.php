@@ -21,32 +21,51 @@
 
                     {{-- Category Icons (Static) --}}
                     <div class="flex gap-4 justify-center mb-6">
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-0 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-warmup">
-                            <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon" class="w-5 h-5 mb-2">
+                        {{-- Warmup --}}
+                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-0 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
+                            data-target="#section-warmup"
+                            data-icon-white="{{ asset('icon/warmupwhite.png') }}"
+                            data-icon-black="{{ asset('icon/warmup.png') }}">
+                            <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon" class="w-5 h-5 mb-2 icon-img">
                             <span class="text-xs">Warmup</span>
                         </button>
 
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-strength">
-                            <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon" class="w-5 h-5 mb-2">
+                        {{-- Strength --}}
+                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
+                            data-target="#section-strength"
+                            data-icon-white="{{ asset('icon/strengthwhite.png') }}"
+                            data-icon-black="{{ asset('icon/strength.png') }}">
+                            <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon" class="w-5 h-5 mb-2 icon-img">
                             <span class="text-xs">Strength</span>
                         </button>
 
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-weightlifting">
-                            <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mb-2">
+                        {{-- Weightlifting --}}
+                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
+                            data-target="#section-weightlifting"
+                            data-icon-white="{{ asset('icon/weightliftingWhite.png') }}"
+                            data-icon-black="{{ asset('icon/weightlifting.png') }}">
+                            <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mb-2 icon-img">
                             <span class="text-xs">Weightlifting</span>
                         </button>
 
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-conditioning">
-                            <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon" class="w-5 h-5 mb-2">
+                        {{-- Conditioning --}}
+                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
+                            data-target="#section-conditioning"
+                            data-icon-white="{{ asset('icon/conditioningWhite.png') }}"
+                            data-icon-black="{{ asset('icon/conditioning.png') }}">
+                            <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon" class="w-5 h-5 mb-2 icon-img">
                             <span class="text-xs">Conditioning</span>
                         </button>
 
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition" data-target="#section-test">
-                            <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-2">
+                        {{-- Test --}}
+                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
+                            data-target="#section-test"
+                            data-icon-white="{{ asset('icon/testWhite.png') }}"
+                            data-icon-black="{{ asset('icon/test.png') }}">
+                            <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-2 icon-img">
                             <span class="text-xs">Test</span>
                         </button>
                     </div>
-
 
                         {{-- Category Workout Sections --}}
 
@@ -713,25 +732,51 @@
         </script>
         {{-- end warumup save --}}
 
-            <script>
-                document.querySelectorAll('.category-tab').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const targetId = button.dataset.target;
-                        document.querySelectorAll('.category-section').forEach(section => section.classList.add('hidden'));
-                        document.querySelector(targetId).classList.remove('hidden');
+        <script>
+            document.querySelectorAll('.category-tab').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.dataset.target;
+
+                    // Hide all sections
+                    document.querySelectorAll('.category-section').forEach(section =>
+                        section.classList.add('hidden')
+                    );
+                    document.querySelector(targetId).classList.remove('hidden');
+
+                    // Reset all tabs
+                    document.querySelectorAll('.category-tab').forEach(tab => {
+                        tab.classList.remove('bg-white', 'text-black');
+                        tab.classList.add('bg-black', 'bg-opacity-50', 'text-white');
+
+                        const icon = tab.querySelector('.icon-img');
+                        if (icon && tab.dataset.iconWhite) {
+                            icon.src = tab.dataset.iconWhite;
+                        }
                     });
+
+                    // Set active styles
+                    button.classList.remove('bg-black', 'bg-opacity-50', 'text-white');
+                    button.classList.add('bg-white', 'text-black');
+
+                    const icon = button.querySelector('.icon-img');
+                    if (icon && button.dataset.iconBlack) {
+                        icon.src = button.dataset.iconBlack;
+                    }
                 });
+            });
 
-                function incrementValue(btn) {
-                    const span = btn.parentElement.querySelector('.reps');
-                    span.innerText = parseInt(span.innerText) + 1;
-                }
+            function incrementValue(btn) {
+                const span = btn.parentElement.querySelector('.reps');
+                span.innerText = parseInt(span.innerText) + 1;
+            }
 
-                function decrementValue(btn) {
-                    const span = btn.parentElement.querySelector('.reps');
-                    span.innerText = Math.max(0, parseInt(span.innerText) - 1);
-                }
-            </script>
+            function decrementValue(btn) {
+                const span = btn.parentElement.querySelector('.reps');
+                span.innerText = Math.max(0, parseInt(span.innerText) - 1);
+            }
+        </script>
+           
+
     @endsection
 </body>
 
