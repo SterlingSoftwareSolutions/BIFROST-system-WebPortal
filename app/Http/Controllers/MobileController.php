@@ -252,7 +252,12 @@ class MobileController extends Controller
     public function workout()
     {
         $storedDay = session('selected_day');
-        //dd($storedDay);
+        
+        if (!$storedDay) {
+            $storedDay = Carbon::now()->format('d/m/Y');
+            session(['selected_day' => $storedDay]);
+        }
+        
         // Format the stored day to the desired format
         $date = Carbon::createFromFormat('d/m/Y', $storedDay);
         $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
