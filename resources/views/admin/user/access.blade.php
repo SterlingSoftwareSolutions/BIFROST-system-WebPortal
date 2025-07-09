@@ -20,6 +20,12 @@
 
 
 <body>
+    <script>
+        @if(session('success'))
+            alert("{{ session('success') }}");
+        @endif
+    </script>
+
     @extends('layout.layout')
     @section('content')
         <!-- Main content (Dashboard) -->
