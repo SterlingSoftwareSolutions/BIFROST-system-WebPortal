@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="{{ asset('js/admin.js') }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
     <title>Document</title>
 </head>
 
@@ -104,27 +105,52 @@
                                         </span>
                                     </div>
                                 </div>
-
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
-                                    <label for="user_type"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 pr-4">
-                                        Role <span class="text-red-500">*</span>
-                                    </label>
-                                </div>
-                                <div class="w-full md:col-span-1">
-                                    <select id="user_type" name="user_type"
-                                            class="form-control w-full rounded px-4 py-2 border" required>
-                                        <option value="">Select Role</option>
-                                        <option value="Admin"
-                                            {{ old('user_type', isset($user) ? ($user->user_type === 'Admin' ? 'selected' : '') : 'selected') }}>
-                                            Admin
-                                        </option>
-                                    </select>
-                                </div>
-
-
                             </div>
 
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
+                                <!-- Access Label -->
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:w-3/4 md:col-span-1">
+                                    <label for="access" class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0">Access</label>
+                                </div>
+                                <div class="access-buttons w-full md:col-span-5 flex flex-wrap items-center gap-2">
+                                    <div class="input-container mb-0 relative">
+                                        <input type="checkbox" name="access_fields[dashboard]" id="dashboard"/>
+                                        <label for="dashboard" >Dashboard</label>
+                                    </div>
+                                    <div class="input-container mb-0">
+                                        <input type="checkbox" name="access_fields[access]" id="access"/>
+                                        <label for="access">Access</label>
+                                    </div>
+                                    <div class="input-container mb-0">
+                                        <input type="checkbox"
+                                            name="access_fields[client_management]" id="client_management"/>
+                                        <label for="client_management">Client Management</label>
+                                    </div>
+                                    <div class="input-container mb-0" >
+                                        <input type="checkbox"
+                                            name="access_fields[workout_library]" id="workout_library"/>
+                                        <label for="workout_library" >Exercise Library</label>
+                                    </div>
+                                    <div class="input-container mb-0" >
+                                        <input type="checkbox" name="access_fields[session]" id="session"/>
+                                        <label for="session">Session</label>
+                                    </div>
+                                    <div class="input-container mb-0" >
+                                        <input type="checkbox" name="access_fields[financial]" id="financial"/>
+                                        <label for="financial">Financial</label>
+                                    </div>
+                                    <div class="input-container mb-0" >
+                                        <input type="checkbox" name="access_fields[communication]" id="communication"/>
+                                        <label for="communication">Communication</label>
+                                    </div>
+                                    <div class="input-container mb-0" >
+                                        <input type="checkbox" name="access_fields[statistics]" id="statistics"/>
+                                        <label for="statistics">Statistics</label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
 
                             {{-- Submint Button --}}
                             <div
