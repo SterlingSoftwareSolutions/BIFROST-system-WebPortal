@@ -20,53 +20,53 @@
                     <div class="flex w-full flex-col justify-center items-center gap-2.5 p-5 text-white">
 
                     {{-- Category Icons (Static) --}}
-                    <div class="flex gap-4 justify-center mb-6">
-                        {{-- Warmup --}}
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-0 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
-                            data-target="#section-warmup"
-                            data-icon-white="{{ asset('icon/warmupwhite.png') }}"
-                            data-icon-black="{{ asset('icon/warmup.png') }}">
-                            <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon" class="w-5 h-5 mb-2 icon-img">
-                            <span class="text-xs">Warmup</span>
-                        </button>
+                    {{-- Category Icons (Static) --}}
+                        <div class="flex gap-4 justify-start mb-6 overflow-x-auto w-full px-2">
+                            {{-- Warmup --}}
+                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-warmup"
+                                data-icon-white="{{ asset('icon/warmupwhite.png') }}"
+                                data-icon-black="{{ asset('icon/warmup.png') }}">
+                                <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon" class="w-5 h-5 mb-1 icon-img">
+                                <span class="text-xs leading-tight text-center">Warm<br>Up</span>
+                            </button>
 
-                        {{-- Strength --}}
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
-                            data-target="#section-strength"
-                            data-icon-white="{{ asset('icon/strengthwhite.png') }}"
-                            data-icon-black="{{ asset('icon/strength.png') }}">
-                            <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon" class="w-5 h-5 mb-2 icon-img">
-                            <span class="text-xs">Strength</span>
-                        </button>
+                            {{-- Strength --}}
+                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-strength"
+                                data-icon-white="{{ asset('icon/strengthwhite.png') }}"
+                                data-icon-black="{{ asset('icon/strength.png') }}">
+                                <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon" class="w-5 h-5 mb-1 icon-img">
+                                <span class="text-xs leading-tight text-center">Strength</span>
+                            </button>
 
-                        {{-- Weightlifting --}}
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
-                            data-target="#section-weightlifting"
-                            data-icon-white="{{ asset('icon/weightliftingWhite.png') }}"
-                            data-icon-black="{{ asset('icon/weightlifting.png') }}">
-                            <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mb-2 icon-img">
-                            <span class="text-xs">Weightlifting</span>
-                        </button>
+                            {{-- Weightlifting --}}
+                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-weightlifting"
+                                data-icon-white="{{ asset('icon/weightliftingWhite.png') }}"
+                                data-icon-black="{{ asset('icon/weightlifting.png') }}">
+                                <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mb-1 icon-img">
+                                <span class="text-xs leading-tight text-center">Weight<br>Lifting</span>
+                            </button>
 
-                        {{-- Conditioning --}}
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
-                            data-target="#section-conditioning"
-                            data-icon-white="{{ asset('icon/conditioningWhite.png') }}"
-                            data-icon-black="{{ asset('icon/conditioning.png') }}">
-                            <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon" class="w-5 h-5 mb-2 icon-img">
-                            <span class="text-xs">Conditioning</span>
-                        </button>
+                            {{-- Conditioning --}}
+                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-conditioning"
+                                data-icon-white="{{ asset('icon/conditioningWhite.png') }}"
+                                data-icon-black="{{ asset('icon/conditioning.png') }}">
+                                <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon" class="w-5 h-5 mb-1 icon-img">
+                                <span class="text-xs leading-tight text-center">Condi<br>tioning</span>
+                            </button>
 
-                        {{-- Test --}}
-                        <button class="category-tab flex flex-col items-center justify-center w-20 h-20 border border-white rounded-lg px-4 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105"
-                            data-target="#section-test"
-                            data-icon-white="{{ asset('icon/testWhite.png') }}"
-                            data-icon-black="{{ asset('icon/test.png') }}">
-                            <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-2 icon-img">
-                            <span class="text-xs">Test</span>
-                        </button>
-                    </div>
-
+                            {{-- Test --}}
+                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-test"
+                                data-icon-white="{{ asset('icon/testWhite.png') }}"
+                                data-icon-black="{{ asset('icon/test.png') }}">
+                                <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-1 icon-img">
+                                <span class="text-xs leading-tight text-center">Test</span>
+                            </button>
+                        </div>
                         {{-- Category Workout Sections --}}
 
                         <div id="categoryDisplayZone">
