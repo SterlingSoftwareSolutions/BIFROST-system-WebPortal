@@ -42,11 +42,11 @@
 
             $(document).ready(function() {
                 const tab = document.getElementById('weightliftingTab');
-                const formDataArray = $(this).serializeArray();
-                console.log('Form data as object:', formDataArray);
 
                 $('#storeFromWe').on('submit', function(event) {
                     event.preventDefault(); // Prevent the default form submission
+                    const formDataArray = $(this).serializeArray();
+                    console.log('Form data as object:', formDataArray);
 
                     $.ajax({
                         url: '/store-weightlifting',
@@ -1615,7 +1615,7 @@
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
+                        <div class="text-gray-700">Workout Name - ${item.workoutname     || 'N/A'}</div>
                         <div class="space-x-2">
                             <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -1658,6 +1658,7 @@
                     </div>
 
                     <div class="mt-4 flex justify-end">
+                        <p class="mr-4 font-bold">Assign Workout to Class</p>
                         <label class="inline-flex items-center cursor-pointer">
                             <input type="checkbox" value="" class="sr-only peer">
                              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>

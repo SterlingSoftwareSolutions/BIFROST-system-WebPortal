@@ -382,13 +382,13 @@ class SessionController extends Controller
             $maxIndex = 10; // Maximum index to check, adjust this as needed
 
             // Loop through each index
-            for ($index = 1; $index <= $maxIndex; $index++) {
+            
                 $processedData = []; // Initialize the array for the current index
 
                 // Iterate over all request data
                 foreach ($requestData as $key => $value) {
                     // Check if the key contains the current index
-                    if (strpos($key, "_$index") !== false) {
+                    if (str_ends_with($key, '_1')){
                         // Add the key-value pair to the array
                         $processedData[$key] = $value;
                     }
@@ -397,9 +397,9 @@ class SessionController extends Controller
                 if (!empty($processedData)) {
                     // Call the filterdata function to process and store the data
                     // dd($processedData);
-                    $this->filterdata($processedData, $index, $request->input('selectdatewe'));
+                    $this->filterdata($processedData, 1, $request->input('selectdatewe'));
                 }
-            }
+            
 
             return response()->json([
                 'message' => 'Weightlifting record stored successfully'
@@ -582,7 +582,6 @@ class SessionController extends Controller
     // serach weightlifting
     public function searchSetWeightlifting(Request $request)
     {
-
         try {
             $date = $request->input("date");
             $name = $request->input("name");
@@ -590,10 +589,9 @@ class SessionController extends Controller
             $workoutId = $request->input("workout_id");
 
             // Always start by filtering by date
-            $weightliftingRecords = Weightlifting::with(['category', 'workout', 'sets', 'altCategory', 'altWorkout'])
-            ->where('date', $date) // date is mandatory
-            ->get();
-            Log::info('Response filtered data weightlifting: ', ['Weightlifting' => $weightliftingRecords]);
+            $weightliftingQuery = Weightlifting::with(['category', 'workout', 'sets', 'altCategory', 'altWorkout'])
+            ->where('date', $date);
+            Log::info('Response filtered data weightlifting: ', ['Weightlifting' => $weightliftingQuery]);
             // Further in-memory filtering
             // if ($name) {
             //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
@@ -601,23 +599,26 @@ class SessionController extends Controller
             //     });
             // }
             if ($categoryId && $workoutId && $name) {
-                $sweightliftingRecords = $weightliftingRecords->where('category_id', $categoryId)
+                $weightliftingQuery = $weightliftingQuery->where('category_id', $categoryId)
                                                     ->where('workout_id', $workoutId)
-                                                    ->where('workoutname', $name);
+                                                    ->whereHas('workout', function ($query) use ($name) {
+                                                    $query->where('workoutname', 'like', '%' . $name . '%');});
             }
 
             elseif ($name) {
-                $weightliftingRecords = $weightliftingRecords->where('workoutname', 'like', '%' . $name . '%');
+                $weightliftingQuery = $weightliftingQuery->whereHas('workout', function ($query) use ($name) {
+                    $query->where('workoutname', 'like', '%' . $name . '%');
+                });
             }
 
             elseif ($categoryId) {
-                $weightliftingRecords = $weightliftingRecords->where('category_id', $categoryId);
+                $weightliftingQuery = $weightliftingQuery->where('category_id', $categoryId);
             }
 
             elseif ($workoutId) {
-                $weightliftingRecords = $weightliftingRecords->where('workout_id', $workoutId);
+                $weightliftingQuery = $weightliftingQuery->where('workout_id', $workoutId);
             }
-
+            $weightliftingRecords = $weightliftingQuery->get();
             $workouts = WorkoutLibrary::where('type', 'Weightlifting')->with('categoryOption')->get();
             $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
 
@@ -821,6 +822,7 @@ class SessionController extends Controller
         $request->validate([
             'category_*' => 'required|exists:category_options,id',
             'workout_*' => 'required|exists:workout_libraries,id',
+            'name_*' => 'required',
             'weight_*' => 'required',
             'restred_*' => 'nullable',
             'restyellow_*'=>'nullable',
@@ -860,17 +862,21 @@ class SessionController extends Controller
                 $this->filterdatastrength($processedData, $index, $request->input("selectdates"));
             }
         }
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Strength record stored successfully!']);
+        }
+        return redirect()->back()->with('success', 'Strength record stored successfully!');
 
-        return redirect()->back();
     }
     // strenghtfillter
     public function filterdatastrength($processedData, $index, $date)
     {
+        Log::info('processedData strenght Request Data: ', $processedData);
 
         $parsedData = [];
         $setParsedData = [];
         // Extract the indexed values from the input data
-        $fields = ['categorys', 'workouts', 'weigths', 'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
+        $fields = ['categorys', 'workouts', 'names', 'weigths', 'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
 
         foreach ($fields as $field) {
             $key = $field . '_' . $index;
@@ -988,7 +994,7 @@ class SessionController extends Controller
 
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->workout : null,
-
+                    'workoutname' => $item->workoutname,
                     'weight' => $item->weight,
                     'restred' => $item->restred,
                     'restyellow'=>$item->restyellow,
@@ -1031,7 +1037,8 @@ class SessionController extends Controller
     // serach strength
     public function searchSetStrength(Request $request)
     {
-
+            Log::info('return Strength Request Data: ', $request->all());
+        
         try {
             $date = $request->input("date");
             $name = $request->input("name");
@@ -1039,28 +1046,39 @@ class SessionController extends Controller
             $workoutId = $request->input("workout_id");
 
             // Always start by filtering by date
-            $strengthRecords = Strength::with(['category', 'workout', 'setstrengthsetsreps', 'altCategory', 'altWorkout'])
-            ->where('date', $date) // date is mandatory
-            ->get();
-            Log::info('Response filtered data strength: ', ['Strength' => $strengthRecords]);
+            $strengthQuery = Strength::with(['category', 'workout', 'setstrengthsetsreps', 'altCategory', 'altWorkout'])
+            ->where('date', $date);
+            Log::info('Response filtered data strength: ', ['Strength' => $strengthQuery]);
             // Further in-memory filtering
             // if ($name) {
             //     $strengthRecords = $strengthRecords->filter(function ($item) use ($name) {
             //         return stripos($item->workout->workout ?? '', $name) !== false;
             //     });
             // }
+            if ($categoryId && $workoutId && $name) {
+                $strengthQuery = $strengthQuery->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->whereHas('workout', function ($query) use ($name) {$query->where('workoutname', 'like', '%' . $name . '%');});
+            }
             if ($categoryId && $workoutId) {
-                $strengthRecords = $strengthRecords->where('category_id', $categoryId)
+                $strengthQuery = $strengthQuery->where('category_id', $categoryId)
                                                     ->where('workout_id', $workoutId);
             }
-
-            elseif ($categoryId) {
-                $strengthRecords = $strengthRecords->where('category_id', $categoryId);
+            if ($name) {
+                $strengthQuery->whereHas('workout', function ($query) use ($name) {
+                    $query->where('workoutname', 'like', '%' . $name . '%');
+                });
             }
 
-            elseif ($workoutId) {
-                $strengthRecords = $strengthRecords->where('workout_id', $workoutId);
+            if ($categoryId) {
+                $strengthQuery = $strengthQuery->where('category_id', $categoryId);
             }
+
+            if ($workoutId) {
+                $strengthQuery = $strengthQuery->where('workout_id', $workoutId);
+            }
+
+            $strengthRecords = $strengthQuery->get();
 
             $workouts = WorkoutLibrary::where('type', 'Strength')->with('categoryOption')->get();
             $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
@@ -1071,6 +1089,7 @@ class SessionController extends Controller
                     'category_id' => $item->category_id,
                     'category_name' => optional($item->category)->category_name,
                     'workout_id' => $item->workout_id,
+                    'workoutname' => $item->workoutname,
                     'workout_type' => optional($item->workout)->workout,
                     'weight' => $item->weight,
                     'restred' => $item->restred,

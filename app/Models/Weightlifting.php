@@ -67,24 +67,24 @@ class Weightlifting extends Model
     public static function store($data)
     {
         // dd($data);
-        Log::info("message for weightlifting data",$data);
+        Log::info("message for weightlifting data", $data);
         $weightlifting = new self();
         $weightlifting->category_id = $data['category'];
         $weightlifting->workout_id = $data['workout'];
-        $weightlifting->workoutname = $data['name']?? null;
+        $weightlifting->workoutname = $data['name'] ?? null;
         $weightlifting->weight = $data['weigth'];
         $weightlifting->restredwe = $data['restred'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->restyellowwe = $data['restyellow'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->restgreenwe = $data['restgreen'] ?? '00:00:00'; // Use default if not provided
-        $weightlifting->intensity = $data['intensity']?? null;
-        $weightlifting->alt_category_id = $data['alt-category']?? null;
-        $weightlifting->alt_workout_id = $data['alt-workout']?? null;
-        $weightlifting->alt_weight = $data['alt-weigth']?? null;
-        $weightlifting->alt_workoutname = $data['alt-name']?? null;
+        $weightlifting->intensity = $data['intensity'] ?? null;
+        $weightlifting->alt_category_id = $data['alt-category'] ?? null;
+        $weightlifting->alt_workout_id = $data['alt-workout'] ?? null;
+        $weightlifting->alt_weight = $data['alt-weigth'] ?? null;
+        $weightlifting->alt_workoutname = $data['alt-name'] ?? null;
         $weightlifting->altrestredwe = $data['alt-restred'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->altrestyellowwe = $data['alt-restyellow'] ?? '00:00:00'; // Use default if not provided
         $weightlifting->altrestgreenwe = $data['alt-restgreen'] ?? '00:00:00'; // Use default if not provided
-        $weightlifting->alt_intensity = $data['alt-intensity']?? null;
+        $weightlifting->alt_intensity = $data['alt-intensity'] ?? null;
         $weightlifting->date =  $data['date'];
 
         // Save the model to the database
