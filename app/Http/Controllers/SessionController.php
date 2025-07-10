@@ -17,6 +17,7 @@ use App\Models\Test;
 use App\Models\Warmup;
 use App\Models\Weightlifting;
 use App\Models\WeightliftingSet;
+use App\Models\WorkoutAssign;
 use App\Models\WorkoutLibrary;
 use DateTime;
 use Exception;
@@ -549,6 +550,7 @@ class SessionController extends Controller
                     'restwegreen' => $item->restgreenwe,
 
                     'intensity' => $item->intensity,
+                    'is_assigned' => $item->is_assigned,
 
                     'alt_category_id' => $item->alt_category_id,
                     'alt_category_name' => $item->altCategory ? $item->altCategory->category_name : null,
@@ -635,7 +637,7 @@ class SessionController extends Controller
                     'restweyellow' => $item->restyellowwe,
                     'restwegreen' => $item->restgreenwe,
                     'intensity' => $item->intensity,
-
+                    'is_assigned' => $item->is_assigned,
                     'alt_category_id' => $item->alt_category_id,
                     'alt_category_name' => optional($item->altCategory)->category_name,
                     'alt_workout_id' => $item->alt_workout_id,
@@ -829,6 +831,109 @@ class SessionController extends Controller
         }
     }
 
+    // assign strength to class
+    public function assignweightlifting(Request $request)
+    {
+        Log::info('assigned weightlifting: ', $request->all());
+
+        $request->validate([
+            'workout_id' => 'required|integer',
+            'workout_type' => 'required|string|in:strength,weightlifting,warmup,conditioning,test',
+            'assigned' => 'required|boolean',
+            'date' => 'required|string',
+        ]);
+
+        $workoutId = $request->workout_id;
+        $workoutType = $request->workout_type;
+        $assigned = $request->assigned;
+        $date = $request->date;
+        $classId = $request->class_id;
+
+        // If unassigning and no class_id is provided, find it from the pivot table
+        if (!$assigned && !$classId) {
+            $existing = WorkoutAssign::where([
+                'workout_id' => $workoutId,
+                'workout_type' => $workoutType,
+                'date' => $date,
+            ])->first();
+
+            if ($existing) {
+                $classId = $existing->class_id;
+            }
+        }
+
+        // Ensure we have a class ID
+        if (!$classId) {
+            return response()->json(['error' => 'Class ID not found for unassigning.'], 422);
+        }
+
+        // Step 1: Assign or unassign in pivot table
+        if ($assigned) {
+            WorkoutAssign::updateOrCreate(
+                [
+                    'class_id' => $classId,
+                    'workout_id' => $workoutId,
+                    'workout_type' => $workoutType,
+                    'date' => $date,
+                ]
+            );
+            $message = 'Workout assigned to class successfully.';
+        } else {
+            WorkoutAssign::where([
+                'class_id' => $classId,
+                'workout_id' => $workoutId,
+                'workout_type' => $workoutType,
+                'date' => $date,
+            ])->delete();
+            $message = 'Workout unassigned from class successfully.';
+        }
+
+        // Step 2: Update class table is_* flag
+        $class = Classes::find($classId);
+        if ($class) {
+            switch ($workoutType) {
+                case 'strength':
+                    $class->is_strength = $assigned;
+                    break;
+                case 'weightlifting':
+                    $class->is_weightlifting = $assigned;
+                    break;
+                case 'warmup':
+                    $class->is_warmup = $assigned;
+                    break;
+                case 'conditioning':
+                    $class->is_conditioning = $assigned;
+                    break;
+                case 'test':
+                    $class->is_test = $assigned;
+                    break;
+            }
+            $class->save();
+        }
+
+        // Step 3: Update is_assigned in the workout's actual table
+        switch ($workoutType) {
+            case 'strength':
+                Strength::where('id', $workoutId)->update(['is_assigned' => $assigned]);
+                break;
+            case 'weightlifting':
+                Weightlifting::where('id', $workoutId)->update(['is_assigned' => $assigned]);
+                break;
+            case 'warmup':
+                Warmup::where('id', $workoutId)->update(['is_assigned' => $assigned]);
+                break;
+            case 'conditioning':
+                Conditioning::where('id', $workoutId)->update(['is_assigned' => $assigned]);
+                break;
+            case 'test':
+                Test::where('id', $workoutId)->update(['is_assigned' => $assigned]);
+                break;
+        }
+
+        return response()->json(['message' => $message], 200);
+    }
+
+
     // strenght store
     public function strengthstore(Request $request)
     {
@@ -1018,7 +1123,7 @@ class SessionController extends Controller
                     'restyellow'=>$item->restyellow,
                     'restgreen'=>$item->restgreen,
                     'intensity' => $item->intensity,
-
+                    'is_assigned' => $item->is_assigned,
 
                     'alt_category_id' => $item->alt_category_id,
                     'alt_category_name' => $item->altCategory ? $item->altCategory->category_name : null,
@@ -1114,7 +1219,7 @@ class SessionController extends Controller
                     'restyellow' => $item->restyellow,
                     'restgreen' => $item->restgreen,
                     'intensity' => $item->intensity,
-
+                    'is_assigned' => $item->is_assigned,
                     'alt_category_id' => $item->alt_category_id,
                     'alt_category_name' => optional($item->altCategory)->category_name,
                     'alt_workout_id' => $item->alt_workout_id,
@@ -1327,7 +1432,7 @@ class SessionController extends Controller
         }
     }
 
-
+    
 
     public function getmember(Request $request)
     {

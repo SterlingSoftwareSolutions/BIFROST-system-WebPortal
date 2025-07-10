@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('restyellow');
             $table->string('restgreen'); // Assuming rest is in seconds
             $table->string('intensity')->nullable(); // Adjust if you have a specific enum or validation
+            $table->boolean('is_assigned')->default(false);
             $table->foreignId('alt_category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('alt_workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
             $table->float('altweight')->nullable();

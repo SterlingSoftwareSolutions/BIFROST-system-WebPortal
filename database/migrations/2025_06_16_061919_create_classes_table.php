@@ -18,6 +18,11 @@ return new class extends Migration
             $table->integer('spots');
             $table->boolean('workout_assigned');
             $table->string('date');
+            $table->boolean('is_warmup')->default(false);
+            $table->boolean('is_strength')->default(false);
+            $table->boolean('is_weightlifting')->default(false);
+            $table->boolean('is_conditioning')->default(false);
+            $table->boolean('is_test')->default(false);
             $table->timestamps();
         });
     }
