@@ -15,7 +15,7 @@ class AccessController extends Controller
         $users = User::join('accesses', 'users.id', '=', 'accesses.user_id')
             ->select('users.*', 'accesses.*')
             ->whereIn('users.user_type', ['admin', 'super admin'])
-            ->orderBy('accesses.id', 'asc')
+            ->orderBy('accesses.id', 'desc')
             ->take(5)
             ->get();
 
@@ -282,7 +282,6 @@ class AccessController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
-                'user_type' => 'required|string|max:255',
                 'pin' => 'required|integer|min:0',
             ]);
 
@@ -298,16 +297,26 @@ class AccessController extends Controller
             $user->name = $validatedData['name'];
             $user->email = $validatedData['email'];
             $user->pin = $pin;
-            $user->user_type = $validatedData['user_type'];
+            $user->user_type = 'admin';
             $user->save();
 
 
+            $accessFields = $request->input('access_fields', []);
             $access = new Access();
             $access->user_id = $user->id;
+
+            $access->dashboard = isset($accessFields['dashboard']) ? 'enable' : 'disable';
+            $access->access = isset($accessFields['access']) ? 'enable' : 'disable';
+            $access->client_management = isset($accessFields['client_management']) ? 'enable' : 'disable';
+            $access->workout_library = isset($accessFields['workout_library']) ? 'enable' : 'disable';
+            $access->session = isset($accessFields['session']) ? 'enable' : 'disable';
+            $access->financial = isset($accessFields['financial']) ? 'enable' : 'disable';
+            $access->communication = isset($accessFields['communication']) ? 'enable' : 'disable';
+            $access->statistics = isset($accessFields['statistics']) ? 'enable' : 'disable';
             $access->save();
 
             // Optionally, you can return a response or redirect
-            return redirect()->route('admindaaccess')->with('success', 'Profile created successfully!');
+            return redirect()->route('admindaaccess')->with('success', 'New Admin created successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
         }

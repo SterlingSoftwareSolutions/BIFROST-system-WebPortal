@@ -13,6 +13,37 @@
             {{-- <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
+            //delete selected weightlifting data
+            //selected strength delete
+            $(document).on('click', '.delete-weightlifting-btn', function () {
+                const date = document.getElementById('selectdateweDelete').value;
+                const id = $(this).data('id');
+                const confirmed = confirm("Are you sure you want to delete this weightlifting record?");
+
+                if (!confirmed) return;
+
+                $.ajax({
+                    url: "/delete-weightlifting",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: id
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            getWeightlifting(date); 
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error:", error);
+                        alert("An error occurred while deleting the weightlifting record.");
+                    }
+                });
+            });
+
             $(document).ready(function() {
                 const date = document.getElementById('selectdateweDelete').value;
                 $('#deleteFormWe').on('submit', function(event) {
@@ -42,11 +73,11 @@
 
             $(document).ready(function() {
                 const tab = document.getElementById('weightliftingTab');
-                const formDataArray = $(this).serializeArray();
-                console.log('Form data as object:', formDataArray);
 
                 $('#storeFromWe').on('submit', function(event) {
                     event.preventDefault(); // Prevent the default form submission
+                    const formDataArray = $(this).serializeArray();
+                    console.log('Form data as object:', formDataArray);
 
                     $.ajax({
                         url: '/store-weightlifting',
@@ -145,7 +176,7 @@
                             </div>
 
                             <!-- Scroll Section -->
-                            <div id="setweights" class="mt-4 max-h-96 overflow-y-auto space-y-4">
+                            <div id="setweights" class="mt-4 max-h-[600px] overflow-y-auto space-y-4">
                                 {{-- <!-- Assigned border / one card -->
                                 <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                                     <div class="border border-black rounded-xl shadow p-4 bg-white">
@@ -1615,7 +1646,7 @@
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">Workout Name - ${item.workout_type || 'N/A'}</div>
+                        <div class="text-gray-700">Workout Name - ${item.workoutname     || 'N/A'}</div>
                         <div class="space-x-2">
                             <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -1624,7 +1655,7 @@
                                 </svg>
                             </button>
 
-                            <button class="" type="button">
+                            <button class="delete-weightlifting-btn" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
@@ -1658,8 +1689,9 @@
                     </div>
 
                     <div class="mt-4 flex justify-end">
+                        <p class="mr-4 font-bold">Assign Workout to Class</p>
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
+                            <input type="checkbox" value="" class="sr-only peer weightlifting-toggle" data-workout-id="${item.id}" data-workout-type="weightlifting" ${item.is_assigned ? 'checked' : ''}>
                              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
@@ -1749,4 +1781,44 @@
             }
         });
     }
+
+    $(document).on('change', '.weightlifting-toggle', function () {
+        const date = document.getElementById('selectdateweDelete').value;
+        var workoutId = $(this).data('workout-id');
+        var workoutType = $(this).data('workout-type');  
+        let selectedClassId = localStorage.getItem("selected_class_id");
+        var classId = selectedClassId;
+        localStorage.removeItem("selected_class_id");
+        console.log('selected class Id----',classId);
+        var assigned = $(this).is(':checked') ? 1 : 0;
+        
+        // Optional: check that classId is present
+        if (!classId) {
+            alert("Please select a class first.");
+            $(this).prop('checked', !assigned);
+            return;
+        }
+        
+        $.ajax({
+            url: "/assign-weightlifting-to-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                class_id: classId,
+                workout_id: workoutId,
+                workout_type: workoutType,
+                date: date,
+                assigned: assigned
+            },
+            success: function (response) {
+                alert(response.message);
+                getdateName(date);
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", xhr.responseText);
+                alert("An error occurred while assigning the workout.");
+            }
+        });
+    });
+
 </script>

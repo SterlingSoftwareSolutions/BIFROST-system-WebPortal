@@ -22,7 +22,7 @@ return new class extends Migration
             $table->time('restgreenwe');
 
             $table->string('intensity');
-
+            $table->boolean('is_assigned')->default(false);
             $table->foreignId('alt_category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('alt_workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
             $table->string('alt_workoutname')->nullable();
