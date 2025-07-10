@@ -12,6 +12,7 @@ class Strength extends Model
     protected $fillable = [
         'category_id',
         'workout_id',
+        'workoutname',
         'weight',
         'sets',
         'restred',
@@ -63,6 +64,7 @@ class Strength extends Model
         $strengthing->category_id = $data['categorys'];
         $strengthing->workout_id = $data['workouts'];
         $strengthing->weight = $data['weigths'];
+        $strengthing->workoutname = $data['names'] ?? null;
         $strengthing->restred = $data['restreds'] ?? '00:00:00';
         $strengthing->restyellow = $data['restyellows'] ?? '00:00:00';
         $strengthing->restgreen = $data['restgreens'] ?? '00:00:00'; // Use default if not provided

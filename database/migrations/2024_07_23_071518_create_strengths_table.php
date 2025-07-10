@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
+            $table->string('workoutname')->nullable();
             $table->float('weight');
             $table->string('restred');
             $table->string('restyellow');
