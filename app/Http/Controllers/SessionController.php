@@ -777,6 +777,24 @@ class SessionController extends Controller
             return response()->json(['message' => 'An error occurred while updating the weightlifting data.'], 500);
         }
     }
+
+    //delete selected weightlifting data
+    public function deleteweightlifting(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:weightliftings,id', 
+        ]);
+
+        try {
+            $weightlifting = Weightlifting::findOrFail($request->id);
+            $weightlifting->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Weightlifting record deleted.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete Weightlifting record.']);
+        }
+    }
+
     public function deleteAllBySelectDateWeightlifting(Request $request)
     {
         // Validate the selected date
@@ -1267,6 +1285,24 @@ class SessionController extends Controller
             return redirect()->back()->with('error', 'An error occurred while updating the weightlifting data.');
         }
     }
+
+    //delete selected strength data
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:strengths,id', 
+        ]);
+
+        try {
+            $strength = Strength::findOrFail($request->id);
+            $strength->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Strength record deleted.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete strength record.']);
+        }
+    }
+
     // deletestrenght
     public function deleteAllByDelectDataStrenght(Request $request)
     {

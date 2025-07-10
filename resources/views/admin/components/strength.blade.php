@@ -11,6 +11,36 @@
             {{-- <button class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
         </form>
         <script>
+            //selected strength delete
+            $(document).on('click', '.delete-strength-btn', function () {
+                const date = document.getElementById('selectdatestrenghtDelete').value;
+                const id = $(this).data('id');
+                const confirmed = confirm("Are you sure you want to delete this strength record?");
+
+                if (!confirmed) return;
+
+                $.ajax({
+                    url: "/delete-strength",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: id
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            getstrength(date); // Or whatever date picker you're using
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error:", error);
+                        alert("An error occurred while deleting the strength record.");
+                    }
+                });
+            });
+
             $(document).ready(function() {
                 const date = document.getElementById('selectdatestrenghtDelete').value;
                 $('#deleteforstrenght').on('submit', function(event) {
@@ -140,7 +170,7 @@
                         </div>
 
                         <!-- Scroll Section -->
-                        <div id="setstrengths" class="mt-4 max-h-96 overflow-y-auto space-y-4">
+                        <div id="setstrengths" class="mt-4 max-h-[600px] overflow-y-auto space-y-4">
                             {{-- <!-- Assigned border / one card -->
                             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                                 <div class="border border-black rounded-xl shadow p-4 bg-white">
@@ -768,7 +798,7 @@
                                 </svg>
                             </button>
 
-                            <button class="" type="button">
+                            <button class="delete-strength-btn" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
