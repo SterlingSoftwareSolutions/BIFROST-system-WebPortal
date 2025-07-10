@@ -14,6 +14,7 @@
         </thead>
         <tbody class="bg-white" id="classesTableBody">
             <input type="text" name="selectdatecla" id="selectdateclae" hidden >
+            <input type="text" id="selected_class_id" hidden >
             {{-- @php
                 $selectedDate = "<script>document.getElementById('selectdateclae').value</script>";
             @endphp
@@ -97,62 +98,95 @@
 
   <script>
     function getdateName(dayName){
-         var selectdateName = dayName;
-        // console.log("nameeeeeeeeeeee",selectdateName);
-         document.getElementById('selectdatecla').value = selectdateName;
-        // document.getElementById('selectdateclae').value = selectdateName;
+    const selectedStoredClassId = localStorage.getItem("selected_class_id");
 
-        console.log("Fetching classes for:", dayName);
+    document.getElementById('selectdatecla').value = dayName;
 
-        fetch(`/get-classes-by-day?day=${encodeURIComponent(dayName)}`)
-            .then(response => response.json())
-            .then(classes => {
-                const tbody = document.getElementById('classesTableBody');
-                tbody.innerHTML = ''; // Clear previous rows
+    console.log("Fetching classes for:", dayName);
 
-                if (classes.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No classes found</td></tr>';
-                    return;
-                }
+    fetch(`/get-classes-by-day?day=${encodeURIComponent(dayName)}`)
+        .then(response => response.json())
+        .then(classes => {
+            const tbody = document.getElementById('classesTableBody');
+            tbody.innerHTML = ''; // Clear previous rows
 
-                classes.forEach(cls => {
-                    const time = new Date('1970-01-01T' + cls.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (classes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No classes found</td></tr>';
+                return;
+            }
 
-                    const row = `
-                        <tr class="border-t">
-                            <td class="px-4 py-2">${time}</td>
-                            <td class="px-4 py-2">${cls.duration} <span class="ml-2">hr</span></td>
-                            <td class="px-4 py-2">${cls.spots}</td>
-                            <td class="px-4 py-2">
-                                <form method="POST" action="/classes/toggle-workout/${cls.id}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <label class="inline-flex items-center cursor-pointer">
-                                        <input type="hidden" name="workout_assigned_${cls.id}" value="0">
-                                        <input type="checkbox"
-                                            class="sr-only peer"
-                                            name="workout_assigned_${cls.id}"
-                                            value="1"
-                                            onchange="this.form.submit()"
-                                            ${cls.workout_assigned ? 'checked' : ''}>
-                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                    </label>
-                                </form>
-                            </td>
-                            <td class="px-4 py-2">
-                                <form method="POST" action="/classes/delete/${cls.id}" onsubmit="return confirm('Are you sure?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button type="submit" class="text-red-500">X</button>
-                                </form>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.insertAdjacentHTML('beforeend', row);
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching classes:", error);
+            classes.forEach(cls => {
+                const time = new Date('1970-01-01T' + cls.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                const isSelected = selectedStoredClassId && selectedStoredClassId == cls.id;
+                const borderStyle = isSelected ? 'border: 2px solid #22c55e; border-radius: 10px;' : '';
+
+                const row = `
+                    <tr class="border-t class-row cursor-pointer" data-id="${cls.id}" onclick="selectClassRow(this)" style="${borderStyle}">
+                        <td class="px-4 py-2">${time}</td>
+                        <td class="px-4 py-2">${cls.duration} <span class="ml-2">hr</span></td>
+                        <td class="px-4 py-2">${cls.spots}</td>
+                        <td class="px-4 py-2">
+                            <form method="POST" action="/classes/toggle-workout/${cls.id}">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <label class="inline-flex items-center cursor-pointer">
+                                    <input type="hidden" name="workout_assigned_${cls.id}" value="0">
+                                    <input type="checkbox"
+                                        class="sr-only peer"
+                                        name="workout_assigned_${cls.id}"
+                                        value="1"
+                                        onchange="this.form.submit()"
+                                        ${cls.workout_assigned ? 'checked' : ''}>
+                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                                </label>
+                            </form>
+                        </td>
+                        <td class="px-4 py-2">
+                            <form method="POST" action="/classes/delete/${cls.id}" onsubmit="return confirm('Are you sure?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="text-red-500">X</button>
+                            </form>
+                        </td>
+                    </tr>
+                `;
+                tbody.insertAdjacentHTML('beforeend', row);
+            });
+
+            // Automatically assign the selected row reference
+            const selectedRow = document.querySelector(`tr[data-id="${selectedStoredClassId}"]`);
+            if (selectedRow) {
+                selectedClassRow = selectedRow;
+                selectedClassId = selectedStoredClassId;
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching classes:", error);
         });
+}
+
+    let selectedClassRow = null;
+    let selectedClassId = null;
+
+    function selectClassRow(rowElement) {
+        // Deselect previous
+        if (selectedClassRow) {
+            selectedClassRow.style.border = '';
+            selectedClassRow.style.borderRadius = '';
+        }
+
+        // Highlight current
+        rowElement.style.border = '2px solid #22c55e'; // Tailwind green-500
+        rowElement.style.borderRadius = '10px';
+        selectedClassRow = rowElement;
+        
+        selectedClassId = rowElement.getAttribute('data-id');
+
+        console.log("Selected Class ID:", selectedClassId);
+        
+        // Optionally set to a hidden input if needed
+        //document.getElementById('selected_class_id')?.value = selectedClassId;
+        localStorage.setItem("selected_class_id", selectedClassId);
     }
 
   </script>

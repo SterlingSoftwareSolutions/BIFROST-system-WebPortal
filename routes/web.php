@@ -159,6 +159,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/search-setweightlifting', [SessionController::class, 'searchSetWeightlifting'])->name('search.setweightlifting');
     // delete selected Weightlifting data
     Route::post('/delete-weightlifting', [SessionController::class, 'deleteweightlifting'])->name('weightlifting.delete');
+    // asign weightligting to class
+    Route::post('/assign-weightlifting-to-class', [SessionController::class, 'assignweightlifting'])->name('weightlifting.assign');
 
     // store conditioning
     Route::post('/store-conditioning', [SessionController::class, 'storeconditioning']);

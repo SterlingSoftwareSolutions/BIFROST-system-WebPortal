@@ -763,6 +763,52 @@
         });
     }
 
+    // assigned to class
+    $(document).on('change', '.strength-toggle', function () {
+        const date = document.getElementById('selectdatestrenghtDelete').value;
+        const workoutId = $(this).data('workout-id');
+        const workoutType = $(this).data('workout-type');
+        const assigned = $(this).is(':checked') ? 1 : 0;
+
+        // Get and conditionally remove class_id from local storage
+        let selectedClassId = localStorage.getItem("selected_class_id");
+        if (assigned) {
+            if (!selectedClassId) {
+                alert("Please select a class first.");
+                $(this).prop('checked', false);
+                return;
+            }
+        }
+
+        // Only send class_id if assigning
+        const payload = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            workout_id: workoutId,
+            workout_type: workoutType,
+            date: date,
+            assigned: assigned
+        };
+
+        if (assigned) {
+            payload.class_id = selectedClassId;
+            localStorage.removeItem("selected_class_id");
+        }
+
+        $.ajax({
+            url: "/assign-weightlifting-to-class",
+            type: "POST",
+            data: payload,
+            success: function (response) {
+                alert(response.message);
+                getdateName(date); // Refresh classes or UI
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX error:", xhr.responseText);
+                alert("An error occurred while assigning the workout.");
+            }
+        });
+    });
+
     function setstrengths(strengthData, categoryOptions) {
         const container = $("#setstrengths"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
@@ -834,7 +880,7 @@
                     <div class="mt-4 flex justify-end">
                         <p class="mr-4 font-bold">Assign Workout to Class</p>
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer">
+                            <input type="checkbox" value="" class="sr-only peer strength-toggle" data-workout-id="${item.id}" data-workout-type="strength" ${item.is_assigned ? 'checked' : ''}>
                              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600 dark:peer-checked:bg-blue-600"></div>
                         </label>
                     </div>
