@@ -3,9 +3,9 @@
     <input type="text" name="selecttabwe" id="selecttabwe" hidden>
 
 
-    <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
-        <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
-        <div class="flex justify-center text-center items-center w-1/2">Create</div>
+    <div class="flex gap-5 px-4 mr-8 rounded-md font-bold text-xl">
+        {{-- <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
+        <div class="flex justify-center text-center items-center w-1/2">Create</div> --}}
         <form id="deleteFormWe">
             @csrf
             @method('DELETE')
@@ -138,6 +138,7 @@
                         {{-- Serach Section --}}
                         <div class="flex-col w-full">
                             <div class="bg-gray-50 p-4">
+                                <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Workout List</div>
                                 <div class="flex items-start space-x-6">
                                     <!-- Category Field -->
                                     <div class="flex flex-row items-center w-1/2 space-x-2">
@@ -171,6 +172,12 @@
                                         <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
                                             type="button"
                                             class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                    </div>
+
+                                    <div class="flex flex-row items-center flex-1 space-x-2">
+                                        <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()"
+                                            type="button"
+                                            class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
                                     </div>
                                 </div>
                             </div>
@@ -255,7 +262,9 @@
 
                         </div>
                         {{-- Primary Category and Workouts --}}
-                        <div class="flex-col w-full">
+
+                        <div class="flex-col w-full bg-gray-50 p-4">
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Create</div>
                             <div class="flex items-center border-b mt-2">
                                 <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="namewe_1" name="namewe_1"
@@ -1620,7 +1629,16 @@
             }
         });
     }
+    function clearSearchWeightlifting(){
+        const date = document.getElementById('selectdateweDelete').value;
 
+        document.getElementById('categorywe_2').value = '';
+        document.getElementById('workoutwe_2').value = '';
+        document.getElementById('namewe_2').value = '';
+        console.log('dateeeee',date);
+        getWeightlifting(date);
+
+    }
     // get filterd weigths
     function setWeightliftings(weightlifting, categoryOptions) {
         const container = $("#setweights"); // Replace with your actual container class or ID
@@ -1723,6 +1741,13 @@
             return;
         }
 
+        const card = document.querySelector(`.edit-weightlifting-btn[data-id="${weightliftingId}"]`).closest('.border.border-green-900');
+        if (card) {
+            card.classList.remove('border-green-900');
+            card.classList.remove('border');
+            card.classList.add('border-red-600');
+            card.classList.add('border-2');
+        }
         // Set category and trigger onchange to load workouts
         const categorySelect = document.getElementById('categorywe_1');
         categorySelect.value = data.category_id;
@@ -1764,6 +1789,11 @@
         document.getElementById('savebtn').innerHTML = "Save";
         // Show Clear button
         document.getElementById('clearwbtn').classList.add('hidden');
+        const redCard = document.querySelector('.border-red-600.border-2');
+        if (redCard) {
+            redCard.classList.remove('border-red-600', 'border-2');
+            redCard.classList.add('border', 'border-green-900');
+        }
 
     }
 

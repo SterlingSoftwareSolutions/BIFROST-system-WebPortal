@@ -1,9 +1,9 @@
 <div id="strength" hidden>
     <input type="text" name="selecttabss" id="selecttabss" hidden>
     {{-- hidden input field --}}
-    <div class="flex gap-5 p-4 mr-8 rounded-md mb-4 font-bold text-xl">
-        <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
-        <div class="flex justify-center text-center items-center w-1/2">Create</div>
+    <div class="flex gap-5 px-4 mr-8 rounded-md font-bold text-xl">
+        {{-- <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
+        <div class="flex justify-center text-center items-center w-1/2">Create</div> --}}
         <form id="deleteforstrenght">
             @csrf
             @method('DELETE')
@@ -132,6 +132,7 @@
                     {{-- start alternative --}}
                     <div class="flex-col w-full">
                         <div class="bg-gray-50 p-4">
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Workout List</div>
                             <div class="flex items-start space-x-6">
                                 <!-- Category Field -->
                                 <div class="flex flex-row items-center w-1/2 space-x-2">
@@ -165,6 +166,12 @@
                                     <button id="addsetstrength_1" onclick="filterStrength(date)"
                                         type="button"
                                         class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                </div>
+
+                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                    <button id="searchclearsetstrength_1" onclick="clearSearchStrength()"
+                                        type="button"
+                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
                                 </div>
                             </div>
                         </div>
@@ -254,6 +261,7 @@
                     {{-- end primary --}}
                     {{-- start primary --}}
                     <div class=" flex-col w-full bg-gray-50 p-4">
+                        <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Create</div>
                         <div class="flex items-center border-b mt-2">
                             <label for="names_1" class="w-60 block mb-1">Workout Name </label>
                             <input type="text" id="names_1" name="names_1"
@@ -291,7 +299,7 @@
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
-                                            
+
 
                                             <!-- Decrement Button -->
                                             <button type="button"
@@ -990,7 +998,13 @@
             console.warn("No strength data found for ID:", strengthId);
             return;
         }
-
+        const card = document.querySelector(`.edit-strength-btn[data-id="${strengthId}"]`).closest('.border.border-green-900');
+        if (card) {
+            card.classList.remove('border-green-900');
+            card.classList.remove('border');
+            card.classList.add('border-red-600');
+            card.classList.add('border-2');
+        }
         // Set category and trigger onchange to load workouts
         const categorySelect = document.getElementById('categorys_1');
         categorySelect.value = data.category_id;
@@ -1032,6 +1046,11 @@
         document.getElementById('savebtn').innerHTML = "Save";
         // Show Clear button
         document.getElementById('clearsbtn').classList.add('hidden');
+        const redCard = document.querySelector('.border-red-600.border-2');
+        if (redCard) {
+            redCard.classList.remove('border-red-600', 'border-2');
+            redCard.classList.add('border', 'border-green-900');
+        }
     }
 
     function filterStrength(date) {
@@ -1070,6 +1089,16 @@
         });
     }
 
+    function clearSearchStrength(){
+        const date = document.getElementById('selectdatestrenghtDelete').value;
+
+        document.getElementById('categorys_2').value = '';
+        document.getElementById('workouts_2').value = '';
+        document.getElementById('name_1').value = '';
+        console.log('dateeeee',date);
+        getstrength(date);
+
+    }
     function setstrengthing(Strength, categoryArray) {
         console.log("this is strength", Strength);
         console.log("this is categoryOptions", categoryArray);
