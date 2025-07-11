@@ -437,73 +437,31 @@ class SessionController extends Controller
 
         // Process the data as needed
         $WeightliftingData = Weightlifting::store($parsedData);
-
-        $setFields = ['setswe', 'repswe', 'alt-setswe', 'alt-repswe'];
-        foreach ($setFields as $setField) {
-            // Check for keys with numbers
-            $patternWithNumbers = '/^' . preg_quote($setField . '_' . $index) . '[0-9]+$/';
-            // Check for keys without numbers
-            $patternWithoutNumbers = '/^' . preg_quote($setField . '_' . $index) . '$/';
-
-            foreach ($processedData as $key => $value) {
-                if (preg_match($patternWithNumbers, $key) || preg_match($patternWithoutNumbers, $key)) {
-                    $setParsedData[$key] = $value;
-                }
-            }
-        }
-        // Add the foreign key if Weightlifting data is available
-        if ($WeightliftingData) {
-            $setParsedData['foreignKey'] = $WeightliftingData->id;
-        }
-
-        // add part
-        // Initialize arrays to hold the parsed data
-        $sets = [];
-        $reps = [];
-        $altSets = [];
-        $altReps = [];
+        Log::info('Created Weightlifting ID', ['id' => optional($WeightliftingData)->id]);
         $foreignKey = $WeightliftingData->id;
 
-        // Iterate over all processed data
-        foreach ($processedData as $key => $value) {
-            // Check for setswe keys
-            if (strpos($key, 'setswe_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $sets[$suffix] = 1;
-            } elseif (strpos($key, 'repswe_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $reps[$suffix] = $value;
-            } elseif (strpos($key, 'alt-setswe_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $altSets[$suffix] = $value;
-            } elseif (strpos($key, 'alt-repswe_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $altReps[$suffix] = $value;
-            } elseif ($key === 'foreignKey') {
-                $foreignKey = $value;
+        // Now handle all set-related fields from entire request (not just _1)
+        $allRepsSets = [];
+        foreach (request()->all() as $key => $value) {
+            if (preg_match('/^(setswe|repswe|alt-setswe|alt-repswe)_(\d+)$/', $key, $matches)) {
+                $type = $matches[1];   // e.g., 'setswe', 'repswe'
+                $suffix = $matches[2]; // e.g., '1', '12', '13'
+
+                $allRepsSets[$suffix][$type] = $value;
             }
         }
 
-        // Combine parsed data into rows
-        $combinedData = [];
-        $allKeys = array_merge(array_keys($sets), array_keys($reps), array_keys($altSets), array_keys($altReps));
-        $uniqueIndexes = array_unique($allKeys);
-
-        foreach ($uniqueIndexes as $index) {
+        // Convert to final row format and save
+        foreach ($allRepsSets as $suffix => $values) {
             $row = [
-                isset($sets[$index]) ? $sets[$index] : null,
-                isset($reps[$index]) ? $reps[$index] : null,
-                isset($altSets[$index]) ? $altSets[$index] : null,
-                isset($altReps[$index]) ? $altReps[$index] : null,
-                $foreignKey,
+                'sets' => isset($values['setswe']) ? $values['setswe'] : 1,
+                'reps' => $values['repswe'] ?? null,
+                'alt_set' => $values['alt-setswe'] ?? null,
+                'alt_reps' => $values['alt-repswe'] ?? null,
+                'weightlifting_id' => $foreignKey,
             ];
-            $combinedData[] = $row;
-        }
 
-        // Process the combined data as needed
-        // Example: Store the combined data in another table
-        foreach ($combinedData as $row) {
-            // dd($row);
+            Log::info('Saving WeightliftingSet row', $row);
             WeightliftingSet::store($row);
         }
     }
@@ -727,42 +685,48 @@ class SessionController extends Controller
             ]);
 
             // Update existing weightlifting sets
+           
             foreach ($request->all() as $key => $value) {
-                if (preg_match('/^setsid_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $setId = $request->input("setwid_$index");
-                    $weightliftingSet = WeightliftingSet::findOrFail($setId);
+    if (preg_match('/^setwid_(\d+)$/', $key, $matches)) {
+        $index = $matches[1];
 
-                    $weightliftingSet->update([
-                        'sets' => $request->input('repsnowe_1'),
-                        'reps' => $request->input('repswe_1'),
-                        'alt_sets' => $request->input('altsetsweight_' . $index),
-                        'alt_reps' => $request->input('altrepsweight_' . $index),
-                        'weightlifting_id' => $weightlifting->id,
-                    ]);
-                }
+        $setId = $request->input("setwid_$index");
+        $sets = $request->input("setswe_$index");
+        $reps = $request->input("repswe_$index");
+
+        if ($setId && $sets !== null && $reps !== null) {
+            $set = WeightliftingSet::find($setId);
+            if ($set) {
+                $set->update([
+                    'sets' => $sets,
+                    'reps' => $reps,
+                ]);
             }
+        }
+    }
+}
+
 
             // Create new weightlifting sets
             foreach ($request->all() as $key => $value) {
-                if (preg_match('/^setswe_(\d+)(\d+)$/', $key, $matches) || preg_match('/^alt-setswe_(\d+)(\d+)$/', $key, $matches)) {
-                    $index = $matches[2];
-                    $sets = $request->input('setswe_' . $weightliftingId . $index);
-                    $reps = $request->input('repswe_' . $weightliftingId . $index);
-                    $alt_sets = $request->input('alt-setswe_' . $weightliftingId . $index);
-                    $alt_reps = $request->input('alt-repswe_' . $weightliftingId . $index);
+                if (preg_match('/^setswe_' . $weightliftingId . '(\d+)$/', $key, $matches)) {
+                    $index = $matches[1];
 
-                    // Debugging statements
-                    Log::info("Processing set: setswe_" . $weightliftingId . $index);
-                    Log::info("Sets: $sets, Reps: $reps, Alt Sets: $alt_sets, Alt Reps: $alt_reps");
+                    $sets = $request->input("setswe_{$weightliftingId}{$index}");
+                    $reps = $request->input("repswe_{$weightliftingId}{$index}");
+                    $alt_sets = $request->input("alt-setswe_{$weightliftingId}{$index}");
+                    $alt_reps = $request->input("alt-repswe_{$weightliftingId}{$index}");
 
-                    WeightliftingSet::create([
-                        'sets' => $sets,
-                        'reps' => $reps,
-                        'alt_sets' => $alt_sets,
-                        'alt_reps' => $alt_reps,
-                        'weightlifting_id' => $weightlifting->id,
-                    ]);
+                    // Only save if at least sets or reps is provided
+                    if ($sets !== null || $reps !== null) {
+                        WeightliftingSet::create([
+                            'sets' => $sets,
+                            'reps' => $reps,
+                            'alt_sets' => $alt_sets,
+                            'alt_reps' => $alt_reps,
+                            'weightlifting_id' => $weightlifting->id,
+                        ]);
+                    }
                 }
             }
 
@@ -1018,77 +982,35 @@ class SessionController extends Controller
         }
         // dd($parsedData);
         $strengthData = Strength::store($parsedData);
+        Log::info('Created Strength ID', ['id' => optional($strengthData)->id]);
 
-        $setFields = ['sets', 'reps', 'alt-sets', 'alt-reps'];
-        foreach ($setFields as $setField) {
-
-            // Check for keys with numbers
-            $patternWithNumbers = '/^' . preg_quote($setField . '_' . $index) . '[0-9]+$/';
-            // Check for keys without numbers
-            $patternWithoutNumbers = '/^' . preg_quote($setField . '_' . $index) . '$/';
-
-            foreach ($processedData as $key => $value) {
-                if (preg_match($patternWithNumbers, $key) || preg_match($patternWithoutNumbers, $key)) {
-                    $setParsedData[$key] = $value;
-                }
-            }
-        }
-        // dd($setField);
-        // Add the foreign key if Strength data is available
-        if ($strengthData) {
-            $setParsedData['foreignKey'] = $strengthData->id;
-        }
-
-        // Initialize arrays to hold the parsed data
-        $sets = [];
-        $reps = [];
-        $altSets = [];
-        $altReps = [];
         $foreignKey = $strengthData->id;
+        // Now handle all set-related fields from entire request (not just _1)
+        $allRepsSets = [];
+        foreach (request()->all() as $key => $value) {
+            if (preg_match('/^(sets|reps|alt-sets|alt-reps)_(\d+)$/', $key, $matches)) {
+                $type = $matches[1];   // e.g., 'setswe', 'repswe'
+                $suffix = $matches[2]; // e.g., '1', '12', '13'
 
-        // Iterate over all processed data
-        foreach ($processedData as $key => $value) {
-            // Check for sets keys
-            if (strpos($key, 'sets_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $sets[$suffix] = $value;
-            } elseif (strpos($key, 'reps_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $reps[$suffix] = $value;
-            } elseif (strpos($key, 'alt-sets_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $altSets[$suffix] = $value;
-            } elseif (strpos($key, 'alt-reps_') === 0) {
-                $suffix = explode('_', $key)[1]; // Extract numeric suffix
-                $altReps[$suffix] = $value;
-            } elseif ($key === 'foreignKey') {
-                $foreignKey = $value;
+                $allRepsSets[$suffix][$type] = $value;
             }
         }
 
-
-        // Combine parsed data into rows
-        $combinedData = [];
-        $allKeys = array_merge(array_keys($sets), array_keys($reps), array_keys($altSets), array_keys($altReps));
-        $uniqueIndexes = array_unique($allKeys);
-
-        foreach ($uniqueIndexes as $index) {
+        // Convert to final row format and save
+        foreach ($allRepsSets as $suffix => $values) {
             $row = [
-                isset($sets[$index]) ? $sets[$index] : null,
-                isset($reps[$index]) ? $reps[$index] : null,
-                isset($altSets[$index]) ? $altSets[$index] : null,
-                isset($altReps[$index]) ? $altReps[$index] : null,
-                $foreignKey,
+                'sets' => isset($values['sets']) ? $values['sets'] : 1,
+                'reps' => $values['reps'] ?? null,
+                'alt_set' => $values['alt-sets'] ?? null,
+                'alt_reps' => $values['alt-reps'] ?? null,
+                'strength_id' => $foreignKey,
             ];
-            $combinedData[] = $row;
-        }
 
-        // Process the combined data as needed
-        // Example: Store the combined data in another table
-        foreach ($combinedData as $row) {
-            //  dd($row);
+            Log::info('Saving StrengthSetRep row', $row);
             StrengthSetRep::store($row);
         }
+
+
     }
 
     // getstrenght
@@ -1335,48 +1257,61 @@ class SessionController extends Controller
                 'altintensity' => $request->input('altintensitystrength_1'),
             ]);
             // dd($strength);
-            // Update existing weightlifting sets
-            foreach ($request->all() as $key => $value) {
-                if (preg_match('/^setsid_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $setId = $request->input("setsid_$index");
-                    $strengthrepsset = StrengthSetRep::findOrFail($setId);
-                    $strengthrepsset->update([
-                        'sets' => $request->input('sets_1'),
-                        'reps' => $request->input('reps_1'),
-                        'alt_sets' => $request->input('altsetsstrength_' . $index),
-                        'alt_reps' => $request->input('altrepssstrength_' . $index),
-                        'strength_id' => $strength->id,
-                    ]);
-                }
+            // Update existing StrengthSetRep records
+foreach ($request->all() as $key => $value) {
+    if (preg_match('/^setsid_(\d+)$/', $key, $matches)) {
+        $suffix = $matches[1]; // e.g., 12
+        $setId = $value; // e.g., 55
+
+        $setsKey = "sets_$suffix";
+        $repsKey = "reps_$suffix";
+
+        $sets = $request->input($setsKey);
+        $reps = $request->input($repsKey);
+
+        if ($sets !== null && $reps !== null) {
+            $set = StrengthSetRep::find($setId);
+            if ($set) {
+                $set->update([
+                    'sets' => $sets,
+                    'reps' => $reps,
+                    'strength_id' => $strengthId,
+                ]);
+
+                Log::info("Updated Set ID $setId: sets=$sets, reps=$reps");
+            } else {
+                Log::warning("Set with ID $setId not found for update.");
             }
-            // Create new  sets
+        } else {
+            Log::warning("No sets/reps found for suffix $suffix (keys: $setsKey, $repsKey)");
+        }
+    }
+}
+
             foreach ($request->all() as $key => $value) {
-                if (preg_match('/^sets_(\d+)(\d+)$/', $key, $matches) || preg_match('/^alt-sets_(\d+)(\d+)$/', $key, $matches)) {
-                    Log::info("data cheack", ['request' => $request->all()]);
-                    $index = $matches[2];
+    if (preg_match('/^sets_(\d+)$/', $key, $matches)) {
+        $index = $matches[1];
 
-                    $sets = $request->input('sets_' . $strengthId . $index);
-                    $reps = $request->input('reps_' . $strengthId . $index);
-                    $alt_sets = $request->input('alt-sets_' . $strengthId . $index);
-                    $alt_reps = $request->input('alt-reps_' . $strengthId . $index);
+        // Check if there's a setsid for this index, skip if yes (already updated)
+        if ($request->has("setsid_$index")) {
+            continue;
+        }
 
+        $sets = $request->input("sets_$index");
+        $reps = $request->input("reps_$index");
 
-                    // Debugging statements
-                    Log::info("Processing set: setswe_" . $strengthId . $index);
-                    Log::info("Sets: $sets, Reps: $reps, Alt Sets: $alt_sets, Alt Reps: $alt_reps");
+        if (!empty($sets) && !empty($reps)) {
+            StrengthSetRep::create([
+                'sets' => $sets,
+                'reps' => $reps,
+                'strength_id' => $strengthId,
+            ]);
+            Log::info("New main set created: sets_$index => $sets, reps_$index => $reps");
+        }
+    }
 
-                    $newSet = StrengthSetRep::create([
-                        'sets' => $sets,
-                        'reps' => $reps,
-                        'alt_sets' => $alt_sets,
-                        'alt_reps' => $alt_reps,
-                        'strength_id' => $strength->id,
-                    ]);
+}
 
-                    Log::info('New StrengthSetRep created successfully.', ['id' => $newSet->id]);
-                }
-            }
 
             return response()->json(['message' => 'update suceess']);
         } catch (\Illuminate\Validation\ValidationException $e) {

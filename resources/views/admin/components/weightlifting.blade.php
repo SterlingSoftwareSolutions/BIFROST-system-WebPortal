@@ -106,7 +106,8 @@
 
                             var duplicateSets = document.querySelector(".duplicate-sets");
                             if (duplicateSets) {
-                                duplicateSets.innerHTML = ""; // Clear content
+                                duplicateSets.innerHTML = "";
+                                setCounter = 1; // Clear content
                             }
 
                             var altDuplicateSets = document.querySelector(".altduplicate-setss");
@@ -303,11 +304,11 @@
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <label for="setswe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
                                         <input type="text" id="setwid_1" name="setwid_1"  class="hidden"/>
                                         <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
-                                            <input type="text" id="repsnowe_1" name="repsnowe_1" value="1" data-input-counter
+                                            <input type="text" id="setswe_1" name="setswe_1" value="1" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
@@ -1032,7 +1033,7 @@
                                         <div class="w-60 block mb-1"></div>
         <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
-                                            <input type="text" id="repsnowe_${remainingfind}${setCounter}" name="repsnowe_${remainingfind}${setCounter}" value="${setCounter}" data-input-counter
+                                            <input type="text" id="setswe_${remainingfind}${setCounter}" name="setswe_${remainingfind}${setCounter}" value="${setCounter}" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
@@ -1656,16 +1657,14 @@
             let setsHTML = '';
             console.log('fffgfgf',)
             if (Array.isArray(item.sets) && item.sets.length > 0) {
-                const setObj = item.sets[0]; // usually only one object with `sets` and `reps`
-
-                for (let i = 0; i < setObj.sets; i++) {
+                item.sets.forEach((set, idx) => {
                     setsHTML += `
                         <tr>
-                            <td class="py-1 pr-4">Set ${i + 1}</td>
-                            <td class="py-1">${setObj.reps} Reps</td>
+                            <td class="py-1 pr-4">Set ${idx + 1}</td>
+                            <td class="py-1">${set.reps} Reps</td>
                         </tr>
                     `;
-                }
+                });
             } else {
                 setsHTML = '<tr><td colspan="2">No set data</td></tr>';
             }
@@ -1674,7 +1673,7 @@
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">${item.workoutname     || 'N/A'} :</div>
+                        <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
                         <div class="space-x-2">
                             <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -1770,17 +1769,65 @@
         // Set weight
         document.getElementById('weigthwe_1').value = data.weight;
 
-        if (data.sets.length > 0) {
-            const setData = data.sets[0]; // Get first item
+       // Clear old duplicated sets
+        document.getElementById('duplicate-sets_1').innerHTML = '';
+        document.getElementById('setswe_1').value = data.sets[0].sets;
+        document.getElementById('repswe_1').value = data.sets[0].reps;
+        document.getElementById('setwid_1').value = data.sets[0].id;
 
-            const setsInput = document.getElementById('repsnowe_1');
-            const repsInput = document.getElementById('repswe_1');
-            const setsidInput = document.getElementById('setwid_1');
+        if (data.sets.length > 1) {
+            for (let i = 1; i < data.sets.length; i++) {
+                const suffix = `1${i + 1}`; // e.g., 12, 13, etc.
+                const set = data.sets[i];
 
-            if (setsInput) setsInput.value = setData.sets;
-            if (repsInput) repsInput.value = setData.reps;
-            if (setsidInput) setsidInput.value = setData.id;
+                // Create the HTML just like duplicateSet()
+                const setuiElement = document.createElement('div');
+                setuiElement.innerHTML = `
+                <div class="flex items-center sets-view mt-1">
+                    <div class="w-60 block mb-1"></div>
+                    <input type="text" id="setwid_${suffix}" name="setwid_${suffix}" value="${set.id}" class="hidden"/>
+                    <div class="relative flex items-center max-w-[12rem] gap-2">
+                        <input type="text" id="setswe_${suffix}" name="setswe_${suffix}" value="${i + 1}" data-input-counter
+                            class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5"
+                            placeholder="0" readonly required />
+
+                        <button type="button"
+                            onclick="decrement(this.parentNode.querySelector('input#repswe_${suffix}').id)"
+                            class="decrement-reps bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11">
+                            <svg class="w-3 h-3 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                            </svg>
+                        </button>
+
+                        <input type="text" id="repswe_${suffix}" name="repswe_${suffix}" value="${set.reps}" data-input-counter
+                            class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5"
+                            placeholder="0" readonly required />
+
+                        <button type="button"
+                            onclick="increment(this.parentNode.querySelector('input#repswe_${suffix}').id)"
+                            class="increment-reps bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11">
+                            <svg class="w-3 h-3 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                            </svg>
+                        </button>
+
+                        <label for="repswe_${suffix}" class="text-sm mr-2">REPS</label>
+                    </div>
+
+                    <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">Remove</button>
+                </div>`;
+
+                // Add functionality to the remove button
+                setuiElement.querySelector('.remove-set').addEventListener('click', function () {
+                    setuiElement.remove();
+                });
+
+                // Append to container
+                const container = document.querySelector('.duplicate-sets');
+                container.appendChild(setuiElement);
+            }
         }
+
 
         document.getElementById('restredwe_1').value = data.restwered;
         document.getElementById('restyellowwe_1').value = data.restweyellow;
@@ -1806,7 +1853,12 @@
             redCard.classList.remove('border-red-600', 'border-2');
             redCard.classList.add('border', 'border-green-900');
         }
-
+        // remove duplicat
+        const duplicateContainer = document.getElementById('duplicate-sets_1');
+        if (duplicateContainer) {
+            duplicateContainer.innerHTML = ''; // Remove all appended set blocks
+        }
+        window.setCounter = 1;  
     }
 
     function updateweightlifting(id) {
