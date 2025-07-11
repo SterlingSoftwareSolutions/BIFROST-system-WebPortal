@@ -12,6 +12,7 @@ class Warmup extends Model
     protected $fillable = [
         'category_id',
         'workout_id',
+        'workoutname',
         'reps',
         'weight',
         'date'

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('workout_id')->nullable()
                 ->constrained('workout_libraries')
                 ->onDelete('cascade');
+            $table->string('workoutname')->nullable();
             $table->integer('reps');
             $table->string('date');
             $table->float('weight');
