@@ -70,6 +70,8 @@
             $(document).ready(function() {
                 $('#storeformss').on('submit', function(event) {
                     event.preventDefault(); // Prevent the default form submission
+                    const formDataArray = $(this).serializeArray();
+                    console.log('FormS data as object:', formDataArray);
                     const strengthId = $('#strength_id').val();
 
                     const url = strengthId ? `/update-strenthdata` : '/save-strength';
@@ -97,6 +99,7 @@
                             var duplicateSets = document.querySelector(".duplicate-sets-strength");
                             if (duplicateSets) {
                                 duplicateSets.innerHTML = ""; // Clear content
+                                setCounterstrength = 1;
                             }
 
                             var altDuplicateSets = document.querySelector(
@@ -917,16 +920,14 @@
             let setsHTML = '';
             console.log('ndnvdnldnvv',)
             if (Array.isArray(item.sets) && item.sets.length > 0) {
-                const setObj = item.sets[0]; // usually only one object with `sets` and `reps`
-
-                for (let i = 0; i < setObj.sets; i++) {
+                item.sets.forEach((set, idx) => {
                     setsHTML += `
                         <tr>
-                            <td class="py-1 pr-4">Set ${i + 1}</td>
-                            <td class="py-1">${setObj.reps} Reps</td>
+                            <td class="py-1 pr-4">Set ${idx + 1}</td>
+                            <td class="py-1">${set.reps} Reps</td>
                         </tr>
                     `;
-                }
+                });
             } else {
                 setsHTML = '<tr><td colspan="2">No set data</td></tr>';
             }
@@ -1029,17 +1030,65 @@
         // Set weight
         document.getElementById('weigths_1').value = data.weight;
 
+        // Clear previous sets before appending new ones
+        document.getElementById('sets_1').value = '';
+        document.getElementById('reps_1').value = '';
+        document.getElementById('setsid_1').value = '';
+        document.querySelector('.duplicate-sets-strength').innerHTML = '';
+        setCounterstrength = 1; // reset counter
+
         if (data.sets.length > 0) {
-            const setData = data.sets[0]; // Get first item
+            // Populate the first set into the default field
+            const firstSet = data.sets[0];
+            document.getElementById('sets_1').value = firstSet.sets;
+            document.getElementById('reps_1').value = firstSet.reps;
+            document.getElementById('setsid_1').value = firstSet.id;
 
-            const setsInput = document.getElementById('sets_1');
-            const repsInput = document.getElementById('reps_1');
-            const setsidInput = document.getElementById('setsid_1');
+            // Loop through remaining sets and dynamically create them
+            for (let i = 1; i < data.sets.length; i++) {
+                setCounterstrength = `1${i + 1}`;
+                const setData = data.sets[i];
 
-            if (setsInput) setsInput.value = setData.sets;
-            if (repsInput) repsInput.value = setData.reps;
-            if (setsidInput) setsidInput.value = setData.id;
+                const newSetHTML = `
+                <div class="flex items-center sets-view mt-1">
+                    <div class="w-60 block mb-1"></div>
+                    <input type="text" id="setsid_${setCounterstrength}" name="setsid_${setCounterstrength}" value="${setData.id}" class="hidden"/>
+                    <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
+                        <input type="text" id="sets_${setCounterstrength}" name="sets_${setCounterstrength}" value="${setData.sets}" data-input-counter
+                            class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                            placeholder="0" readonly required />
+
+                        <button type="button"
+                            onclick="decrement('reps_${setCounterstrength}')"
+                            class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                            <svg class="w-3 h-3 text-gray-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                            </svg>
+                        </button>
+
+                        <input type="text" id="reps_${setCounterstrength}" name="reps_${setCounterstrength}" value="${setData.reps}" data-input-counter
+                            class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                            placeholder="0" readonly required />
+
+                        <button type="button"
+                            onclick="increment('reps_${setCounterstrength}')"
+                            class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                            <svg class="w-3 h-3 text-gray-900 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                            </svg>
+                        </button>
+                        <label for="reps_${setCounterstrength}" class="text-sm mr-2">REPS</label>
+                    </div>
+
+                    <button type="button" class="remove-set-strength bg-red-500 text-white p-2 rounded ml-2" onclick="this.closest('.sets-view').remove()">
+                        Remove
+                    </button>
+                </div>`;
+
+                document.querySelector('.duplicate-sets-strength').insertAdjacentHTML('beforeend', newSetHTML);
+            }
         }
+
 
         document.getElementById('names_1').value = data.workoutname;
         document.getElementById('restreds_1').value = data.restred;
@@ -1064,6 +1113,11 @@
             redCard.classList.remove('border-red-600', 'border-2');
             redCard.classList.add('border', 'border-green-900');
         }
+        const duplicateContainers = document.getElementById('duplicate-sets-strength_1');
+        if (duplicateContainers) {
+            duplicateContainers.innerHTML = ''; // Remove all appended set blocks
+        }
+        window.setCounterstrength = 1;
     }
 
     function filterStrength(date) {
