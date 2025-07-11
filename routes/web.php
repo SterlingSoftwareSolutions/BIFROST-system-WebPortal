@@ -146,6 +146,8 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/delete-warmups', [SessionController::class, 'deleteAllBySelectDateWarmups'])->name('warmups.deleteAllBySelectDate');
     // get warmup
     Route::Post('/get-wormup', [SessionController::class, 'getwarmup']);
+    // search Warmup
+    Route::post('/search-setwarmup', [SessionController::class, 'searchSetWarmup'])->name('search.setwarmup');
 
     // store weightlifting
     Route::post('/store-weightlifting', [SessionController::class, 'storeweightlifting']);

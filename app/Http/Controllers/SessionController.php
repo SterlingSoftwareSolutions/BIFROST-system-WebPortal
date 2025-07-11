@@ -202,50 +202,44 @@ class SessionController extends Controller
 
     public function storewarmup(Request $request)
     {
-        // Validate the incoming request data
-        $request->validate([
-            'categoryw_*' => 'required|exists:category_options,id',
-            'workoutw_*' => 'required|exists:workout_libraries,id',
-            'repsw_*' => 'required|integer',
-            'weigthw_*' => 'required|numeric',
-            'selectdatew' => 'required',  // Validate the date
-        ]);
+        Log::info('Incoming Warmup Request Data: ', $request->all());
+
         try {
-            // Extract the data from the request
-            $warmups = [];
-            $date = $request->input('selectdatew');  // Get the date
+            // Validate specific indexed fields
+            $request->validate([
+                'namew_1' => 'required|string',
+                'categoryw_1' => 'required|exists:category_options,id',
+                'workoutw_1' => 'required|exists:workout_libraries,id',
+                'repsw_1' => 'required|integer',
+                'weigthw_1' => 'required|numeric',
+                'selectdatew' => 'required|date', // You can use string if not using a date format
+            ]);
 
-            foreach ($request->all() as $key => $value) {
-                if (preg_match('/^categoryw_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $warmups[$index]['category_id'] = $value;
-                } elseif (preg_match('/^workoutw_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $warmups[$index]['workout_id'] = $value;
-                } elseif (preg_match('/^repsw_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $warmups[$index]['reps'] = $value;
-                } elseif (preg_match('/^weigthw_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
-                    $warmups[$index]['weight'] = $value;
-                }
-            }
+            // Extract the values directly
+            $warmup = new Warmup();
+            $warmup->workoutname = $request->input('namew_1');
+            $warmup->category_id = $request->input('categoryw_1');
+            $warmup->workout_id = $request->input('workoutw_1');
+            $warmup->reps = $request->input('repsw_1');
+            $warmup->weight = $request->input('weigthw_1');
+            $warmup->date = $request->input('selectdatew');
 
-            // Store each warmup set with the date
-            foreach ($warmups as $warmupData) {
-                $warmupData['date'] = $date;  // Add the date to each record
-                Warmup::create($warmupData);
-            }
+            $warmup->save();
 
-            // Redirect or respond with a success message
             return response()->json(['message' => 'Warmup data saved successfully!']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'An error occurred while store warmups.',
+                'message' => 'An error occurred while storing warmup data.',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
     public function updateWarmup(Request $request)
     {
@@ -334,6 +328,7 @@ class SessionController extends Controller
                 'id' => $item->id,
                 'date' => $item->date,
                 'category_id' => $item->category_id,
+                'workoutname' => $item->workoutname,
                 'weight' => $item->weight,
                 'category_name' => $item->category ? $item->category->category_name : null,
                 'workout_id' => $item->workout_id,
@@ -343,6 +338,70 @@ class SessionController extends Controller
         });
 
         return response()->json(['result' => $result, 'categoryOptions' => $categoryOptions]);
+    }
+
+
+    // serach warmup
+    public function searchSetWarmup(Request $request)
+    {
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $warmupQuery = Warmup::with(['category', 'workout'])
+            ->where('date', $date);
+            Log::info('Response filtered data Warmup: ', ['Warmup' => $warmupQuery]);
+           
+            if ($categoryId && $workoutId && $name) {
+                $warmupQuery = $warmupQuery->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->whereHas('d', function ($query) use ($name) {
+                                                    $query->where('workoutname', 'like', '%' . $name . '%');});
+            }
+
+            elseif ($name) {
+                $warmupQuery = $warmupQuery->whereHas('workout', function ($query) use ($name) {
+                    $query->where('workoutname', 'like', '%' . $name . '%');
+                });
+            }
+
+            elseif ($categoryId) {
+                $warmupQuery = $warmupQuery->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $warmupQuery = $warmupQuery->where('workout_id', $workoutId);
+            }
+            $warmupRecords = $warmupQuery->get();
+            $workouts = WorkoutLibrary::where('type', 'Warmup')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $warmupRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'date' => $item->date,
+                    'category_id' => $item->category_id,
+                    'workoutname' => $item->workoutname,
+                    'weight' => $item->weight,
+                    'category_name' => $item->category ? $item->category->category_name : null,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => $item->workout ? $item->workout->type : null,
+                    'reps' => $item->reps,
+                ];
+            });
+
+            return response()->json([
+                'warmup' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getwarmup: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
     }
     // Store Weightlifting Start
     //  Store Weightlifting

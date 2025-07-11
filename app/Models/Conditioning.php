@@ -13,6 +13,7 @@ class Conditioning extends Model
         'rounds',
         'category_id',
         'workout_id',
+        'workoutname',
         'reps',
         'time_to_complete',
         'weight',

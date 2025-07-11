@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreignId('workout_id')->nullable()
                 ->constrained('workout_libraries')
                 ->onDelete('cascade');
+            $table->string('workoutname')->nullable();
             $table->integer('reps');
             $table->float('weight')->nullable();
             $table->enum('unit', ['%', 'Kg']); // Enum column for unit
