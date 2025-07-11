@@ -35,7 +35,7 @@ class SessionController extends Controller
         // Fetch the access record for the user
         $access = Access::where('user_id', $userId)->first();
         $classes = Classes::all();
-        
+
         if ($access && $access->session === 'enable') {
             // Pass the access type to the view using compact
             $accessType = $access->access_type;
@@ -383,7 +383,7 @@ class SessionController extends Controller
             $maxIndex = 10; // Maximum index to check, adjust this as needed
 
             // Loop through each index
-            
+
                 $processedData = []; // Initialize the array for the current index
 
                 // Iterate over all request data
@@ -400,7 +400,7 @@ class SessionController extends Controller
                     // dd($processedData);
                     $this->filterdata($processedData, 1, $request->input('selectdatewe'));
                 }
-            
+
 
             return response()->json([
                 'message' => 'Weightlifting record stored successfully'
@@ -667,7 +667,7 @@ class SessionController extends Controller
     // update weightlifting
     public function updateWeightlifting(Request $request)
     {
-        // dd($request);
+        Log::info('Weight Request Data dd:', ['request' => $request->all()]);
         try {
             // Validate the incoming request data
             $request->validate([
@@ -696,12 +696,7 @@ class SessionController extends Controller
 
             // Dynamically find the ID from the request
             $weightliftingId = null;
-            foreach ($request->all() as $key => $value) {
-                if (strpos($key, 'id_') === 0) {
-                    $weightliftingId = $value;
-                    break; // Exit the loop once the ID is found
-                }
-            }
+            $weightliftingId = $request->input('weightlifting_id');
 
             // Check if ID was found
             if (!$weightliftingId) {
@@ -713,21 +708,21 @@ class SessionController extends Controller
 
             // Update the weightlifting record with new data
             $weightlifting->update([
-                'category_id' => $request->input('categoryweight_' . $weightliftingId),
-                'workout_id' => $request->input('workoutweight_' . $weightliftingId),
-                'workoutname' => $request->input('nameweight_' . $weightliftingId),
-                'weight' => $request->input('weigthweight_' . $weightliftingId),
-                'restredwe' => $request->input('restredweight_' . $weightliftingId),
-                'restyellowwe' => $request->input('restyellowweight_' . $weightliftingId),
-                'restgreenwe' => $request->input('restgreenweight_' . $weightliftingId),
-                'intensity' => $request->input('intensityweight_' . $weightliftingId),
+                'category_id' => $request->input('categorywe_1'),
+                'workout_id' => $request->input('workoutwe_1'),
+                'workoutname' => $request->input('namewe_1'),
+                'weight' => $request->input('weigthwe_1'),
+                'restredwe' => $request->input('restredwe_1'),
+                'restyellowwe' => $request->input('restyellowwe_1'),
+                'restgreenwe' => $request->input('restgreenwe_1'),
+                'intensity' => $request->input('intensitywe_1'),
                 'alt_category_id' => $request->input('altcategoryweight_' . $weightliftingId),
                 'alt_workout_id' => $request->input('altworkoutweight_' . $weightliftingId),
                 'alt_workoutname' => $request->input('altnameweight_' . $weightliftingId),
                 'alt_weight' => $request->input('altweigthweight_' . $weightliftingId),
-                'altrestredwe' => $request->input('altrestredweight_' . $weightliftingId),
-                'altrestyellowwe' => $request->input('altrestyellowweight_' . $weightliftingId),
-                'altrestgreenwe' => $request->input('altrestgreenweight_' . $weightliftingId),
+                'altrestredwe' => $request->input('altrestredweight_' . $weightliftingId) ?? '00:00:00',
+                'altrestyellowwe' => $request->input('altrestyellowweight_' . $weightliftingId) ?? '00:00:00',
+                'altrestgreenwe' => $request->input('altrestgreenweight_' . $weightliftingId) ?? '00:00:00',
                 'alt_intensity' => $request->input('altintensityweight_' . $weightliftingId),
             ]);
 
@@ -735,10 +730,12 @@ class SessionController extends Controller
             foreach ($request->all() as $key => $value) {
                 if (preg_match('/^setsid_(\d+)$/', $key, $matches)) {
                     $index = $matches[1];
-                    $weightliftingSet = WeightliftingSet::findOrFail($request->input('setsid_' . $index));
+                    $setId = $request->input("setwid_$index");
+                    $weightliftingSet = WeightliftingSet::findOrFail($setId);
+
                     $weightliftingSet->update([
-                        'sets' => $request->input('setsweight_' . $index),
-                        'reps' => $request->input('repsweight_' . $index),
+                        'sets' => $request->input('repsnowe_1'),
+                        'reps' => $request->input('repswe_1'),
                         'alt_sets' => $request->input('altsetsweight_' . $index),
                         'alt_reps' => $request->input('altrepsweight_' . $index),
                         'weightlifting_id' => $weightlifting->id,
@@ -773,10 +770,16 @@ class SessionController extends Controller
             return response()->json(['message' => 'Weightlifting data updated successfully'], 200);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Handle validation exceptions
-            return response()->json(['errors' => $e->errors()], 422);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             // Handle other exceptions
-            return response()->json(['message' => 'An error occurred while updating the weightlifting data.'], 500);
+            return response()->json([
+                'message' => 'An error occurred while updating the weightlifting data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -784,7 +787,7 @@ class SessionController extends Controller
     public function deleteweightlifting(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:weightliftings,id', 
+            'id' => 'required|integer|exists:weightliftings,id',
         ]);
 
         try {
@@ -1098,7 +1101,7 @@ class SessionController extends Controller
             $strengthRecords = Strength::where('date', $date)
                 ->with(['category', 'workout', 'setstrengthsetsreps', 'altCategory', 'altWorkout'])
                 ->get();
-
+                Log::info('Response data strength: ', ['Strength' => $strengthRecords]);
             Log::info('Strength records fetched: ' . $strengthRecords->count()); // Log the number of records
 
             $workouts = WorkoutLibrary::where('type', 'Strength')
@@ -1161,7 +1164,7 @@ class SessionController extends Controller
     public function searchSetStrength(Request $request)
     {
             Log::info('return Strength Request Data: ', $request->all());
-        
+
         try {
             $date = $request->input("date");
             $name = $request->input("name");
@@ -1303,12 +1306,7 @@ class SessionController extends Controller
             ]);
             // Dynamically find the ID from the request
             $strengthId = null;
-            foreach ($request->all() as $key => $value) {
-                if (strpos($key, 'id_') === 0) {
-                    $strengthId = $value;
-                    break; // Exit the loop once the ID is found
-                }
-            }
+            $strengthId = $request->input('strength_id');
 
             // Check if ID was found
             if (!$strengthId) {
@@ -1320,31 +1318,32 @@ class SessionController extends Controller
             //  dd($request);
             //  dd($request->input('altworkoutstrengths_' . $strengthId));
             $strength->update([
-                'category_id' => $request->input('categorystrength_' . $strengthId),
-                'workout_id' => $request->input('workoutstrength_' . $strengthId),
-                'weight' => $request->input('weigthstrength_' . $strengthId),
-                'restred' => $request->input('restredstrength_' . $strengthId),
-                'restyellow' => $request->input('restyellowstrength_' . $strengthId),
-                'restgreen' => $request->input('restgreenstrength_' . $strengthId),
+                'category_id' => $request->input('categorys_1'),
+                'workout_id' => $request->input('workouts_1'),
+                'weight' => $request->input('weigths_1'),
+                'restred' => $request->input('restreds_1'),
+                'restyellow' => $request->input('restyellows_1'),
+                'restgreen' => $request->input('restgreens_1'),
 
-                'intensity' => $request->input('intensitystrength_' . $strengthId),
-                'alt_category_id' => $request->input('altcategorystrength_' . $strengthId),
-                'alt_workout_id' => $request->input('altworkoutstrengths_' . $strengthId),
-                'altweight' => $request->input('altweigthstrength_' . $strengthId),
-                'altrestred' => $request->input('altrestredstrength_' . $strengthId),
-                'altrestyellow' => $request->input('altrestyellowstrength_' . $strengthId),
-                'altrestgreen' => $request->input('altrestgreenstrength_' . $strengthId),
-                'altintensity' => $request->input('altintensitystrength_' . $strengthId),
+                'intensity' => $request->input('intensitys_1'),
+                'alt_category_id' => $request->input('altcategorystrength_1'),
+                'alt_workout_id' => $request->input('altworkoutstrengths_1'),
+                'altweight' => $request->input('altweigthstrength_1'),
+                'altrestred' => $request->input('altrestredstrength_1') ?? '00:00:00',
+                'altrestyellow' => $request->input('altrestyellowstrength_1') ?? '00:00:00',
+                'altrestgreen' => $request->input('altrestgreenstrength_1') ?? '00:00:00',
+                'altintensity' => $request->input('altintensitystrength_1'),
             ]);
             // dd($strength);
             // Update existing weightlifting sets
             foreach ($request->all() as $key => $value) {
                 if (preg_match('/^setsid_(\d+)$/', $key, $matches)) {
                     $index = $matches[1];
-                    $strengthrepsset = StrengthSetRep::findOrFail($request->input('setsid_' . $index));
+                    $setId = $request->input("setsid_$index");
+                    $strengthrepsset = StrengthSetRep::findOrFail($setId);
                     $strengthrepsset->update([
-                        'sets' => $request->input('setsstrength_' . $index),
-                        'reps' => $request->input('repsstrength_' . $index),
+                        'sets' => $request->input('sets_1'),
+                        'reps' => $request->input('reps_1'),
                         'alt_sets' => $request->input('altsetsstrength_' . $index),
                         'alt_reps' => $request->input('altrepssstrength_' . $index),
                         'strength_id' => $strength->id,
@@ -1383,11 +1382,17 @@ class SessionController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Handle validation exceptions
 
-            return redirect()->back()->withErrors($e->errors())->withInput();
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             // Handle other exceptions
 
-            return redirect()->back()->with('error', 'An error occurred while updating the weightlifting data.');
+            return response()->json([
+                'message' => 'An error occurred while updating the weightlifting data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -1395,7 +1400,7 @@ class SessionController extends Controller
     public function delete(Request $request)
     {
         $request->validate([
-            'id' => 'required|integer|exists:strengths,id', 
+            'id' => 'required|integer|exists:strengths,id',
         ]);
 
         try {
@@ -1432,7 +1437,7 @@ class SessionController extends Controller
         }
     }
 
-    
+
 
     public function getmember(Request $request)
     {

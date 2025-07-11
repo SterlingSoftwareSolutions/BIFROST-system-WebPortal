@@ -78,16 +78,21 @@
                     event.preventDefault(); // Prevent the default form submission
                     const formDataArray = $(this).serializeArray();
                     console.log('Form data as object:', formDataArray);
+                    const weightliftingId = $('#weightlifting_id').val();
 
+                    const url = weightliftingId ? `/update-Weightlifting` : '/store-weightlifting';
                     $.ajax({
-                        url: '/store-weightlifting',
+                        url: url,
                         type: 'POST',
                         data: $(this).serialize(), // Serialize form data
                         success: function(response) {
                             // Handle the response
                             // Clear input fields
                             $('#storeFromWe')[0].reset();
+                            $('#weightlifting_id').val('');
 
+                            document.getElementById('savebtnwe').textContent = "Save"; // Reset button
+                            document.getElementById('clearwbtn').classList.add('hidden');
                             // Clear specific elements
                             const cloneDisplayContainer = document.getElementById(
                                 'cloneDisplayContainer');
@@ -95,7 +100,7 @@
                                 cloneDisplayContainer.innerHTML = ''; // Clear content
                             }
 
-
+                            console.log('Response from server:', response);
                             // Optionally, update the UI to reflect the changes
                             alert(response.message); // Uncomment if you want to show a message
 
@@ -265,6 +270,7 @@
 
                         <div class="flex-col w-full bg-gray-50 p-4">
                             <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Create</div>
+                            <input type="hidden" id="weightlifting_id" name="weightlifting_id" value="">
                             <div class="flex items-center border-b mt-2">
                                 <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
                                 <input type="text" id="namewe_1" name="namewe_1"
@@ -298,6 +304,7 @@
                                 <div class="">
                                     <div class="flex items-center sets-view">
                                         <label for="repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <input type="text" id="setwid_1" name="setwid_1"  class="hidden"/>
                                         <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="repsnowe_1" name="repsnowe_1" value="1" data-input-counter
@@ -1767,9 +1774,11 @@
 
             const setsInput = document.getElementById('repsnowe_1');
             const repsInput = document.getElementById('repswe_1');
+            const setsidInput = document.getElementById('setwid_1');
 
             if (setsInput) setsInput.value = setData.sets;
             if (repsInput) repsInput.value = setData.reps;
+            if (setsidInput) setsidInput.value = setData.id;
         }
 
         document.getElementById('restredwe_1').value = data.restwered;
@@ -1777,7 +1786,9 @@
         document.getElementById('restgreenwe_1').value = data.restwegreen;
         document.getElementById('intensitywe_1').value = data.intensity;
         document.getElementById('namewe_1').value = data.workoutname;
-        document.getElementById('savebtnwe').innerHTML = "Edit";
+        document.getElementById('weightlifting_id').value = weightliftingId;
+        document.getElementById('savebtnwe').textContent = "Edit";
+
 
      // Show Clear button
         document.getElementById('clearwbtn').classList.remove('hidden');

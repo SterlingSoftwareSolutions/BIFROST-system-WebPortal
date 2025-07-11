@@ -99,6 +99,7 @@
   <script>
     function getdateName(dayName){
     const selectedStoredClassId = localStorage.getItem("selected_class_id");
+    console.log('dddddddddd',localStorage.getItem("selected_class_id"));
 
     document.getElementById('selectdatecla').value = dayName;
 
@@ -169,23 +170,32 @@
     let selectedClassId = null;
 
     function selectClassRow(rowElement) {
-        // Deselect previous
-        if (selectedClassRow) {
-            selectedClassRow.style.border = '';
-            selectedClassRow.style.borderRadius = '';
+        const clickedClassId = rowElement.getAttribute('data-id');
+
+        if (selectedClassId === clickedClassId) {
+            // Deselect same row
+            rowElement.style.border = '1px solid transparent';
+            rowElement.style.borderRadius = '0';
+            console.log("Deselecting class ID:", selectedClassId);
+            localStorage.removeItem("selected_class_id");
+            selectedClassRow = null;
+            selectedClassId = null;
+            return;
         }
 
-        // Highlight current
-        rowElement.style.border = '2px solid #22c55e'; // Tailwind green-500
+        // Deselect previous
+        if (selectedClassRow) {
+            selectedClassRow.style.border = '1px solid transparent';
+            selectedClassRow.style.borderRadius = '0';
+        }
+
+        // Select new row
+        rowElement.style.border = '2px solid #22c55e';
         rowElement.style.borderRadius = '10px';
         selectedClassRow = rowElement;
-        
-        selectedClassId = rowElement.getAttribute('data-id');
+        selectedClassId = clickedClassId;
 
         console.log("Selected Class ID:", selectedClassId);
-        
-        // Optionally set to a hidden input if needed
-        //document.getElementById('selected_class_id')?.value = selectedClassId;
         localStorage.setItem("selected_class_id", selectedClassId);
     }
 
