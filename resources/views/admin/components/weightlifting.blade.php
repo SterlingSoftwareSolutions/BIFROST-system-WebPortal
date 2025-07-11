@@ -3,7 +3,7 @@
     <input type="text" name="selecttabwe" id="selecttabwe" hidden>
 
 
-    <div class="flex gap-5 px-4 mr-8 rounded-md font-bold text-xl">
+    <div class="flex gap-5 mr-8 rounded-md font-bold text-xl -mt-5 p-0">
         {{-- <div class="flex justify-center text-center items-center w-1/2">Workout List</div>
         <div class="flex justify-center text-center items-center w-1/2">Create</div> --}}
         <form id="deleteFormWe">
@@ -129,7 +129,7 @@
         </script>
     </div>
     {{-- display  weightlifting --}}
-    <div id="weightlifting-container"></div>
+    <div id="weightlifting-container" class="-mt-5 pt-2"></div>
 
 
     <form id="storeFromWe">
@@ -137,13 +137,13 @@
         <input type="text" name="selectdatewe" id="selectdatewe" hidden>
         <div class="duplicateUi flex flex-col text-lg mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
             <div class="" data-index="1">
-                <div class="ui-block flex flex-col text-lg p-4 rounded-md gap-4 mb-4 ">
+                <div class="ui-block flex flex-col text-lg px-4 rounded-md gap-4 mb-4 ">
                     <!-- Your UI block content here -->
                     <div class="flex gap-5 justify-between">
                         {{-- Serach Section --}}
                         <div class="flex-col w-full">
                             <div class="bg-gray-50 p-4">
-                                <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Workout List</div>
+                                <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
                                 <div class="flex items-start space-x-6">
                                     <!-- Category Field -->
                                     <div class="flex flex-row items-center w-1/2 space-x-2">
@@ -269,7 +269,7 @@
                         {{-- Primary Category and Workouts --}}
 
                         <div class="flex-col w-full bg-gray-50 p-4">
-                            <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Create</div>
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
                             <input type="hidden" id="weightlifting_id" name="weightlifting_id" value="">
                             <div class="flex items-center border-b mt-2">
                                 <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
@@ -642,7 +642,7 @@
         <div class="flex flex-row justify-end gap-4 mt-5">
             <button type="button" id="clearwbtn" onclick="clearWeightliftingForm()"
                 class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
-                Clear
+                Cancel
             </button>
 
             <button type="submit" id="savebtnwe" class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
@@ -1036,7 +1036,7 @@
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
-                                            <label for="repsnowe_${remainingfind}${setCounter}" class="text-sm mr-2">REPS</label>
+
 
                                             <!-- Decrement Button -->
                                             <button type="button"
@@ -1063,6 +1063,7 @@
                                                         d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
+                                            <label for="repsnowe_${remainingfind}${setCounter}" class="text-sm mr-2">REPS</label>
                                         </div>
 
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
@@ -1673,7 +1674,7 @@
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">Workout Name - ${item.workoutname     || 'N/A'}</div>
+                        <div class="text-gray-700">${item.workoutname     || 'N/A'} :</div>
                         <div class="space-x-2">
                             <button class="edit-weightlifting-btn" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -1787,7 +1788,7 @@
         document.getElementById('intensitywe_1').value = data.intensity;
         document.getElementById('namewe_1').value = data.workoutname;
         document.getElementById('weightlifting_id').value = weightliftingId;
-        document.getElementById('savebtnwe').textContent = "Edit";
+        document.getElementById('savebtnwe').textContent = "Save Edit";
 
 
      // Show Clear button
