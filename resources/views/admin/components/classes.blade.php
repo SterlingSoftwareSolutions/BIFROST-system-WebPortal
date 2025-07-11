@@ -2,14 +2,14 @@
     <h1 class="text-2xl font-bold mb-4 text-center">Classes</h1>
 
     <div class="border rounded-2xl overflow-hidden">
-      <table class="min-w-full table-auto text-left border-collapse">
+      <table class="min-w-full table-fixed text-left border-collapse">
         <thead class="bg-gray-200">
           <tr>
-            <th class="px-4 py-2">Time</th>
-            <th class="px-4 py-2">Duration</th>
-            <th class="px-4 py-2">Spots</th>
-            <th class="px-4 py-2">Workout Assigned</th>
-            <th class="px-4 py-2"></th>
+            <th class="px-4 py-2 w-[15%]">Time</th>
+            <th class="px-4 py-2 w-[15%]">Duration</th>
+            <th class="px-4 py-2 w-[15%]">Spots</th>
+            <th class="px-4 py-2 w-[45%]">Workout Assigned</th>
+            <th class="px-4 py-2 w-[15%]"></th>
           </tr>
         </thead>
         <tbody class="bg-white" id="classesTableBody">
@@ -97,12 +97,13 @@
   </div>
 
   <script>
+    let classdate = null;
     function getdateName(dayName){
     const selectedStoredClassId = localStorage.getItem("selected_class_id");
     console.log('dddddddddd',localStorage.getItem("selected_class_id"));
 
     document.getElementById('selectdatecla').value = dayName;
-
+    classdate = dayName;
     console.log("Fetching classes for:", dayName);
 
     fetch(`/get-classes-by-day?day=${encodeURIComponent(dayName)}`)
@@ -124,30 +125,18 @@
 
                 const row = `
                     <tr class="border-t class-row cursor-pointer" data-id="${cls.id}" onclick="selectClassRow(this)" style="${borderStyle}">
-                        <td class="px-4 py-2">${time}</td>
-                        <td class="px-4 py-2">${cls.duration} <span class="ml-2">hr</span></td>
-                        <td class="px-4 py-2">${cls.spots}</td>
-                        <td class="px-4 py-2">
-                            <form method="POST" action="/classes/toggle-workout/${cls.id}">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <label class="inline-flex items-center cursor-pointer">
-                                    <input type="hidden" name="workout_assigned_${cls.id}" value="0">
-                                    <input type="checkbox"
-                                        class="sr-only peer"
-                                        name="workout_assigned_${cls.id}"
-                                        value="1"
-                                        onchange="this.form.submit()"
-                                        ${cls.workout_assigned ? 'checked' : ''}>
-                                    <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
-                                </label>
-                            </form>
+                        <td class="px-4 py-2 w-[15%]">${time}</td>
+                        <td class="px-4 py-2 w-[15%]">${cls.duration} <span class="ml-2">hr</span></td>
+                        <td class="px-4 py-2 w-[15%]">${cls.spots}</td>
+                        <td class="px-4 py-2 flex items-center space-x-2 w-[45%]">
+                            <img src="/icon/warmup.png" class="${cls.is_warmup ? 'ring-2 ring-green-500 rounded' : ''} w-6 h-6" title="Warmup">
+                            <img src="/icon/strength.png" class="${cls.is_strength ? 'ring-2 ring-green-500 rounded' : ''} w-6 h-6" title="Strength">
+                            <img src="/icon/weightlifting.png" class="${cls.is_weightlifting ? 'ring-2 ring-green-500 rounded' : ''} w-6 h-6" title="Weightlifting">
+                            <img src="/icon/conditioning.png" class="${cls.is_conditioning ? 'ring-2 ring-green-500 rounded' : ''} w-6 h-6" title="Conditioning">
+                            <img src="/icon/test.png" class="${cls.is_test ? 'ring-2 ring-green-500 rounded' : ''} w-6 h-6" title="Test">
                         </td>
-                        <td class="px-4 py-2">
-                            <form method="POST" action="/classes/delete/${cls.id}" onsubmit="return confirm('Are you sure?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button type="submit" class="text-red-500">X</button>
-                            </form>
+                        <td class="px-2 py-2 w-[15%]">
+                                <button class="text-red-500 ml-4" onclick="deleteClass(${cls.id}, '${dayName}')">X</button>
                         </td>
                     </tr>
                 `;
@@ -198,5 +187,32 @@
         console.log("Selected Class ID:", selectedClassId);
         localStorage.setItem("selected_class_id", selectedClassId);
     }
+
+    function deleteClass(classId, date) {
+        if (!confirm("Are you sure you want to delete this class?")) return;
+        
+        console.log('Deleting class on date:', date);
+        $.ajax({
+            url: `/classes/${classId}`,
+            type: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}' // Blade directive for CSRF
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    console.log("seeeeeeeeeeeeeeeeeeeeeeeee",date);
+                    getdateName(date); // Refresh table
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert('Delete request failed.');
+            }
+        });
+    }
+
 
   </script>
