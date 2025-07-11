@@ -37,15 +37,13 @@ class StrengthSetRep extends Model
        
         // dd($data);
         return self::create([
-            'sets' => $data[0] ?? null,
-            'reps' => $data[1] ?? null,
-            'alt_sets' => $data[2] ?? null,
-            'alt_reps' => $data[3] ?? null,
-            'strength_id' => $data[4] ?? null,
+            'sets' => $data['sets'] ?? null,
+            'reps' => $data['reps'] ?? null,
+            'alt_sets' => $data['alt_sets'] ?? null,
+            'alt_reps' => $data['alt_reps'] ?? null,
+            'strength_id' => $data['strength_id'] ?? null,
         ]);
     }
-
-
 
 
     /**
