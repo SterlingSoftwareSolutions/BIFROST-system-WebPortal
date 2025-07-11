@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('category_id')->nullable()->constrained('category_options')->onDelete('cascade');
             $table->foreignId('workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
             $table->foreignId('member_id')->nullable()->constrained('members')->onDelete('cascade');
+            $table->string('workoutname')->nullable();
             $table->string('date');
             $table->timestamps();
         });
