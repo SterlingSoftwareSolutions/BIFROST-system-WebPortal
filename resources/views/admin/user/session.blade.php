@@ -25,7 +25,20 @@
             <div class="breadcrumb text-sm mb-4">
                 <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Manager
                         </strong></span></div>
-                <div class="text-3xl mt-3">Workout Manager</div>
+                <div class="flex items-start w-full relative">
+                    <div class="wo text-3xl mt-3">Workout Manager</div>
+                    <div class="dt flex flex-col items-center gap-2 mb-6 absolute left-1/2 transform -translate-x-1/2">
+                        <div class="flex justify-center text-2xl font-semibold items-center gap-4">
+                            <p class="cursor-pointer" id="prevWeek">&larr;</p>
+                            <h2 id="weekDisplay"></h2>
+                            <p class="cursor-pointer" id="nextWeek">&rarr;</p>
+                        </div>
+                        <div class="text-lg">
+                            <h2 id="weekRangeDisplay"></h2>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="border rounded-b-lg bg-white shadow-md mt-10 text-sm">
                 <div>
@@ -73,7 +86,7 @@
                     </div>
 
                     {{-- Top Week and year display --}}
-                    <div class="flex flex-col items-center  gap-2 mb-6">
+                    {{-- <div class="flex flex-col items-center  gap-2 mb-6">
                         <div class="flex justify-center text-2xl font-semibold items-center gap-4">
                             <p class="cursor-pointer" id="prevWeek">&larr;</p>
                             <h2 id="weekDisplay"></h2>
@@ -82,12 +95,14 @@
                         <div class="text-lg">
                             <h2 id="weekRangeDisplay"></h2>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
                     <div class="w-1/4">
+
                         <div class="flex flex-col text-lg weekday pr-5">
+                            <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>
                             <button
                                 class="border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
                                 id="1day">Day 1</button>
