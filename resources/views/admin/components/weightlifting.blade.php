@@ -32,7 +32,7 @@
                     success: function (response) {
                         if (response.status === 'success') {
                             alert(response.message);
-                            getWeightlifting(date); 
+                            getWeightlifting(date);
                         } else {
                             alert("Error: " + response.message);
                         }
@@ -295,7 +295,7 @@
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
-                                            <label for="repswe_1" class="text-sm mr-2">REPS</label>
+                                            {{-- <label for="repswe_1" class="text-sm mr-2">REPS</label> --}}
 
                                             <!-- Decrement Button -->
                                             <button type="button"
@@ -322,6 +322,7 @@
                                                         d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
+                                            <label for="repswe_1" class="text-sm mr-2">REPS</label>
                                         </div>
                                     </div>
 
@@ -622,16 +623,17 @@
 
         </div>
         <div id="cloneDisplayContainer"></div>
-        <div class=" flex flex-col gap-5">
-            {{-- Clone UI button --}}
-            {{-- <button id="cloneButton"type="button"
-                class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base w-32">
-                Another
-            </button> --}}
-            {{-- Save Button --}}
-            <button id="savebtnwe" type="submit"
-                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 mr-8 self-end">Save</button>
+        <div class="flex flex-row justify-end gap-4 mt-5">
+            <button type="button" id="clearwbtn" onclick="clearWeightliftingForm()"
+                class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
+                Clear
+            </button>
+
+            <button type="submit" id="savebtnwe" class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
+                Save
+            </button>
         </div>
+
     </form>
 </div>
 
@@ -1582,7 +1584,7 @@
 
     }
 
-    
+
     function filterWeightlifting(date) {
         const dateOnClick = document.getElementById('selectdateweDelete').value;
         console.log('first',dateOnClick)
@@ -1752,6 +1754,17 @@
         document.getElementById('namewe_1').value = data.workoutname;
         document.getElementById('savebtnwe').innerHTML = "Edit";
 
+     // Show Clear button
+        document.getElementById('clearwbtn').classList.remove('hidden');
+
+    }
+    function clearWeightliftingForm() {
+        // Clear input fields
+        $('#storeFromWe')[0].reset();
+        document.getElementById('savebtn').innerHTML = "Save";
+        // Show Clear button
+        document.getElementById('clearwbtn').classList.add('hidden');
+
     }
 
     function updateweightlifting(id) {
@@ -1785,20 +1798,20 @@
     $(document).on('change', '.weightlifting-toggle', function () {
         const date = document.getElementById('selectdateweDelete').value;
         var workoutId = $(this).data('workout-id');
-        var workoutType = $(this).data('workout-type');  
+        var workoutType = $(this).data('workout-type');
         let selectedClassId = localStorage.getItem("selected_class_id");
         var classId = selectedClassId;
         localStorage.removeItem("selected_class_id");
         console.log('selected class Id----',classId);
         var assigned = $(this).is(':checked') ? 1 : 0;
-        
+
         // Optional: check that classId is present
         if (!classId) {
             alert("Please select a class first.");
             $(this).prop('checked', !assigned);
             return;
         }
-        
+
         $.ajax({
             url: "/assign-weightlifting-to-class",
             type: "POST",

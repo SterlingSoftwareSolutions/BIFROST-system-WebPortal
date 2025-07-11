@@ -291,7 +291,7 @@
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
-                                            <label for="reps_1" class="text-sm mr-2">REPS</label>
+                                            
 
                                             <!-- Decrement Button -->
                                             <button type="button"
@@ -318,6 +318,7 @@
                                                         d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
+                                            <label for="reps_1" class="text-sm mr-2">REPS</label>
                                         </div>
                                     </div>
 
@@ -329,8 +330,83 @@
                                     </div>
                                 </div>
                             </div>
-                        
 
+                            <div class="flex items-center border-b">
+                                <label for="restreds_1" class="w-60 block mb-1">Rest <span class="text-red-500">*</span></label>
+                                <div class="">
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restreds_1" name="restreds_1" placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restwered border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label for="restyellows_1" class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restyellows_1" name="restyellows_1" placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restweyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+
+                                    <div class="relative flex items-center max-w-[12rem] mb-4">
+                                        <label for="restgreens_1" class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
+                                        <button type="button" onclick="decrementRest(this.parentNode.querySelector('input').id)"
+                                            class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="restgreens_1" name="restgreens_1" placeholder="00:00" value="04:00"
+                                            class="bg-gray-50 border-x-0 restwegreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            readonly required>
+                                        <button type="button" onclick="incrementRest(this.parentNode.querySelector('input').id)"
+                                            class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
                         <div class="flex items-center border-b ">
                             <label for="intensity" class="w-60 block mb-1">Intensity</label>
                             <select id="intensitys_1" name="intensitys_1"
@@ -343,11 +419,17 @@
                                 <option value="extreme">Extreme</option>
                             </select>
                         </div>
-                        <div class="flex flex-col gap-5 mt-5">
-                            {{-- <a class=" bg-black text-white py-2 px-4 rounded mt-2 text-center text-base w-32"
-                                id="cloneButtonstrength">Another</a> --}}
+                        <div class="flex flex-row justify-end gap-4 mt-5">
+                            <button type="button" id="clearsbtn"
+                                onclick="clearStrengthForm()"
+                                class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
+                                Clear
+                            </button>
+
                             <button type="submit" id="savebtn"
-                                class="bg-[#FB1018] text-white py-2 px-4 rounded mb-2 hover:bg-red-700 w-24 self-end">Save</button>
+                                class="bg-[#FB1018] text-white py-2 px-4 rounded hover:bg-red-700 w-24">
+                                Save
+                            </button>
                         </div>
                     </div>
                     {{-- end primary --}}
@@ -937,10 +1019,19 @@
         document.getElementById('restreds_1').value = data.restred;
         document.getElementById('restyellows_1').value = data.restyellow;
         document.getElementById('restgreens_1').value = data.restgreen;
-        document.getElementById('restgreens_1').value = data.restgreen;
+        // document.getElementById('restgreens_1').value = data.restgreen;
         document.getElementById('intensitys_1').value = data.intensity;
         document.getElementById('savebtn').innerHTML = "Edit";
+        // Show Clear button
+        document.getElementById('clearsbtn').classList.remove('hidden');
 
+    }
+    function clearStrengthForm() {
+        // Clear input fields
+        $('#storeformss')[0].reset();
+        document.getElementById('savebtn').innerHTML = "Save";
+        // Show Clear button
+        document.getElementById('clearsbtn').classList.add('hidden');
     }
 
     function filterStrength(date) {
