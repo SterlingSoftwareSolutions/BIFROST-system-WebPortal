@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classes;
+use App\Models\Conditioning;
+use App\Models\Strength;
+use App\Models\Test;
+use App\Models\Warmup;
+use App\Models\Weightlifting;
+use App\Models\WorkoutAssign;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -40,8 +46,41 @@ class ClassesController extends Controller
     // Delete class
     public function delete($id)
     {
-        Classes::findOrFail($id)->delete();
-        return redirect()->back()->with('success', 'Class deleted successfully.');
+        try {
+            // Fetch all related assigned workouts
+            $assignments = WorkoutAssign::where('class_id', $id)->get();
+
+            foreach ($assignments as $assign) {
+                switch ($assign->workout_type) {
+                    case 'strength':
+                        Strength::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                        break;
+                    case 'weightlifting':
+                        Weightlifting::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                        break;
+                    // case 'conditioning':
+                    //     Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                    //     break;
+                    // case 'warmup':
+                    //     Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                    //     break;
+                    // case 'test':
+                    //     Test::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                    //     break;
+                    default:
+                        // Unknown type - skip
+                        break;
+                }
+            }
+
+            // Delete the class (will also delete workout_assign records due to cascade)
+            Classes::findOrFail($id)->delete();
+
+            return response()->json(['success' => true, 'message' => 'Class and workout assignments deleted successfully.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 
     public function toggleWorkout(Request $request, $id)
