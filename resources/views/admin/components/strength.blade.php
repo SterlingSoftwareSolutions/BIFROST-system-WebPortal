@@ -70,14 +70,21 @@
             $(document).ready(function() {
                 $('#storeformss').on('submit', function(event) {
                     event.preventDefault(); // Prevent the default form submission
+                    const strengthId = $('#strength_id').val();
+
+                    const url = strengthId ? `/update-strenthdata` : '/save-strength';
 
                     $.ajax({
-                        url: '/save-strength',
+                        url: url,
                         type: 'POST',
                         data: $(this).serialize(), // Serialize form data
                         success: function(response) {
                             // Clear input fields
                             $('#storeformss')[0].reset();
+                            $('#strength_id').val('');
+
+                            document.getElementById('savebtn').textContent = "Save"; // Reset button
+                            document.getElementById('clearsbtn').classList.add('hidden');
 
                             // Clear the clone display container
                             const cloneDisplayContainerStrength = document.getElementById(
@@ -85,6 +92,7 @@
                             if (cloneDisplayContainerStrength) {
                                 cloneDisplayContainerStrength.innerHTML = '';
                             }
+                            console.log('Response from server:', response);
                             alert(response.message);
                             var duplicateSets = document.querySelector(".duplicate-sets-strength");
                             if (duplicateSets) {
@@ -262,6 +270,7 @@
                     {{-- start primary --}}
                     <div class=" flex-col w-full bg-gray-50 p-4">
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-xl">Create</div>
+                        <input type="hidden" id="strength_id" name="strength_id" value="">
                         <div class="flex items-center border-b mt-2">
                             <label for="names_1" class="w-60 block mb-1">Workout Name </label>
                             <input type="text" id="names_1" name="names_1"
@@ -293,6 +302,7 @@
                                 <div class="">
                                     <div class="flex items-center sets-view">
                                         <label for="sets_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
+                                        <input type="text" id="setsid_1" name="setsid_1"  class="hidden"/>
                                         <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="sets_1" name="sets_1" value="1" data-input-counter
@@ -1024,9 +1034,11 @@
 
             const setsInput = document.getElementById('sets_1');
             const repsInput = document.getElementById('reps_1');
+            const setsidInput = document.getElementById('setsid_1');
 
             if (setsInput) setsInput.value = setData.sets;
             if (repsInput) repsInput.value = setData.reps;
+            if (setsidInput) setsidInput.value = setData.id;
         }
 
         document.getElementById('names_1').value = data.workoutname;
@@ -1035,7 +1047,8 @@
         document.getElementById('restgreens_1').value = data.restgreen;
         // document.getElementById('restgreens_1').value = data.restgreen;
         document.getElementById('intensitys_1').value = data.intensity;
-        document.getElementById('savebtn').innerHTML = "Edit";
+        document.getElementById('strength_id').value = strengthId;
+        document.getElementById('savebtn').textContent = "Edit";
         // Show Clear button
         document.getElementById('clearsbtn').classList.remove('hidden');
 
