@@ -1629,184 +1629,247 @@ foreach ($request->all() as $key => $value) {
     // store conditioning
     public function storeconditioning(Request $request)
     {
-        // dd($request);
+        Log::info('Incoming Conditioning Request Data: ', $request->all());
 
-        // Validate the incoming request data
-        $request->validate([
-            'selectdatec' => 'required|string',
-            'rounds' => 'nullable|integer', // `rounds` is optional
-            'amrap' => 'nullable', // `amrapCheckbox` should be a boolean
-            'categoryc_*' => 'required|integer|exists:category_options,id',
-            'workoutc_*' => 'required|integer|exists:workout_libraries,id',
-            'repsc_*' => 'required|integer',
-            'weigthc_*' => 'required|numeric',
-            'timeTC_*' => 'required|string', // Validate time as string to ensure proper format
-            'unit_*' => 'required|string', // Corrected 'unit_' to 'unit_*' to handle multiple fields
-        ]);
-        // dd($request);
         try {
-            // Prepare date for insertion
-            $date = $request->input('selectdatec'); // Format: 31/07/24 Wednesday
+            // Validate required fields
+            $request->validate([
+                'selectdatec' => 'required|string',
+                'namec_1' => 'nullable|string',
+                'categoryc_1' => 'required|integer|exists:category_options,id',
+                'workoutc_1' => 'required|integer|exists:workout_libraries,id',
+                'weigthc_1' => 'required|integer',
+                'unit_1' => 'required|string|max:10',
+                'repsc_1' => 'required|integer|min:1',
+                'timeTC_1' => 'required|string', // could add regex/time validation if needed,
+            ]);
+            // Retrieve checkbox value from the request
+            $amrap = $request->input('amrap', false); // Default to false if checkbox is not present
 
-            // Process each set of data
-            $entries = [];
-            foreach ($request->except(['_token', 'selectdatec', 'rounds', 'amrap']) as $key => $value) {
-                if (preg_match('/^categoryc_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
+            // Convert to boolean if necessary
+            $amrap = filter_var($amrap, FILTER_VALIDATE_BOOLEAN);
 
-                    // Retrieve checkbox value from the request
-                    $amrap = $request->input('amrap', false); // Default to false if checkbox is not present
+            // Create new Conditioning model (assumes you have one)
+            $conditioning = new Conditioning(); // or ConditioningRecord or whatever your model is called
+            $conditioning->date = $request->input('selectdatec');
+            $conditioning->rounds = $request->input('roundCond');
+            $conditioning->rounds = $request->input('rounds');
+            $conditioning->workoutname = $request->input('namec_1');
+            $conditioning->category_id = $request->input('categoryc_1');
+            $conditioning->workout_id = $request->input('workoutc_1');
+            $conditioning->weight = $request->input('weigthc_1');
+            $conditioning->unit = $request->input('unit_1');
+            $conditioning->reps = $request->input('repsc_1');
+            $conditioning->time_to_complete = $request->input('timeTC_1');
+            $conditioning->intensity = $request->input('intensityc_1');
+            $conditioning->amrap = $amrap;
 
-                    // Convert to boolean if necessary
-                    $amrap = filter_var($amrap, FILTER_VALIDATE_BOOLEAN);
-                    // dd($amrap);
-                    $entries[] = [
-                        'rounds' => $request->input('rounds'),
-                        'category_id' => $request->input('categoryc_' . $index),
-                        'workout_id' => $request->input('workoutc_' . $index),
-                        'reps' => $request->input('repsc_' . $index),
-                        'weight' => $request->input('weigthc_' . $index),
-                        'unit' => $request->input('unit_' . $index),
-                        'time_to_complete' => $request->input('timeTC_' . $index),
-                        'date' => $date,
-                        'amrap' => $amrap, // Include 'amrap' in the data if needed
-                    ];
-                    if ($amrap == "true") {
-                        $amrap = 1;
-                    } else if ($amrap == "false") {
-                        $amrap = 0;
-                    }
-                    $this->allUpdate($date, $request->input('rounds'), $amrap);
-                }
-            }
-
-            // Insert data into the database
-            foreach ($entries as $entry) {
-                Conditioning::create($entry);
-            }
+            $conditioning->save();
 
             return response()->json([
-                'message' => 'Conditioning record stored successfully'
+                'message' => 'Conditioning data stored successfully!'
             ], 201);
-        } catch (\Exception $e) {
-            // Handle exceptions and return an error response
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
-                'message' => 'Failed to store conditioning record',
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while storing conditioning data.',
                 'error' => $e->getMessage()
             ], 500);
         }
+        
     }
     // get conditioning
     public function getConditioning(Request $request)
     {
-        $date = $request->input('date');
+       $date = $request->input('date');
 
-        // Fetch conditioning data with related category and workout details
+        // Validate the date input
+        if (!$date) {
+            return response()->json(['message' => 'Date is required'], 400);
+        }
+
+        // Fetch conditionings for the specific date with relationships
         $conditionings = Conditioning::where('date', $date)
             ->with(['category', 'workout'])
             ->get();
 
-        // Fetch workouts based on the type and include related category options
-        $workouts = WorkoutLibrary::where('type', 'conditioning')
-            ->with('categoryOption')
-            ->get();
-
-        // Get unique category options based on the fetched workouts
-        $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
-
-        // Transform the result to include the desired fields
         $result = $conditionings->map(function ($item) {
-            return [
+            $data = [
                 'id' => $item->id,
                 'date' => $item->date,
+                'workoutname' => $item->workoutname,
                 'category_id' => $item->category_id,
-                'weight' => $item->weight,
-                'category_name' => $item->category ? $item->category->category_name : null,
+                'category_name' => $item->category?->category_name,
                 'workout_id' => $item->workout_id,
-                'workout_type' => $item->workout ? $item->workout->workout : null,
+                'workout_type' => $item->workout?->workout,
                 'reps' => $item->reps,
-                'rounds' => $item->rounds,
-                'complete_time' => $item->time_to_complete,
+                'weight' => $item->weight,
                 'unit' => $item->unit,
+                'time_to_complete' => $item->time_to_complete,
+                'intensity' => $item->intensity,
+                'rounds' => $item->rounds,
                 'amrap' => $item->amrap,
+                'is_assigned' => $item->is_assigned,
             ];
+
+            // Only include 'rounds' or 'amrap'
+            if (!is_null($item->rounds)) {
+                $data['roundsnamrap'] = $item->rounds;
+            } elseif ($item->amrap == 1) {
+                $data['roundsnamrap'] = $item->amrap;
+            }
+
+            return $data;
         });
 
         return response()->json([
-            'result' => $result,
-            'categoryOptions' => $categoryOptions
+            'result' => $result
         ]);
     }
+
+    // serach conditioning
+    public function searchConditioning(Request $request)
+    {
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $conditioningQuery = Conditioning::with(['category', 'workout'])
+            ->where('date', $date);
+            Log::info('Response filtered data Conditioning: ', ['Conditioning' => $conditioningQuery]);
+           
+            if ($categoryId && $workoutId && $name) {
+                $conditioningQuery = $conditioningQuery->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->whereHas('d', function ($query) use ($name) {
+                                                    $query->where('workoutname', 'like', '%' . $name . '%');});
+            }
+
+            elseif ($name) {
+                $conditioningQuery = $conditioningQuery->whereHas('workout', function ($query) use ($name) {
+                    $query->where('workoutname', 'like', '%' . $name . '%');
+                });
+            }
+
+            elseif ($categoryId) {
+                $conditioningQuery = $conditioningQuery->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $conditioningQuery = $conditioningQuery->where('workout_id', $workoutId);
+            }
+            $conditioningRecords = $conditioningQuery->get();
+            $workouts = WorkoutLibrary::where('type', 'Conditioning')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $conditioningRecords->map(function ($item) {
+                $data = [
+                    'id' => $item->id,
+                    'date' => $item->date,
+                    'workoutname' => $item->workoutname,
+                    'category_id' => $item->category_id,
+                    'category_name' => $item->category?->category_name,
+                    'workout_id' => $item->workout_id,
+                    'workout_type' => $item->workout?->workout,
+                    'reps' => $item->reps,
+                    'weight' => $item->weight,
+                    'unit' => $item->unit,
+                    'time_to_complete' => $item->time_to_complete,
+                    'intensity' => $item->intensity,
+                    'rounds' => $item->rounds,
+                    'amrap' => $item->amrap,
+                    'is_assigned' => $item->is_assigned,
+                ];
+
+                // Only include 'rounds' or 'amrap'
+                if (!is_null($item->rounds)) {
+                    $data['roundsnamrap'] = $item->rounds;
+                } elseif ($item->amrap == 1) {
+                    $data['roundsnamrap'] = $item->amrap;
+                }
+
+                return $data;
+            });
+
+            return response()->json([
+                'conditioning' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getConditioning: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
+
     public function updateConditioning(Request $request)
     {
-        // Validate incoming request data
-        $validated = $request->validate([
-            'id' => 'required|integer|exists:conditionings,id',
-            'category' => 'required',
-            'workout' => 'required',
-            'reps' => 'required|integer',
-            'weight' => 'required',
-            'timeToComplete' => 'required',
-            'rounds' => 'nullable|integer',
-            'date' => 'required',
-            'isChecked' => 'nullable',
-            'unit' => 'required',
-        ]);
         try {
-            // Find the Conditioning record by ID
-            $conditioning = Conditioning::find($validated['id']);
-            if (!$conditioning) {
-                Log::error('Conditioning not found', ['id' => $validated['id']]);
-                return response()->json(['error' => 'Conditioning not found'], 404);
-            }
-
-            if ($request->isChecked == "true") {
-                $amrap = 1;
-            } else if ($request->isChecked == "false") {
-                $amrap = 0;
-            }
-
-            // Log the current state before update
-            Log::info('Updating Conditioning record', [
-                'id' => $conditioning->id,
-                'old_data' => $conditioning->toArray(),
-                'new_data' => $validated
+            // Validate incoming request data
+            $validated = $request->validate([
+                'conditioning_id' => 'required|integer|exists:conditionings,id',
             ]);
+            // Find the Conditioning record
+            $conditioning = Conditioning::findOrFail($request->input('conditioning_id'));
 
-            // Update the Conditioning record
-            $conditioning->rounds = $validated['rounds'];
-            $conditioning->category_id  = $validated['category'];
-            $conditioning->workout_id  = $validated['workout'];
-            $conditioning->reps = $validated['reps'];
-            $conditioning->weight = $validated['weight'];
-            $conditioning->time_to_complete = $validated['timeToComplete'];
-            $conditioning->date = $validated['date'];
-            $conditioning->unit = $validated['unit'];
+            // Convert AMRAP checkbox value
+            $amrap = $request->input('amrap', false);
+            $amrap = filter_var($amrap, FILTER_VALIDATE_BOOLEAN);
+
+            // Update the conditioning record
+            $conditioning->date = $request->input('selectdatec');
+            $conditioning->rounds = $request->input('roundCond'); // can be null
+            $conditioning->workoutname = $request->input('namec_1');
+            $conditioning->category_id = $request->input('categoryc_1');
+            $conditioning->workout_id = $request->input('workoutc_1');
+            $conditioning->weight = $request->input('weigthc_1');
+            $conditioning->unit = $request->input('unit_1');
+            $conditioning->reps = $request->input('repsc_1');
+            $conditioning->time_to_complete = $request->input('timeTC_1');
+            $conditioning->intensity = $request->input('intensityc_1');
             $conditioning->amrap = $amrap;
-            // $conditioning->is_checked = $validated['isChecked'];
+
             $conditioning->save();
 
-            // Update all records with the same date
-            $this->allUpdate($validated['date'], $validated['rounds'], $amrap);
-
-            // Log the successful update
-            Log::info('Conditioning record updated successfully', [
-                'id' => $conditioning->id,
-                'updated_data' => $conditioning->toArray()
-            ]);
-
-            // Return a success response
-            return response()->json(['message' => 'Conditioning updated successfully'], 200);
+            return response()->json([
+                'message' => 'Conditioning data updated successfully!'
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
-            // Handle exceptions and return an error response
-            Log::error('Failed to update conditioning record', [
-                'error' => $e->getMessage(),
-                'request_data' => $request->all()
-            ]);
-            return response()->json(['error' => 'Failed to update conditioning record', 'message' => $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'An error occurred while updating conditioning data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
+    //delete selected Conditioning data
+    public function deleteconditionings(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:conditionings,id',
+        ]);
 
+        try {
+            $conditioning = Conditioning::findOrFail($request->id);
+            $conditioning->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Conditioning record deleted.']);
+        } catch (\Exception $e) {
+            Log::error('Error in deletetconditioning: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete Conditioning record.']);
+        }
+    }
     public function allUpdate($date, $rounds, $amrap)
     {
         // Update rounds and amrap for all records with the same date

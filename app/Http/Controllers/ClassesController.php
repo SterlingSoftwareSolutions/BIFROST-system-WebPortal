@@ -58,9 +58,9 @@ class ClassesController extends Controller
                     case 'weightlifting':
                         Weightlifting::where('id', $assign->workout_id)->update(['is_assigned' => false]);
                         break;
-                    // case 'conditioning':
-                    //     Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                    //     break;
+                    case 'conditioning':
+                        Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                        break;
                     case 'warmup':
                         Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
                         break;
