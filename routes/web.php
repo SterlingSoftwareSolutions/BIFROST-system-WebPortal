@@ -175,6 +175,10 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-conditioning', [SessionController::class, 'updateConditioning']);
     // delete conditioning
     Route::post('/delete-conditioning', [SessionController::class, 'deleteConditioning']);
+    // search conditioning
+    Route::post('/search-conditioning', [SessionController::class, 'searchConditioning'])->name('search.conditioning');
+    // delete selected conditioning
+    Route::post('/delete-conditioning', [SessionController::class, 'deleteconditionings'])->name('conditioning.delete');
 
 
     //stroe strenght

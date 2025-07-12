@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('date');
             $table->string('time_to_complete');
             $table->boolean('is_assigned')->default(false);
+            $table->string('intensity');
             $table->timestamps();
         });
     }
