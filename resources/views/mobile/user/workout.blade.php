@@ -71,7 +71,7 @@
 
                         <div id="categoryDisplayZone">
                             {{-- Warmup --}}
-                            <div id="section-warmup" class="category-section hidden">
+                            <div id="section-warmup" class="category-section">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
 
                                 <table class="w-full text-white ">
@@ -123,103 +123,130 @@
                                 <div class="content pt-4 text-white">
                                     @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
                                         <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                    data-target="#primary-weight-{{ $strengthIndex }}">
-                                                    {{ $strengthdetail->workout->categoryOption->category_name }} -
-                                                    {{ $strengthdetail->workout->workout }}
-                                                </button>
+                                            <button class="px-4 py-2 rounded primary-btn bg-white text-black"
+                                                data-target="#primary-weight-{{ $strengthIndex }}">
+                                                {{ $strengthdetail->workout->categoryOption->category_name }} -
+                                                {{ $strengthdetail->workout->workout }}
+                                            </button>
                                         </div>
 
                                         {{-- Primary Table --}}
                                         <div id="primary-weight-{{ $strengthIndex }}" class="table-body primary-body">
-                                            @foreach ($strengthdetail->sets as $setIndex => $setdetail)
-                                                @php
-                                                    $baseWeight = $strengthdetail->weight;
-                                                    $totalPercentageIncrease = 0.7;
-                                                    $numberOfSets = $setdetail->sets;
-                                                    $percentageIncreasePerSet = $numberOfSets > 1 ? $totalPercentageIncrease / ($numberOfSets - 1) : 0;
-                                                    $percentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSet * $i, range(0, $numberOfSets - 1));
-                                                @endphp
-                                                <table class="w-full text-white tablee my-4">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="py-2">Set</th>
-                                                            <th class="py-2">Weight</th>
-                                                            <th class="px-2">Rep</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                            @php
-                                                                $setPercentage = $percentages[$setNumber - 1] ?? 0.3;
-                                                                $calculatedWeight = $baseWeight * $setPercentage;
-                                                            @endphp
-                                                            <tr class="border-b border-gray-300">
-                                                                <td class="py-4">{{ $setNumber }}</td>
-                                                                <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}" class="py-4 text-center">
-                                                                    {{ number_format($calculatedWeight, 2) }}
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <div class="flex items-center justify-center space-x-4">
-                                                                        <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                        <span
-                                                                            class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
-                                                                            id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">{{ $setdetail->reps }}</span>
-                                                                        <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <label class="inline-flex items-center cursor-pointer">
-                                                                        <input type="checkbox"
-                                                                            id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                            class="sr-only peer timer-checkbox"
-                                                                            data-rest-time="{{ $strengthdetail->rest }}"
-                                                                            data-strength-detail-id="{{ $strengthdetail->id }}"
-                                                                            data-type="Primary"
-                                                                            data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                            onclick="saveStrengthWorkout(this)">
-                                                                        <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                        </div>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        @endfor
-                                                    </tbody>
-                                                </table>
-                                            @endforeach
-                                        </div>
+                                            @php
+                                                // Get max number of sets from all related setdetails
+                                                $maxSetDetail = $strengthdetail->sets->sortByDesc('sets')->first();
+                                                $numberOfSets = $maxSetDetail->sets;
+                                                $baseWeight = $strengthdetail->weight;
+                                                $totalPercentageIncrease = 0.7;
+                                                $percentageIncreasePerSet = $numberOfSets > 1 ? $totalPercentageIncrease / ($numberOfSets - 1) : 0;
+                                                $percentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSet * $i, range(0, $numberOfSets - 1));
 
+                                                // ✅ Build reps list per set index
+                                                $repsList = [];
+                                                $setIndex = 0;
+                                                foreach ($strengthdetail->sets as $setDetail) {
+                                                    for ($i = 0; $i < $setDetail->sets; $i++) {
+                                                        $repsList[$setIndex] = $setDetail->reps;
+                                                        $setIndex++;
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <table class="w-full text-white tablee my-4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="px-2">Set</th>
+                                                        <th class="px-2">Weight</th>
+                                                        <th class="px-2">Rep</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
+                                                        @php
+                                                            $setPercentage = $percentages[$setNumber - 1] ?? 0.3;
+                                                            $calculatedWeight = $baseWeight * $setPercentage;
+                                                            $reps = $repsList[$setNumber - 1] ?? '-';
+                                                        @endphp
+                                                        <tr class="border-b border-gray-300">
+                                                            <td class="py-4">{{ $setNumber }}</td>
+                                                            <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}" class="py-4 text-center">
+                                                                {{ number_format($calculatedWeight, 2) }}
+                                                            </td>
+                                                            <td class="py-4">
+                                                                <div class="flex items-center justify-center space-x-4">
+                                                                    <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
+                                                                    <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
+                                                                        id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
+                                                                        {{ $reps }}
+                                                                    </span>
+                                                                    <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
+                                                                </div>
+                                                            </td>
+                                                            <td class="py-4">
+                                                                <label class="inline-flex items-center cursor-pointer">
+                                                                    <input type="checkbox"
+                                                                        id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                        class="sr-only peer timer-checkbox"
+                                                                        data-rest-time="{{ $strengthdetail->rest }}"
+                                                                        data-strength-detail-id="{{ $strengthdetail->id }}"
+                                                                        data-type="Primary"
+                                                                        data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                        onclick="saveStrengthWorkout(this)">
+                                                                    <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                        class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                    </div>
+                                                                </label>
+                                                            </td>
+                                                        </tr>
+                                                    @endfor
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     @endforeach
                                 </div>
                             </div>
                         </div>
 
-                         {{-- Weightlifting --}}
-                        <div id="section-weightlifting" class="category-section hidden">
-                            <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                {{-- Dynamic Weightlifting Content --}}
-                                <div class="content pt-4 text-white">
-                                    @foreach ($detailsweight as $weightIndex => $weightdetail)
-                                        <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
+
+                            {{-- Weightlifting --}}
+                            <div id="section-weightlifting" class="category-section hidden">
+                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
+                                    {{-- Dynamic Weightlifting Content --}}
+                                    <div class="content pt-4 text-white">
+                                        @foreach ($detailsweight as $weightIndex => $weightdetail)
+                                            <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
                                                 <button class="px-4 py-2 rounded primary-btn bg-white text-black"
                                                     data-target="#primary-weight-{{ $weightIndex }}">
                                                     {{ $weightdetail->workouts->categoryOption->category_name }} -
                                                     {{ $weightdetail->workouts->workout }}
                                                 </button>
-                                        </div>
+                                            </div>
 
-                                        {{-- Primary Table --}}
-                                        <div id="primary-weight-{{ $weightIndex }}" class="table-body primary-body">
-                                            @foreach ($weightdetail->sets as $setIndex => $setdetail)
+                                            {{-- Primary Table --}}
+                                            <div id="primary-weight-{{ $weightIndex }}" class="table-body primary-body">
                                                 @php
+                                                    // 1. Get max number of sets from all set details
+                                                    $maxSetDetail = $weightdetail->sets->sortByDesc('sets')->first();
+                                                    $numberOfSets = $maxSetDetail->sets;
+
+                                                    // 2. Calculate weight percentages
                                                     $baseWeight = $weightdetail->weight;
                                                     $totalPercentageIncrease = 0.7;
-                                                    $numberOfSets = $setdetail->sets;
-                                                    $percentageIncreasePerSet = $numberOfSets >= 1 ? $totalPercentageIncrease / max(1, $numberOfSets - 1) : 0;
+                                                    $percentageIncreasePerSet = $numberOfSets > 1 ? $totalPercentageIncrease / ($numberOfSets - 1) : 0;
                                                     $percentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSet * $i, range(0, $numberOfSets - 1));
+
+                                                    // 3. Build reps list across all sets
+                                                    $repsList = [];
+                                                    $setIndex = 0;
+                                                    foreach ($weightdetail->sets as $setDetail) {
+                                                        for ($i = 0; $i < $setDetail->sets; $i++) {
+                                                            $repsList[$setIndex] = $setDetail->reps;
+                                                            $setIndex++;
+                                                        }
+                                                    }
                                                 @endphp
+
                                                 <table class="w-full text-white tablee my-4">
                                                     <thead>
                                                         <tr>
@@ -234,6 +261,7 @@
                                                             @php
                                                                 $setPercentage = $percentages[$setNumber - 1] ?? 0.3;
                                                                 $calculatedWeight = $baseWeight * $setPercentage;
+                                                                $reps = $repsList[$setNumber - 1] ?? '-';
                                                             @endphp
                                                             <tr class="border-b border-gray-300">
                                                                 <td class="py-4">{{ $setNumber }}</td>
@@ -243,7 +271,9 @@
                                                                 <td class="py-4">
                                                                     <div class="flex items-center justify-center space-x-4">
                                                                         <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                        <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">{{ $setdetail->reps }}</span>
+                                                                        <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">
+                                                                            {{ $reps }}
+                                                                        </span>
                                                                         <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
                                                                     </div>
                                                                 </td>
@@ -262,13 +292,12 @@
                                                         @endfor
                                                     </tbody>
                                                 </table>
-                                            @endforeach
-                                        </div>
-
-                                    @endforeach
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+
 
 
                             {{-- Conditioning --}}
