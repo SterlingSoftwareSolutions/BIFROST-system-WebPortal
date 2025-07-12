@@ -61,9 +61,9 @@ class ClassesController extends Controller
                     // case 'conditioning':
                     //     Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
                     //     break;
-                    // case 'warmup':
-                    //     Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                    //     break;
+                    case 'warmup':
+                        Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                        break;
                     // case 'test':
                     //     Test::where('id', $assign->workout_id)->update(['is_assigned' => false]);
                     //     break;

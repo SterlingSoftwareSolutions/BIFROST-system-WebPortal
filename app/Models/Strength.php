@@ -23,6 +23,7 @@ class Strength extends Model
         'altrestgreen',
         'reps',
         'intensity',
+        'is_assigned',
         'alt_category_id',
         'alt_workout_id',
         'altweight',

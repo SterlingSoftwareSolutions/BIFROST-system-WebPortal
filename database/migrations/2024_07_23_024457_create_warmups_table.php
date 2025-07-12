@@ -23,6 +23,7 @@ return new class extends Migration
             $table->integer('reps');
             $table->string('date');
             $table->float('weight');
+            $table->boolean('is_assigned')->default(false);
             $table->timestamps();
         });
     }

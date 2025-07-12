@@ -15,6 +15,7 @@ class Warmup extends Model
         'workoutname',
         'reps',
         'weight',
+        'is_assigned',
         'date'
     ];
 

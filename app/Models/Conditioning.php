@@ -20,6 +20,7 @@ class Conditioning extends Model
         'date',
         'unit', 
         'amrap',
+        'is_assigned',
     ];
     // public function category()
     // {
