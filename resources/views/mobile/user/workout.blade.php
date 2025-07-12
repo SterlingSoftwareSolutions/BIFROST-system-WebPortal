@@ -19,49 +19,55 @@
                 <div id="ring" class="border border-gray-600 rounded-3xl flex items-start">
                     <div class="flex w-full flex-col justify-center items-center gap-2.5 p-5 text-white">
 
-                    {{-- Category Icons (Static) --}}
-                    {{-- Category Icons (Static) --}}
+                        {{-- Category Icons (Static) --}}
+                        {{-- Category Icons (Static) --}}
                         <div class="flex gap-4 justify-start mb-6 overflow-x-auto w-full px-2">
                             {{-- Warmup --}}
-                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-warmup"
-                                data-icon-white="{{ asset('icon/warmupwhite.png') }}"
+                            <button
+                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-warmup" data-icon-white="{{ asset('icon/warmupwhite.png') }}"
                                 data-icon-black="{{ asset('icon/warmup.png') }}">
-                                <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon" class="w-5 h-5 mb-1 icon-img">
+                                <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon"
+                                    class="w-5 h-5 mb-1 icon-img">
                                 <span class="text-xs leading-tight text-center">Warm<br>Up</span>
                             </button>
 
                             {{-- Strength --}}
-                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-strength"
-                                data-icon-white="{{ asset('icon/strengthwhite.png') }}"
+                            <button
+                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-strength" data-icon-white="{{ asset('icon/strengthwhite.png') }}"
                                 data-icon-black="{{ asset('icon/strength.png') }}">
-                                <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon" class="w-5 h-5 mb-1 icon-img">
+                                <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon"
+                                    class="w-5 h-5 mb-1 icon-img">
                                 <span class="text-xs leading-tight text-center">Strength</span>
                             </button>
 
                             {{-- Weightlifting --}}
-                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                            <button
+                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
                                 data-target="#section-weightlifting"
                                 data-icon-white="{{ asset('icon/weightliftingWhite.png') }}"
                                 data-icon-black="{{ asset('icon/weightlifting.png') }}">
-                                <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mb-1 icon-img">
+                                <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon"
+                                    class="w-5 h-5 mb-1 icon-img">
                                 <span class="text-xs leading-tight text-center">Weight<br>Lifting</span>
                             </button>
 
                             {{-- Conditioning --}}
-                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                            <button
+                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
                                 data-target="#section-conditioning"
                                 data-icon-white="{{ asset('icon/conditioningWhite.png') }}"
                                 data-icon-black="{{ asset('icon/conditioning.png') }}">
-                                <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon" class="w-5 h-5 mb-1 icon-img">
+                                <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon"
+                                    class="w-5 h-5 mb-1 icon-img">
                                 <span class="text-xs leading-tight text-center">Condi<br>tioning</span>
                             </button>
 
                             {{-- Test --}}
-                            <button class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-test"
-                                data-icon-white="{{ asset('icon/testWhite.png') }}"
+                            <button
+                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
+                                data-target="#section-test" data-icon-white="{{ asset('icon/testWhite.png') }}"
                                 data-icon-black="{{ asset('icon/test.png') }}">
                                 <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-1 icon-img">
                                 <span class="text-xs leading-tight text-center">Test</span>
@@ -73,140 +79,173 @@
                             {{-- Warmup --}}
                             <div id="section-warmup" class="category-section">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
+                                    @if ($detailswarmup->isEmpty())
+                                        <p class="text-white text-center">No warm-up workouts assigned.</p>
+                                    @else
+                                        <table class="w-full text-white ">
+                                            <thead class="justify-between">
+                                                <tr>
+                                                    <th class="py-2">Workout</th>
+                                                    <th class="px-2">Weight</th>
+                                                    <th class="px-2">Rep</th>
+                                                    <th class="col-span-2"></th>
 
-                                <table class="w-full text-white ">
-                                    <thead class="justify-between">
-                                        <tr>
-                                            <th class="py-2">Workout</th>
-                                            <th class="px-2">Weight</th>
-                                            <th class="px-2">Rep</th>
-                                            <th class="col-span-2"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-body">
+                                                @foreach ($detailswarmup as $warmupdetail)
+                                                    <tr class="border-b border-gray-300">
+                                                        {{-- Category --}}
+                                                        <td class="py-4" onclick="savewarmup(this)"
+                                                            data-workout-id="{{ $warmupdetail->id }}"
+                                                            data-daily-warmup-id="">
+                                                            {{ $warmupdetail->workouts->categoryOption->category_name }} -
+                                                            {{ $warmupdetail->workouts->workout }}</td>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        @foreach ($detailswarmup as $warmupdetail)
-                                            <tr class="border-b border-gray-300">
-                                                {{-- Category --}}
-                                                <td class="py-4" onclick="savewarmup(this)"
-                                                    data-workout-id="{{ $warmupdetail->id }}" data-daily-warmup-id="">
-                                                    {{ $warmupdetail->workouts->categoryOption->category_name }} -
-                                                    {{ $warmupdetail->workouts->workout }}</td>
-
-                                                {{-- Workout --}}
-                                                {{-- <td class="py-4 workouts">{{ $warmupdetail->workouts->workout }}</td> --}}
-                                                {{-- Weight --}}
-                                                <td class="py-4 text-center">{{ $warmupdetail->weight }}</td>
-                                                {{-- Reps --}}
-                                                <td class="py-4">
-                                                    <div class="flex items-center justify-center space-x-4">
-                                                        <button class="px-2 py-1 text-white"
-                                                            onclick="decrementValue(this)">-</button>
-                                                        <span
-                                                            class="w-16 bg-white text-black text-center rounded border-none p-1 reps">{{ $warmupdetail->reps }}</span>
-                                                        <button class="px-2 py-1 text-white"
-                                                            onclick="incrementValue(this)">+</button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-
-                                </div>
-                            </div>
-
-                        {{-- Strength --}}
-                        <div id="section-strength" class="category-section hidden">
-                            <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                {{-- Actual Strength Content --}}
-                                <div class="content pt-4 text-white">
-                                    @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
-                                        <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                            <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                data-target="#primary-weight-{{ $strengthIndex }}">
-                                                {{ $strengthdetail->workout->categoryOption->category_name }} -
-                                                {{ $strengthdetail->workout->workout }}
-                                            </button>
-                                        </div>
-
-                                        {{-- Primary Table --}}
-                                        <div id="primary-weight-{{ $strengthIndex }}" class="table-body primary-body">
-                                            @php
-                                                // Get max number of sets from all related setdetails
-                                                $maxSetDetail = $strengthdetail->sets->sortByDesc('sets')->first();
-                                                $numberOfSets = $maxSetDetail->sets;
-                                                $baseWeight = $strengthdetail->weight;
-                                                $totalPercentageIncrease = 0.7;
-                                                $percentageIncreasePerSet = $numberOfSets > 1 ? $totalPercentageIncrease / ($numberOfSets - 1) : 0;
-                                                $percentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSet * $i, range(0, $numberOfSets - 1));
-
-                                                // ✅ Build reps list per set index
-                                                $repsList = [];
-                                                $setIndex = 0;
-                                                foreach ($strengthdetail->sets as $setDetail) {
-                                                    for ($i = 0; $i < $setDetail->sets; $i++) {
-                                                        $repsList[$setIndex] = $setDetail->reps;
-                                                        $setIndex++;
-                                                    }
-                                                }
-                                            @endphp
-
-                                            <table class="w-full text-white tablee my-4">
-                                                <thead>
-                                                    <tr>
-                                                        <th class="px-2">Set</th>
-                                                        <th class="px-2">Weight</th>
-                                                        <th class="px-2">Rep</th>
-                                                        <th></th>
+                                                        {{-- Workout --}}
+                                                        {{-- <td class="py-4 workouts">{{ $warmupdetail->workouts->workout }}</td> --}}
+                                                        {{-- Weight --}}
+                                                        <td class="py-4 text-center">{{ $warmupdetail->weight }}</td>
+                                                        {{-- Reps --}}
+                                                        <td class="py-4">
+                                                            <div class="flex items-center justify-center space-x-4">
+                                                                <button class="px-2 py-1 text-white"
+                                                                    onclick="decrementValue(this)">-</button>
+                                                                <span
+                                                                    class="w-16 bg-white text-black text-center rounded border-none p-1 reps">{{ $warmupdetail->reps }}</span>
+                                                                <button class="px-2 py-1 text-white"
+                                                                    onclick="incrementValue(this)">+</button>
+                                                            </div>
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                        @php
-                                                            $setPercentage = $percentages[$setNumber - 1] ?? 0.3;
-                                                            $calculatedWeight = $baseWeight * $setPercentage;
-                                                            $reps = $repsList[$setNumber - 1] ?? '-';
-                                                        @endphp
-                                                        <tr class="border-b border-gray-300">
-                                                            <td class="py-4">{{ $setNumber }}</td>
-                                                            <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}" class="py-4 text-center">
-                                                                {{ number_format($calculatedWeight, 2) }}
-                                                            </td>
-                                                            <td class="py-4">
-                                                                <div class="flex items-center justify-center space-x-4">
-                                                                    <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                    <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
-                                                                        id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
-                                                                        {{ $reps }}
-                                                                    </span>
-                                                                    <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
-                                                                </div>
-                                                            </td>
-                                                            <td class="py-4">
-                                                                <label class="inline-flex items-center cursor-pointer">
-                                                                    <input type="checkbox"
-                                                                        id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                        class="sr-only peer timer-checkbox"
-                                                                        data-rest-time="{{ $strengthdetail->rest }}"
-                                                                        data-strength-detail-id="{{ $strengthdetail->id }}"
-                                                                        data-type="Primary"
-                                                                        data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                        onclick="saveStrengthWorkout(this)">
-                                                                    <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                        class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                    </div>
-                                                                </label>
-                                                            </td>
-                                                        </tr>
-                                                    @endfor
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @endforeach
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
                             </div>
-                        </div>
+
+                            {{-- Strength --}}
+                            <div id="section-strength" class="category-section hidden">
+                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
+                                    {{-- Actual Strength Content --}}
+                                    <div class="content pt-4 text-white">
+
+                                        @if ($detailsstrength->isEmpty())
+                                            <p class="text-center text-white">No assigned strength workouts.</p>
+                                        @else
+                                            @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
+                                                <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
+                                                    <button class="px-4 py-2 rounded primary-btn bg-white text-black"
+                                                        data-target="#primary-weight-{{ $strengthIndex }}">
+                                                        {{ $strengthdetail->workout?->categoryOption?->category_name ?? 'No Category' }}
+                                                        -
+                                                        {{ $strengthdetail->workout?->workout ?? 'Unnamed Workout' }}
+                                                    </button>
+                                                </div>
+
+                                                {{-- Primary Table --}}
+                                                <div id="primary-weight-{{ $strengthIndex }}"
+                                                    class="table-body primary-body">
+                                                    @php
+                                                        // Get max number of sets from all related setdetails
+                                                        $maxSetDetail = $strengthdetail->sets
+                                                            ->sortByDesc('sets')
+                                                            ->first();
+                                                        $numberOfSets = $maxSetDetail->sets ?? 0;
+                                                        $baseWeight = $strengthdetail->weight ?? 0;
+                                                        $totalPercentageIncrease = 0.7;
+                                                        $percentageIncreasePerSet =
+                                                            $numberOfSets > 1
+                                                                ? $totalPercentageIncrease / ($numberOfSets - 1)
+                                                                : 0;
+                                                        $percentages = array_map(
+                                                            fn($i) => 0.3 + $percentageIncreasePerSet * $i,
+                                                            range(0, $numberOfSets - 1),
+                                                        );
+
+                                                        // Build reps list per set index
+                                                        $repsList = [];
+                                                        $setIndex = 0;
+                                                        foreach ($strengthdetail->sets as $setDetail) {
+                                                            for ($i = 0; $i < $setDetail->sets; $i++) {
+                                                                $repsList[$setIndex] = $setDetail->reps;
+                                                                $setIndex++;
+                                                            }
+                                                        }
+                                                    @endphp
+
+                                                    @if ($numberOfSets > 0)
+                                                        <table class="w-full text-white tablee my-4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="px-2">Set</th>
+                                                                    <th class="px-2">Weight</th>
+                                                                    <th class="px-2">Rep</th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
+                                                                    @php
+                                                                        $setPercentage =
+                                                                            $percentages[$setNumber - 1] ?? 0.3;
+                                                                        $calculatedWeight =
+                                                                            $baseWeight * $setPercentage;
+                                                                        $reps = $repsList[$setNumber - 1] ?? '-';
+                                                                    @endphp
+                                                                    <tr class="border-b border-gray-300">
+                                                                        <td class="py-4">{{ $setNumber }}</td>
+                                                                        <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                            class="py-4 text-center">
+                                                                            {{ number_format($calculatedWeight, 2) }}
+                                                                        </td>
+                                                                        <td class="py-4">
+                                                                            <div
+                                                                                class="flex items-center justify-center space-x-4">
+                                                                                <button class="px-2 py-1 text-white"
+                                                                                    onclick="decrementValue(this)">-</button>
+                                                                                <span
+                                                                                    class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
+                                                                                    id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
+                                                                                    {{ $reps }}
+                                                                                </span>
+                                                                                <button class="px-2 py-1 text-white"
+                                                                                    onclick="incrementValue(this)">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="py-4">
+                                                                            <label
+                                                                                class="inline-flex items-center cursor-pointer">
+                                                                                <input type="checkbox"
+                                                                                    id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                    class="sr-only peer timer-checkbox"
+                                                                                    data-rest-time="{{ $strengthdetail->rest }}"
+                                                                                    data-strength-detail-id="{{ $strengthdetail->id }}"
+                                                                                    data-type="Primary"
+                                                                                    data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                    onclick="saveStrengthWorkout(this)">
+                                                                                <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                                </div>
+                                                                            </label>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endfor
+                                                            </tbody>
+                                                        </table>
+                                                    @else
+                                                        <p class="text-center text-sm text-white mt-4">No sets assigned for
+                                                            this workout.</p>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @endif
+
+                                    </div>
+                                </div>
+                            </div>
+
 
 
                             {{-- Weightlifting --}}
@@ -214,89 +253,119 @@
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
                                     {{-- Dynamic Weightlifting Content --}}
                                     <div class="content pt-4 text-white">
-                                        @foreach ($detailsweight as $weightIndex => $weightdetail)
-                                            <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                    data-target="#primary-weight-{{ $weightIndex }}">
-                                                    {{ $weightdetail->workouts->categoryOption->category_name }} -
-                                                    {{ $weightdetail->workouts->workout }}
-                                                </button>
-                                            </div>
 
-                                            {{-- Primary Table --}}
-                                            <div id="primary-weight-{{ $weightIndex }}" class="table-body primary-body">
-                                                @php
-                                                    // 1. Get max number of sets from all set details
-                                                    $maxSetDetail = $weightdetail->sets->sortByDesc('sets')->first();
-                                                    $numberOfSets = $maxSetDetail->sets;
+                                        @if ($detailsweight->isEmpty())
+                                            <p class="text-center text-white">No assigned weightlifting workouts.</p>
+                                        @else
+                                            @foreach ($detailsweight as $weightIndex => $weightdetail)
+                                                <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
+                                                    <button class="px-4 py-2 rounded primary-btn bg-white text-black"
+                                                        data-target="#primary-weight-{{ $weightIndex }}">
+                                                        {{ $weightdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
+                                                        -
+                                                        {{ $weightdetail->workouts?->workout ?? 'Unnamed Workout' }}
+                                                    </button>
+                                                </div>
 
-                                                    // 2. Calculate weight percentages
-                                                    $baseWeight = $weightdetail->weight;
-                                                    $totalPercentageIncrease = 0.7;
-                                                    $percentageIncreasePerSet = $numberOfSets > 1 ? $totalPercentageIncrease / ($numberOfSets - 1) : 0;
-                                                    $percentages = array_map(fn($i) => 0.3 + $percentageIncreasePerSet * $i, range(0, $numberOfSets - 1));
+                                                {{-- Primary Table --}}
+                                                <div id="primary-weight-{{ $weightIndex }}"
+                                                    class="table-body primary-body">
+                                                    @php
+                                                        $baseWeight = $weightdetail->weight ?? 0;
+                                                        $totalPercentageIncrease = 0.7;
 
-                                                    // 3. Build reps list across all sets
-                                                    $repsList = [];
-                                                    $setIndex = 0;
-                                                    foreach ($weightdetail->sets as $setDetail) {
-                                                        for ($i = 0; $i < $setDetail->sets; $i++) {
-                                                            $repsList[$setIndex] = $setDetail->reps;
-                                                            $setIndex++;
+                                                        // Get max sets
+                                                        $maxSetDetail = $weightdetail->sets
+                                                            ->sortByDesc('sets')
+                                                            ->first();
+                                                        $numberOfSets = $maxSetDetail->sets ?? 0;
+
+                                                        // Weight increments
+                                                        $percentageIncreasePerSet =
+                                                            $numberOfSets > 1
+                                                                ? $totalPercentageIncrease / ($numberOfSets - 1)
+                                                                : 0;
+                                                        $percentages = array_map(
+                                                            fn($i) => 0.3 + $percentageIncreasePerSet * $i,
+                                                            range(0, $numberOfSets - 1),
+                                                        );
+
+                                                        // Reps per set
+                                                        $repsList = [];
+                                                        $setIndex = 0;
+                                                        foreach ($weightdetail->sets as $setDetail) {
+                                                            for ($i = 0; $i < $setDetail->sets; $i++) {
+                                                                $repsList[$setIndex] = $setDetail->reps;
+                                                                $setIndex++;
+                                                            }
                                                         }
-                                                    }
-                                                @endphp
+                                                    @endphp
 
-                                                <table class="w-full text-white tablee my-4">
-                                                    <thead>
-                                                        <tr>
-                                                            <th class="py-2">Set</th>
-                                                            <th class="py-2">Weight</th>
-                                                            <th class="px-2">Rep</th>
-                                                            <th></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                            @php
-                                                                $setPercentage = $percentages[$setNumber - 1] ?? 0.3;
-                                                                $calculatedWeight = $baseWeight * $setPercentage;
-                                                                $reps = $repsList[$setNumber - 1] ?? '-';
-                                                            @endphp
-                                                            <tr class="border-b border-gray-300">
-                                                                <td class="py-4">{{ $setNumber }}</td>
-                                                                <td class="py-4 text-center">
-                                                                    {{ number_format($calculatedWeight, 2) }}
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <div class="flex items-center justify-center space-x-4">
-                                                                        <button class="px-2 py-1 text-white" onclick="decrementValue(this)">-</button>
-                                                                        <span class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">
-                                                                            {{ $reps }}
-                                                                        </span>
-                                                                        <button class="px-2 py-1 text-white" onclick="incrementValue(this)">+</button>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <label class="inline-flex items-center cursor-pointer">
-                                                                        <input type="checkbox"
-                                                                            id="toggleTimer{{ $weightIndex }}-{{ $setNumber }}"
-                                                                            class="sr-only peer timer-checkbox"
-                                                                            data-rest-time="{{ $weightdetail->rest }}">
-                                                                        <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
-                                                                            class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                        </div>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        @endfor
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        @endforeach
+                                                    @if ($numberOfSets > 0)
+                                                        <table class="w-full text-white tablee my-4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="py-2">Set</th>
+                                                                    <th class="py-2">Weight</th>
+                                                                    <th class="px-2">Rep</th>
+                                                                    <th></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
+                                                                    @php
+                                                                        $setPercentage =
+                                                                            $percentages[$setNumber - 1] ?? 0.3;
+                                                                        $calculatedWeight =
+                                                                            $baseWeight * $setPercentage;
+                                                                        $reps = $repsList[$setNumber - 1] ?? '-';
+                                                                    @endphp
+                                                                    <tr class="border-b border-gray-300">
+                                                                        <td class="py-4">{{ $setNumber }}</td>
+                                                                        <td class="py-4 text-center">
+                                                                            {{ number_format($calculatedWeight, 2) }}
+                                                                        </td>
+                                                                        <td class="py-4">
+                                                                            <div
+                                                                                class="flex items-center justify-center space-x-4">
+                                                                                <button class="px-2 py-1 text-white"
+                                                                                    onclick="decrementValue(this)">-</button>
+                                                                                <span
+                                                                                    class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">
+                                                                                    {{ $reps }}
+                                                                                </span>
+                                                                                <button class="px-2 py-1 text-white"
+                                                                                    onclick="incrementValue(this)">+</button>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="py-4">
+                                                                            <label
+                                                                                class="inline-flex items-center cursor-pointer">
+                                                                                <input type="checkbox"
+                                                                                    id="toggleTimer{{ $weightIndex }}-{{ $setNumber }}"
+                                                                                    class="sr-only peer timer-checkbox"
+                                                                                    data-rest-time="{{ $weightdetail->rest ?? 0 }}">
+                                                                                <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
+                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                                </div>
+                                                                            </label>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endfor
+                                                            </tbody>
+                                                        </table>
+                                                    @else
+                                                        <p class="text-center text-sm text-white mt-4">No sets assigned for
+                                                            this workout.</p>
+                                                    @endif
+                                                </div>
+                                            @endforeach
+                                        @endif
+
                                     </div>
                                 </div>
                             </div>
+
 
 
 
@@ -304,509 +373,532 @@
                             <div id="section-conditioning" class="category-section hidden">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
 
-                                <table class="w-full text-white ">
-                                    <thead class="justify-between">
-                                        <tr>
-                                            <th class="py-2">Workout</th>
-                                            <th class="px-2">Weight</th>
-                                            <th class="px-2">Rep</th>
-                                            <th class="col-span-2"></th>
+                                    @if ($detailsconditioning->isEmpty())
+                                        <p class="text-center text-white">No assigned conditioning workouts.</p>
+                                    @else
+                                        <table class="w-full text-white">
+                                            <thead class="justify-between">
+                                                <tr>
+                                                    <th class="py-2">Workout</th>
+                                                    <th class="px-2">Weight</th>
+                                                    <th class="px-2">Rep</th>
+                                                    <th class="col-span-2"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-body">
+                                                @foreach ($detailsconditioning as $conditioningdetail)
+                                                    <tr class="border-b border-gray-300">
+                                                        {{-- Category & Workout --}}
+                                                        <td class="py-4" onclick="savewarmup(this)"
+                                                            data-workout-id="{{ $conditioningdetail->id }}"
+                                                            data-daily-warmup-id="">
+                                                            {{ $conditioningdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
+                                                            -
+                                                            {{ $conditioningdetail->workouts?->workout ?? 'Unnamed Workout' }}
+                                                        </td>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        @foreach ($detailsconditioning as $conditioningdetail)
-                                            <tr class="border-b border-gray-300">
-                                                {{-- Category --}}
-                                                <td class="py-4" onclick="savewarmup(this)"
-                                                    data-workout-id="{{ $conditioningdetail->id }}" data-daily-warmup-id="">
-                                                    {{ $conditioningdetail->workouts->categoryOption->category_name }} -
-                                                    {{ $conditioningdetail->workouts->workout }}</td>
+                                                        {{-- Weight --}}
+                                                        <td class="py-4 text-center">
+                                                            {{ $conditioningdetail->weight ?? '0' }}</td>
 
-                                                {{-- Workout --}}
-                                                {{-- <td class="py-4 workouts">{{ $conditioningdetail->workouts->workout }}</td> --}}
-                                                {{-- Weight --}}
-                                                <td class="py-4 text-center">{{ $conditioningdetail->weight }}</td>
-                                                {{-- Reps --}}
-                                                <td class="py-4">
-                                                    <div class="flex items-center justify-center space-x-4">
-                                                        <button class="px-2 py-1 text-white"
-                                                            onclick="decrementValue(this)">-</button>
-                                                        <span
-                                                            class="w-16 bg-white text-black text-center rounded border-none p-1 reps">{{ $conditioningdetail->reps }}</span>
-                                                        <button class="px-2 py-1 text-white"
-                                                            onclick="incrementValue(this)">+</button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                        {{-- Reps --}}
+                                                        <td class="py-4">
+                                                            <div class="flex items-center justify-center space-x-4">
+                                                                <button class="px-2 py-1 text-white"
+                                                                    onclick="decrementValue(this)">-</button>
+                                                                <span
+                                                                    class="w-16 bg-white text-black text-center rounded border-none p-1 reps">
+                                                                    {{ $conditioningdetail->reps ?? '-' }}
+                                                                </span>
+                                                                <button class="px-2 py-1 text-white"
+                                                                    onclick="incrementValue(this)">+</button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
+
                                 </div>
                             </div>
 
-                    {{--  Test --}}
-                        <div id="section-test" class="category-section hidden">
-                            <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                              <table class="w-full text-white ">
-                                    <thead class="justify-between">
-                                        <tr>
-                                            <th class="py-2">Category</th>
-                                            <th class="px-2">Workout</th>
-                                            <th class="px-2">Member</th>
-                                            <th class="col-span-2"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="table-body">
-                                        @foreach ($detailstest as $test)
-                                            <tr class="border-b border-gray-300">
-                                                <td class="py-4" onclick="handleTestClick(this)"
-                                                    data-test-id="{{ $test->id }}">
-                                                    {{ $test->category->category_name ?? 'N/A' }}
-                                                </td>
 
-                                                <td class="py-4">
-                                                    {{ $test->workout->workout ?? 'N/A' }}
-                                                </td>
+                            {{-- Test --}}
+                            <div id="section-test" class="category-section hidden">
+                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
+                                    @if ($detailstest->isEmpty())
+                                        <p class="text-center text-white">No test records assigned.</p>
+                                    @else
+                                        <table class="w-full text-white">
+                                            <thead class="justify-between">
+                                                <tr>
+                                                    <th class="py-2">Category</th>
+                                                    <th class="px-2">Workout</th>
+                                                    <th class="px-2">Member</th>
+                                                    <th class="col-span-2"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-body">
+                                                @foreach ($detailstest as $test)
+                                                    <tr class="border-b border-gray-300">
+                                                        {{-- Category --}}
+                                                        <td class="py-4" onclick="handleTestClick(this)"
+                                                            data-test-id="{{ $test->id }}">
+                                                            {{ $test->category->category_name ?? 'N/A' }}
+                                                        </td>
 
-                                                <td class="py-4">
-                                                    {{$test->member->firstname}}
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                        {{-- Workout --}}
+                                                        <td class="py-4">
+                                                            {{ $test->workout->workout ?? 'N/A' }}
+                                                        </td>
+
+                                                        {{-- Member --}}
+                                                        <td class="py-4">
+                                                            {{ $test->member->firstname ?? 'N/A' }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
 
-                        <button id="resetButton" class="px-4 rounded w-full">RESET TIMER</button>
 
-                        <div id="timer" class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
-                            00:00:00
+                            <button id="resetButton" class="px-4 rounded w-full">RESET TIMER</button>
+
+                            <div id="timer"
+                                class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
+                                00:00:00
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                const sets = document.querySelectorAll('.set');
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    const sets = document.querySelectorAll('.set');
 
-                sets.forEach(set => {
-                    const plusButton = set.querySelector('.plus');
-                    const minusButton = set.querySelector('.minus');
-                    const input = set.querySelector('.quantity input');
+                    sets.forEach(set => {
+                        const plusButton = set.querySelector('.plus');
+                        const minusButton = set.querySelector('.minus');
+                        const input = set.querySelector('.quantity input');
 
-                    plusButton.addEventListener('click', () => {
-                        input.value = parseInt(input.value) + 1;
-                    });
+                        plusButton.addEventListener('click', () => {
+                            input.value = parseInt(input.value) + 1;
+                        });
 
-                    minusButton.addEventListener('click', () => {
-                        if (parseInt(input.value) > 0) {
-                            input.value = parseInt(input.value) - 1;
-                        }
-                    });
-                });
-
-                const resetButton = document.querySelector('.reset-timer');
-                resetButton.addEventListener('click', () => {
-                    // Timer reset logic goes here
-                    console.log('Timer reset');
-                });
-            });
-        </script>
-
-        {{-- increase decrease quntity function --}}
-        <script>
-            function incrementValue(element) {
-                var span = element.parentNode.querySelector('span');
-                var value = parseInt(span.textContent, 10);
-                value = isNaN(value) ? 0 : value;
-                value++;
-                span.textContent = value;
-            }
-
-            function decrementValue(element) {
-                var span = element.parentNode.querySelector('span');
-                var value = parseInt(span.textContent, 10);
-                value = isNaN(value) ? 0 : value;
-                value = value <= 0 ? 0 : value - 1;
-                span.textContent = value;
-            }
-        </script>
-        {{-- end increase decrease quntity function --}}
-
-
-        {{-- drop down script --}}
-        <script>
-            document.querySelectorAll('.toggle-icon').forEach(icon => {
-                icon.addEventListener('click', function() {
-                    // Determine the element to toggle
-                    let toggleTarget;
-
-                    // Check if the next sibling is a table or look for the '.content' div
-                    const parentDiv = this.closest('div');
-                    const table = parentDiv.nextElementSibling; // For Warmup section
-                    const content = parentDiv.parentElement.querySelector('.content'); // For Strength and Weightlifting
-
-                    if (table && table.tagName === 'TABLE') {
-                        // If it's the Warmup section
-                        toggleTarget = table;
-                    } else if (content) {
-                        // If it's Strength or Weightlifting
-                        toggleTarget = content;
-                    }
-
-                    // Toggle the visibility
-                    if (toggleTarget) {
-                        if (toggleTarget.classList.contains('hidden')) {
-                            toggleTarget.classList.remove('hidden');
-                            this.classList.remove('fa-chevron-down');
-                            this.classList.add('fa-minus');
-                        } else {
-                            toggleTarget.classList.add('hidden');
-                            this.classList.remove('fa-minus');
-                            this.classList.add('fa-chevron-down');
-                        }
-                    }
-                });
-            });
-        </script>
-        {{-- end drop down script --}}
-
-
-        {{-- strenght save and colur change --}}
-        <script>
-            let timerIntervals = {};
-            let elapsedTimes = {};
-
-            function startTimer(setNumber) {
-                console.log(setNumber);
-                elapsedTimes[setNumber] = 0;
-                timerIntervals[setNumber] = setInterval(() => {
-                    elapsedTimes[setNumber]++;
-                    updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
-                    changeTimerColor(setNumber, elapsedTimes[setNumber]);
-                    if (elapsedTimes[setNumber] >= 240) { // 4 minutes
-                        clearInterval(timerIntervals[setNumber]);
-                        beep(3);
-                    }
-                }, 1000);
-            }
-
-            function stopTimer(setNumber) {
-                clearInterval(timerIntervals[setNumber]);
-            }
-
-            function resetTimer(setNumber) {
-                clearInterval(timerIntervals[setNumber]);
-                elapsedTimes[setNumber] = 0;
-                updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
-
-                const ringElement = document.getElementById(`ring`);
-                if (ringElement) {
-                    ringElement.classList.remove('border-red-600', 'border-yellow-600', 'border-green-600');
-                    ringElement.classList.add('border-orange-600');
-                }
-
-                const timerElement = document.getElementById(`timer`);
-                if (timerElement) {
-                    timerElement.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                    timerElement.classList.add('bg-orange-600');
-                }
-
-                const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
-                if (toggleBackground) {
-                    toggleBackground.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                    toggleBackground.classList.add('bg-gray-600');
-                }
-            }
-
-            function updateTimerDisplay(setNumber, seconds) {
-                const minutes = Math.floor(seconds / 60);
-                const remainingSeconds = seconds % 60;
-                const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
-                const displaySeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
-
-                const timerElement = document.getElementById(`timer`);
-                if (timerElement) {
-                    timerElement.textContent = `00:${displayMinutes}:${displaySeconds}`;
-                }
-
-            }
-
-            function changeTimerColor(setNumber, seconds) {
-                const timerElement = document.getElementById(`timer`);
-                const ringElement = document.getElementById(`ring`);
-                const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
-
-                if (timerElement && toggleBackground) {
-                    timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                    ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600', 'border-green-600');
-                    toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-
-                    if (seconds <= 120) {
-                        timerElement.classList.add('bg-red-600');
-                        ringElement.classList.add('border-red-600');
-                        toggleBackground.classList.add('bg-red-600');
-                    } else if (seconds <= 180) {
-                        timerElement.classList.add('bg-yellow-600');
-                        ringElement.classList.add('border-yellow-600');
-                        toggleBackground.classList.add('bg-yellow-600');
-                    } else if (seconds <= 240) {
-                        timerElement.classList.add('bg-green-600');
-                        ringElement.classList.add('border-green-600');
-                        toggleBackground.classList.add('bg-green-600');
-                    }
-                }
-            }
-
-            function beep(times) {
-                for (let i = 0; i < times; i++) {
-                    setTimeout(() => {
-                        const audio = new Audio('/audio/beep.mp3');
-                        audio.play();
-                    }, i * 1000);
-                }
-            }
-
-            document.querySelectorAll('.tablee').forEach((table) => {
-                const checkboxes = table.querySelectorAll('.timer-checkbox');
-                if (checkboxes.length > 0) {
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.addEventListener('change', (event) => {
-                            const setNumber = checkbox.id.replace('toggleTimer', '');
-                            if (event.target.checked) {
-                                startTimer(setNumber);
-                            } else {
-                                stopTimer(setNumber);
-                                resetTimer(setNumber);
+                        minusButton.addEventListener('click', () => {
+                            if (parseInt(input.value) > 0) {
+                                input.value = parseInt(input.value) - 1;
                             }
-                            saveStrengthWorkout(checkbox);
                         });
                     });
+
+                    const resetButton = document.querySelector('.reset-timer');
+                    resetButton.addEventListener('click', () => {
+                        // Timer reset logic goes here
+                        console.log('Timer reset');
+                    });
+                });
+            </script>
+
+            {{-- increase decrease quntity function --}}
+            <script>
+                function incrementValue(element) {
+                    var span = element.parentNode.querySelector('span');
+                    var value = parseInt(span.textContent, 10);
+                    value = isNaN(value) ? 0 : value;
+                    value++;
+                    span.textContent = value;
                 }
-            });
 
-            // Function to be called when a checkbox is clicked
-            function saveStrengthWorkout(checkbox) {
-                if (checkbox.dataset.processed) {
-                    console.log('Already processed, skipping...');
-                    return;
+                function decrementValue(element) {
+                    var span = element.parentNode.querySelector('span');
+                    var value = parseInt(span.textContent, 10);
+                    value = isNaN(value) ? 0 : value;
+                    value = value <= 0 ? 0 : value - 1;
+                    span.textContent = value;
+                }
+            </script>
+            {{-- end increase decrease quntity function --}}
+
+
+            {{-- drop down script --}}
+            <script>
+                document.querySelectorAll('.toggle-icon').forEach(icon => {
+                    icon.addEventListener('click', function() {
+                        // Determine the element to toggle
+                        let toggleTarget;
+
+                        // Check if the next sibling is a table or look for the '.content' div
+                        const parentDiv = this.closest('div');
+                        const table = parentDiv.nextElementSibling; // For Warmup section
+                        const content = parentDiv.parentElement.querySelector(
+                        '.content'); // For Strength and Weightlifting
+
+                        if (table && table.tagName === 'TABLE') {
+                            // If it's the Warmup section
+                            toggleTarget = table;
+                        } else if (content) {
+                            // If it's Strength or Weightlifting
+                            toggleTarget = content;
+                        }
+
+                        // Toggle the visibility
+                        if (toggleTarget) {
+                            if (toggleTarget.classList.contains('hidden')) {
+                                toggleTarget.classList.remove('hidden');
+                                this.classList.remove('fa-chevron-down');
+                                this.classList.add('fa-minus');
+                            } else {
+                                toggleTarget.classList.add('hidden');
+                                this.classList.remove('fa-minus');
+                                this.classList.add('fa-chevron-down');
+                            }
+                        }
+                    });
+                });
+            </script>
+            {{-- end drop down script --}}
+
+
+            {{-- strenght save and colur change --}}
+            <script>
+                let timerIntervals = {};
+                let elapsedTimes = {};
+
+                function startTimer(setNumber) {
+                    console.log(setNumber);
+                    elapsedTimes[setNumber] = 0;
+                    timerIntervals[setNumber] = setInterval(() => {
+                        elapsedTimes[setNumber]++;
+                        updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
+                        changeTimerColor(setNumber, elapsedTimes[setNumber]);
+                        if (elapsedTimes[setNumber] >= 240) { // 4 minutes
+                            clearInterval(timerIntervals[setNumber]);
+                            beep(3);
+                        }
+                    }, 1000);
                 }
 
-                checkbox.dataset.processed = true; // Mark as processed to prevent re-entry
+                function stopTimer(setNumber) {
+                    clearInterval(timerIntervals[setNumber]);
+                }
 
-                // Check if the checkbox is checked
-                if (checkbox.checked) {
-                    // Find the closest row
-                    const row = checkbox.closest('tr');
-                    if (!row) {
-                        console.error('Row not found');
+                function resetTimer(setNumber) {
+                    clearInterval(timerIntervals[setNumber]);
+                    elapsedTimes[setNumber] = 0;
+                    updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
+
+                    const ringElement = document.getElementById(`ring`);
+                    if (ringElement) {
+                        ringElement.classList.remove('border-red-600', 'border-yellow-600', 'border-green-600');
+                        ringElement.classList.add('border-orange-600');
+                    }
+
+                    const timerElement = document.getElementById(`timer`);
+                    if (timerElement) {
+                        timerElement.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                        timerElement.classList.add('bg-orange-600');
+                    }
+
+                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
+                    if (toggleBackground) {
+                        toggleBackground.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                        toggleBackground.classList.add('bg-gray-600');
+                    }
+                }
+
+                function updateTimerDisplay(setNumber, seconds) {
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
+                    const displaySeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+
+                    const timerElement = document.getElementById(`timer`);
+                    if (timerElement) {
+                        timerElement.textContent = `00:${displayMinutes}:${displaySeconds}`;
+                    }
+
+                }
+
+                function changeTimerColor(setNumber, seconds) {
+                    const timerElement = document.getElementById(`timer`);
+                    const ringElement = document.getElementById(`ring`);
+                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
+
+                    if (timerElement && toggleBackground) {
+                        timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                        ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
+                        'border-green-600');
+                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
+
+                        if (seconds <= 120) {
+                            timerElement.classList.add('bg-red-600');
+                            ringElement.classList.add('border-red-600');
+                            toggleBackground.classList.add('bg-red-600');
+                        } else if (seconds <= 180) {
+                            timerElement.classList.add('bg-yellow-600');
+                            ringElement.classList.add('border-yellow-600');
+                            toggleBackground.classList.add('bg-yellow-600');
+                        } else if (seconds <= 240) {
+                            timerElement.classList.add('bg-green-600');
+                            ringElement.classList.add('border-green-600');
+                            toggleBackground.classList.add('bg-green-600');
+                        }
+                    }
+                }
+
+                function beep(times) {
+                    for (let i = 0; i < times; i++) {
+                        setTimeout(() => {
+                            const audio = new Audio('/audio/beep.mp3');
+                            audio.play();
+                        }, i * 1000);
+                    }
+                }
+
+                document.querySelectorAll('.tablee').forEach((table) => {
+                    const checkboxes = table.querySelectorAll('.timer-checkbox');
+                    if (checkboxes.length > 0) {
+                        checkboxes.forEach((checkbox) => {
+                            checkbox.addEventListener('change', (event) => {
+                                const setNumber = checkbox.id.replace('toggleTimer', '');
+                                if (event.target.checked) {
+                                    startTimer(setNumber);
+                                } else {
+                                    stopTimer(setNumber);
+                                    resetTimer(setNumber);
+                                }
+                                saveStrengthWorkout(checkbox);
+                            });
+                        });
+                    }
+                });
+
+                // Function to be called when a checkbox is clicked
+                function saveStrengthWorkout(checkbox) {
+                    if (checkbox.dataset.processed) {
+                        console.log('Already processed, skipping...');
                         return;
                     }
 
-                    // Get the set number
-                    const setNumberElement = row.querySelector('td:first-child');
-                    if (!setNumberElement) {
-                        console.error('Set number element not found');
-                        return;
+                    checkbox.dataset.processed = true; // Mark as processed to prevent re-entry
+
+                    // Check if the checkbox is checked
+                    if (checkbox.checked) {
+                        // Find the closest row
+                        const row = checkbox.closest('tr');
+                        if (!row) {
+                            console.error('Row not found');
+                            return;
+                        }
+
+                        // Get the set number
+                        const setNumberElement = row.querySelector('td:first-child');
+                        if (!setNumberElement) {
+                            console.error('Set number element not found');
+                            return;
+                        }
+                        const setNumber = setNumberElement.textContent.trim(); // Assuming set number is in the first <td>
+
+                        // Get the type from the checkbox data attribute
+                        const type = checkbox.getAttribute('data-type');
+
+                        // Extract the strengthIndex from the parent container of the checkbox
+                        const strengthIndex = checkbox.closest('.table-body').id.match(/-(\d+)/)[1];
+
+                        // Get the reps value based on type
+                        const repsElement = type === 'Primary' ?
+                            row.querySelector(`#repsValue${strengthIndex}-${setNumber}`) :
+                            row.querySelector(`#alt-repsValue${strengthIndex}-${setNumber}`);
+                        const reps = repsElement ? repsElement.textContent.trim() : null;
+
+                        // Get the weight or alternative weight value based on type
+                        const weightId = type === 'Primary' ? `weight-${strengthIndex}-${setNumber}` :
+                            `alweight-${strengthIndex}-${setNumber}`;
+                        const weightElement = document.getElementById(weightId);
+                        const weight = weightElement ? weightElement.textContent.trim() : null;
+
+                        // Get the strength ID from the checkbox's data attribute
+                        const strengthId = checkbox.getAttribute('data-strength-detail-id');
+
+                        // Get the rest time from the checkbox data attribute
+                        const restTime = checkbox.getAttribute('data-rest-time');
+
+                        if (!strengthId) {
+                            console.error('Strength ID not found');
+                            return;
+                        }
+
+                        // Make the AJAX request
+                        $.ajax({
+                            url: "/save-strength-workout",
+                            type: "POST",
+                            data: {
+                                strength_id: strengthId,
+                                reps: reps,
+                                weight: weight,
+                                type: type, // Ensure type is included
+                                _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                            },
+                            success: function(response) {
+                                console.log('Success:', response.message);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            },
+                            complete: function() {
+                                // Reset processed state after request completes to allow future processing
+                                checkbox.dataset.processed = false;
+                            }
+                        });
                     }
-                    const setNumber = setNumberElement.textContent.trim(); // Assuming set number is in the first <td>
+                }
+            </script>
 
-                    // Get the type from the checkbox data attribute
-                    const type = checkbox.getAttribute('data-type');
 
-                    // Extract the strengthIndex from the parent container of the checkbox
-                    const strengthIndex = checkbox.closest('.table-body').id.match(/-(\d+)/)[1];
+            {{-- end strenght save and colur change --}}
 
-                    // Get the reps value based on type
-                    const repsElement = type === 'Primary' ?
-                        row.querySelector(`#repsValue${strengthIndex}-${setNumber}`) :
-                        row.querySelector(`#alt-repsValue${strengthIndex}-${setNumber}`);
-                    const reps = repsElement ? repsElement.textContent.trim() : null;
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    document.querySelectorAll('.primary-btn').forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            const targetId = button.getAttribute('data-target');
+                            const primaryBody = document.querySelector(targetId); // Primary table body
+                            const altBody = document.querySelector(targetId.replace('#primary-',
+                            '#alt-')); // Alternate table body
 
-                    // Get the weight or alternative weight value based on type
-                    const weightId = type === 'Primary' ? `weight-${strengthIndex}-${setNumber}` :
-                        `alweight-${strengthIndex}-${setNumber}`;
-                    const weightElement = document.getElementById(weightId);
-                    const weight = weightElement ? weightElement.textContent.trim() : null;
+                            if (primaryBody && altBody) {
+                                primaryBody.classList.remove('hidden');
+                                primaryBody.classList.add('block');
+                                altBody.classList.add('hidden');
+                                altBody.classList.remove('block');
+                            } else {
+                                console.error(`Element with ID ${targetId} or its alternate not found.`);
+                            }
+                        });
+                    });
 
-                    // Get the strength ID from the checkbox's data attribute
-                    const strengthId = checkbox.getAttribute('data-strength-detail-id');
+                    document.querySelectorAll('.alt-btn').forEach(function(button) {
+                        button.addEventListener('click', function() {
+                            const targetId = button.getAttribute('data-target');
+                            const altBody = document.querySelector(targetId); // Alternate table body
+                            const primaryBody = document.querySelector(targetId.replace('#alt-',
+                                '#primary-')); // Primary table body
 
-                    // Get the rest time from the checkbox data attribute
-                    const restTime = checkbox.getAttribute('data-rest-time');
+                            if (primaryBody && altBody) {
+                                altBody.classList.remove('hidden');
+                                altBody.classList.add('block');
+                                primaryBody.classList.add('hidden');
+                                primaryBody.classList.remove('block');
+                            } else {
+                                console.error(`Element with ID ${targetId} or its primary not found.`);
+                            }
+                        });
+                    });
+                });
 
-                    if (!strengthId) {
-                        console.error('Strength ID not found');
-                        return;
+
+
+
+                function toggleContent(icon) {
+                    const content = icon.closest('.w-full').querySelector('.content');
+                    content.classList.toggle('hidden');
+                    if (content.classList.contains('hidden')) {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
                     }
+                }
+            </script>
 
-                    // Make the AJAX request
+
+            {{-- warm up  save --}}
+            <script>
+                //save warm-up after toching
+                function savewarmup(element) {
+                    var workoutId = element.getAttribute('data-workout-id');
+                    var dailyWarmupId = element.getAttribute('data-daily-warmup-id');
+                    var reps = $(element).closest('tr').find('.reps').text().trim();
+                    console.log('Workout ID:', workoutId);
+                    console.log('Reps:', reps);
+
                     $.ajax({
-                        url: "/save-strength-workout",
-                        type: "POST",
+                        url: dailyWarmupId ? "/warmup-daily/" + dailyWarmupId : "/warmup-daily",
+                        type: dailyWarmupId ? "PUT" : "POST",
                         data: {
-                            strength_id: strengthId,
+                            warmup_id: workoutId,
                             reps: reps,
-                            weight: weight,
-                            type: type, // Ensure type is included
                             _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
                         },
                         success: function(response) {
-                            console.log('Success:', response.message);
+                            console.log(response);
+
+                            //set saved daily warmup-id to warmup workout
+                            if (response.daily_warmup_id) {
+                                element.setAttribute('data-daily-warmup-id', response.daily_warmup_id);
+                            }
                         },
                         error: function(xhr, status, error) {
-                            console.error('Error:', error);
-                        },
-                        complete: function() {
-                            // Reset processed state after request completes to allow future processing
-                            checkbox.dataset.processed = false;
+                            console.error(error); // Handle error
                         }
                     });
                 }
-            }
-        </script>
+            </script>
+            {{-- end warumup save --}}
 
+            <script>
+                document.querySelectorAll('.category-tab').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
 
-        {{-- end strenght save and colur change --}}
+                        // Hide all sections
+                        document.querySelectorAll('.category-section').forEach(section =>
+                            section.classList.add('hidden')
+                        );
+                        document.querySelector(targetId).classList.remove('hidden');
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.primary-btn').forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        const targetId = button.getAttribute('data-target');
-                        const primaryBody = document.querySelector(targetId); // Primary table body
-                        const altBody = document.querySelector(targetId.replace('#primary-', '#alt-')); // Alternate table body
+                        // Reset all tabs
+                        document.querySelectorAll('.category-tab').forEach(tab => {
+                            tab.classList.remove('bg-white', 'text-black');
+                            tab.classList.add('bg-black', 'bg-opacity-50', 'text-white');
 
-                        if (primaryBody && altBody) {
-                            primaryBody.classList.remove('hidden');
-                            primaryBody.classList.add('block');
-                            altBody.classList.add('hidden');
-                            altBody.classList.remove('block');
-                        } else {
-                            console.error(`Element with ID ${targetId} or its alternate not found.`);
+                            const icon = tab.querySelector('.icon-img');
+                            if (icon && tab.dataset.iconWhite) {
+                                icon.src = tab.dataset.iconWhite;
+                            }
+                        });
+
+                        // Set active styles
+                        button.classList.remove('bg-black', 'bg-opacity-50', 'text-white');
+                        button.classList.add('bg-white', 'text-black');
+
+                        const icon = button.querySelector('.icon-img');
+                        if (icon && button.dataset.iconBlack) {
+                            icon.src = button.dataset.iconBlack;
                         }
                     });
                 });
 
-                document.querySelectorAll('.alt-btn').forEach(function (button) {
-                    button.addEventListener('click', function () {
-                        const targetId = button.getAttribute('data-target');
-                        const altBody = document.querySelector(targetId); // Alternate table body
-                        const primaryBody = document.querySelector(targetId.replace('#alt-', '#primary-')); // Primary table body
-
-                        if (primaryBody && altBody) {
-                            altBody.classList.remove('hidden');
-                            altBody.classList.add('block');
-                            primaryBody.classList.add('hidden');
-                            primaryBody.classList.remove('block');
-                        } else {
-                            console.error(`Element with ID ${targetId} or its primary not found.`);
-                        }
-                    });
-                });
-            });
-
-
-
-
-            function toggleContent(icon) {
-                const content = icon.closest('.w-full').querySelector('.content');
-                content.classList.toggle('hidden');
-                if (content.classList.contains('hidden')) {
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                } else {
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
+                function incrementValue(btn) {
+                    const span = btn.parentElement.querySelector('.reps');
+                    span.innerText = parseInt(span.innerText) + 1;
                 }
-            }
-        </script>
+
+                function decrementValue(btn) {
+                    const span = btn.parentElement.querySelector('.reps');
+                    span.innerText = Math.max(0, parseInt(span.innerText) - 1);
+                }
+            </script>
 
 
-        {{-- warm up  save --}}
-        <script>
-            //save warm-up after toching
-            function savewarmup(element) {
-                var workoutId = element.getAttribute('data-workout-id');
-                var dailyWarmupId = element.getAttribute('data-daily-warmup-id');
-                var reps = $(element).closest('tr').find('.reps').text().trim();
-                console.log('Workout ID:', workoutId);
-                console.log('Reps:', reps);
-
-                $.ajax({
-                    url: dailyWarmupId ? "/warmup-daily/" + dailyWarmupId : "/warmup-daily",
-                    type: dailyWarmupId ? "PUT" : "POST",
-                    data: {
-                        warmup_id: workoutId,
-                        reps: reps,
-                        _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                    },
-                    success: function(response) {
-                        console.log(response);
-
-                        //set saved daily warmup-id to warmup workout
-                        if (response.daily_warmup_id) {
-                            element.setAttribute('data-daily-warmup-id', response.daily_warmup_id);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error(error); // Handle error
-                    }
-                });
-            }
-        </script>
-        {{-- end warumup save --}}
-
-        <script>
-            document.querySelectorAll('.category-tab').forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetId = button.dataset.target;
-
-                    // Hide all sections
-                    document.querySelectorAll('.category-section').forEach(section =>
-                        section.classList.add('hidden')
-                    );
-                    document.querySelector(targetId).classList.remove('hidden');
-
-                    // Reset all tabs
-                    document.querySelectorAll('.category-tab').forEach(tab => {
-                        tab.classList.remove('bg-white', 'text-black');
-                        tab.classList.add('bg-black', 'bg-opacity-50', 'text-white');
-
-                        const icon = tab.querySelector('.icon-img');
-                        if (icon && tab.dataset.iconWhite) {
-                            icon.src = tab.dataset.iconWhite;
-                        }
-                    });
-
-                    // Set active styles
-                    button.classList.remove('bg-black', 'bg-opacity-50', 'text-white');
-                    button.classList.add('bg-white', 'text-black');
-
-                    const icon = button.querySelector('.icon-img');
-                    if (icon && button.dataset.iconBlack) {
-                        icon.src = button.dataset.iconBlack;
-                    }
-                });
-            });
-
-            function incrementValue(btn) {
-                const span = btn.parentElement.querySelector('.reps');
-                span.innerText = parseInt(span.innerText) + 1;
-            }
-
-            function decrementValue(btn) {
-                const span = btn.parentElement.querySelector('.reps');
-                span.innerText = Math.max(0, parseInt(span.innerText) - 1);
-            }
-        </script>
-           
-
-    @endsection
+        @endsection
 </body>
 
 </html>
