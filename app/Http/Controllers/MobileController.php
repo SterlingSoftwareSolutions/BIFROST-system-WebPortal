@@ -270,6 +270,7 @@ class MobileController extends Controller
         $tabwarmup = 'warmup';
         $date = $dayWithDate;
         $detailswarmup = Warmup::where('date', $dayWithDate)
+            ->where('is_assigned', 1)
             ->with('workouts')
             ->with('workouts.categoryOption')
             ->get();
@@ -278,6 +279,7 @@ class MobileController extends Controller
         $tabstrength = 'strength';
         $date = $dayWithDate;
         $detailsstrength = Strength::where('date', $date)
+            ->where('is_assigned', 1)    
             ->with('sets')
             ->with('sets.strengthing')
             ->with('workout')
@@ -288,6 +290,7 @@ class MobileController extends Controller
          $tabconditioning = 'conditioning';
          $date = $dayWithDate;
          $detailsconditioning = Conditioning::where('date', $date)
+            ->where('is_assigned', 1)
              ->with('workout')
              ->with('workout.categoryOption')
              ->get();
@@ -296,6 +299,7 @@ class MobileController extends Controller
         $tabweightweight = 'weightlifting';
         $date = $dayWithDate;
         $detailsweight = Weightlifting::where('date', $date)
+            ->where('is_assigned', 1)
             ->with('sets')
             ->with('sets.weightlifting')
             ->with('workouts')
@@ -305,6 +309,7 @@ class MobileController extends Controller
         $tabtest = 'Test';
         $date = $dayWithDate;
         $detailstest = Test::where('date', $date)
+            ->where('is_assigned', 1)
             ->with('member')
             ->get();
 
