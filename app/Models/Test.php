@@ -16,6 +16,7 @@ class Test extends Model
         'workout_id',
         'member_id',
         'workoutname',
+        'is_assigned',
         'date'
     ];
 

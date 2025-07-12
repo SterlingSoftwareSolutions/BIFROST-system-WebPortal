@@ -243,40 +243,37 @@ class SessionController extends Controller
 
     public function updateWarmup(Request $request)
     {
+
+        Log::info('Incoming Warmup Update Request Data: ', $request->all());
+        
         // Validate the common ID
         $validatedData = $request->validate([
-            'id' => 'required|integer|exists:warmups,id',
+            'warmup_id' => 'required|integer|exists:warmups,id',
         ]);
         try {
             // Find the warmup record by ID
-            $warmup = Warmup::findOrFail($validatedData['id']);
+            $warmup = Warmup::findOrFail($validatedData['warmup_id']);
 
-            // Loop through the request data to update corresponding fields
-            foreach ($request->all() as $key => $value) {
-                if (preg_match('/^categorywe_(\d+)$/', $key, $matches)) {
-                    $index = $matches[1];
+            // Update the fields
+            $warmup->workoutname = $request->input('namew_1');
+            $warmup->category_id = $request->input('categoryw_1');
+            $warmup->workout_id = $request->input('workoutw_1');
+            $warmup->reps = $request->input('repsw_1');
+            $warmup->weight = $request->input('weigthw_1');
+            $warmup->date = $request->input('selectdatew');
 
-                    $validatedFormData = $request->validate([
-                        "categorywe_$index" => 'required|integer|exists:category_options,id',
-                        "workoutwe_$index" => 'required|integer|exists:workout_libraries,id',
-                        "repswe_$index" => 'required|integer|min:1',
-                        "weightwe_$index" => 'required|numeric|min:0',
-                    ]);
+            $warmup->save();
 
-                    // Update the warmup record with the validated data
-                    $warmup->category_id = $validatedFormData["categorywe_$index"];
-                    $warmup->workout_id = $validatedFormData["workoutwe_$index"];
-                    $warmup->reps = $validatedFormData["repswe_$index"];
-                    $warmup->weight = $validatedFormData["weightwe_$index"];
-                    $warmup->save();
-                }
-            }
+            return response()->json(['message' => 'Warmup updated successfully!']);
 
-            // Return a response
-            return response()->json(['message' => 'Warmup updated successfully']);
         } catch (\Illuminate\Validation\ValidationException $e) {
             // Handle validation exceptions
             return response()->json(['errors' => $e->errors()], 422);
+        }catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while updating warmup data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
     // delete warmup
@@ -334,6 +331,7 @@ class SessionController extends Controller
                 'workout_id' => $item->workout_id,
                 'workout_type' => $item->workout ? $item->workout->type : null,
                 'reps' => $item->reps,
+                'is_assigned' => $item->is_assigned,
             ];
         });
 
@@ -390,6 +388,7 @@ class SessionController extends Controller
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->type : null,
                     'reps' => $item->reps,
+                    'is_assigned' => $item->is_assigned,
                 ];
             });
 
@@ -402,6 +401,24 @@ class SessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
 
+    }
+
+    //delete selected warmup data
+    public function deletewarmup(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:warmups,id',
+        ]);
+
+        try {
+            $warmup = Warmup::findOrFail($request->id);
+            $warmup->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Warmup record deleted.']);
+        } catch (\Exception $e) {
+            Log::error('Error in deletetwarmup: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete Warmup record.']);
+        }
     }
     // Store Weightlifting Start
     //  Store Weightlifting
