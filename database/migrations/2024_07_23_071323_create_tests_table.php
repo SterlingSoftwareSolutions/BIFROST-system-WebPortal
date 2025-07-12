@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('workout_id')->nullable()->constrained('workout_libraries')->onDelete('cascade');
             $table->foreignId('member_id')->nullable()->constrained('members')->onDelete('cascade');
             $table->string('workoutname')->nullable();
+            $table->boolean('is_assigned')->default(false);
             $table->string('date');
             $table->timestamps();
         });

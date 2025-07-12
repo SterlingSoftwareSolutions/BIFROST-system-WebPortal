@@ -11,6 +11,36 @@
                 onclick="deleteWarmups()">Clear</button> --}}
         </form>
         <script>
+            //selected strength delete
+            $(document).on('click', '.delete-warmups-btn', function() {
+                const date = document.getElementById('selectdatewd').value;
+                const id = $(this).data('id');
+                const confirmed = confirm("Are you sure you want to delete this weightlifting record?");
+
+                if (!confirmed) return;
+
+                $.ajax({
+                    url: "/delete-warmup",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        id: id
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                            getwarmup(date);
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX error:", error);
+                        alert("An error occurred while deleting the weightlifting record.");
+                    }
+                });
+            });
+
             function deleteWarmups() {
                 // Serialize the form data
                 const formData = $('#deleteWarmupsForm').serialize();
@@ -40,10 +70,13 @@
                 // Serialize the form data
                 const formData = $('#storeWarmupForm').serialize();
                 const tab = document.getElementById('warmupTab');
-                console.log("call warmap",formData);
+                console.log("call warmap", formData);
+                const warmupId = $('#warmup_id').val();
+                const url = warmupId ? `/update-warmup` : '/store-warmup';
+
                 // AJAX request
                 $.ajax({
-                    url: '/store-warmup',
+                    url: url,
                     type: 'POST',
                     data: formData,
                     success: function(response) {
@@ -55,6 +88,10 @@
                         }
                         // Optionally, clear the form fields
                         $('#storeWarmupForm')[0].reset();
+                        $('#warmup_id').val('');
+
+                        document.getElementById('savebtnwarmup').textContent = "Save";
+                        document.getElementById('clearwarmbtn').classList.add('hidden');
                     },
                     error: function(xhr) {
                         // Handle error
@@ -113,8 +150,7 @@
                                 </div>
 
                                 <div class="flex flex-row items-center flex-1 space-x-2">
-                                    <button id="searchclearsetwarmup_1" onclick="clearSearchWarmup()"
-                                        type="button"
+                                    <button id="searchclearsetwarmup_1" onclick="clearSearchWarmup()" type="button"
                                         class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
                                 </div>
                             </div>
@@ -129,12 +165,13 @@
                     {{-- form section --}}
                     <div class="flex-col w-full bg-gray-50 p-4">
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
+                        <input type="hidden" id="warmup_id" name="warmup_id" value="">
                         <div class="flex items-center border-b mt-2">
-                                <label for="namew_1" class="w-60 block mb-1">Workout Name </label>
-                                <input type="text" id="namew_1" name="namew_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                            <label for="namew_1" class="w-60 block mb-1">Workout Name </label>
+                            <input type="text" id="namew_1" name="namew_1"
+                                class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
-                            </div>
+                        </div>
                         <div class="flex items-center border-b">
                             <label for="categoryw_1" class="w-60 block mb-1">Category <span
                                     class="text-red-500">*</span></label>
@@ -193,29 +230,31 @@
                             <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                         </div>
 
+                        <div class="flex flex-row justify-end gap-4 mt-5">
+                            <button type="button" id="clearwarmbtn" onclick="clearWarmupForm()"
+                                class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
+                                Cancel
+                            </button>
+
+                            <button type="button" id="savebtnwarmup" onclick="storeWarmup()"
+                                class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
+                                Save
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         {{-- <a class="duplicateBtn bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base cursor-pointer">Another</a> --}}
-        
-        <div class="flex flex-row justify-end gap-4 mt-5">
-            <button type="button" id="clearwarmbtn" onclick="clearWarmupForm()"
-                class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
-                Cancel
-            </button>
 
-            <button type="button" id="savebtnwarmup" onclick="storeWarmup()" class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
-                Save
-            </button>
-        </div>
+
     </form>
 </div>
 <script>
     // Function to set category options for warmup
     // Function to set category options for warmup categories
-    function setCategoryW(id, categoryName,selectId) {
+    function setCategoryW(id, categoryName, selectId) {
         const categorySelectW = document.getElementById(selectId);
         const option = document.createElement('option');
         option.value = id;
@@ -248,23 +287,23 @@
                 }
 
                 // Clear existing options in the select element before adding new ones
-                ['categoryw_1','categoryw_2'].forEach(id => {
+                ['categoryw_1', 'categoryw_2'].forEach(id => {
                     const categorySelectW = document.getElementById(id);
                     categorySelectW.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
                 });
-                
+
                 // Loop through each category_option and call the setCategoryW() function
                 categoryOptionsW.forEach(option => {
-                    setCategoryW(option.id, option.category_name,'categoryw_1');
-                    setCategoryW(option.id, option.category_name,'categoryw_2');
+                    setCategoryW(option.id, option.category_name, 'categoryw_1');
+                    setCategoryW(option.id, option.category_name, 'categoryw_2');
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categoryw_1','categoryw_2'].forEach(id => {
+                ['categoryw_1', 'categoryw_2'].forEach(id => {
                     sortSelectOptionsW(document.getElementById(id));
                 });
-                
+
             },
             error: function(xhr, status, error) {
                 console.error(error); // Handle error
@@ -389,7 +428,7 @@
         container.empty(); // Clear previous content
 
         warmups.forEach((item, index) => {
-            
+
             let html = `
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
@@ -420,7 +459,7 @@
                     <div class="mt-4 flex justify-end">
                         <p class="mr-4 font-bold">Assign Workout to Class</p>
                         <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer warmups-toggle" data-workout-id="${item.id}" data-workout-type="warmups" ${item.is_assigned ? 'checked' : ''}>
+                            <input type="checkbox" value="" class="sr-only peer warmups-toggle" data-workout-id="${item.id}" data-workout-type="warmup" ${item.is_assigned ? 'checked' : ''}>
                              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
                         </label>
                     </div>
@@ -431,19 +470,75 @@
             container.append(html);
 
             // Bind the Edit button after appending
-            container.find('.edit-warmups-btn').off('click').on('click', function () {
-                const warmupsgId = $(this).data('id');
+            container.find('.edit-warmups-btn').off('click').on('click', function() {
+                const warmupsId = $(this).data('id');
                 populateWarmupsForm(warmupsId);
             });
 
         });
-    
+
+    }
+
+    // get editing details to form
+    function populateWarmupsForm(warmupsId) {
+
+        const data = allWarmupData.find(item => item.id == warmupsId);
+        console.log('dataaaaaa', data);
+
+        if (!data) {
+            console.warn("No warmup data found for ID:", warmupsId);
+            return;
+        }
+
+        const card = document.querySelector(`.edit-warmups-btn[data-id="${warmupsId}"]`).closest(
+            '.border.border-green-900');
+        if (card) {
+            card.classList.remove('border-green-900');
+            card.classList.remove('border');
+            card.classList.add('border-red-600');
+            card.classList.add('border-2');
+        }
+        // Set category and trigger onchange to load workouts
+        const categorySelect = document.getElementById('categoryw_1');
+        categorySelect.value = data.category_id;
+        categorySelect.dispatchEvent(new Event('change')); // To trigger getworkoutS
+
+        // Delay setting workouts to allow async options to load
+        setTimeout(() => {
+            const workoutSelect = document.getElementById('workoutw_1');
+            workoutSelect.value = data.workout_id;
+        }, 500); // Adjust based on how long getworkoutS takes to populate
+
+
+        document.getElementById('weigthw_1').value = data.weight;
+        document.getElementById('repsw_1').value = data.reps;
+        document.getElementById('namew_1').value = data.workoutname;
+        document.getElementById('warmup_id').value = warmupsId;
+
+
+        document.getElementById('savebtnwarmup').textContent = "Save Edit";
+        document.getElementById('clearwarmbtn').classList.remove('hidden');
+
+    }
+
+    // clear edit form
+    function clearWarmupForm() {
+        // Clear input fields
+        $('#storeWarmupForm')[0].reset();
+        document.getElementById('savebtnwarmup').innerHTML = "Save";
+        // Show Clear button
+        document.getElementById('clearwarmbtn').classList.add('hidden');
+        const redCard = document.querySelector('.border-red-600.border-2');
+        if (redCard) {
+            redCard.classList.remove('border-red-600', 'border-2');
+            redCard.classList.add('border', 'border-green-900');
+        }
     }
 
     // search warmup
     function filterWarmup(date) {
         const dateOnClick = document.getElementById('selectdatewd').value;
-        console.log('first',dateOnClick)
+        console.log('first', dateOnClick)
 
         //console.log('bbbbbbbb',buttonId)
         let categoryId = document.getElementById("categoryw_2").value;
@@ -460,7 +555,7 @@
                 category_id: categoryId,
                 workout_id: exerciseId
             },
-            success: function (response) {
+            success: function(response) {
                 console.log("this is filteerd warmup response", response);
                 allWarmupData = response.warmup;
                 const warmupArray = Object.values(response.warmup);
@@ -468,13 +563,24 @@
                 setwarmups(warmupArray, categoryArray);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                    //setstrengths(response.Strength, response.categoryOptions);
+                //setstrengths(response.Strength, response.categoryOptions);
                 // });
             },
-            error: function (xhr) {
+            error: function(xhr) {
                 alert("Error occurred: " + xhr.responseText);
             }
         });
+    }
+
+    function clearSearchWarmup() {
+        const date = document.getElementById('selectdatewd').value;
+
+        document.getElementById('categoryw_2').value = '';
+        document.getElementById('workoutw_2').value = '';
+        document.getElementById('namew_2').value = '';
+        console.log('dateeeee', date);
+        getwarmup(date);
+
     }
 
     // set warmup
@@ -574,6 +680,52 @@
         // Set the HTML content to the container
         warmupInfoDiv.innerHTML = htmlContent;
     }
+
+    //assign warmup to class
+    $(document).on('change', '.warmups-toggle', function() {
+        const date = document.getElementById('selectdatewd').value;
+        const workoutId = $(this).data('workout-id');
+        const workoutType = $(this).data('workout-type');
+        const assigned = $(this).is(':checked') ? 1 : 0;
+
+        // Get and conditionally remove class_id from local storage
+        let selectedClassId = localStorage.getItem("selected_class_id");
+        if (assigned) {
+            if (!selectedClassId) {
+                alert("Please select a class first.");
+                $(this).prop('checked', false);
+                return;
+            }
+        }
+
+        // Only send class_id if assigning
+        const payload = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            workout_id: workoutId,
+            workout_type: workoutType,
+            date: date,
+            assigned: assigned
+        };
+
+        if (assigned) {
+            payload.class_id = selectedClassId;
+            localStorage.removeItem("selected_class_id");
+        }
+
+        $.ajax({
+            url: "/assign-weightlifting-to-class",
+            type: "POST",
+            data: payload,
+            success: function(response) {
+                alert(response.message);
+                getdateName(date); // Refresh classes or UI
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX error:", xhr.responseText);
+                alert("An error occurred while assigning the workout.");
+            }
+        });
+    });
 
     // Call getCategoryW on page load
     document.addEventListener('DOMContentLoaded', function() {

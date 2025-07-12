@@ -27,6 +27,7 @@ return new class extends Migration
             $table->enum('unit', ['%', 'Kg']); // Enum column for unit
             $table->string('date');
             $table->string('time_to_complete');
+            $table->boolean('is_assigned')->default(false);
             $table->timestamps();
         });
     }

@@ -27,6 +27,8 @@ class WorkoutAssign extends Model
                 return $this->belongsTo(Conditioning::class, 'workout_id');
             case 'warmup':
                 return $this->belongsTo(Warmup::class, 'workout_id');
+            case 'test':
+                return $this->belongsTo(Warmup::class, 'workout_id');
             default:
                 return null;
         }

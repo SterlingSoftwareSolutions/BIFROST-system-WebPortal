@@ -24,6 +24,7 @@ class Weightlifting extends Model
         'altrestyellowwe',
         'altrestgreenwe',
         'intensity',
+        'is_assigned',
         'alt_category_id',
         'alt_workout_id',
         'alt_workoutname',
