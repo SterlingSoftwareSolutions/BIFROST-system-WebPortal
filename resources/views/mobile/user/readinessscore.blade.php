@@ -341,12 +341,13 @@
                     case 'Excitement':
                         modalTitle.textContent = 'Excitement';
                         modalBody.innerHTML = `
-                <li>1 = Pulling my hair out.</li>
-                <li>2 = fairly stressed.</li>
-                <li>3 = Feeling ok.</li>
-                <li>4 = surfer level stress.</li>
-                <li>5 = Zen monk.</li>
+                <li>1 = Not interested in weights today.</li>
+                <li>2 = Ill do it because its good for me.</li>
+                <li>3 = Not pumped but not upset either.</li>
+                <li>4 = I’m keen, lets go!</li>
+                <li>5 = Chomping at the bit all day!</li>
             `;
+
                         break;
                     case 'Stress':
                         modalTitle.textContent = 'Stress';
