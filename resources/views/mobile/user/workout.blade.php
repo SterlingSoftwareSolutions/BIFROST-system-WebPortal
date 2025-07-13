@@ -129,7 +129,7 @@
                             <div id="section-strength" class="category-section hidden">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
                                     {{-- Actual Strength Content --}}
-                                    <div class="content pt-4 text-white">
+                                    <div class="content p-4 text-white border border-gray-600 rounded-3xl" id="ringdiv">
 
                                         @if ($detailsstrength->isEmpty())
                                             <p class="text-center text-white">No assigned strength workouts.</p>
@@ -218,7 +218,7 @@
                                                                             <label
                                                                                 class="inline-flex items-center cursor-pointer">
                                                                                 <input type="checkbox"
-                                                                                    id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                    id="toggleTimerStrength{{ $strengthIndex }}-{{ $setNumber }}"
                                                                                     class="sr-only peer timer-checkbox"
                                                                                     data-rest-time="{{ $strengthdetail->rest }}"
                                                                                     data-restred="{{ $strengthdetail->restred }}"
@@ -229,7 +229,7 @@
                                                                                     data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
                                                                                     onclick="saveStrengthWorkout(this)">
                                                                                 <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
                                                                                 </div>
                                                                             </label>
                                                                         </td>
@@ -308,8 +308,8 @@
                                                         <table class="w-full text-white tablee my-4">
                                                             <thead>
                                                                 <tr>
-                                                                    <th class="py-2">Set</th>
-                                                                    <th class="py-2">Weight</th>
+                                                                    <th class="px-2">Set</th>
+                                                                    <th class="px-2">Weight</th>
                                                                     <th class="px-2">Rep</th>
                                                                     <th></th>
                                                                 </tr>
@@ -345,14 +345,15 @@
                                                                             <label
                                                                                 class="inline-flex items-center cursor-pointer">
                                                                                 <input type="checkbox"
-                                                                                    id="toggleTimer{{ $weightIndex }}-{{ $setNumber }}"
+                                                                                    id="toggleTimerWeight{{ $weightIndex }}-{{ $setNumber }}"
                                                                                     class="sr-only peer timer-checkbox"
                                                                                     data-rest-time="{{ $weightdetail->rest ?? 0 }}"
                                                                                     data-restred="{{ $weightdetail->restredwe }}"
                                                                                     data-restyellow="{{ $weightdetail->restyellowwe }}"
-                                                                                    data-restgreen="{{ $weightdetail->restgreenwe }}">
+                                                                                    data-restgreen="{{ $weightdetail->restgreenwe }}"
+                                                                                    data-strength-detail-id="{{ $weightdetail->id }}">
                                                                                 <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
-                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
                                                                                 </div>
                                                                             </label>
                                                                         </td>
@@ -377,56 +378,86 @@
 
                             {{-- Conditioning --}}
                             <div id="section-conditioning" class="category-section hidden">
-                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
+                                <div>
+                                    <div>
+                                        <div class="justify-center items-center text-white text-center h-full pt-20">
+                                            <div class="text-xl mb-5">Conditioning</div>
+                                            @if (isset($detailsconditioning[0]->amrap) && $detailsconditioning[0]->amrap == 1)
+                                                <div class="text-base mb-5">AMRAP</div>
+                                            @else
+                                                <div class="text-base mb-5">Rounds</div>
+                                            @endif
+                                            @if (isset($detailsconditioning[0]->workout->categoryOption->category_name))
+                                                <div class="text-base mb-12">
+                                                    {{ $detailsconditioning[0]->workout->categoryOption->category_name }}
+                                                </div>
+                                            @endif
 
-                                    @if ($detailsconditioning->isEmpty())
-                                        <p class="text-center text-white">No assigned conditioning workouts.</p>
-                                    @else
-                                        <table class="w-full text-white">
-                                            <thead class="justify-between">
-                                                <tr>
-                                                    <th class="py-2">Workout</th>
-                                                    <th class="px-2">Weight</th>
-                                                    <th class="px-2">Rep</th>
-                                                    <th class="col-span-2"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-body">
-                                                @foreach ($detailsconditioning as $conditioningdetail)
-                                                    <tr class="border-b border-gray-300">
-                                                        {{-- Category & Workout --}}
-                                                        <td class="py-4" onclick="savewarmup(this)"
-                                                            data-workout-id="{{ $conditioningdetail->id }}"
-                                                            data-daily-warmup-id="">
-                                                            {{ $conditioningdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
-                                                            -
-                                                            {{ $conditioningdetail->workouts?->workout ?? 'Unnamed Workout' }}
-                                                        </td>
+                                            <div class="border-b border-white mb-12"></div>
+                                            <div class="mb-16 text-xl">
+                                                <table class="w-full text-white tablee">
+                                                    <thead class="justify-between">
+                                                        <tr>
+                                                            <th class="py-2">Workout</th>
+                                                            <th class="py-2">Rep</th>
+                                                            <th class="py-2">Weight</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="table-body"> <!-- Initially hidden table body -->
+                                                        @foreach ($detailsconditioning as $index => $conditioningdetail)
+                                                            <tr class="border-b border-gray-300">
+                                                                <td class="py-4">
+                                                                    {{ $conditioningdetail->workout->workout }}</td>
+                                                                <td class="py-4 workouts">{{ $conditioningdetail->reps }}
+                                                                </td>
+                                                                <td class="py-4">
+                                                                    <input type="text"
+                                                                        value="{{ $conditioningdetail->weight }}"
+                                                                        class="w-24 h-8 text-center text-3xl text-black">
+                                                                </td>
+                                                                <td id="timeToComplete-{{ $index }}"
+                                                                    class="py-4 hidden">
+                                                                    {{ $conditioningdetail->time_to_complete }} </td>
 
-                                                        {{-- Weight --}}
-                                                        <td class="py-4 text-center">
-                                                            {{ $conditioningdetail->weight ?? '0' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                        <!-- Add more rows as needed -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="flex justify-center items-center mb-10">
+                                                <button id="decreaseRounds"
+                                                    class="bg-transparent border border-white text-3xl text-white w-16 h-20 cursor-pointer"
+                                                    onclick="decrementValue(this)">-</button>
+                                                <input id="roundsInput"
+                                                    value="{{ isset($conditioningdetail->rounds) ? $conditioningdetail->rounds : '' }}"
+                                                    min="1" class="w-24 h-20 text-center text-3xl text-black">
 
-                                                        {{-- Reps --}}
-                                                        <td class="py-4">
-                                                            <div class="flex items-center justify-center space-x-4">
-                                                                <button class="px-2 py-1 text-white"
-                                                                    onclick="decrementValue(this)">-</button>
-                                                                <span
-                                                                    class="w-16 bg-white text-black text-center rounded border-none p-1 reps">
-                                                                    {{ $conditioningdetail->reps ?? '-' }}
-                                                                </span>
-                                                                <button class="px-2 py-1 text-white"
-                                                                    onclick="incrementValue(this)">+</button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    @endif
+                                                <button id="increaseRounds"
+                                                    class="bg-transparent border border-white text-3xl text-white w-16 h-20 cursor-pointer"
+                                                    onclick="incrementValue(this)">+</button>
+                                            </div>
+                                            <div class="mb-0">
+                                                <div class="text-base mb-2">TIME TO COMPLETE</div>
+                                                <div id="timer" class="text-5xl text-black bg-white p-2">00:00:00
+                                                </div>
+                                                {{-- <div class="flex w-full">
+                                                        <button id="startButton" class="w-1/2 h-16 bg-green-600 text-white cursor-pointer ">START</button>
+                                                        <button id="stopButton" class="w-1/2 h-16 bg-red-600 text-white cursor-pointer">STOP</button>
+                                                    </div>   --}}
+                                            </div>
+                                        </div>
+                                        <div id="popup"
+                                            class="fixed -inset-96 bg-black bg-opacity-70 flex justify-center items-center z-50 cursor-pointer">
+                                            <div class="bg-white rounded-full w-48 h-48 flex justify-center items-center text-2xl text-black text-center"
+                                                onclick="startCountdown()">
+                                                Ready?
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
+
                             </div>
 
 
@@ -436,43 +467,37 @@
                                     @if ($detailstest->isEmpty())
                                         <p class="text-center text-white">No test records assigned.</p>
                                     @else
-                                        <table class="w-full text-white">
-                                            <thead class="justify-between">
-                                                <tr>
-                                                    <th class="py-2">Category</th>
-                                                    <th class="px-2">Workout</th>
-                                                    <th class="px-2">Member</th>
-                                                    <th class="col-span-2"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-body">
-                                                @foreach ($detailstest as $test)
-                                                    <tr class="border-b border-gray-300">
-                                                        {{-- Category --}}
-                                                        <td class="py-4" onclick="handleTestClick(this)"
-                                                            data-test-id="{{ $test->id }}">
-                                                            {{ $test->category->category_name ?? 'N/A' }}
-                                                        </td>
+                                        @foreach ($detailstest as $testIndex => $testdetail)
+                                            <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
+                                                <button class="px-4 py-2 rounded primary-btn bg-white text-black"
+                                                    data-target="#primary-weight-{{ $testIndex }}">
+                                                    {{ $testdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
+                                                    -
+                                                    {{ $testdetail->workouts?->workout ?? 'Unnamed Workout' }}
+                                                </button>
+                                            </div>
+                                            <div class="flex flex-col items-center justify-center gap-2 pt-4">
+                                                <p class="text-center text-white font-bold text-lg">1 REP MAX</p>
 
-                                                        {{-- Workout --}}
-                                                        <td class="py-4">
-                                                            {{ $test->workout->workout ?? 'N/A' }}
-                                                        </td>
+                                                <div class="flex items-center gap-2">
+                                                    <input type="number"
+                                                        class="w-32 md:w-48 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black text-center text-lg"
+                                                        placeholder="Enter weight" />
+                                                    <span class="text-white text-sm">kg</span>
+                                                </div>
 
-                                                        {{-- Member --}}
-                                                        <td class="py-4">
-                                                            {{ $test->member->firstname ?? 'N/A' }}
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                <button
+                                                    class="mt-3 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
+                                                    Save
+                                                </button>
+                                            </div>
+                                        @endforeach
                                     @endif
                                 </div>
                             </div>
 
 
-                            <button id="resetButton" class="px-4 rounded w-full">RESET TIMER</button>
+                            <button id="resetButton" class="px-4 rounded w-full">REST TIMER</button>
 
                             <div id="timer"
                                 class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
@@ -543,7 +568,7 @@
                         const parentDiv = this.closest('div');
                         const table = parentDiv.nextElementSibling; // For Warmup section
                         const content = parentDiv.parentElement.querySelector(
-                        '.content'); // For Strength and Weightlifting
+                            '.content'); // For Strength and Weightlifting
 
                         if (table && table.tagName === 'TABLE') {
                             // If it's the Warmup section
@@ -576,35 +601,44 @@
                 let timerIntervals = {};
                 let elapsedTimes = {};
                 const timerThresholds = {};
+
                 function startTimer(setNumber, red, yellow, green) {
                     const redSec = parseTimeToSeconds(red);
                     const yellowSec = parseTimeToSeconds(yellow);
                     const greenSec = parseTimeToSeconds(green);
 
-                    timerThresholds[setNumber] = { red: redSec, yellow: yellowSec, green: greenSec };
+                    timerThresholds[setNumber] = {
+                        red: redSec,
+                        yellow: yellowSec,
+                        green: greenSec
+                    };
                     elapsedTimes[setNumber] = 0;
 
                     runStageTimer(setNumber, 'red');
                 }
 
                 function runStageTimer(setNumber, stage) {
-                    const { red, yellow, green } = timerThresholds[setNumber];
-                    let stageTime = 0;
+                    const {
+                        red,
+                        yellow,
+                        green
+                    } = timerThresholds[setNumber];
                     let stageLimit = 0;
 
                     // Set stage color
                     const timerElement = document.getElementById(`timer`);
-                    const ringElement = document.getElementById(`ring`);
+                    const ringElement = document.getElementById(`ringdiv`);
                     const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
 
                     // Clean up previous styles
                     if (timerElement && toggleBackground) {
                         timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
                         ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
-                        'border-green-600');
-                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');}
+                            'border-green-600');
+                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                    }
 
-                    console.log('changeTimerColor',timerElement,ringElement,toggleBackground);
+                    console.log('changeTimerColor', timerElement, ringElement, toggleBackground);
                     // Determine current stage limits and color
                     switch (stage) {
                         case 'red':
@@ -627,11 +661,17 @@
                             break;
                     }
 
-                    timerIntervals[setNumber] = setInterval(() => {
-                        stageTime++;
-                        updateTimerDisplay(setNumber, stageTime);
+                    let remainingTime = stageLimit;
 
-                        if (stageTime >= stageLimit) {
+                    // Initial display
+                    updateTimerDisplay(setNumber, remainingTime);
+
+                    timerIntervals[setNumber] = setInterval(() => {
+                        remainingTime--;
+
+                        updateTimerDisplay(setNumber, remainingTime);
+
+                        if (remainingTime <= 0) {
                             clearInterval(timerIntervals[setNumber]);
 
                             if (stage === 'red') {
@@ -640,6 +680,7 @@
                                 runStageTimer(setNumber, 'green');
                             } else if (stage === 'green') {
                                 beep(3);
+                                activeTimerSetNumber = null;
                             }
                         }
                     }, 1000);
@@ -673,7 +714,7 @@
                     elapsedTimes[setNumber] = 0;
                     updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
 
-                    const ringElement = document.getElementById(`ring`);
+                    const ringElement = document.getElementById(`ringdiv`);
                     if (ringElement) {
                         ringElement.classList.remove('border-red-600', 'border-yellow-600', 'border-green-600');
                         ringElement.classList.add('border-orange-600');
@@ -692,11 +733,11 @@
                     }
                 }
 
-                function updateTimerDisplay(setNumber, seconds) {
-                    const minutes = Math.floor(seconds / 60);
-                    const remainingSeconds = seconds % 60;
+                function updateTimerDisplay(setNumber, secondsRemaining) {
+                    const minutes = Math.floor(secondsRemaining / 60);
+                    const seconds = secondsRemaining % 60;
                     const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
-                    const displaySeconds = remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds;
+                    const displaySeconds = seconds < 10 ? '0' + seconds : seconds;
 
                     const timerElement = document.getElementById(`timer`);
                     if (timerElement) {
@@ -706,21 +747,26 @@
 
                 function changeTimerColor(setNumber, seconds) {
                     const timerElement = document.getElementById(`timer`);
-                    const ringElement = document.getElementById(`ring`);
+                    const ringElement = document.getElementById(`ringdiv`);
                     const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
 
 
-                    console.log('changeTimerColor',timerElement,ringElement);
+                    console.log('changeTimerColor', timerElement, ringElement);
 
                     if (!timerThresholds[setNumber]) return;
 
-                    const { red, yellow, green } = timerThresholds[setNumber];
+                    const {
+                        red,
+                        yellow,
+                        green
+                    } = timerThresholds[setNumber];
 
                     if (timerElement && toggleBackground) {
                         timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
                         ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
-                        'border-green-600');
+                            'border-green-600');
                         toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                        //removeBgClasses(toggleBackground);
 
                         if (seconds <= red) {
                             timerElement.classList.add('bg-red-600');
@@ -746,27 +792,61 @@
                         }, i * 1000);
                     }
                 }
-
+                let activeTimerSetNumber = null;
                 document.querySelectorAll('.tablee').forEach((table) => {
                     const checkboxes = table.querySelectorAll('.timer-checkbox');
                     if (checkboxes.length > 0) {
                         checkboxes.forEach((checkbox) => {
                             checkbox.addEventListener('change', (event) => {
-                                const setNumber = checkbox.id.replace('toggleTimer', '');
+                                const id = checkbox
+                                    .id; // e.g. toggleTimerStrength0-1 or toggleTimerWeight0-1
+                                const typeMatch = id.match(/^toggleTimer(Strength|Weight)/);
+                                const type = typeMatch ? typeMatch[1] : 'Unknown';
+                                const setNumber = id.replace(`toggleTimer${type}`, '');
+
                                 if (event.target.checked) {
+                                    if (activeTimerSetNumber !== null && activeTimerSetNumber !==
+                                        setNumber) {
+                                        alert(
+                                            "One rest is already on. Please stop it before starting a new one."
+                                        );
+                                        checkbox.checked = false;
+                                        return;
+                                    }
+
                                     const red = checkbox.dataset.restred;
                                     const yellow = checkbox.dataset.restyellow;
                                     const green = checkbox.dataset.restgreen;
+
+                                    activeTimerSetNumber = setNumber;
                                     startTimer(setNumber, red, yellow, green);
                                 } else {
                                     stopTimer(setNumber);
                                     resetTimer(setNumber);
+
+                                    if (activeTimerSetNumber === setNumber) {
+                                        activeTimerSetNumber = null;
+                                    }
                                 }
-                                saveStrengthWorkout(checkbox);
+
+                                // Optional branching if you need different saving logic
+                                if (type === 'Strength') {
+                                    saveStrengthWorkout(checkbox);
+                                } else if (type === 'Weight') {
+                                    saveWeightWorkout(checkbox);
+                                }
                             });
                         });
                     }
                 });
+
+                function removeBgClasses(element) {
+                    [...element.classList].forEach(cls => {
+                        if (cls.startsWith('bg-')) {
+                            element.classList.remove(cls);
+                        }
+                    });
+                }
 
                 // Function to be called when a checkbox is clicked
                 function saveStrengthWorkout(checkbox) {
@@ -859,7 +939,7 @@
                             const targetId = button.getAttribute('data-target');
                             const primaryBody = document.querySelector(targetId); // Primary table body
                             const altBody = document.querySelector(targetId.replace('#primary-',
-                            '#alt-')); // Alternate table body
+                                '#alt-')); // Alternate table body
 
                             if (primaryBody && altBody) {
                                 primaryBody.classList.remove('hidden');
@@ -985,7 +1065,100 @@
                     span.innerText = Math.max(0, parseInt(span.innerText) - 1);
                 }
             </script>
+            <script>
+                class Timer {
+                    constructor(displayElement) {
+                        this.displayElement = displayElement;
+                        this.seconds = 0;
+                        this.timer = null;
+                    }
 
+                    updateDisplay() {
+                        const hrs = Math.floor(this.seconds / 3600);
+                        const mins = Math.floor((this.seconds % 3600) / 60);
+                        const secs = this.seconds % 60;
+                        this.displayElement.textContent =
+                            `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                    }
+
+                    start() {
+                        clearInterval(this.timer);
+                        this.timer = setInterval(() => {
+                            this.seconds++;
+                            this.updateDisplay();
+                        }, 1000);
+                    }
+
+                    stop() {
+                        clearInterval(this.timer);
+                    }
+
+                    reset(seconds) {
+                        this.seconds = seconds;
+                        this.updateDisplay();
+                    }
+                }
+
+                const timerDisplay = document.getElementById('timer');
+                const timer = new Timer(timerDisplay);
+
+                function startCountdown() {
+                    const popup = document.getElementById('popup');
+                    const popupContent = popup.querySelector('.bg-white');
+                    popup.classList.remove(
+                        'cursor-pointer'); // Remove the pointer cursor during the countdown to prevent multiple clicks
+                    popupContent.onclick = null;
+
+                    let countdown = 10;
+                    const countdownInterval = setInterval(() => {
+                        if (countdown > 0) {
+                            popupContent.textContent = countdown;
+                            countdown--;
+                        } else {
+                            clearInterval(countdownInterval);
+                            popupContent.textContent = 'Go!';
+                            setTimeout(() => {
+                                popup.classList.add('hidden');
+                                const timeToComplete = parseInt(document.querySelector('#timeToComplete-0')
+                                    .textContent, 10);
+                                console.log(timeToComplete)
+                                timer.reset(timeToComplete); // Start timer with the time_to_complete value
+                                timer.start();
+                            }, 1000);
+                        }
+                    }, 1000);
+                }
+
+                const increaseRoundsButton = document.getElementById('increaseRounds');
+                const decreaseRoundsButton = document.getElementById('decreaseRounds');
+                const roundsInput = document.getElementById('roundsInput');
+
+                increaseRoundsButton.addEventListener('click', () => {
+                    roundsInput.value = parseInt(roundsInput.value) + 1;
+                });
+
+                decreaseRoundsButton.addEventListener('click', () => {
+                    if (roundsInput.value > 1) {
+                        roundsInput.value = parseInt(roundsInput.value) - 1;
+                    }
+                });
+
+                function incrementValue(element) {
+                    var span = element.parentNode.querySelector('input');
+                    var value = parseInt(span.value, 10);
+                    value = isNaN(value) ? 0 : value;
+                    value++;
+                    span.value = value;
+                }
+
+                function decrementValue(element) {
+                    var span = element.parentNode.querySelector('input');
+                    var value = parseInt(span.value, 10);
+                    value = isNaN(value) ? 0 : value;
+                    value = value <= 0 ? 0 : value - 1;
+                    span.value = value;
+                }
+            </script>
 
         @endsection
 </body>
