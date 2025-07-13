@@ -368,7 +368,7 @@
                                             </svg>
                                         </button>
                                         <input type="text" id="restredwe_1" name="restredwe_1"
-                                            placeholder="00:00" value="04:00"
+                                            placeholder="00:00" value="00:04:00"
                                             class="bg-gray-50 border-x-0 restwered border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
@@ -396,7 +396,7 @@
                                             </svg>
                                         </button>
                                         <input type="text" id="restyellowwe_1" name="restyellowwe_1"
-                                            placeholder="00:00" value="04:00"
+                                            placeholder="00:00" value="00:04:00"
                                             class="bg-gray-50 border-x-0 restweyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
@@ -424,7 +424,7 @@
                                             </svg>
                                         </button>
                                         <input type="text" id="restgreenwe_1" name="restgreenwe_1"
-                                            placeholder="00:00" value="04:00"
+                                            placeholder="00:00" value="00:04:00"
                                             class="bg-gray-50 border-x-0 restwegreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
@@ -808,49 +808,42 @@
 <script>
     // Rest increment Increment
     function incrementRest(id) {
-        // Get the current time value
-        let input = document.getElementById(id); // Ensure you get the input element using the id
-        let [minutes, seconds] = input.value.split(':').map(Number);
+    let input = document.getElementById(id);
+    let [hours, minutes, seconds] = input.value.split(':').map(Number);
 
-        // Convert to total seconds
-        if (isNaN(minutes)) minutes = 0;
-        if (isNaN(seconds)) seconds = 0;
-        let totalSeconds = (minutes * 60) + seconds;
+    if (isNaN(hours)) hours = 0;
+    if (isNaN(minutes)) minutes = 0;
+    if (isNaN(seconds)) seconds = 0;
 
-        // Update the time
-        totalSeconds += 15;
-        if (totalSeconds < 0) totalSeconds = 0; // Prevent negative values
+    let totalSeconds = (hours * 3600) + (minutes * 60) + seconds + 15;
 
-        // Convert back to minutes and seconds
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
+    hours = Math.floor(totalSeconds / 3600);
+    minutes = Math.floor((totalSeconds % 3600) / 60);
+    seconds = totalSeconds % 60;
 
-        // Format the value as MM:SS
-        input.value = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+    input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
 
     // Rest increment Decrement
     function decrementRest(id) {
-        // Get the current time value
-        let input = document.getElementById(id); // Ensure you get the input element using the id
-        let [minutes, seconds] = input.value.split(':').map(Number);
+    let input = document.getElementById(id);
+    let [hours, minutes, seconds] = input.value.split(':').map(Number);
 
-        // Convert to total seconds
-        if (isNaN(minutes)) minutes = 0;
-        if (isNaN(seconds)) seconds = 0;
-        let totalSeconds = (minutes * 60) + seconds;
+    if (isNaN(hours)) hours = 0;
+    if (isNaN(minutes)) minutes = 0;
+    if (isNaN(seconds)) seconds = 0;
 
-        // Update the time
-        totalSeconds -= 15;
-        if (totalSeconds < 0) totalSeconds = 0; // Prevent negative values
+    let totalSeconds = (hours * 3600) + (minutes * 60) + seconds - 15;
+    totalSeconds = Math.max(0, totalSeconds); // Prevent negative time
 
-        // Convert back to minutes and seconds
-        minutes = Math.floor(totalSeconds / 60);
-        seconds = totalSeconds % 60;
+    hours = Math.floor(totalSeconds / 3600);
+    minutes = Math.floor((totalSeconds % 3600) / 60);
+    seconds = totalSeconds % 60;
 
-        // Format the value as MM:SS
-        input.value = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    }
+    input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
 
 
     // Function to set category options
