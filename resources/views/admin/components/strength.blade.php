@@ -372,7 +372,7 @@
                                         </svg>
                                     </button>
                                     <input type="text" id="restreds_1" name="restreds_1" placeholder="00:00"
-                                        value="04:00"
+                                        value="00:04:00"
                                         class="bg-gray-50 border-x-0 restwered border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         readonly required>
                                     <button type="button"
@@ -400,7 +400,7 @@
                                         </svg>
                                     </button>
                                     <input type="text" id="restyellows_1" name="restyellows_1"
-                                        placeholder="00:00" value="04:00"
+                                        placeholder="00:00" value="00:04:00"
                                         class="bg-gray-50 border-x-0 restweyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         readonly required>
                                     <button type="button"
@@ -428,7 +428,7 @@
                                         </svg>
                                     </button>
                                     <input type="text" id="restgreens_1" name="restgreens_1" placeholder="00:00"
-                                        value="04:00"
+                                        value="00:04:00"
                                         class="bg-gray-50 border-x-0 restwegreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         readonly required>
                                     <button type="button"
