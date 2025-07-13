@@ -221,6 +221,9 @@
                                                                                     id="toggleTimer{{ $strengthIndex }}-{{ $setNumber }}"
                                                                                     class="sr-only peer timer-checkbox"
                                                                                     data-rest-time="{{ $strengthdetail->rest }}"
+                                                                                    data-restred="{{ $strengthdetail->restred }}"
+                                                                                    data-restyellow="{{ $strengthdetail->restyellow }}"
+                                                                                    data-restgreen="{{ $strengthdetail->restgreen }}"
                                                                                     data-strength-detail-id="{{ $strengthdetail->id }}"
                                                                                     data-type="Primary"
                                                                                     data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
@@ -344,7 +347,10 @@
                                                                                 <input type="checkbox"
                                                                                     id="toggleTimer{{ $weightIndex }}-{{ $setNumber }}"
                                                                                     class="sr-only peer timer-checkbox"
-                                                                                    data-rest-time="{{ $weightdetail->rest ?? 0 }}">
+                                                                                    data-rest-time="{{ $weightdetail->rest ?? 0 }}"
+                                                                                    data-restred="{{ $weightdetail->restredwe }}"
+                                                                                    data-restyellow="{{ $weightdetail->restyellowwe }}"
+                                                                                    data-restgreen="{{ $weightdetail->restgreenwe }}">
                                                                                 <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
                                                                                     class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
                                                                                 </div>
@@ -569,19 +575,93 @@
             <script>
                 let timerIntervals = {};
                 let elapsedTimes = {};
+                const timerThresholds = {};
+                function startTimer(setNumber, red, yellow, green) {
+                    const redSec = parseTimeToSeconds(red);
+                    const yellowSec = parseTimeToSeconds(yellow);
+                    const greenSec = parseTimeToSeconds(green);
 
-                function startTimer(setNumber) {
-                    console.log(setNumber);
+                    timerThresholds[setNumber] = { red: redSec, yellow: yellowSec, green: greenSec };
                     elapsedTimes[setNumber] = 0;
+
+                    runStageTimer(setNumber, 'red');
+                }
+
+                function runStageTimer(setNumber, stage) {
+                    const { red, yellow, green } = timerThresholds[setNumber];
+                    let stageTime = 0;
+                    let stageLimit = 0;
+
+                    // Set stage color
+                    const timerElement = document.getElementById(`timer`);
+                    const ringElement = document.getElementById(`ring`);
+                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
+
+                    // Clean up previous styles
+                    if (timerElement && toggleBackground) {
+                        timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
+                        ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
+                        'border-green-600');
+                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');}
+
+                    console.log('changeTimerColor',timerElement,ringElement,toggleBackground);
+                    // Determine current stage limits and color
+                    switch (stage) {
+                        case 'red':
+                            stageLimit = red;
+                            timerElement?.classList.add('bg-red-600');
+                            ringElement?.classList.add('border-red-600');
+                            toggleBackground?.classList.add('bg-red-600');
+                            break;
+                        case 'yellow':
+                            stageLimit = yellow;
+                            timerElement?.classList.add('bg-yellow-600');
+                            ringElement?.classList.add('border-yellow-600');
+                            toggleBackground?.classList.add('bg-yellow-600');
+                            break;
+                        case 'green':
+                            stageLimit = green;
+                            timerElement?.classList.add('bg-green-600');
+                            ringElement?.classList.add('border-green-600');
+                            toggleBackground?.classList.add('bg-green-600');
+                            break;
+                    }
+
                     timerIntervals[setNumber] = setInterval(() => {
-                        elapsedTimes[setNumber]++;
-                        updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
-                        changeTimerColor(setNumber, elapsedTimes[setNumber]);
-                        if (elapsedTimes[setNumber] >= 240) { // 4 minutes
+                        stageTime++;
+                        updateTimerDisplay(setNumber, stageTime);
+
+                        if (stageTime >= stageLimit) {
                             clearInterval(timerIntervals[setNumber]);
-                            beep(3);
+
+                            if (stage === 'red') {
+                                runStageTimer(setNumber, 'yellow');
+                            } else if (stage === 'yellow') {
+                                runStageTimer(setNumber, 'green');
+                            } else if (stage === 'green') {
+                                beep(3);
+                            }
                         }
                     }, 1000);
+                }
+
+
+
+                function parseTimeToSeconds(timeStr) {
+                    if (!timeStr) return 0;
+
+                    const parts = timeStr.split(':').map(Number);
+                    if (parts.length === 3) {
+                        const [hours, minutes, seconds] = parts;
+                        return hours * 3600 + minutes * 60 + seconds;
+                    } else if (parts.length === 2) {
+                        const [minutes, seconds] = parts;
+                        return minutes * 60 + seconds;
+                    } else if (parts.length === 1) {
+                        return Number(parts[0]);
+                    }
+
+                    return 0;
                 }
 
                 function stopTimer(setNumber) {
@@ -622,7 +702,6 @@
                     if (timerElement) {
                         timerElement.textContent = `00:${displayMinutes}:${displaySeconds}`;
                     }
-
                 }
 
                 function changeTimerColor(setNumber, seconds) {
@@ -630,21 +709,28 @@
                     const ringElement = document.getElementById(`ring`);
                     const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
 
+
+                    console.log('changeTimerColor',timerElement,ringElement);
+
+                    if (!timerThresholds[setNumber]) return;
+
+                    const { red, yellow, green } = timerThresholds[setNumber];
+
                     if (timerElement && toggleBackground) {
                         timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
                         ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
                         'border-green-600');
                         toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
 
-                        if (seconds <= 120) {
+                        if (seconds <= red) {
                             timerElement.classList.add('bg-red-600');
                             ringElement.classList.add('border-red-600');
                             toggleBackground.classList.add('bg-red-600');
-                        } else if (seconds <= 180) {
+                        } else if (seconds <= yellow) {
                             timerElement.classList.add('bg-yellow-600');
                             ringElement.classList.add('border-yellow-600');
                             toggleBackground.classList.add('bg-yellow-600');
-                        } else if (seconds <= 240) {
+                        } else if (seconds <= green) {
                             timerElement.classList.add('bg-green-600');
                             ringElement.classList.add('border-green-600');
                             toggleBackground.classList.add('bg-green-600');
@@ -668,7 +754,10 @@
                             checkbox.addEventListener('change', (event) => {
                                 const setNumber = checkbox.id.replace('toggleTimer', '');
                                 if (event.target.checked) {
-                                    startTimer(setNumber);
+                                    const red = checkbox.dataset.restred;
+                                    const yellow = checkbox.dataset.restyellow;
+                                    const green = checkbox.dataset.restgreen;
+                                    startTimer(setNumber, red, yellow, green);
                                 } else {
                                     stopTimer(setNumber);
                                     resetTimer(setNumber);

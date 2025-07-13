@@ -140,8 +140,8 @@ class MobileController extends Controller
 
         // Check if user already reserved this class (optional)
         $existing = ReservationSession::where('user_id', Auth::id())
-                    ->where('classes_id', $class->id)
-                    ->first();
+            ->where('classes_id', $class->id)
+            ->first();
 
         if ($existing) {
             return back()->with('info', 'You have already reserved this class.');
@@ -252,12 +252,12 @@ class MobileController extends Controller
     public function workout()
     {
         $storedDay = session('selected_day');
-        
+
         if (!$storedDay) {
             $storedDay = Carbon::now()->format('d/m/Y');
             session(['selected_day' => $storedDay]);
         }
-        
+
         // Format the stored day to the desired format
         $date = Carbon::createFromFormat('d/m/Y', $storedDay);
         $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
@@ -279,21 +279,21 @@ class MobileController extends Controller
         $tabstrength = 'strength';
         $date = $dayWithDate;
         $detailsstrength = Strength::where('date', $date)
-            ->where('is_assigned', 1)    
+            ->where('is_assigned', 1)
             ->with('sets')
             ->with('sets.strengthing')
             ->with('workout')
             ->with('workout.categoryOption')
             ->get();
 
-         //get conditioning details for specific date
-         $tabconditioning = 'conditioning';
-         $date = $dayWithDate;
-         $detailsconditioning = Conditioning::where('date', $date)
+        //get conditioning details for specific date
+        $tabconditioning = 'conditioning';
+        $date = $dayWithDate;
+        $detailsconditioning = Conditioning::where('date', $date)
             ->where('is_assigned', 1)
-             ->with('workout')
-             ->with('workout.categoryOption')
-             ->get();
+            ->with('workout')
+            ->with('workout.categoryOption')
+            ->get();
 
         //  //get warup details for specific date
         $tabweightweight = 'weightlifting';
@@ -322,7 +322,7 @@ class MobileController extends Controller
 
         //dd($detailsstrength);
 
-        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight','detailstest'));
+        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight', 'detailstest'));
     }
 
     //store daily warmup workout after clicking
