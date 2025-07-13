@@ -29,7 +29,10 @@ class Test extends Model
     {
         return $this->belongsTo(WorkoutLibrary::class, 'workout_id');
     }
-    
+    public function workouts()
+    {
+        return $this->belongsTo(WorkoutLibrary::class, 'workout_id');
+    }
     public function member()
     {
         return $this->belongsTo(Newprofile::class, 'member_id');
