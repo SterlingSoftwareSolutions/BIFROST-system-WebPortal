@@ -129,118 +129,120 @@
                             <div id="section-strength" class="category-section hidden">
                                 <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
                                     {{-- Actual Strength Content --}}
-                                    <div class="content p-4 text-white border border-gray-600 rounded-3xl" id="ringdiv">
+                                    <div class="content p-4 text-white">
 
                                         @if ($detailsstrength->isEmpty())
                                             <p class="text-center text-white">No assigned strength workouts.</p>
                                         @else
                                             @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
-                                                <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                    <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                        data-target="#primary-weight-{{ $strengthIndex }}">
-                                                        {{ $strengthdetail->workout?->categoryOption?->category_name ?? 'No Category' }}
-                                                        -
-                                                        {{ $strengthdetail->workout?->workout ?? 'Unnamed Workout' }}
-                                                    </button>
-                                                </div>
+                                                <div class="content p-4 mt-3 text-white border border-gray-600 rounded-3xl" id="ringdiv">
+                                                    <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
+                                                        <button class="px-4 py-2 rounded primary-btn bg-white text-black"
+                                                            data-target="#primary-weight-{{ $strengthIndex }}">
+                                                            {{ $strengthdetail->workout?->categoryOption?->category_name ?? 'No Category' }}
+                                                            -
+                                                            {{ $strengthdetail->workout?->workout ?? 'Unnamed Workout' }}
+                                                        </button>
+                                                    </div>
 
-                                                {{-- Primary Table --}}
-                                                <div id="primary-weight-{{ $strengthIndex }}"
-                                                    class="table-body primary-body">
-                                                    @php
-                                                        // Get max number of sets from all related setdetails
-                                                        $maxSetDetail = $strengthdetail->sets
-                                                            ->sortByDesc('sets')
-                                                            ->first();
-                                                        $numberOfSets = $maxSetDetail->sets ?? 0;
-                                                        $baseWeight = $strengthdetail->weight ?? 0;
-                                                        $totalPercentageIncrease = 0.7;
-                                                        $percentageIncreasePerSet =
-                                                            $numberOfSets > 1
-                                                                ? $totalPercentageIncrease / ($numberOfSets - 1)
-                                                                : 0;
-                                                        $percentages = array_map(
-                                                            fn($i) => 0.3 + $percentageIncreasePerSet * $i,
-                                                            range(0, $numberOfSets - 1),
-                                                        );
+                                                    {{-- Primary Table --}}
+                                                    <div id="primary-weight-{{ $strengthIndex }}"
+                                                        class="table-body primary-body">
+                                                        @php
+                                                            // Get max number of sets from all related setdetails
+                                                            $maxSetDetail = $strengthdetail->sets
+                                                                ->sortByDesc('sets')
+                                                                ->first();
+                                                            $numberOfSets = $maxSetDetail->sets ?? 0;
+                                                            $baseWeight = $strengthdetail->weight ?? 0;
+                                                            $totalPercentageIncrease = 0.7;
+                                                            $percentageIncreasePerSet =
+                                                                $numberOfSets > 1
+                                                                    ? $totalPercentageIncrease / ($numberOfSets - 1)
+                                                                    : 0;
+                                                            $percentages = array_map(
+                                                                fn($i) => 0.3 + $percentageIncreasePerSet * $i,
+                                                                range(0, $numberOfSets - 1),
+                                                            );
 
-                                                        // Build reps list per set index
-                                                        $repsList = [];
-                                                        $setIndex = 0;
-                                                        foreach ($strengthdetail->sets as $setDetail) {
-                                                            for ($i = 0; $i < $setDetail->sets; $i++) {
-                                                                $repsList[$setIndex] = $setDetail->reps;
-                                                                $setIndex++;
+                                                            // Build reps list per set index
+                                                            $repsList = [];
+                                                            $setIndex = 0;
+                                                            foreach ($strengthdetail->sets as $setDetail) {
+                                                                for ($i = 0; $i < $setDetail->sets; $i++) {
+                                                                    $repsList[$setIndex] = $setDetail->reps;
+                                                                    $setIndex++;
+                                                                }
                                                             }
-                                                        }
-                                                    @endphp
+                                                        @endphp
 
-                                                    @if ($numberOfSets > 0)
-                                                        <table class="w-full text-white tablee my-4">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th class="px-2">Set</th>
-                                                                    <th class="px-2">Weight</th>
-                                                                    <th class="px-2">Rep</th>
-                                                                    <th></th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                                    @php
-                                                                        $setPercentage =
-                                                                            $percentages[$setNumber - 1] ?? 0.3;
-                                                                        $calculatedWeight =
-                                                                            $baseWeight * $setPercentage;
-                                                                        $reps = $repsList[$setNumber - 1] ?? '-';
-                                                                    @endphp
-                                                                    <tr class="border-b border-gray-300">
-                                                                        <td class="py-4">{{ $setNumber }}</td>
-                                                                        <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                            class="py-4 text-center">
-                                                                            {{ number_format($calculatedWeight, 2) }}
-                                                                        </td>
-                                                                        <td class="py-4">
-                                                                            <div
-                                                                                class="flex items-center justify-center space-x-4">
-                                                                                <button class="px-2 py-1 text-white"
-                                                                                    onclick="decrementValue(this)">-</button>
-                                                                                <span
-                                                                                    class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
-                                                                                    id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
-                                                                                    {{ $reps }}
-                                                                                </span>
-                                                                                <button class="px-2 py-1 text-white"
-                                                                                    onclick="incrementValue(this)">+</button>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="py-4">
-                                                                            <label
-                                                                                class="inline-flex items-center cursor-pointer">
-                                                                                <input type="checkbox"
-                                                                                    id="toggleTimerStrength{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                    class="sr-only peer timer-checkbox"
-                                                                                    data-rest-time="{{ $strengthdetail->rest }}"
-                                                                                    data-restred="{{ $strengthdetail->restred }}"
-                                                                                    data-restyellow="{{ $strengthdetail->restyellow }}"
-                                                                                    data-restgreen="{{ $strengthdetail->restgreen }}"
-                                                                                    data-strength-detail-id="{{ $strengthdetail->id }}"
-                                                                                    data-type="Primary"
-                                                                                    data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                    onclick="saveStrengthWorkout(this)">
-                                                                                <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                                </div>
-                                                                            </label>
-                                                                        </td>
+                                                        @if ($numberOfSets > 0)
+                                                            <table class="w-full text-white tablee my-4">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th class="px-2">Set</th>
+                                                                        <th class="px-2">Weight</th>
+                                                                        <th class="px-2">Rep</th>
+                                                                        <th></th>
                                                                     </tr>
-                                                                @endfor
-                                                            </tbody>
-                                                        </table>
-                                                    @else
-                                                        <p class="text-center text-sm text-white mt-4">No sets assigned for
-                                                            this workout.</p>
-                                                    @endif
+                                                                </thead>
+                                                                <tbody>
+                                                                    @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
+                                                                        @php
+                                                                            $setPercentage =
+                                                                                $percentages[$setNumber - 1] ?? 0.3;
+                                                                            $calculatedWeight =
+                                                                                $baseWeight * $setPercentage;
+                                                                            $reps = $repsList[$setNumber - 1] ?? '-';
+                                                                        @endphp
+                                                                        <tr class="border-b border-gray-300">
+                                                                            <td class="py-4">{{ $setNumber }}</td>
+                                                                            <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                class="py-4 text-center">
+                                                                                {{ number_format($calculatedWeight, 2) }}
+                                                                            </td>
+                                                                            <td class="py-4">
+                                                                                <div
+                                                                                    class="flex items-center justify-center space-x-4">
+                                                                                    <button class="px-2 py-1 text-white"
+                                                                                        onclick="decrementValue(this)">-</button>
+                                                                                    <span
+                                                                                        class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
+                                                                                        id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
+                                                                                        {{ $reps }}
+                                                                                    </span>
+                                                                                    <button class="px-2 py-1 text-white"
+                                                                                        onclick="incrementValue(this)">+</button>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td class="py-4">
+                                                                                <label
+                                                                                    class="inline-flex items-center cursor-pointer">
+                                                                                    <input type="checkbox"
+                                                                                        id="toggleTimerStrength{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                        class="sr-only peer timer-checkbox"
+                                                                                        data-rest-time="{{ $strengthdetail->rest }}"
+                                                                                        data-restred="{{ $strengthdetail->restred }}"
+                                                                                        data-restyellow="{{ $strengthdetail->restyellow }}"
+                                                                                        data-restgreen="{{ $strengthdetail->restgreen }}"
+                                                                                        data-strength-detail-id="{{ $strengthdetail->id }}"
+                                                                                        data-type="Primary"
+                                                                                        data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                        onclick="saveStrengthWorkout(this)">
+                                                                                    <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
+                                                                                        class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
+                                                                                    </div>
+                                                                                </label>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endfor
+                                                                </tbody>
+                                                            </table>
+                                                        @else
+                                                            <p class="text-center text-sm text-white mt-4">No sets assigned for
+                                                                this workout.</p>
+                                                        @endif
+                                                    </div>
                                                 </div>
                                             @endforeach
                                         @endif
@@ -499,7 +501,7 @@
 
                             <button id="resetButton" class="px-4 rounded w-full">REST TIMER</button>
 
-                            <div id="timer"
+                            <div id="timerest"
                                 class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
                                 00:00:00
                             </div>
@@ -626,7 +628,7 @@
                     let stageLimit = 0;
 
                     // Set stage color
-                    const timerElement = document.getElementById(`timer`);
+                    const timerElement = document.getElementById(`timerest`);
                     const ringElement = document.getElementById(`ringdiv`);
                     const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
 
@@ -720,7 +722,7 @@
                         ringElement.classList.add('border-orange-600');
                     }
 
-                    const timerElement = document.getElementById(`timer`);
+                    const timerElement = document.getElementById(`timerest`);
                     if (timerElement) {
                         timerElement.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
                         timerElement.classList.add('bg-orange-600');
@@ -739,14 +741,14 @@
                     const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
                     const displaySeconds = seconds < 10 ? '0' + seconds : seconds;
 
-                    const timerElement = document.getElementById(`timer`);
+                    const timerElement = document.getElementById(`timerest`);
                     if (timerElement) {
                         timerElement.textContent = `00:${displayMinutes}:${displaySeconds}`;
                     }
                 }
 
                 function changeTimerColor(setNumber, seconds) {
-                    const timerElement = document.getElementById(`timer`);
+                    const timerElement = document.getElementById(`timerest`);
                     const ringElement = document.getElementById(`ringdiv`);
                     const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
 
