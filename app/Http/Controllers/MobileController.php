@@ -306,10 +306,18 @@ class MobileController extends Controller
             ->with('workouts.categoryOption')
             ->get();
 
+        //get warup details for specific date
+        $tabconditioning = 'conditioning';
+        $date = $dayWithDate;
+        $detailsconditioning = Conditioning::where('date', $date)
+            ->with('workout')
+            ->get();
+
         $tabtest = 'Test';
         $date = $dayWithDate;
         $detailstest = Test::where('date', $date)
-            ->where('is_assigned', 1)
+            ->with('workout')
+            ->with('workouts.categoryOption')
             ->with('member')
             ->get();
 
@@ -322,7 +330,7 @@ class MobileController extends Controller
 
         //dd($detailsstrength);
 
-        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight', 'detailstest'));
+        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight', 'detailstest','detailsconditioning'));
     }
 
     //store daily warmup workout after clicking
