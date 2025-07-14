@@ -102,7 +102,7 @@
                                 </div>
                                 <div class="flex items-center border-b mt-2">
                                     <label for="weigthc_1" class="w-60 block mb-1">
-                                        Weight Precentage <span class="text-red-500">*</span>
+                                        Training Load <span class="text-red-500">*</span>
                                     </label>
                                     <input type="number" id="weigthc_1" name="weigthc_1"
                                         class="w-1/3 px-3 py-3 border rounded mb-2" required>
@@ -172,7 +172,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                
+
 
                                 {{-- <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
                         onclick="addAnotherClick()" id="idfake_1">Another</button> --}}

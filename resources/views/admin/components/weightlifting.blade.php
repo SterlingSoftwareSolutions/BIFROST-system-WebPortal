@@ -295,7 +295,7 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="weigthwe_1" class="w-60 block mb-1">Weight Precentage <span
+                                <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span
                                         class="text-red-500">*</span></label>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
@@ -1851,7 +1851,7 @@
         if (duplicateContainer) {
             duplicateContainer.innerHTML = ''; // Remove all appended set blocks
         }
-        window.setCounter = 1;  
+        window.setCounter = 1;
     }
 
     function updateweightlifting(id) {
