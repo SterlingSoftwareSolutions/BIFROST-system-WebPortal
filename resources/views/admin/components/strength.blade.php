@@ -293,7 +293,7 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="weigths_1" class="w-60 block mb-1">Weight Precentage <span
+                            <label for="weigths_1" class="w-60 block mb-1">Training Load <span
                                     class="text-red-500">*</span></label>
                             <input type="text" id="weigths_1" name="weigths_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2">
