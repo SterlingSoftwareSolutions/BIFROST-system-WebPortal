@@ -212,7 +212,7 @@ class SessionController extends Controller
                 'workoutw_1' => 'required|exists:workout_libraries,id',
                 'repsw_1' => 'required|integer',
                 'weigthw_1' => 'required|numeric',
-                'selectdatew' => 'required|date', // You can use string if not using a date format
+                'selectdatew' => 'required', // You can use string if not using a date format
             ]);
 
             // Extract the values directly
