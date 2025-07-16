@@ -150,7 +150,7 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/search-setwarmup', [SessionController::class, 'searchSetWarmup'])->name('search.setwarmup');
      // delete selected Warmup data
     Route::post('/delete-warmup', [SessionController::class, 'deletewarmup'])->name('warmup.delete');
-    
+
 
     // store weightlifting
     Route::post('/store-weightlifting', [SessionController::class, 'storeweightlifting']);
@@ -205,6 +205,10 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/update-test', [SessionController::class, 'updatest'])->name('update-test');
     //testdelete
     Route::delete('/delete-test', [SessionController::class, 'deletealldatatest'])->name('delete-test');
+    // search Test
+    Route::post('/search-test', [SessionController::class, 'searchTest'])->name('search.test');
+    // delete selected test
+    Route::post('/delete-tests', [SessionController::class, 'deletetests'])->name('test.delete');
 
     // get classes
     Route::get('/classes', [ClassesController::class, 'index'])->name('classes.index');
