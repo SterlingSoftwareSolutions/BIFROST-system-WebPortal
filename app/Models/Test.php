@@ -24,7 +24,7 @@ class Test extends Model
     {
         return $this->belongsTo(CategoryOption::class, 'category_id');
     }
-    
+
     public function workout()
     {
         return $this->belongsTo(WorkoutLibrary::class, 'workout_id');
@@ -37,10 +37,11 @@ class Test extends Model
     {
         return $this->belongsTo(Newprofile::class, 'member_id');
     }
-    
+
     public static function store($data)
     {
         $test = new self();
+        $test->workoutname = $data['namet'];
         $test->category_id = $data['test-category'];
         $test->workout_id = $data['test-workout'];
         $test->member_id = $data['test-member'];
