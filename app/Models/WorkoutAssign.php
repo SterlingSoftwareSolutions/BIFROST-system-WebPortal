@@ -28,7 +28,7 @@ class WorkoutAssign extends Model
             case 'warmup':
                 return $this->belongsTo(Warmup::class, 'workout_id');
             case 'test':
-                return $this->belongsTo(Warmup::class, 'workout_id');
+                return $this->belongsTo(Test::class, 'workout_id');
             default:
                 return null;
         }

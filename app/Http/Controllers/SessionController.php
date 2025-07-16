@@ -19,6 +19,7 @@ use App\Models\Weightlifting;
 use App\Models\WeightliftingSet;
 use App\Models\WorkoutAssign;
 use App\Models\WorkoutLibrary;
+use App\Models\CategoryOption;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,15 +50,21 @@ class SessionController extends Controller
     public function getCategory(Request $request)
     {
         $tab = strtolower($request->input('tab'));
-
+        Log::info('Tab value: ' . $tab);
         // Fetch workouts based on the type
-        $workouts = WorkoutLibrary::where('type', $tab)
+        if($tab == 'test'){
+            $categoryOptions = CategoryOption::all();
+        }
+        else{
+            $workouts = WorkoutLibrary::where('type', $tab)
             ->with('categoryOption') // Load the category options
             ->get();
 
+
+
         // Get unique category options based on the fetched workouts
         $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
-
+        }
         return response()->json([
             'category_options' => $categoryOptions
         ]);
@@ -160,10 +167,17 @@ class SessionController extends Controller
         $tab = strtolower($request->tab);
         $id = $request->id;
         // category option id andb type filter
-        $workouts = WorkoutLibrary::where([
-            ['type', $tab],
-            ['category_options_id', $id],
-        ])->get();
+        if($tab == 'test'){
+            $workouts = WorkoutLibrary::where([
+                ['category_options_id', $id],
+            ])->get();
+        }else{
+            $workouts = WorkoutLibrary::where([
+                ['type', $tab],
+                ['category_options_id', $id],
+            ])->get();
+        }
+
         return response()->json(['workouts' => $workouts]);
     }
     public function update(Request $request)
@@ -212,7 +226,7 @@ class SessionController extends Controller
                 'workoutw_1' => 'required|exists:workout_libraries,id',
                 'repsw_1' => 'required|integer',
                 'weigthw_1' => 'required|numeric',
-                'selectdatew' => 'required|date', // You can use string if not using a date format
+                'selectdatew' => 'required', // You can use string if not using a date format
             ]);
 
             // Extract the values directly
@@ -245,7 +259,7 @@ class SessionController extends Controller
     {
 
         Log::info('Incoming Warmup Update Request Data: ', $request->all());
-        
+
         // Validate the common ID
         $validatedData = $request->validate([
             'warmup_id' => 'required|integer|exists:warmups,id',
@@ -352,7 +366,7 @@ class SessionController extends Controller
             $warmupQuery = Warmup::with(['category', 'workout'])
             ->where('date', $date);
             Log::info('Response filtered data Warmup: ', ['Warmup' => $warmupQuery]);
-           
+
             if ($categoryId && $workoutId && $name) {
                 $warmupQuery = $warmupQuery->where('category_id', $categoryId)
                                                     ->where('workout_id', $workoutId)
@@ -761,26 +775,26 @@ class SessionController extends Controller
             ]);
 
             // Update existing weightlifting sets
-           
+
             foreach ($request->all() as $key => $value) {
-    if (preg_match('/^setwid_(\d+)$/', $key, $matches)) {
-        $index = $matches[1];
+                if (preg_match('/^setwid_(\d+)$/', $key, $matches)) {
+                    $index = $matches[1];
 
-        $setId = $request->input("setwid_$index");
-        $sets = $request->input("setswe_$index");
-        $reps = $request->input("repswe_$index");
+                    $setId = $request->input("setwid_$index");
+                    $sets = $request->input("setswe_$index");
+                    $reps = $request->input("repswe_$index");
 
-        if ($setId && $sets !== null && $reps !== null) {
-            $set = WeightliftingSet::find($setId);
-            if ($set) {
-                $set->update([
-                    'sets' => $sets,
-                    'reps' => $reps,
-                ]);
+                    if ($setId && $sets !== null && $reps !== null) {
+                        $set = WeightliftingSet::find($setId);
+                        if ($set) {
+                            $set->update([
+                                'sets' => $sets,
+                                'reps' => $reps,
+                            ]);
+                        }
+                    }
+                }
             }
-        }
-    }
-}
 
 
             // Create new weightlifting sets
@@ -1424,6 +1438,24 @@ foreach ($request->all() as $key => $value) {
         }
     }
 
+    //delete selected test data
+    public function deletetests(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:tests,id',
+        ]);
+
+        try {
+            $test = Test::findOrFail($request->id);
+            $test->delete();
+
+            return response()->json(['status' => 'success', 'message' => 'Testrecord deleted.']);
+        } catch (\Exception $e) {
+            Log::error('Error in deletettest: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete Test record.']);
+        }
+    }
+
     // deletestrenght
     public function deleteAllByDelectDataStrenght(Request $request)
     {
@@ -1471,42 +1503,57 @@ foreach ($request->all() as $key => $value) {
 
     public function storeTest(Request $request)
     {
-        //  dd($request);
-        $request->validate([
-            'test-category_*' => 'required|exists:category_options,id',
-            'test-workout_*' => 'required|exists:workout_libraries,id',
-            'test-member_*' => 'required',
-            'selectdatet_*' => 'required',
-        ]);
+        Log::info('Test Request Data dd:', ['request' => $request->all()]);
+        try {
+            //  dd($request);
+            $request->validate([
+                'namet_*' => 'required|string',
+                'test-category_*' => 'required|exists:category_options,id',
+                'test-workout_*' => 'required|exists:workout_libraries,id',
+                'test-member_*' => 'required',
+                'selectdatet_*' => 'required',
+            ]);
+            $requestData = $request->all();
 
-        $requestData = $request->all();
-        $maxIndex = 10; // Maximum index to check, adjust this as needed
+            $maxIndex = 10; // Maximum index to check, adjust this as needed
 
-        for ($index = 1; $index <= $maxIndex; $index++) {
-            $processedData = []; // Initialize the array for the current index
+            for ($index = 1; $index <= $maxIndex; $index++) {
+                $processedData = []; // Initialize the array for the current index
 
-            // Iterate over all request data
-            foreach ($requestData as $key => $value) {
-                // Check if the key contains the current index
-                if (strpos($key, "_$index") !== false) {
-                    // Add the key-value pair to the array
-                    $processedData[$key] = $value;
+                // Iterate over all request data
+                foreach ($requestData as $key => $value) {
+                    // Check if the key contains the current index
+                    if (strpos($key, "_$index") !== false) {
+                        // Add the key-value pair to the array
+                        $processedData[$key] = $value;
+                    }
+                }
+
+                if (!empty($processedData)) {
+                    // Call the filterdatastrength function to process and store the data
+                    $this->filterdatastest($processedData, $index, $request->input("selectdatet"));
                 }
             }
-
-            if (!empty($processedData)) {
-                // Call the filterdatastrength function to process and store the data
-                $this->filterdatastest($processedData, $index, $request->input("selectdatet"));
-            }
+            return response()->json(['message' => 'Test data saved successfully!']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while storing warmup data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        return redirect()->back()->with('success', 'Data saved successfully!');
+
     }
     public function filterdatastest($processedData, $index, $date)
 
     {
         $parsedData = [];
         // Extract the indexed values from the input data
-        $fields = ['test-category', 'test-workout', 'test-member'];
+        $fields = ['namet','test-category', 'test-workout', 'test-member'];
         // dd($fields);
         foreach ($fields as $field) {
             $key = $field . '_' . $index;
@@ -1545,9 +1592,11 @@ foreach ($request->all() as $key => $value) {
                     'category_id' => $item->category_id,
                     'category_name' => $item->category ? $item->category->category_name : null,
                     'workout_id' => $item->workout_id,
-                    'workout_name' => $item->workout ? $item->workout->workout : null,
+                    'is_assigned' => $item->is_assigned,
+                    'workout_type' => $item->workout ? $item->workout->workout : null,
                     'member_id' => $item->member_id,
-                    'member_name' => $item->member ? $item->member->name : null
+                    'member_name' => $item->member ? $item->member->firstname : null,
+                    'workoutname' => $item->workoutname
                 ];
             });
             Log::info('Test records fetched: ' . $result);
@@ -1566,41 +1615,96 @@ foreach ($request->all() as $key => $value) {
             return response()->json(['error' => 'An error occurred while fetching test data.'], 500);
         }
     }
+    // serach warmup
+    public function searchTest(Request $request)
+    {
+        try {
+            $date = $request->input("date");
+            $name = $request->input("name");
+            $categoryId = $request->input("category_id");
+            $workoutId = $request->input("workout_id");
+
+            // Always start by filtering by date
+            $testQuery = Test::with(['category', 'workout'])
+            ->where('date', $date);
+            Log::info('Response filtered data Test: ', ['Test' => $testQuery]);
+
+            if ($categoryId && $workoutId && $name) {
+                $testQuery = $testQuery->where('category_id', $categoryId)
+                                                    ->where('workout_id', $workoutId)
+                                                    ->whereHas('d', function ($query) use ($name) {
+                                                    $query->where('workoutname', 'like', '%' . $name . '%');});
+            }
+
+            elseif ($name) {
+                $testQuery = $testQuery->whereHas('workout', function ($query) use ($name) {
+                    $query->where('workoutname', 'like', '%' . $name . '%');
+                });
+            }
+
+            elseif ($categoryId) {
+                $testQuery = $testQuery->where('category_id', $categoryId);
+            }
+
+            elseif ($workoutId) {
+                $testQuery = $testQuery->where('workout_id', $workoutId);
+            }
+            $TestRecords = $testQuery->get();
+            $workouts = WorkoutLibrary::where('type', 'Test')->with('categoryOption')->get();
+            $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
+
+            $result = $TestRecords->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'category_id' => $item->category_id,
+                    'category_name' => $item->category ? $item->category->category_name : null,
+                    'workout_id' => $item->workout_id,
+                    'is_assigned' => $item->is_assigned,
+                    'workout_type' => $item->workout ? $item->workout->workout : null,
+                    'member_id' => $item->member_id,
+                    'member_name' => $item->member ? $item->member->firstname : null,
+                    'workoutname' => $item->workoutname
+                ];
+            });
+
+            return response()->json([
+                'test' => $result,
+                'categoryOptions' => $categoryOptions,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in gettest: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+
+    }
 
     public function updatest(Request $request)
     {
         // dd($request);
         try {
             $request->validate([
-                'id_*' => 'required|integer|exists:weightliftings,id',
-                'categorytest_*' => 'required|integer|exists:category_options,id',
-                'workouttest_*' => 'required|integer|exists:workout_libraries,id',
-                'test-member_*' => 'required',
+                'test_id' => 'required|integer|exists:weightliftings,id',
             ]);
-            $testId = null;
-            foreach ($request->all() as $key => $value) {
-                if (strpos($key, 'id_') === 0) {
-                    $testId = $value;
-                    break; // Exit the loop once the ID is found
-                }
-            }
-            // Check if ID was found
-            if (!$testId) {
-                return response()->json(['message' => 'ID not found'], 400);
-            }
-            $test = Test::findOrFail($testId);
+
+            $test = Test::findOrFail($request->input('test_id'));
             $test->update([
-                'category_id' => $request->input('categorytest_' . $testId),
-                'workout_id' => $request->input('workouttest_' . $testId),
-                'member_id' => $request->input('test-member_' . $testId)
+                'workoutname' => $request->input('namet_1'),
+                'category_id' => $request->input('test-category_1'),
+                'workout_id' => $request->input('test-workout_1'),
+                'member_id' => $request->input('test-member_1')
 
             ]);
 
 
-            return response()->json(['message' => 'update suceess']);
-        } catch (\Exception $e) {
-
-            return redirect()->back()->with('error', 'an error occurred while updateing the test data');
+            return response()->json(['message' => 'Test updated suceess']);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation exceptions
+            return response()->json(['errors' => $e->errors()], 422);
+        }catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while updating test data.',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -1680,7 +1784,7 @@ foreach ($request->all() as $key => $value) {
                 'error' => $e->getMessage()
             ], 500);
         }
-        
+
     }
     // get conditioning
     public function getConditioning(Request $request)
@@ -1744,7 +1848,7 @@ foreach ($request->all() as $key => $value) {
             $conditioningQuery = Conditioning::with(['category', 'workout'])
             ->where('date', $date);
             Log::info('Response filtered data Conditioning: ', ['Conditioning' => $conditioningQuery]);
-           
+
             if ($categoryId && $workoutId && $name) {
                 $conditioningQuery = $conditioningQuery->where('category_id', $categoryId)
                                                     ->where('workout_id', $workoutId)

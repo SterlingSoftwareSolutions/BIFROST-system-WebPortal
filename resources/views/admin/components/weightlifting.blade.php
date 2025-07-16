@@ -297,9 +297,9 @@
                             <div class="flex items-center border-b mt-2">
                                 <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span
                                         class="text-red-500">*</span></label>
+                                <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                             </div>
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
@@ -357,7 +357,7 @@
                                         class="text-red-500">*</span></label>
                                 <div class="">
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-red-500 font-bold w-16 text-right pr-8">Stage&nbsp;1</label>
+                                        <label class="text-red-500 font-bold w-16 text-right pr-8">RSet</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -385,7 +385,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
+                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">RSet</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -413,7 +413,7 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4">
-                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
+                                        <label class="text-green-500 font-bold w-16 text-right pr-8">RSet</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -1686,7 +1686,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets[0]?.sets || 0} sets</div>
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets?.length || 0} sets</div>
 
                     <div class="grid grid-cols-2 gap-4 text-gray-700">
                         <div>

@@ -58,7 +58,6 @@
                                             <option value="Strength">Strength</option>
                                             <option value="Conditioning">Conditioning</option>
                                             <option value="Weightlifting">Weightlifting</option>
-                                            <option value="Test">Test</option>
                                         </select>
                                     </div>
 
@@ -141,7 +140,6 @@
                                             <option value="strength">Strength</option>
                                             <option value="conditioning">Conditioning</option>
                                             <option value="weightlifting">Weightlifting</option>
-                                            <option value="test">Test</option>
                                         </select>
                                     </td>
                                     <td class="pr-2">
