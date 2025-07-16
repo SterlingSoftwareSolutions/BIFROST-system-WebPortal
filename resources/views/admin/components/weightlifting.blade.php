@@ -297,9 +297,9 @@
                             <div class="flex items-center border-b mt-2">
                                 <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span
                                         class="text-red-500">*</span></label>
+                                <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
                             </div>
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
