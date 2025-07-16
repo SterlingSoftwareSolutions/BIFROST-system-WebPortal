@@ -84,98 +84,6 @@
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
                                 </div>
-                                <div class="flex items-center border-b">
-                                    <label for="categoryc_1" class="w-60 block mb-1">Category <span
-                                            class="text-red-500">*</span></label>
-                                    <select id="categoryc_1" name="categoryc_1" onchange="getworkoutC(this)"
-                                        class="w-1/3 px-3 py-3 border flex rounded mb-2 ">
-                                        <option value="" selected disabled>-- Select Category --</option>
-                                    </select>
-                                </div>
-                                <div class="flex items-center border-b">
-                                    <label for="workoutc_1" class="w-60 block mb-1">Exercise <span
-                                            class="text-red-500">*</span></label>
-                                    <select id="workoutc_1" name="workoutc_1"
-                                        class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2">
-                                        <option value="" selected disabled>-- Select Exercise --</option>
-                                    </select>
-                                </div>
-                                <div class="flex items-center border-b mt-2">
-                                    <label for="weigthc_1" class="w-60 block mb-1">
-                                        Training Load <span class="text-red-500">*</span>
-                                    </label>
-                                    <input type="number" id="weigthc_1" name="weigthc_1"
-                                        class="w-1/3 px-3 py-3 border rounded mb-2" required>
-                                    <select id="unit_1" name="unit_1"
-                                        class="border bg-white py-3 px-3 mb-2 rounded">
-                                        <option value="%">%</option>
-                                        <option value="kg">Kg</option>
-                                    </select>
-                                </div>
-                                <div class="flex items-center border-b mt-2">
-                                    <label for="roundCond" class="w-60 block">Rounds</label>
-                                    <div class="relative flex items-center max-w-[8rem] mb-2 w-1/2">
-                                        <button type="button"
-                                            onclick="decrementR(this.parentNode.querySelector('input').id)"
-                                            class="decrement-roundCond bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                            </svg>
-                                        </button>
-                                        <input type="text" id="roundCond" name="roundCond" data-input-counter
-                                            class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                            placeholder="0" readonly />
-                                        <button type="button"
-                                            onclick="incrementR(this.parentNode.querySelector('input').id)"
-                                            class="increment-roundCond bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                    <div class="ml-10 flex items-center w-1/2">
-                                        <label for="amrapCheckboxCon" class="w-24 block">AMRAP</label>
-                                        <input type="checkbox" id="amrapCheckboxCon" name="amrapCheckboxCon"
-                                            class="h-11 w-11 px-3 py-3 border border-gray-300 rounded mb-2 checked:bg-blue-600 checked:border-transparent"
-                                            onchange="syncCheckboxes()">
-                                    </div>
-                                </div>
-                                <div class="flex items-center border-b mt-2">
-                                    <label for="repsc_1" class="w-60 block mb-1">REPS <span
-                                            class="text-red-500">*</span></label>
-                                    <div class="relative flex items-center max-w-[8rem] mb-2">
-                                        <button type="button"
-                                            onclick="decrement(this.parentNode.querySelector('input').id)"
-                                            class="decrement-repsc bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
-                                            </svg>
-                                        </button>
-                                        <input type="text" id="repsc_1" name="repsc_1" data-input-counter
-                                            class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                            placeholder="0" readonly />
-                                        <button type="button"
-                                            onclick="increment(this.parentNode.querySelector('input').id)"
-                                            class="increment-repsc bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
-                                                <path stroke="currentColor" stroke-linecap="round"
-                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-
-
-                                {{-- <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
-                        onclick="addAnotherClick()" id="idfake_1">Another</button> --}}
                                 <div class="flex items-center border-b mt-2">
                                     <label for="timeTC_1" class="w-60 block mb-1">Time To Complete<span
                                             class="text-red-500">*</span></label>
@@ -205,7 +113,184 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="flex items-center border-b ">
+                                <div class="flex items-center border-b mt-2">
+                                    <label for="repsc_1" class="w-60 block mb-1">Rounds <span
+                                            class="text-red-500">*</span></label>
+                                    <div class="relative flex items-center max-w-[8rem] mb-2">
+                                        <button type="button"
+                                            onclick="decrement(this.parentNode.querySelector('input').id)"
+                                            class="decrement-repsc bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="repsc_1" name="repsc_1" data-input-counter
+                                            class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            placeholder="0" readonly />
+                                        <button type="button"
+                                            onclick="incrementR(this.parentNode.querySelector('input').id)"
+                                            class="increment-roundCond bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                     <div class="ml-4 flex items-center w-24 space-x-2">
+                                        <label for="amrapCheckboxCon" class="block">AMRAP</label>
+                                        <input type="checkbox" id="amrapCheckboxCon" name="amrapCheckboxCon" class="h-11 w-11" onchange="syncCheckboxes()">
+                                    </div>
+                                    <div class="ml-4 flex items-center w-24 space-x-2">
+                                        <label for="pyramidCheckboxCon" class="block">Pyramid</label>
+                                        <input type="checkbox" id="pyramidCheckboxCon" name="pyramidCheckboxCon" class="h-11 w-11" onchange="togglePyramidSection()">
+                                    </div>
+                                    <!-- Hidden by default -->
+                                    
+                               </div>
+                            <div id="pyramidSection" class="border-b mt-4 ml-4 hidden">
+                            <div class="p-4 border border-gray-300 rounded bg-gray-50">
+                                    <p class="mb-2 font-semibold">Pyramid SETS</p>
+                                    <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
+                                        <!-- Optional extra input (first one) -->
+                                        <input type="text" id="pyramidSet_1" name="pyramidSet_1" value="1"
+                                            data-input-counter
+                                            class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            placeholder="0" readonly required />
+
+
+
+                                        <!-- Decrement Button -->
+                                        <button type="button"
+                                            onclick="decrement(this.parentNode.querySelector('input#pyreps_1').id)"
+                                            class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+
+                                        <!-- REPS Counter Input -->
+                                        <input type="text" id="pyreps_1" name="reps_1" data-input-counter
+                                            class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            placeholder="0" readonly required />
+
+                                        <!-- Increment Button -->
+                                        <button type="button"
+                                            onclick="increment(this.parentNode.querySelector('input#pyreps_1').id)"
+                                            class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                        <label for="pyreps_1" class="text-sm mr-2">REPS</label>
+                                    </div>
+                                    <div class="duplicate-sets-pyramid" id="duplicate-sets-pyramid_1"></div>
+                                <div>
+                                    <button id="duplicatesetPyramid_1" onclick="duplicatePyramid(this.id)"
+                                        type="button"
+                                        class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
+                                        <i class="fas fa-plus text-[12px]"></i> Add set</button>
+                                </div>
+                            </div>
+                            </div>
+
+
+                    <div id="exerciseGroupsContainer">
+                        <div class="exerciseGroup pb-4" id="exerciseGroup_1">
+                        <!-- Category -->
+                           <div class="flex items-center border-b">
+                                                    <label for="categoryc_1" class="w-60 block mb-1">Category <span
+                                                            class="text-red-500">*</span></label>
+                                                    <select id="categoryc_1" name="categoryc_1" onchange="getworkoutC(this)"
+                                                        class="w-1/3 px-3 py-3 border flex rounded mb-2 ">
+                                                        <option value="" selected disabled>-- Select Category --</option>
+                                                    </select>
+                                                    <!-- Remove button (hidden for first) -->
+                            <button type="button" onclick="removeExerciseGroup(this)"
+                                class="text-red-500 font-semibold ml-4 hidden">Remove</button>
+                                                </div>
+
+                        <!-- Exercise -->
+                         <div class="flex items-center border-b">
+                            <label for="workoutc_1" class="w-60 block mb-1">Exercise <span class="text-red-500">*</span></label>
+                                <select id="workoutc_1" name="workoutc_1"
+                                class="w-1/3 px-3 py-3 border flex rounded mb-2 mt-2">
+                                    <option value="" selected disabled>-- Select Exercise --</option>
+                                </select>
+                        </div>
+
+                        <div class="flex items-center border-b mt-2">
+                                    <label for="repsc_1" class="w-60 block mb-1">REPS <span
+                                            class="text-red-500">*</span></label>
+                                    <div class="relative flex items-center max-w-[8rem] mb-2">
+                                        <button type="button"
+                                            onclick="decrement(this.parentNode.querySelector('input').id)"
+                                            class="decrement-repsc bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <input type="text" id="repsc_1" name="repsc_1" data-input-counter
+                                            class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                            placeholder="0" readonly />
+                                        <button type="button"
+                                            onclick="increment(this.parentNode.querySelector('input').id)"
+                                            class="increment-repsc bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                        </div>
+
+                        <!-- Training Load -->
+                        <div class="flex items-center border-b mt-2 space-x-4">
+                            <label class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
+
+                            <select name="unit_1" class="border bg-white py-3.5 px-4 mb-2 rounded"
+                                onchange="toggleGenderInputs(this)">
+                                <option value="outof10">10</option>
+                                <option value="cal">Cal</option>
+                                <option value="percent">%</option>
+                                <option value="kg">Kg</option>
+                            </select>
+
+                            <input type="number" name="weigthc_1"
+                                class="w-1/3 px-3 py-3 border rounded mb-2" required>
+
+                            <div class="flex space-x-2 items-center hidden">
+                                <label class="text-sm">Male:</label>
+                                <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                <label class="text-sm">Female:</label>
+                                <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Button -->
+                <div class="flex justify-end mt-4">
+                    <button type="button" onclick="addExerciseGroup()"
+                        class="bg-white border border-black text-black font-semibold py-2 px-4 rounded hover:bg-gray-100 hover:shadow-md transition duration-200 ease-in-out">
+                        + Add
+                    </button>
+                </div>
+                                {{-- <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
+                        onclick="addAnotherClick()" id="idfake_1">Another</button> --}}
+                               
+                                {{-- <div class="flex items-center border-b ">
                                 <label for="intensityc_1" class="w-60 block mb-1">Intensity</label>
                                 <select id="intensityc_1" name="intensityc_1"
                                     class="w-1/3 px-3 py-3 border flex rounded my-2">
@@ -215,7 +300,7 @@
                                     <option value="high">High</option>
                                     <option value="extreme">Extreme</option>
                                 </select>
-                            </div>
+                                </div> --}}
                             </div>
 
                         </div>
@@ -1058,5 +1143,185 @@
                 alert('An error occurred while deleting the records.');
             }
         });
+    }
+</script>
+
+<script>
+let groupCount = 1;
+
+function increment(id) {
+    const input = document.getElementById(id);
+    input.value = parseInt(input.value || 0) + 1;
+}
+
+function decrement(id) {
+    const input = document.getElementById(id);
+    const current = parseInt(input.value || 0);
+    if (current > 0) input.value = current - 1;
+}
+
+function toggleGenderInputs(selectElement) {
+    const container = selectElement.closest('.flex');
+    const defaultInput = container.querySelector('input[type="number"][name^="weigthc_"]');
+    const genderDiv = container.querySelector('div.flex.space-x-2');
+
+    const selected = selectElement.value;
+
+    if (selected === 'cal' || selected === 'kg') {
+        genderDiv.classList.remove('hidden');
+        defaultInput.classList.add('hidden');
+        defaultInput.removeAttribute('required');
+    } else {
+        genderDiv.classList.add('hidden');
+        defaultInput.classList.remove('hidden');
+        defaultInput.setAttribute('required', 'true');
+    }
+}
+
+function addExerciseGroup() {
+    groupCount++;
+    const container = document.getElementById('exerciseGroupsContainer');
+    const original = document.getElementById('exerciseGroup_1');
+    const clone = original.cloneNode(true);
+
+    clone.id = `exerciseGroup_${groupCount}`;
+
+    // Update all IDs & names
+    clone.querySelectorAll('[name], [id]').forEach(el => {
+        if (el.name) el.name = el.name.replace(/\d+$/, groupCount);
+        if (el.id) el.id = el.id.replace(/\d+$/, groupCount);
+        if (el.tagName === 'INPUT') el.value = ''; // clear inputs
+    });
+
+    // Show remove button
+    const removeBtn = clone.querySelector('button[onclick^="removeExerciseGroup"]');
+    removeBtn.classList.remove('hidden');
+
+    container.appendChild(clone);
+}
+
+function removeExerciseGroup(button) {
+    const group = button.closest('.exerciseGroup');
+    group.remove();
+}
+</script>
+
+<script>
+  function togglePyramidSection() {
+    const checkbox = document.getElementById('pyramidCheckboxCon');
+    const section = document.getElementById('pyramidSection');
+    section.classList.toggle('hidden', !checkbox.checked);
+  }
+
+  let setCounterPyramid = 1;
+    function duplicatePyramid(id) {
+        console.log(id)
+        const idPartfind = id.split('_');
+
+        // Get the remaining part after the base
+        const remainingfind = idPartfind.slice(1).join('_');
+        console.log("idsss " + remainingfind)
+
+        setCounterPyramid++;
+        const originalSet = document.getElementById(id);
+        console.log(originalSet);
+
+        if (!originalSet) {
+            console.error('Original set element with id "' + id + '" not found');
+            return;
+        }
+
+        // Clone the original set
+        const clone = originalSet.cloneNode(true);
+
+        // Update the id and name attributes of the input field
+        const input = clone.querySelector('input');
+        if (input) {
+            input.id = `sets_${remainingfind}${setCounterPyramid}`;
+            input.name = `sets_${remainingfind}${setCounterPyramid}`;
+            input.value = '0';
+        }
+
+        // Add remove button
+        const removeButton = document.createElement('button');
+        removeButton.textContent = 'Remove';
+        removeButton.className = 'remove-set-strength bg-red-500 text-white p-2 rounded';
+        removeButton.onclick = function() {
+            clone.remove();
+        };
+
+        // Append the remove button to the clone
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'flex justify-end mb-2'; // Ensure the button is aligned properly
+        buttonContainer.appendChild(removeButton);
+        clone.appendChild(buttonContainer);
+
+        // Create a new element from the setui string and append it to the duplicate-sets container
+        const setPyramidElement = document.createElement('div');
+        setPyramidElement.innerHTML = `
+        <div class="flex items-center sets-view mt-1">
+                                        <div class="block mb-1"></div>
+        <div class=" flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
+                                            <!-- Optional extra input (first one) -->
+                                            <input type="text" id="sets_${remainingfind}${setCounterPyramid}" name="sets_${remainingfind}${setCounterPyramid}" value="${setCounterPyramid}" data-input-counter
+                                                class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+
+
+                                            <!-- Decrement Button -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#reps_${remainingfind}${setCounterPyramid}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+
+                                            <!-- REPS Counter Input -->
+                                            <input type="text" id="reps_${remainingfind}${setCounterPyramid}" name="reps_${remainingfind}${setCounterPyramid}" data-input-counter
+                                                class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+
+                                            <!-- Increment Button -->
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#reps_${remainingfind}${setCounterPyramid}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                            <label for="sets_${remainingfind}${setCounterPyramid}" class="text-sm mr-2">REPS</label>
+                                        </div>
+
+            <button type="button" class="remove-set-strength bg-red-500 text-white p-2 rounded ml-2">
+                    Remove
+            </button>
+        </div>
+                                </div>
+
+        `;
+        // Add functionality to the remove button
+        setPyramidElement.querySelector('.remove-set-strength').addEventListener('click', function() {
+            setPyramidElement.remove();
+        });
+
+        // Find the container element with class 'duplicate-sets' using parentNode traversal
+        const container = originalSet
+            .closest(
+                '.border-b').querySelector('.duplicate-sets-pyramid');
+        console.log(container);
+
+        if (container) {
+            container.appendChild(setPyramidElement);
+        } else {
+            console.error('Container element with class "duplicate-sets-pyramid" not found');
+        }
+
+        console.log(`Duplicated Set ID: ${input ? input.id : 'N/A'}`);
+
     }
 </script>
