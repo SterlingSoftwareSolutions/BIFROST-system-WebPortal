@@ -9,7 +9,7 @@
     <!-- Include jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-    <title>Document</title>
+    <title>Workout Manager</title>
     <style>
         .w-1\/3 {
             width: 50% !important;
