@@ -223,13 +223,30 @@
                             </div>
                         </div>
                         <div class="flex items-center border-b mt-2">
-                            <label for="weigthw_1" class="w-60 block mb-1">Weight <span
-                                    class="text-red-500">*</span></label>
-                            <input type="number" id="weigthw_1" name="weigthw_1"
-                                class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                            <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
+                            <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
+                            <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                            <option value="outof10">/10</option>
+                                            <option value="cal">Cal</option>
+                                            <option value="percent">%</option>
+                                            <option value="kg">Kg</option>
+                                            </select>
+                                            <div class="relative h-[60px] min-w-0">
+                                                <input type="number" name="weigthc_1"
+                                                class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
+                                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
+                                                    <label class="text-sm ml-1">M</label>
+                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                    <label class="text-sm">F</label>
+                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                </div>
+                                            </div>
                         </div>
-
+                        <div class="flex flex-row justify-end gap-4 mt-5">
+                            <button type="button" id="savebtnwarmup" onclick="()"
+                                class="bg-[#000000] text-white py-2 px-4 rounded mr-8 hover:bg-gray-800 w-30">
+                                + Add Another
+                            </button>
+                        </div>
                         <div class="flex flex-row justify-end gap-4 mt-5">
                             <button type="button" id="clearwarmbtn" onclick="clearWarmupForm()"
                                 class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
@@ -763,3 +780,35 @@
         });
     }
 </script>
+
+<script>
+        let workoutCount = 1;
+
+        function addAnotherWorkout() {
+            workoutCount++;
+
+            const original = document.querySelector('.workout-entry');
+            const clone = original.cloneNode(true);
+
+            // Update IDs and names
+            clone.id = `workout-entry-${workoutCount}`;
+            clone.querySelectorAll('[id], [name], label, select').forEach(el => {
+                if (el.id) el.id = el.id.replace(/_\d+/, `_${workoutCount}`);
+                if (el.name) el.name = el.name.replace(/_\d+/, `_${workoutCount}`);
+                if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/_\d+/, `_${workoutCount}`);
+            });
+
+            // Reset inputs
+            clone.querySelectorAll('input').forEach(input => {
+                if (input.type === 'text' || input.type === 'number') input.value = '';
+            });
+
+            clone.querySelectorAll('select').forEach(select => {
+                select.selectedIndex = 0;
+            });
+
+            // Insert before Add Another button
+            const addBtn = document.getElementById('add-another-btn');
+            addBtn.parentNode.insertBefore(clone, addBtn);
+        }
+    </script>
