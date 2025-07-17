@@ -273,7 +273,7 @@
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-3xl">Create</div>
                         <input type="hidden" id="strength_id" name="strength_id" value="">
                         <div class="flex items-center border-b mt-2">
-                            <label for="names_1" class="w-60 block mb-1">Workout Name </label>
+                            <label for="names_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                             <input type="text" id="names_1" name="names_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                         </div>
@@ -293,11 +293,12 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="weigths_1" class="w-60 block mb-1">Training Load <span
-                                    class="text-red-500">*</span></label>
-                            <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
-                            <input type="text" id="weigths_1" name="weigths_1"
-                                class="w-1/3 px-3 py-3 border flex rounded mb-2">
+                            <label for="weigths_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
+                            <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                <option value="percent">%</option>
+                                <option value="kg">%^</option>
+                            </select>
+                            <input type="text" id="weigths_1" name="weigths_1" class="w-1/3 px-3 py-3 border flex rounded mb-2">
 
                         </div>
                         <div class="border-b mt-2" id="duplicateSetUI">

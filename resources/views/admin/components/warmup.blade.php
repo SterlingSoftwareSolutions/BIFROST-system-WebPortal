@@ -165,11 +165,12 @@
                     {{-- form section --}}
                     <div class="flex-col w-full bg-gray-50 p-4">
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
-                            <input type="hidden" id="warmup_id" name="warmup_id" value="">
-                            <div class="flex items-center border-b mt-2">
-                                <label for="namew_1" class="w-60 block mb-1">Workout Name </label>
-                                <input type="text" id="namew_1" name="namew_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+
+                        <input type="hidden" id="warmup_id" name="warmup_id" value="">
+                        <div class="flex items-center border-b mt-2">
+                            <label for="namew_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="namew_1" name="namew_1"
+                                class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
                             </div>
                          <!-- Workout Entry Block -->
