@@ -79,7 +79,7 @@
                                 </div>
                                 <input type="hidden" id="conditioning_id" name="conditioning_id" value="">
                                 <div class="flex items-center border-b mt-2">
-                                    <label for="namec_1" class="w-60 block mb-1">Workout Name </label>
+                                    <label for="namec_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                                     <input type="text" id="namec_1" name="namec_1"
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
@@ -148,7 +148,7 @@
                                         <input type="checkbox" id="pyramidCheckboxCon" name="pyramidCheckboxCon" class="h-9 w-9" onchange="togglePyramidSection()">
                                     </div>
                                     <!-- Hidden by default -->
-                                    
+
                                </div>
                             <div id="pyramidSection" class="border-b mt-4 ml-2 hidden">
                             <div class="p-4 border border-gray-300 rounded bg-gray-50">
@@ -192,7 +192,7 @@
                                             <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
                                             <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="outof10">10</option>
+                                            <option value="outof10">/10</option>
                                             <option value="cal">Cal</option>
                                             <option value="percent">%</option>
                                             <option value="kg">Kg</option>
@@ -225,7 +225,7 @@
                     <div id="exerciseGroupsContainer">
                         <div class="exerciseGroup pb-4" id="exerciseGroup_1">
                         <!-- Category -->
-                           <div class="flex items-center border-b">
+                           <div class="flex items-center border-b mt-2">
                                                     <label for="categoryc_1" class="w-60 block mb-1">Category <span
                                                             class="text-red-500">*</span></label>
                                                     <select id="categoryc_1" name="categoryc_1" onchange="getworkoutC(this)"
@@ -276,26 +276,28 @@
                         </div>
 
                         <!-- Training Load -->
-                        <div class="flex items-center border-b mt-2 space-x-4">
-                            <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
-                                            <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="outof10">10</option>
-                                            <option value="cal">Cal</option>
-                                            <option value="percent">%</option>
-                                            <option value="kg">Kg</option>
-                                            </select>
-                                            <div class="relative h-[60px] min-w-0">
-                                                <input type="number" name="weigthc_1"
-                                                class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-                                                    <label class="text-sm">M</label>
-                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                                    <label class="text-sm">F</label>
-                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                                </div>
-                                            </div>
+                        <div class="flex items-center border-b mt-2">
+                            <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
+                            <div class="relative flex items-center max-w-[8rem] mb-2">
+                                    <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                    <option value="outof10">/10</option>
+                                    <option value="cal">Cal</option>
+                                    <option value="percent">%</option>
+                                    <option value="kg">Kg</option>
+                                </select>
+                                <div class="relative h-[60px] min-w-0">
+                                    <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
+                                    <div class="flex space-x-2 items-center absolute top-0 left-1 invisible" data-gender-inputs>
+                                        <label class="text-sm">M</label>
+                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                        <label class="text-sm">F</label>
+                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
-                    </div>
+                        </div>
                 </div>
 
                 <!-- Add Button -->
@@ -307,7 +309,7 @@
                 </div>
                                 {{-- <button class=" bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base "
                         onclick="addAnotherClick()" id="idfake_1">Another</button> --}}
-                               
+
                                 {{-- <div class="flex items-center border-b ">
                                 <label for="intensityc_1" class="w-60 block mb-1">Intensity</label>
                                 <select id="intensityc_1" name="intensityc_1"

@@ -273,7 +273,7 @@
                             <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
                             <input type="hidden" id="weightlifting_id" name="weightlifting_id" value="">
                             <div class="flex items-center border-b mt-2">
-                                <label for="namewe_1" class="w-60 block mb-1">Workout Name </label>
+                                <label for="namewe_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                                 <input type="text" id="namewe_1" name="namewe_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
@@ -295,11 +295,12 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2">
-                                <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span
-                                        class="text-red-500">*</span></label>
-                                <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
-                                <input type="number" id="weigthwe_1" name="weigthwe_1"
-                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
+                                <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                    <option value="percent">%</option>
+                                    <option value="kg">%^</option>
+                                </select>
+                                <input type="number" id="weigthwe_1" name="weigthwe_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                             </div>
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">

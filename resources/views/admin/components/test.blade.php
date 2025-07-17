@@ -226,7 +226,7 @@
                             </div>
                             <input type="hidden" id="test_id" name="test_id" value="">
                             <div class="flex items-center border-b mt-2">
-                                <label for="namet_1" class="w-60 block mb-1">Workout Name </label>
+                                <label for="namet_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                                 <input type="text" id="namet_1" name="namet_1"
                                     class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                             </div>
