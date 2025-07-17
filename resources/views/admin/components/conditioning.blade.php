@@ -189,24 +189,24 @@
                                         </button>
                                         <label for="pyreps_1" class="text-sm mr-1">REPS</label>
                                        <div class="flex items-center gap-1 min-w-0">
-                                            <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
+                                            <label for="weigthPy_1" class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
                                             <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="outof10">/10</option>
-                                            <option value="cal">Cal</option>
-                                            <option value="percent">%</option>
-                                            <option value="kg">Kg</option>
+                                            <option value="/10">/10</option>
+                                            <option value="Cal">Cal</option>
+                                            <option value="%">%</option>
+                                            <option value="Kg">Kg</option>
                                             </select>
 
                                             <div class="relative h-[60px] min-w-0">
-                                                <input type="number" name="weigthc_1"
+                                                <input type="number" name="weigthPy_1"
                                                 class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
 
                                                 <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-                                                    <label class="text-sm">M</label>
-                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                                    <label class="text-sm">F</label>
-                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                    <label for="pyramidmale_1" class="text-sm">M</label>
+                                                    <input type="number" name="pyramidmale_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                    <label for="pyramidfemale_1" class="text-sm">F</label>
+                                                    <input type="number" name="pyramidfemale_1" class="w-20 px-2 py-2 border rounded mb-2">
                                                 </div>
                                             </div>
                                         </div>
@@ -280,10 +280,10 @@
                             <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
                             <div class="relative flex items-center max-w-[8rem] mb-2">
                                     <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                    <option value="outof10">/10</option>
-                                    <option value="cal">Cal</option>
-                                    <option value="percent">%</option>
-                                    <option value="kg">Kg</option>
+                                        <option value="/10">/10</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="%">%</option>
+                                        <option value="Kg">Kg</option>
                                 </select>
                                 <div class="relative h-[60px] min-w-0">
                                     <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
@@ -1182,7 +1182,7 @@ function decrement(id) {
 
 function toggleGenderInputs(selectElement) {
     const container = selectElement.closest('div'); // Or more specific if needed
-    const defaultInput = container.querySelector('input[type="number"][name^="weigthc_"]');
+    const defaultInput = container.querySelector('input[type="number"][name^="weigthPy_"]') || container.querySelector('input[type="number"][name^="weigthc_"]');
     const genderDiv = container.querySelector('[data-gender-inputs]');
 
     const selected = selectElement.value;
@@ -1213,6 +1213,17 @@ function addExerciseGroup() {
         if (el.id) el.id = el.id.replace(/\d+$/, groupCount);
         if (el.tagName === 'INPUT') el.value = ''; // clear inputs
     });
+
+    const repsInput = clone.querySelector('input[id^="repsc_"]');
+    if (repsInput) {
+        const inputId = repsInput.id;
+
+        const decBtn = clone.querySelector('button.decrement-repsc');
+        const incBtn = clone.querySelector('button.increment-repsc');
+
+        if (decBtn) decBtn.setAttribute('onclick', `decrement('${inputId}')`);
+        if (incBtn) incBtn.setAttribute('onclick', `increment('${inputId}')`);
+    }
 
     // Show remove button
     const removeBtn = clone.querySelector('button[onclick^="removeExerciseGroup"]');
@@ -1318,22 +1329,22 @@ function removeExerciseGroup(button) {
                                     <div class="flex items-center gap-1 min-w-0">
                                     <label class="w-28 block mb-1 whitespace-nowrap ml-1">Training Load <span class="text-red-500">*</span></label>
 
-                                    <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                        <option value="outof10">10</option>
-                                        <option value="cal">Cal</option>
-                                        <option value="percent">%</option>
-                                        <option value="kg">Kg</option>
+                                    <select name="unit_${remainingfind}${setCounterPyramid}" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                        <option value="/10">/10</option>
+                                            <option value="Cal">Cal</option>
+                                            <option value="%">%</option>
+                                            <option value="Kg">Kg</option>
                                     </select>
 
                                     <div class="relative h-[60px] min-w-0">
-                                        <input type="number" name="weigthc_1"
+                                        <input type="number" name="weigthPy_${remainingfind}${setCounterPyramid}"
                                         class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
 
                                         <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
                                         <label class="text-sm">M</label>
-                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                        <input type="number" name="pyramidmale_${remainingfind}${setCounterPyramid}" class="w-20 px-2 py-2 border rounded mb-2">
                                         <label class="text-sm">F</label>
-                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                        <input type="number" name="pyramidfemale_${remainingfind}${setCounterPyramid}" class="w-20 px-2 py-2 border rounded mb-2">
                                         </div>
                                     </div>
                                     </div>

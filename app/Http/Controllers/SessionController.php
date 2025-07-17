@@ -20,6 +20,7 @@ use App\Models\WeightliftingSet;
 use App\Models\WorkoutAssign;
 use App\Models\WorkoutLibrary;
 use App\Models\CategoryOption;
+use App\Models\PyramidSet;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -1736,48 +1737,41 @@ foreach ($request->all() as $key => $value) {
         Log::info('Incoming Conditioning Request Data: ', $request->all());
 
         try {
-            // Validate required fields
             $request->validate([
                 'selectdatec' => 'required|string',
                 'namec_1' => 'nullable|string',
-                'categoryc_1' => 'required|integer|exists:category_options,id',
-                'workoutc_1' => 'required|integer|exists:workout_libraries,id',
-                'weigthc_1' => 'required|integer',
-                'unit_1' => 'required|string|max:10',
-                'repsc_1' => 'required|integer|min:1',
-                'timeTC_1' => 'required|string', // could add regex/time validation if needed,
+                'timeTC_1' => 'required|string',
+                'categoryc_*' => 'required|exists:category_options,id',
+                'workoutc_*' => 'required|exists:workout_libraries,id',
             ]);
-            // Retrieve checkbox value from the request
-            $amrap = $request->input('amrap', false); // Default to false if checkbox is not present
 
-            // Convert to boolean if necessary
-            $amrap = filter_var($amrap, FILTER_VALIDATE_BOOLEAN);
+            $requestData = $request->all();
+            $maxIndex = 10; // Adjust according to expected input
 
-            // Create new Conditioning model (assumes you have one)
-            $conditioning = new Conditioning(); // or ConditioningRecord or whatever your model is called
-            $conditioning->date = $request->input('selectdatec');
-            $conditioning->rounds = $request->input('roundCond');
-            $conditioning->rounds = $request->input('rounds');
-            $conditioning->workoutname = $request->input('namec_1');
-            $conditioning->category_id = $request->input('categoryc_1');
-            $conditioning->workout_id = $request->input('workoutc_1');
-            $conditioning->weight = $request->input('weigthc_1');
-            $conditioning->unit = $request->input('unit_1');
-            $conditioning->reps = $request->input('repsc_1');
-            $conditioning->time_to_complete = $request->input('timeTC_1');
-            $conditioning->intensity = $request->input('intensityc_1');
-            $conditioning->amrap = $amrap;
+            for ($index = 1; $index <= $maxIndex; $index++) {
+                $processedData = [];
 
-            $conditioning->save();
+                foreach ($requestData as $key => $value) {
+                    if (strpos($key, "_$index") !== false) {
+                        $processedData[$key] = $value;
+                    }
+                }
+
+                if (!empty($processedData)) {
+                    $this->filterdataconditioning($processedData, $index, $request->input('selectdatec'), $request->input('rounds'), $request->input('conditioning_id'));
+                }
+            }
 
             return response()->json([
                 'message' => 'Conditioning data stored successfully!'
             ], 201);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while storing conditioning data.',
@@ -1786,6 +1780,71 @@ foreach ($request->all() as $key => $value) {
         }
 
     }
+
+    public function filterdataconditioning($processedData, $index, $date, $rounds, $conditioningId = null)
+    {
+        Log::info('Processed Conditioning Data:', $processedData);
+
+        $parsedData = [];
+
+        // Indexed fields (with _1, _2, etc.)
+        $fields = [
+            'categoryc' => 'category_id',
+            'workoutc' => 'workout_id',
+            'repsc' => 'reps',
+            'weigthc' => 'weight',
+            'unit' => 'unit',
+            'male' => 'male',
+            'female' => 'female',
+        ];
+
+        foreach ($fields as $inputField => $dbField) {
+            $key = $inputField . '_' . $index;
+            if (isset($processedData[$key])) {
+                $parsedData[$dbField] = $processedData[$key];
+            }
+        }
+
+        // Non-indexed (shared) fields from full request
+        $parsedData['workoutname'] = request()->input('namec_1') ?? null;
+        $parsedData['rounds'] = $rounds;
+        $parsedData['time_to_complete'] = request()->input('timeTC_1') ?? null;
+        $parsedData['amrap'] = request()->input('amrap') ?? null;
+        $parsedData['Pyramid'] = request()->has('pyramidCheckboxCon') ? true : false;
+        $parsedData['date'] = $date;
+        $parsedData['conditioning_id'] = $conditioningId;
+
+        // Save conditioning
+        $conditioning = Conditioning::store($parsedData); // use your custom method here
+        Log::info('Created Conditioning ID', ['id' => $conditioning->id]);
+
+        // Save pyramid sets (global to all entries)
+        $allPyramids = [];
+        foreach (request()->all() as $key => $value) {
+            if (preg_match('/^(sets|reps|unit|weigthPy|pyramidmale|pyramidfemale)_(\d+)$/', $key, $matches)) {
+                $type = $matches[1];
+                $suffix = $matches[2];
+                $allPyramids[$suffix][$type] = $value;
+            }
+        }
+
+        foreach ($allPyramids as $suffix => $values) {
+            $row = [
+                'sets' => $values['sets'] ?? 1,
+                'reps' => $values['reps'] ?? null,
+                'unit' => $values['unit'] ?? null,
+                'pyramidweight' => $values['weigthPy'] ?? null,
+                'pyramidmale' => $values['pyramidmale'] ?? null,
+                'pyramidfemale' => $values['pyramidfemale'] ?? null,
+                'conditioning_id' => $conditioning->id,
+            ];
+
+            Log::info('Saving PyramidSet row:', $row);
+            PyramidSet::store($row);
+        }
+    }
+
+
     // get conditioning
     public function getConditioning(Request $request)
     {
