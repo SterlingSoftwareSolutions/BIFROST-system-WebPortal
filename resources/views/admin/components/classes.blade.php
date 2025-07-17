@@ -190,7 +190,7 @@
 
     function deleteClass(classId, date) {
         if (!confirm("Are you sure you want to delete this class?")) return;
-        
+
         console.log('Deleting class on date:', date);
         $.ajax({
             url: `/classes/${classId}`,
@@ -203,6 +203,9 @@
                     alert(response.message);
                     console.log("seeeeeeeeeeeeeeeeeeeeeeeee",date);
                     getdateName(date); // Refresh table
+                    logSelection(selectedTab, selectedDate);
+                    //changeTab(selectedTab, date);
+                    //changeui(selectedTab, date);
                 } else {
                     alert('Error: ' + response.message);
                 }
