@@ -189,27 +189,27 @@
                                         </button>
                                         <label for="pyreps_1" class="text-sm mr-1">REPS</label>
                                        <div class="flex items-center gap-1 min-w-0">
-    <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
+                                            <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
-    <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-      <option value="outof10">10</option>
-      <option value="cal">Cal</option>
-      <option value="percent">%</option>
-      <option value="kg">Kg</option>
-    </select>
+                                            <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                            <option value="outof10">10</option>
+                                            <option value="cal">Cal</option>
+                                            <option value="percent">%</option>
+                                            <option value="kg">Kg</option>
+                                            </select>
 
-    <div class="relative h-[60px] min-w-0">
-      <input type="number" name="weigthc_1"
-        class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
+                                            <div class="relative h-[60px] min-w-0">
+                                                <input type="number" name="weigthc_1"
+                                                class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
 
-      <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-        <label class="text-sm">M</label>
-        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
-        <label class="text-sm">F</label>
-        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
-      </div>
-    </div>
-  </div>
+                                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
+                                                    <label class="text-sm">M</label>
+                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                    <label class="text-sm">F</label>
+                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="duplicate-sets-pyramid" id="duplicate-sets-pyramid_1"></div>
                                 <div>
@@ -277,25 +277,23 @@
 
                         <!-- Training Load -->
                         <div class="flex items-center border-b mt-2 space-x-4">
-                            <label class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
-
-                            <select name="unit_1" class="border bg-white py-3.5 px-4 mb-2 rounded"
-                                onchange="toggleGenderInputs(this)">
-                                <option value="outof10">10</option>
-                                <option value="cal">Cal</option>
-                                <option value="percent">%</option>
-                                <option value="kg">Kg</option>
-                            </select>
-
-                            <input type="number" name="weigthc_1"
-                                class="w-1/3 px-3 py-3 border rounded mb-2" required>
-
-                           <div class="flex space-x-2 items-center hidden" data-gender-inputs>
-                                <label class="text-sm">M</label>
-                                <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                <label class="text-sm">F</label>
-                                <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
-                            </div>
+                            <label class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
+                                            <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                            <option value="outof10">10</option>
+                                            <option value="cal">Cal</option>
+                                            <option value="percent">%</option>
+                                            <option value="kg">Kg</option>
+                                            </select>
+                                            <div class="relative h-[60px] min-w-0">
+                                                <input type="number" name="weigthc_1"
+                                                class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
+                                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
+                                                    <label class="text-sm">M</label>
+                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                    <label class="text-sm">F</label>
+                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                                </div>
+                                            </div>
                         </div>
                     </div>
                 </div>
