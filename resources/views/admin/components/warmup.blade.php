@@ -165,99 +165,81 @@
                     {{-- form section --}}
                     <div class="flex-col w-full bg-gray-50 p-4">
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
-                        <input type="hidden" id="warmup_id" name="warmup_id" value="">
-                        <div class="flex items-center border-b mt-2">
-                            <label for="namew_1" class="w-60 block mb-1">Workout Name </label>
-                            <input type="text" id="namew_1" name="namew_1"
-                                class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                            <input type="hidden" id="warmup_id" name="warmup_id" value="">
+                            <div class="flex items-center border-b mt-2">
+                                <label for="namew_1" class="w-60 block mb-1">Workout Name </label>
+                                <input type="text" id="namew_1" name="namew_1"
+                                    class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
 
-                        </div>
-                        <div class="flex items-center border-b">
-                            <label for="categoryw_1" class="w-60 block mb-1">Category <span
-                                    class="text-red-500">*</span></label>
-                            <select id="categoryw_1" name="categoryw_1" onchange="getworkoutw(this)"
-                                class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                                <option value="" selected disabled>-- Select Category --
-                                </option>
-                            </select>
-                            <!-- This element will push the button to the right -->
-                        </div>
-                        <div class="flex items-center border-b mt-2">
-                            <label for="workoutw_1" class="w-60 block mb-1">Workout <span
-                                    class="text-red-500">*</span></label>
-                            <select id="workoutw_1" name="workoutw_1" class="w-1/3 px-3 py-3 border flex rounded mb-2">
-                                <option value="" selected disabled>-- Select Workout --
-                                </option>
-                            </select>
-                        </div>
-                        <div class="flex items-center border-b mt-2">
-                            <label for="repsw_1" class="w-60 block mb-1">REPS <span
-                                    class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem] mb-2">
-                                <!-- Decrement Button -->
-                                <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)"
-                                    id="decrement-repsw_1"
-                                    class="decrement-repsw_1 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M1 1h16" />
-                                    </svg>
-                                </button>
+                            </div>
+                         <!-- Workout Entry Block -->
+                        <div class="workout-entry border-b rounded mb-4" id="workout-entry-1">
+                            <div class="flex items-center border-b">
+                                <label for="categoryw_1" class="w-60 block mb-1">Category <span class="text-red-500">*</span></label>
+                                <select id="categoryw_1" name="categoryw_1" onchange="getworkoutw(this)" class="w-1/3 px-3 py-3 border flex rounded mb-2">
+                                <option value="" selected disabled>-- Select Category --</option>
+                                </select>
+                            </div>
 
-                                <!-- Input Field -->
-                                <input type="text" id="repsw_1" name="repsw_1" data-input-counter
-                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
-                                    placeholder="0" readonly />
+                            <div class="flex items-center border-b mt-2">
+                                <label for="workoutw_1" class="w-60 block mb-1">Workout <span class="text-red-500">*</span></label>
+                                <select id="workoutw_1" name="workoutw_1" class="w-1/3 px-3 py-3 border flex rounded mb-2">
+                                <option value="" selected disabled>-- Select Workout --</option>
+                                </select>
+                            </div>
 
-                                <!-- Increment Button -->
-                                <button type="button" onclick="increment(this.parentNode.querySelector('input').id)"
-                                    id="increment-repsw_1"
-                                    class="increment-repsw_1 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                    <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                            stroke-width="2" d="M9 1v16M1 9h16" />
-                                    </svg>
-                                </button>
+                            <div class="flex items-center border-b mt-2">
+                                <label for="repsw_1" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
+                                <div class="relative flex items-center max-w-[8rem] mb-2">
+                                <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" id="decrement-repsw_1"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
+                                <input type="text" id="repsw_1" name="repsw_1"
+                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full py-2.5" placeholder="0"
+                                    readonly />
+                                <button type="button" onclick="increment(this.parentNode.querySelector('input').id)" id="increment-repsw_1"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center border-b mt-2">
+                                <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
+                                <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                                <option value="outof10">/10</option>
+                                <option value="cal">Cal</option>
+                                <option value="percent">%</option>
+                                <option value="kg">Kg</option>
+                                </select>
+                                <div class="relative h-[60px] min-w-0">
+                                <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
+                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
+                                    <label class="text-sm ml-1">M</label>
+                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                    <label class="text-sm">F</label>
+                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center border-b mt-2">
-                            <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
-                            <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="outof10">/10</option>
-                                            <option value="cal">Cal</option>
-                                            <option value="percent">%</option>
-                                            <option value="kg">Kg</option>
-                                            </select>
-                                            <div class="relative h-[60px] min-w-0">
-                                                <input type="number" name="weigthc_1"
-                                                class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                                <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-                                                    <label class="text-sm ml-1">M</label>
-                                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                                    <label class="text-sm">F</label>
-                                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
-                                                </div>
-                                            </div>
-                        </div>
-                        <div class="flex flex-row justify-end gap-4 mt-5">
-                            <button type="button" id="savebtnwarmup" onclick="()"
-                                class="bg-[#000000] text-white py-2 px-4 rounded mr-8 hover:bg-gray-800 w-30">
-                                + Add Another
-                            </button>
-                        </div>
-                        <div class="flex flex-row justify-end gap-4 mt-5">
-                            <button type="button" id="clearwarmbtn" onclick="clearWarmupForm()"
-                                class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24 hidden">
-                                Cancel
-                            </button>
 
-                            <button type="button" id="savebtnwarmup" onclick="storeWarmup()"
-                                class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
-                                Save
-                            </button>
-                        </div>
+
+        <!-- Add Another Button -->
+        <div class="flex flex-row justify-end gap-4 mt-5" id="add-another-btn">
+            <button type="button" onclick="addAnotherWorkout()" class="bg-[#000000] text-white py-2 px-4 rounded mr-8 hover:bg-gray-800 w-30">
+                + Add Another
+            </button>
+        </div>
+
+        <!-- Save & Cancel -->
+        <div class="flex flex-row justify-end gap-4 mt-5">
+            <button type="button" id="clearwarmbtn" onclick="clearWarmupForm()" class="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 w-24">
+                Cancel
+            </button>
+
+            <button type="button" id="savebtnwarmup" onclick="storeWarmup()" class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
+                Save
+            </button>
+        </div>
+    
                     </div>
                 </div>
             </div>
@@ -782,33 +764,55 @@
 </script>
 
 <script>
-        let workoutCount = 1;
+    let workoutCount = 1;
 
-        function addAnotherWorkout() {
-            workoutCount++;
+    function addAnotherWorkout() {
+      workoutCount++;
 
-            const original = document.querySelector('.workout-entry');
-            const clone = original.cloneNode(true);
+      const original = document.querySelector('.workout-entry');
+      const clone = original.cloneNode(true);
 
-            // Update IDs and names
-            clone.id = `workout-entry-${workoutCount}`;
-            clone.querySelectorAll('[id], [name], label, select').forEach(el => {
-                if (el.id) el.id = el.id.replace(/_\d+/, `_${workoutCount}`);
-                if (el.name) el.name = el.name.replace(/_\d+/, `_${workoutCount}`);
-                if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/_\d+/, `_${workoutCount}`);
-            });
+      // Update IDs and names
+      clone.id = `workout-entry-${workoutCount}`;
+      clone.querySelectorAll('[id], [name], label, select').forEach(el => {
+        if (el.id) el.id = el.id.replace(/_\d+/, `_${workoutCount}`);
+        if (el.name) el.name = el.name.replace(/_\d+/, `_${workoutCount}`);
+        if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/_\d+/, `_${workoutCount}`);
+      });
 
-            // Reset inputs
-            clone.querySelectorAll('input').forEach(input => {
-                if (input.type === 'text' || input.type === 'number') input.value = '';
-            });
+      // Clear input values
+      clone.querySelectorAll('input').forEach(input => {
+        if (input.type === 'text' || input.type === 'number') input.value = '';
+      });
+      clone.querySelectorAll('select').forEach(select => {
+        select.selectedIndex = 0;
+      });
 
-            clone.querySelectorAll('select').forEach(select => {
-                select.selectedIndex = 0;
-            });
+      // Add Remove button if not present
+      if (!clone.querySelector('.remove-btn')) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.textContent = 'Remove';
+        removeBtn.className = 'remove-btn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 ml-auto mt-1 mb-2';
+        removeBtn.onclick = function () {
+          removeWorkoutEntry(clone);
+        };
+        const removeContainer = document.createElement('div');
+        removeContainer.className = 'flex justify-end mt-2';
+        removeContainer.appendChild(removeBtn);
+        clone.appendChild(removeContainer);
+      }
 
-            // Insert before Add Another button
-            const addBtn = document.getElementById('add-another-btn');
-            addBtn.parentNode.insertBefore(clone, addBtn);
-        }
-    </script>
+      const addBtn = document.getElementById('add-another-btn');
+      addBtn.parentNode.insertBefore(clone, addBtn);
+    }
+
+    function removeWorkoutEntry(entry) {
+      const allEntries = document.querySelectorAll('.workout-entry');
+      if (allEntries.length > 1) {
+        entry.remove();
+      } else {
+        alert('At least one workout entry is required.');
+      }
+    }
+</script>
