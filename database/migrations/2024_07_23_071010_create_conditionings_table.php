@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('rounds')->nullable();
             $table->boolean('amrap')->nullable();
+            $table->boolean('Pyramid')->nullable();
             $table->foreignId('category_id')->nullable()
                 ->constrained('category_options')
                 ->onDelete('cascade');
@@ -24,11 +25,13 @@ return new class extends Migration
             $table->string('workoutname')->nullable();
             $table->integer('reps');
             $table->float('weight')->nullable();
-            $table->enum('unit', ['%', 'Kg']); // Enum column for unit
+            $table->enum('unit', ['%', 'Kg', 'Cal', '/10']); // Enum column for unit
             $table->string('date');
             $table->string('time_to_complete');
             $table->boolean('is_assigned')->default(false);
             $table->string('intensity');
+            $table->float('male')->nullable();
+            $table->float('female')->nullable();
             $table->timestamps();
         });
     }

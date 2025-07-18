@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('altrestgreen'); // Assuming rest is in seconds
             $table->string('altintensity')->nullable();
             $table->string('date');
+            $table->enum('unit', ['%', '%^']);
             $table->timestamps();
         });
     }
