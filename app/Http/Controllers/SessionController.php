@@ -20,6 +20,7 @@ use App\Models\WeightliftingSet;
 use App\Models\WorkoutAssign;
 use App\Models\WorkoutLibrary;
 use App\Models\CategoryOption;
+use App\Models\PyramidSet;
 use DateTime;
 use Exception;
 use Illuminate\Http\Request;
@@ -219,33 +220,38 @@ class SessionController extends Controller
         Log::info('Incoming Warmup Request Data: ', $request->all());
 
         try {
-            // Validate specific indexed fields
             $request->validate([
-                'namew_1' => 'required|string',
-                'categoryw_1' => 'required|exists:category_options,id',
-                'workoutw_1' => 'required|exists:workout_libraries,id',
-                'repsw_1' => 'required|integer',
-                'weigthw_1' => 'required|numeric',
-                'selectdatew' => 'required', // You can use string if not using a date format
+                'selectdatew' => 'required|string',
+                'namew_1' => 'nullable|string',
+                'categoryw_*' => 'required|exists:category_options,id',
+                'workoutw_*' => 'required|exists:workout_libraries,id',
             ]);
 
-            // Extract the values directly
-            $warmup = new Warmup();
-            $warmup->workoutname = $request->input('namew_1');
-            $warmup->category_id = $request->input('categoryw_1');
-            $warmup->workout_id = $request->input('workoutw_1');
-            $warmup->reps = $request->input('repsw_1');
-            $warmup->weight = $request->input('weigthw_1');
-            $warmup->date = $request->input('selectdatew');
+            $requestData = $request->all();
+            $maxIndex = 10; // Adjust based on expected warmup group count
 
-            $warmup->save();
+            for ($index = 1; $index <= $maxIndex; $index++) {
+                $processedData = [];
 
-            return response()->json(['message' => 'Warmup data saved successfully!']);
+                foreach ($requestData as $key => $value) {
+                    if (strpos($key, "_{$index}") !== false) {
+                        $processedData[$key] = $value;
+                    }
+                }
+
+                if (!empty($processedData)) {
+                    $this->filterdatawarmup($processedData, $index, $request->input('selectdatew'));
+                }
+            }
+
+            return response()->json(['message' => 'Warmup data stored successfully!'], 201);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while storing warmup data.',
@@ -253,6 +259,40 @@ class SessionController extends Controller
             ], 500);
         }
     }
+
+    public function filterdatawarmup($processedData, $index, $date)
+    {
+        Log::info("Processing Warmup Group #{$index}:", $processedData);
+
+        $parsedData = [];
+
+        // Map form keys to DB columns
+        $fields = [
+            'categoryw' => 'category_id',
+            'workoutw' => 'workout_id',
+            'repsw' => 'reps',
+            'weigthc' => 'weight',
+            'unit' => 'unit',
+            'male' => 'male',
+            'female' => 'female',
+        ];
+
+        foreach ($fields as $inputField => $dbField) {
+            $key = $inputField . "_{$index}";
+            if (isset($processedData[$key])) {
+                $parsedData[$dbField] = $processedData[$key];
+            }
+        }
+
+        // Non-indexed (shared) fields
+        $parsedData['workoutname'] = request()->input('namew_1') ?? null;
+        $parsedData['date'] = $date;
+
+        // Save to DB
+        $warmup = Warmup::store($parsedData); // This assumes you have a `store` method on your Warmup model
+        Log::info("Warmup entry saved with ID: {$warmup->id}");
+    }
+
 
 
     public function updateWarmup(Request $request)
@@ -335,18 +375,29 @@ class SessionController extends Controller
 
         // Transform the result to include the desired fields
         $result = $warmup->map(function ($item) {
-            return [
+            $data =  [
                 'id' => $item->id,
                 'date' => $item->date,
                 'category_id' => $item->category_id,
                 'workoutname' => $item->workoutname,
+                'unit' => $item->unit,
                 'weight' => $item->weight,
+                'male' => $item->male,
+                'female' => $item->female,
                 'category_name' => $item->category ? $item->category->category_name : null,
                 'workout_id' => $item->workout_id,
                 'workout_type' => $item->workout ? $item->workout->type : null,
                 'reps' => $item->reps,
                 'is_assigned' => $item->is_assigned,
             ];
+            
+            if ($item->unit === 'Cal' || $item->unit === 'Kg') {
+                $data['weightvalu'] = $item->male ?? $item->female;
+            } else {
+                $data['weightvalu'] = $item->weight;
+            }
+
+            return $data;
         });
 
         return response()->json(['result' => $result, 'categoryOptions' => $categoryOptions]);
@@ -392,18 +443,29 @@ class SessionController extends Controller
             $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
 
             $result = $warmupRecords->map(function ($item) {
-                return [
+                $data = [
                     'id' => $item->id,
                     'date' => $item->date,
                     'category_id' => $item->category_id,
                     'workoutname' => $item->workoutname,
+                    'unit' => $item->unit,
                     'weight' => $item->weight,
+                    'male' => $item->male,
+                    'female' => $item->female,
                     'category_name' => $item->category ? $item->category->category_name : null,
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->type : null,
                     'reps' => $item->reps,
                     'is_assigned' => $item->is_assigned,
                 ];
+
+                if ($item->unit === 'Cal' || $item->unit === 'Kg') {
+                    $data['weightvalu'] = $item->male ?? $item->female;
+                } else {
+                    $data['weightvalu'] = $item->weight;
+                }
+
+                return $data;
             });
 
             return response()->json([
@@ -512,7 +574,7 @@ class SessionController extends Controller
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
+        $fields = ['category', 'workout','name', 'weigth','unit', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -592,6 +654,7 @@ class SessionController extends Controller
                     'workout_type' => $item->workout ? $item->workout->workout : null,
 
                     'weight' => $item->weight,
+                    'unit' => $item->unit,
 
                     'restwered' => $item->restredwe,
                     'restweyellow' => $item->restyellowwe,
@@ -1056,7 +1119,7 @@ class SessionController extends Controller
         $parsedData = [];
         $setParsedData = [];
         // Extract the indexed values from the input data
-        $fields = ['categorys', 'workouts', 'names', 'weigths', 'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
+        $fields = ['categorys', 'workouts', 'names', 'weigths','unit',  'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
 
         foreach ($fields as $field) {
             $key = $field . '_' . $index;
@@ -1127,13 +1190,11 @@ class SessionController extends Controller
                     'id' => $item->id,
                     'category_id' => $item->category_id,
                     'category_name' => $item->category ? $item->category->category_name : null,
-
-
-
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->workout : null,
                     'workoutname' => $item->workoutname,
                     'weight' => $item->weight,
+                    'unit' => $item->unit,
                     'restred' => $item->restred,
                     'restyellow'=>$item->restyellow,
                     'restgreen'=>$item->restgreen,
@@ -1736,56 +1797,106 @@ foreach ($request->all() as $key => $value) {
         Log::info('Incoming Conditioning Request Data: ', $request->all());
 
         try {
-            // Validate required fields
             $request->validate([
                 'selectdatec' => 'required|string',
                 'namec_1' => 'nullable|string',
-                'categoryc_1' => 'required|integer|exists:category_options,id',
-                'workoutc_1' => 'required|integer|exists:workout_libraries,id',
-                'weigthc_1' => 'required|integer',
-                'unit_1' => 'required|string|max:10',
-                'repsc_1' => 'required|integer|min:1',
-                'timeTC_1' => 'required|string', // could add regex/time validation if needed,
+                'timeTC_1' => 'required|string',
+                'categoryc_*' => 'required|exists:category_options,id',
+                'workoutc_*' => 'required|exists:workout_libraries,id',
             ]);
-            // Retrieve checkbox value from the request
-            $amrap = $request->input('amrap', false); // Default to false if checkbox is not present
 
-            // Convert to boolean if necessary
-            $amrap = filter_var($amrap, FILTER_VALIDATE_BOOLEAN);
+            $requestData = $request->all();
+            $maxIndex = 10; // Limit for indexed entries
 
-            // Create new Conditioning model (assumes you have one)
-            $conditioning = new Conditioning(); // or ConditioningRecord or whatever your model is called
-            $conditioning->date = $request->input('selectdatec');
-            $conditioning->rounds = $request->input('roundCond');
-            $conditioning->rounds = $request->input('rounds');
-            $conditioning->workoutname = $request->input('namec_1');
-            $conditioning->category_id = $request->input('categoryc_1');
-            $conditioning->workout_id = $request->input('workoutc_1');
-            $conditioning->weight = $request->input('weigthc_1');
-            $conditioning->unit = $request->input('unit_1');
-            $conditioning->reps = $request->input('repsc_1');
-            $conditioning->time_to_complete = $request->input('timeTC_1');
-            $conditioning->intensity = $request->input('intensityc_1');
-            $conditioning->amrap = $amrap;
+            // Extract pyramid set once globally
+            $pyramidRow = $this->extractPyramidSetFromRequest($request);
 
-            $conditioning->save();
+            for ($index = 1; $index <= $maxIndex; $index++) {
+                $processedData = [];
 
-            return response()->json([
-                'message' => 'Conditioning data stored successfully!'
-            ], 201);
+                foreach ($requestData as $key => $value) {
+                    if (strpos($key, "_{$index}") !== false) {
+                        $processedData[$key] = $value;
+                    }
+                }
+
+                if (!empty($processedData)) {
+                    $this->filterdataconditioning($processedData, $index, $request->input('selectdatec'), $request->input('rounds'), $pyramidRow);
+                }
+            }
+
+            return response()->json(['message' => 'Conditioning data stored successfully!'], 201);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while storing conditioning data.',
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
+
+    // Extract pyramid values once
+    private function extractPyramidSetFromRequest(Request $request)
+    {
+        return [
+            'sets' => $request->input('sets_1'),
+            'reps' => $request->input('reps_1'),
+            'unit' => $request->input('unit_1'),
+            'pyramidweight' => $request->input('weigthPy_1'),
+            'pyramidmale' => $request->input('pyramidmale_1'),
+            'pyramidfemale' => $request->input('pyramidfemale_1')
+        ];
+    }
+
+    public function filterdataconditioning($processedData, $index, $date, $rounds, $pyramidRow = null)
+    {
+        Log::info('Processed Conditioning Data:', $processedData);
+
+        $parsedData = [];
+        $fields = [
+            'categoryc' => 'category_id',
+            'workoutc' => 'workout_id',
+            'repsc' => 'reps',
+            'weigthc' => 'weight',
+            'unit' => 'unit',
+            'male' => 'male',
+            'female' => 'female',
+        ];
+
+        foreach ($fields as $inputField => $dbField) {
+            $key = $inputField . "_{$index}";
+            if (isset($processedData[$key])) {
+                $parsedData[$dbField] = $processedData[$key];
+            }
+        }
+
+        // Non-indexed (shared) fields from full request
+        $parsedData['workoutname'] = request()->input('namec_1') ?? null;
+        $parsedData['rounds'] = $rounds;
+        $parsedData['time_to_complete'] = request()->input('timeTC_1') ?? null;
+        $parsedData['amrap'] = request()->input('amrap') ?? null;
+        $parsedData['Pyramid'] = request()->has('pyramidCheckboxCon') ? true : false;
+        $parsedData['date'] = $date;
+
+        $conditioning = Conditioning::store($parsedData);
+        Log::info('Created Conditioning ID', ['id' => $conditioning->id]);
+
+        // Save pyramid only if pyramid checkbox is checked
+        if ($parsedData['Pyramid'] && $pyramidRow) {
+            $pyramidRowToInsert = $pyramidRow;
+            $pyramidRowToInsert['conditioning_id'] = $conditioning->id;
+            Log::info('Saving PyramidSet row:', $pyramidRowToInsert);
+            PyramidSet::store($pyramidRowToInsert);
+        }
+    }
+
+
     // get conditioning
     public function getConditioning(Request $request)
     {

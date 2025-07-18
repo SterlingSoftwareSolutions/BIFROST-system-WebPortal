@@ -16,6 +16,9 @@ class Warmup extends Model
         'reps',
         'weight',
         'is_assigned',
+        'unit',
+        'male',
+        'female',
         'date'
     ];
 
@@ -41,4 +44,24 @@ class Warmup extends Model
     {
         return $this->hasMany(DailyWarmup::class, 'warmup_id');
     }
+
+    public static function store($data)
+{
+    $warmup = new self();
+
+    $warmup->category_id = $data['category_id'] ?? null;
+    $warmup->workout_id = $data['workout_id'] ?? null;
+    $warmup->workoutname = $data['workoutname'] ?? null;
+    $warmup->reps = $data['reps'] ?? null;
+    $warmup->weight = $data['weight'] ?? null;
+    $warmup->unit = $data['unit'] ?? null;
+    $warmup->male = $data['male'] ?? null;
+    $warmup->female = $data['female'] ?? null;
+    $warmup->date = $data['date'] ?? null;
+    $warmup->is_assigned = $data['is_assigned'] ?? false;
+
+    $warmup->save();
+
+    return $warmup;
+}
 }

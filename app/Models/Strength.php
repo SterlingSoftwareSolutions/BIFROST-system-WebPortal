@@ -30,6 +30,7 @@ class Strength extends Model
         'altsets',
         'altreps',
         'altintensity',
+        'unit',
         'date'
     ];
 
@@ -65,6 +66,7 @@ class Strength extends Model
         $strengthing->category_id = $data['categorys'];
         $strengthing->workout_id = $data['workouts'];
         $strengthing->weight = $data['weigths'];
+        $strengthing->unit = $data['unit'];
         $strengthing->workoutname = $data['names'] ?? null;
         $strengthing->restred = $data['restreds'] ?? '00:00:00';
         $strengthing->restyellow = $data['restyellows'] ?? '00:00:00';
