@@ -205,10 +205,10 @@
                             <div class="flex items-center border-b mt-2">
                                 <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
                                 <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                <option value="outof10">/10</option>
-                                <option value="cal">Cal</option>
-                                <option value="percent">%</option>
-                                <option value="kg">Kg</option>
+                                <option value="/10">/10</option>
+                                <option value="Cal">Cal</option>
+                                <option value="%">%</option>
+                                <option value="Kg">Kg</option>
                                 </select>
                                 <div class="relative h-[60px] min-w-0">
                                 <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
@@ -240,7 +240,7 @@
                 Save
             </button>
         </div>
-    
+
                     </div>
                 </div>
             </div>
@@ -453,7 +453,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.reps} reps</div>
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weightvalu || 0}${item.unit} for ${item.reps} reps</div>
 
 
                     <div class="mt-4 flex justify-end">

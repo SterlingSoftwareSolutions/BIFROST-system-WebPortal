@@ -220,33 +220,38 @@ class SessionController extends Controller
         Log::info('Incoming Warmup Request Data: ', $request->all());
 
         try {
-            // Validate specific indexed fields
             $request->validate([
-                'namew_1' => 'required|string',
-                'categoryw_1' => 'required|exists:category_options,id',
-                'workoutw_1' => 'required|exists:workout_libraries,id',
-                'repsw_1' => 'required|integer',
-                'weigthw_1' => 'required|numeric',
-                'selectdatew' => 'required', // You can use string if not using a date format
+                'selectdatew' => 'required|string',
+                'namew_1' => 'nullable|string',
+                'categoryw_*' => 'required|exists:category_options,id',
+                'workoutw_*' => 'required|exists:workout_libraries,id',
             ]);
 
-            // Extract the values directly
-            $warmup = new Warmup();
-            $warmup->workoutname = $request->input('namew_1');
-            $warmup->category_id = $request->input('categoryw_1');
-            $warmup->workout_id = $request->input('workoutw_1');
-            $warmup->reps = $request->input('repsw_1');
-            $warmup->weight = $request->input('weigthw_1');
-            $warmup->date = $request->input('selectdatew');
+            $requestData = $request->all();
+            $maxIndex = 10; // Adjust based on expected warmup group count
 
-            $warmup->save();
+            for ($index = 1; $index <= $maxIndex; $index++) {
+                $processedData = [];
 
-            return response()->json(['message' => 'Warmup data saved successfully!']);
+                foreach ($requestData as $key => $value) {
+                    if (strpos($key, "_{$index}") !== false) {
+                        $processedData[$key] = $value;
+                    }
+                }
+
+                if (!empty($processedData)) {
+                    $this->filterdatawarmup($processedData, $index, $request->input('selectdatew'));
+                }
+            }
+
+            return response()->json(['message' => 'Warmup data stored successfully!'], 201);
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while storing warmup data.',
@@ -254,6 +259,40 @@ class SessionController extends Controller
             ], 500);
         }
     }
+
+    public function filterdatawarmup($processedData, $index, $date)
+    {
+        Log::info("Processing Warmup Group #{$index}:", $processedData);
+
+        $parsedData = [];
+
+        // Map form keys to DB columns
+        $fields = [
+            'categoryw' => 'category_id',
+            'workoutw' => 'workout_id',
+            'repsw' => 'reps',
+            'weigthc' => 'weight',
+            'unit' => 'unit',
+            'male' => 'male',
+            'female' => 'female',
+        ];
+
+        foreach ($fields as $inputField => $dbField) {
+            $key = $inputField . "_{$index}";
+            if (isset($processedData[$key])) {
+                $parsedData[$dbField] = $processedData[$key];
+            }
+        }
+
+        // Non-indexed (shared) fields
+        $parsedData['workoutname'] = request()->input('namew_1') ?? null;
+        $parsedData['date'] = $date;
+
+        // Save to DB
+        $warmup = Warmup::store($parsedData); // This assumes you have a `store` method on your Warmup model
+        Log::info("Warmup entry saved with ID: {$warmup->id}");
+    }
+
 
 
     public function updateWarmup(Request $request)
@@ -336,18 +375,29 @@ class SessionController extends Controller
 
         // Transform the result to include the desired fields
         $result = $warmup->map(function ($item) {
-            return [
+            $data =  [
                 'id' => $item->id,
                 'date' => $item->date,
                 'category_id' => $item->category_id,
                 'workoutname' => $item->workoutname,
+                'unit' => $item->unit,
                 'weight' => $item->weight,
+                'male' => $item->male,
+                'female' => $item->female,
                 'category_name' => $item->category ? $item->category->category_name : null,
                 'workout_id' => $item->workout_id,
                 'workout_type' => $item->workout ? $item->workout->type : null,
                 'reps' => $item->reps,
                 'is_assigned' => $item->is_assigned,
             ];
+            
+            if ($item->unit === 'Cal' || $item->unit === 'Kg') {
+                $data['weightvalu'] = $item->male ?? $item->female;
+            } else {
+                $data['weightvalu'] = $item->weight;
+            }
+
+            return $data;
         });
 
         return response()->json(['result' => $result, 'categoryOptions' => $categoryOptions]);
@@ -393,18 +443,29 @@ class SessionController extends Controller
             $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
 
             $result = $warmupRecords->map(function ($item) {
-                return [
+                $data = [
                     'id' => $item->id,
                     'date' => $item->date,
                     'category_id' => $item->category_id,
                     'workoutname' => $item->workoutname,
+                    'unit' => $item->unit,
                     'weight' => $item->weight,
+                    'male' => $item->male,
+                    'female' => $item->female,
                     'category_name' => $item->category ? $item->category->category_name : null,
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->type : null,
                     'reps' => $item->reps,
                     'is_assigned' => $item->is_assigned,
                 ];
+
+                if ($item->unit === 'Cal' || $item->unit === 'Kg') {
+                    $data['weightvalu'] = $item->male ?? $item->female;
+                } else {
+                    $data['weightvalu'] = $item->weight;
+                }
+
+                return $data;
             });
 
             return response()->json([
