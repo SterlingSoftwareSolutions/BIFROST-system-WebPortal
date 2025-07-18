@@ -22,7 +22,10 @@ return new class extends Migration
             $table->string('workoutname')->nullable();
             $table->integer('reps');
             $table->string('date');
-            $table->float('weight');
+            $table->float('weight')->nullable();
+            $table->enum('unit', ['%', 'Kg', 'Cal', '/10']);
+            $table->float('male')->nullable();
+            $table->float('female')->nullable();
             $table->boolean('is_assigned')->default(false);
             $table->timestamps();
         });

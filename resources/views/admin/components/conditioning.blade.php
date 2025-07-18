@@ -851,7 +851,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}${item.unit} for ${item.roundsnamrap} sets of ${item.reps} reps in ${item.time_to_complete} mins</div>
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}${item.unit}  ${item.reps} reps</div>
 
 
                     <div class="mt-4 flex justify-end">
