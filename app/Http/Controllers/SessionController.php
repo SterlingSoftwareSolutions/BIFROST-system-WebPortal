@@ -513,7 +513,7 @@ class SessionController extends Controller
         $setParsedData = [];
 
         // Extract the indexed values from the input data
-        $fields = ['category', 'workout','name', 'weigth', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
+        $fields = ['category', 'workout','name', 'weigth','unit', 'restred','restgreen','restyellow', 'intensity', 'alt-category', 'alt-workout', 'alt-name', 'alt-weigth', 'alt-restred','alt-restyellow','alt-restgreen','alt-intensity'];
 
         foreach ($fields as $field) {
             $key = $field . 'we_' . $index;
@@ -593,6 +593,7 @@ class SessionController extends Controller
                     'workout_type' => $item->workout ? $item->workout->workout : null,
 
                     'weight' => $item->weight,
+                    'unit' => $item->unit,
 
                     'restwered' => $item->restredwe,
                     'restweyellow' => $item->restyellowwe,
