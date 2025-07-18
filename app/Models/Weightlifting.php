@@ -30,6 +30,7 @@ class Weightlifting extends Model
         'alt_workoutname',
         'alt_weight',
         'alt_intensity',
+        'unit',
         'date',
     ];
 

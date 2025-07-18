@@ -493,6 +493,26 @@
                         const showUIC = document.getElementById('showUIC');
                         showUIC.innerHTML = ''; // Clears the content inside the div
 
+                        var pyramidSets = document.querySelector(".duplicate-sets-pyramid");
+                            if (pyramidSets) {
+                                pyramidSets.innerHTML = ""; // Clear content
+                                setCounterPyramid = 1;
+                            }
+
+                            const section = document.getElementById('pyramidSection');
+                            section.classList.add('hidden');
+
+                            const container = document.getElementById('exerciseGroupsContainer');
+                            const children = container.querySelectorAll('[id^="exerciseGroup_"]');
+
+                            children.forEach(child => {
+                                if (child.id !== 'exerciseGroup_1') {
+                                    container.removeChild(child);
+                                }
+                            });
+
+                            groupCount = 1;
+
                         // Example: Switch tabs or update content
                         const tab = document.getElementById('conditioningTab');
                         if (tab) {
@@ -810,6 +830,8 @@
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
+                        <div class="text-gray-700">Rounds: ${item.rounds || '0'} </div>
+                        <div class="text-gray-700">Time To Complete: ${item.time_to_complete || 'N/A'} </div>
                         <div class="space-x-2">
                             <button class="edit-conditionings-btn" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -1187,7 +1209,7 @@ function toggleGenderInputs(selectElement) {
 
     const selected = selectElement.value;
 
-    if (selected === 'cal' || selected === 'kg') {
+    if (selected === 'Cal' || selected === 'Kg') {
         genderDiv.classList.remove('invisible');
         defaultInput.classList.add('invisible');
         defaultInput.removeAttribute('required');
@@ -1295,7 +1317,7 @@ function removeExerciseGroup(button) {
                                     <div class="block mb-1"></div>
                                     <div class="flex items-center max-w-[12rem] gap-2">
                                         <!-- reps inputs/buttons -->
-                                        <input type="text" id="sets_${remainingfind}${setCounterPyramid}" name="sets_${remainingfind}${setCounterPyramid}" value="${setCounterPyramid}" data-input-counter
+                                        <input type="text" id="pyramidSet_${remainingfind}${setCounterPyramid}" name="pyramidSet_${remainingfind}${setCounterPyramid}" value="${setCounterPyramid}" data-input-counter
                                         class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                         placeholder="0" readonly required />
                                         <!-- decrement button -->

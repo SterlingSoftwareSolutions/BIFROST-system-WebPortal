@@ -1057,7 +1057,7 @@ class SessionController extends Controller
         $parsedData = [];
         $setParsedData = [];
         // Extract the indexed values from the input data
-        $fields = ['categorys', 'workouts', 'names', 'weigths', 'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
+        $fields = ['categorys', 'workouts', 'names', 'weigths','unit',  'restreds','restyellows','restgreens', 'intensitys', 'alt-categorys', 'alt-workouts', 'alt-weigths', 'alt-restreds','alt-restyellows','alt-restgreens','alt-intensitys'];
 
         foreach ($fields as $field) {
             $key = $field . '_' . $index;
@@ -1128,13 +1128,11 @@ class SessionController extends Controller
                     'id' => $item->id,
                     'category_id' => $item->category_id,
                     'category_name' => $item->category ? $item->category->category_name : null,
-
-
-
                     'workout_id' => $item->workout_id,
                     'workout_type' => $item->workout ? $item->workout->workout : null,
                     'workoutname' => $item->workoutname,
                     'weight' => $item->weight,
+                    'unit' => $item->unit,
                     'restred' => $item->restred,
                     'restyellow'=>$item->restyellow,
                     'restgreen'=>$item->restgreen,
@@ -1746,25 +1744,26 @@ foreach ($request->all() as $key => $value) {
             ]);
 
             $requestData = $request->all();
-            $maxIndex = 10; // Adjust according to expected input
+            $maxIndex = 10; // Limit for indexed entries
+
+            // Extract pyramid set once globally
+            $pyramidRow = $this->extractPyramidSetFromRequest($request);
 
             for ($index = 1; $index <= $maxIndex; $index++) {
                 $processedData = [];
 
                 foreach ($requestData as $key => $value) {
-                    if (strpos($key, "_$index") !== false) {
+                    if (strpos($key, "_{$index}") !== false) {
                         $processedData[$key] = $value;
                     }
                 }
 
                 if (!empty($processedData)) {
-                    $this->filterdataconditioning($processedData, $index, $request->input('selectdatec'), $request->input('rounds'), $request->input('conditioning_id'));
+                    $this->filterdataconditioning($processedData, $index, $request->input('selectdatec'), $request->input('rounds'), $pyramidRow);
                 }
             }
 
-            return response()->json([
-                'message' => 'Conditioning data stored successfully!'
-            ], 201);
+            return response()->json(['message' => 'Conditioning data stored successfully!'], 201);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
@@ -1778,16 +1777,26 @@ foreach ($request->all() as $key => $value) {
                 'error' => $e->getMessage()
             ], 500);
         }
-
     }
 
-    public function filterdataconditioning($processedData, $index, $date, $rounds, $conditioningId = null)
+    // Extract pyramid values once
+    private function extractPyramidSetFromRequest(Request $request)
+    {
+        return [
+            'sets' => $request->input('sets_1'),
+            'reps' => $request->input('reps_1'),
+            'unit' => $request->input('unit_1'),
+            'pyramidweight' => $request->input('weigthPy_1'),
+            'pyramidmale' => $request->input('pyramidmale_1'),
+            'pyramidfemale' => $request->input('pyramidfemale_1')
+        ];
+    }
+
+    public function filterdataconditioning($processedData, $index, $date, $rounds, $pyramidRow = null)
     {
         Log::info('Processed Conditioning Data:', $processedData);
 
         $parsedData = [];
-
-        // Indexed fields (with _1, _2, etc.)
         $fields = [
             'categoryc' => 'category_id',
             'workoutc' => 'workout_id',
@@ -1799,7 +1808,7 @@ foreach ($request->all() as $key => $value) {
         ];
 
         foreach ($fields as $inputField => $dbField) {
-            $key = $inputField . '_' . $index;
+            $key = $inputField . "_{$index}";
             if (isset($processedData[$key])) {
                 $parsedData[$dbField] = $processedData[$key];
             }
@@ -1812,35 +1821,16 @@ foreach ($request->all() as $key => $value) {
         $parsedData['amrap'] = request()->input('amrap') ?? null;
         $parsedData['Pyramid'] = request()->has('pyramidCheckboxCon') ? true : false;
         $parsedData['date'] = $date;
-        $parsedData['conditioning_id'] = $conditioningId;
 
-        // Save conditioning
-        $conditioning = Conditioning::store($parsedData); // use your custom method here
+        $conditioning = Conditioning::store($parsedData);
         Log::info('Created Conditioning ID', ['id' => $conditioning->id]);
 
-        // Save pyramid sets (global to all entries)
-        $allPyramids = [];
-        foreach (request()->all() as $key => $value) {
-            if (preg_match('/^(sets|reps|unit|weigthPy|pyramidmale|pyramidfemale)_(\d+)$/', $key, $matches)) {
-                $type = $matches[1];
-                $suffix = $matches[2];
-                $allPyramids[$suffix][$type] = $value;
-            }
-        }
-
-        foreach ($allPyramids as $suffix => $values) {
-            $row = [
-                'sets' => $values['sets'] ?? 1,
-                'reps' => $values['reps'] ?? null,
-                'unit' => $values['unit'] ?? null,
-                'pyramidweight' => $values['weigthPy'] ?? null,
-                'pyramidmale' => $values['pyramidmale'] ?? null,
-                'pyramidfemale' => $values['pyramidfemale'] ?? null,
-                'conditioning_id' => $conditioning->id,
-            ];
-
-            Log::info('Saving PyramidSet row:', $row);
-            PyramidSet::store($row);
+        // Save pyramid only if pyramid checkbox is checked
+        if ($parsedData['Pyramid'] && $pyramidRow) {
+            $pyramidRowToInsert = $pyramidRow;
+            $pyramidRowToInsert['conditioning_id'] = $conditioning->id;
+            Log::info('Saving PyramidSet row:', $pyramidRowToInsert);
+            PyramidSet::store($pyramidRowToInsert);
         }
     }
 
