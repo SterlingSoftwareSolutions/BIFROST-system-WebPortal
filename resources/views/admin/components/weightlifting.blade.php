@@ -296,9 +296,9 @@
                             </div>
                             <div class="flex items-center border-b mt-2">
                                 <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
-                                <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                    <option value="percent">%</option>
-                                    <option value="kg">%^</option>
+                                <select name="unitwe_1" class="border bg-white py-3.5 mb-2 rounded">
+                                    <option value="%">%</option>
+                                    <option value="%^">%^</option>
                                 </select>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                             </div>
@@ -1687,7 +1687,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}% for ${item.sets?.length || 0} sets</div>
+                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}${item.unit} for ${item.sets?.length || 0} sets</div>
 
                     <div class="grid grid-cols-2 gap-4 text-gray-700">
                         <div>
