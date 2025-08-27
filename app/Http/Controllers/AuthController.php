@@ -40,7 +40,17 @@ class AuthController extends Controller
                 Auth::login($user);
                 if ($request->type == "mobile") {
                     if ($user->user_type == "client") {
-                        return redirect()->route('mobile.trainingday');
+                        if ($request->wantsJson()) {
+                            $token = $user->createToken('MyAppToken')->plainTextToken;
+
+                            return response()->json([
+                                'success' => true,
+                                'user' => $user,
+                                'token' => $token
+                            ], 200);
+                        }else {
+                            return redirect()->route('mobile.trainingday');
+                        }
                     } else {
                         return redirect()->back()->with('error', 'Please enter a correct pin number.');
                     }
