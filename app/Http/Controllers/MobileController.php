@@ -610,4 +610,47 @@ class MobileController extends Controller
     {
         return view("mobile.user.history");
     }
+
+    public function getrainingdaysnclasses(Request $request)
+    {
+        $dates = [];
+        $today = Carbon::now()->startOfDay();
+
+        // Prepare next 7 days
+        for ($i = 0; $i < 7; $i++) {
+            $dates[] = $today->copy()->addDays($i);
+        }
+
+        $classesByDate = [];
+
+        foreach ($dates as $date) {
+            $dayName = $date->format('l');          // Monday, Tuesday, etc.
+            $formattedDate = $date->format('d/m/Y'); // For key
+            $dayWithDate = $date->format('d/m/y') . ' ' . $dayName; // Matches DB format
+
+            // Get 6AM class for that date
+            $classes = Classes::where('date', $dayWithDate)
+                            ->get();
+
+            // Add class info or null
+            $classesByDate[$formattedDate] = $classes->isNotEmpty()
+            ? $classes->map(function ($class) {
+                return [
+                    'id' => $class->id,
+                    'time' => $class->time,
+                    'date' => $class->date,
+                    'spots' => $class->spots,
+                    // add more fields if needed
+                ];
+            })
+            : [];
+        }
+
+        return response()->json([
+            'success' => true,
+            'dates' => array_map(fn($d) => $d->format('d/m/Y'), $dates),
+            'classesByDate' => $classesByDate,
+            'defaultTime' => '06:00:00'
+        ], 200);
+    }
 }
