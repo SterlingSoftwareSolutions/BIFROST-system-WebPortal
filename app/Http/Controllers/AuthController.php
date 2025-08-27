@@ -94,4 +94,51 @@ class AuthController extends Controller
             return redirect('/mobile/login');
         }
     }
+
+    public function mobilelogin(Request $request)
+    {
+        try {
+            $request->validate([
+                'pin_1' => 'required|integer|min:0|max:9',
+                'pin_2' => 'required|integer|min:0|max:9',
+                'pin_3' => 'required|integer|min:0|max:9',
+                'pin_4' => 'required|integer|min:0|max:9',
+            ]);
+
+            $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
+
+            $user = User::where(function ($query) use ($request) {
+                if ($request->portal === 'admin') {
+                    $query->whereIn('user_type', ['admin', 'super admin']);
+                } else {
+                    $query->whereIn('user_type', ['client', 'worker']);
+                }
+            })
+            ->where('pin', $pin)
+            ->first();
+
+            if ($user && $user->user_type == "client") {
+                // ✅ No CSRF, just return a token
+                $token = $user->createToken('MyAppToken')->plainTextToken;
+
+                return response()->json([
+                    'success' => true,
+                    'user' => $user,
+                    'token' => $token
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid PIN or unauthorized user type.'
+            ], 401);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
