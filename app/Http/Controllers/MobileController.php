@@ -134,31 +134,50 @@ class MobileController extends Controller
         $class = Classes::find($request->class_id);
 
         // Check if spots are available
-        if ($class->spots <= 0) {
-            return back()->with('error', 'No spots available for this class.');
+        if ($class->availablespots <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No spots available for this class.'
+            ], 400);
         }
 
-        // Check if user already reserved this class (optional)
+        // Check if user already reserved this class
         $existing = ReservationSession::where('user_id', Auth::id())
             ->where('classes_id', $class->id)
             ->first();
 
         if ($existing) {
-            return back()->with('info', 'You have already reserved this class.');
+            return response()->json([
+                'success' => false,
+                'message' => 'You have already reserved this class.'
+            ], 400);
         }
 
         // Create reservation
-        ReservationSession::create([
+        $reservation = ReservationSession::create([
             'user_id' => Auth::id(),
             'classes_id' => $class->id,
             'is_reserved' => true
         ]);
 
         // Decrease spot count
-        $class->decrement('spots');
+        $class->availablespots = $class->availablespots - 1;
+        $class->save();
 
-        return back()->with('success', 'Reservation successful!');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Reservation successful!',
+            'reservation' => [
+                'id' => $reservation->id,
+                'class_id' => $reservation->classes_id,
+                'user_id' => $reservation->user_id,
+                'is_reserved' => $reservation->is_reserved
+            ],
+            'remainingSpots' => $class->availablespots
+        ], 200);
     }
+
 
     public function cancel(Request $request)
     {
@@ -175,13 +194,21 @@ class MobileController extends Controller
 
             // Increase the spot count
             $class = Classes::find($request->class_id);
-            $class->increment('spots');
+            $class->increment('availablespots');
 
-            return back()->with('success', 'Reservation cancelled.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservation cancelled successfully.',
+                'remainingSpots' => $class->availablespots
+            ], 200);
         }
 
-        return back()->with('error', 'No reservation found.');
+        return response()->json([
+            'success' => false,
+            'message' => 'No reservation found.'
+        ], 400);
     }
+
     // Training Day select date
     public function selectday(Request $request)
     {
@@ -613,6 +640,7 @@ class MobileController extends Controller
 
     public function getrainingdaysnclasses(Request $request)
     {
+        $userId = Auth::user()->id;
         $dates = [];
         $today = Carbon::now()->startOfDay();
 
@@ -630,25 +658,37 @@ class MobileController extends Controller
 
             // Get 6AM class for that date
             $classes = Classes::where('date', $dayWithDate)
+                            ->orderBy('time', 'asc')
                             ->get();
 
             // Add class info or null
-            $classesByDate[$formattedDate] = $classes->isNotEmpty()
-            ? $classes->map(function ($class) {
-                return [
-                    'id' => $class->id,
-                    'time' => $class->time,
-                    'date' => $class->date,
-                    'spots' => $class->spots,
-                    // add more fields if needed
-                ];
-            })
-            : [];
+            $classesByDate[$formattedDate] = [
+                'dayName' => $dayName,
+                'classes' =>   $classes->isNotEmpty()
+                    ? $classes->map(function ($class) use ($date, $dayName, $userId) {
+                        $isReserved = ReservationSession::where('user_id', $userId)
+                        ->where('classes_id', $class->id)
+                        ->where('is_reserved', 1)
+                        ->exists();
+                        return [
+                            'id' => $class->id,
+                            'time' => \Carbon\Carbon::parse($class->time)->format('g:i A'),
+                            'date' => $date->format('d/m/Y'),
+                            'dayName' => $dayName,
+                            'availablespots' => $class->availablespots,
+                            'isReserved' => $isReserved,
+                        ];
+                    })
+                    : []
+            ];
         }
 
         return response()->json([
             'success' => true,
-            'dates' => array_map(fn($d) => $d->format('d/m/Y'), $dates),
+            'dates' => array_map(fn($d) => [
+                'date' => $d->format('d/m/Y'),
+                'dayName' => $d->format('l')
+            ], $dates),
             'classesByDate' => $classesByDate,
             'defaultTime' => '06:00:00'
         ], 200);

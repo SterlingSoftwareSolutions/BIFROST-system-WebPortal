@@ -16,6 +16,7 @@ return new class extends Migration
             $table->time('time');
             $table->integer('duration');
             $table->integer('spots');
+            $table->integer('availablespots')->nullable();
             $table->boolean('workout_assigned');
             $table->string('date');
             $table->boolean('is_warmup')->default(false);
