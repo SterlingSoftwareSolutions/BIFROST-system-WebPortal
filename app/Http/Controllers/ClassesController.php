@@ -36,6 +36,7 @@ class ClassesController extends Controller
             'time' => $request->time,
             'duration' => $request->duration,
             'spots' => $request->spots,
+            'availablespots' => $request->spots,
             'workout_assigned' => $request->has('workout_assigned'),
             'date' => $request->selectdatecla,
         ]);

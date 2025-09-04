@@ -12,6 +12,7 @@ class Classes extends Model
         'time',
         'duration',
         'spots',
+        'availablespots',
         'workout_assigned',
         'date'
     ];
