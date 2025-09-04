@@ -22,5 +22,8 @@ Route::post('mobilelogin', [AuthController::class, 'mobilelogin'])->name('mobile
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::get('/getrainingdaysnclasses', [MobileController::class, 'getrainingdaysnclasses']);
+    //class reserve
+    Route::post('reserve', [MobileController::class, 'reserve'])->name('class.reserve');
+    Route::post('/cancel', [MobileController::class, 'cancel'])->name('class.cancel');
 
 });
