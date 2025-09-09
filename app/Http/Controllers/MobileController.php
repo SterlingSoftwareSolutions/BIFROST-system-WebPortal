@@ -201,7 +201,7 @@ class MobileController extends Controller
                 'message' => 'Reservation cancelled successfully.',
                 'remainingSpots' => $class->availablespots
             ], 200);
-        }
+        }          
 
         return response()->json([
             'success' => false,
@@ -693,4 +693,32 @@ class MobileController extends Controller
             'defaultTime' => '06:00:00'
         ], 200);
     }
+
+    public function storescoremobile(Request $request)
+    {
+        $validatedData = $request->validate([
+            'selected_day' => 'required|string',
+            'sleep_input' => 'required|string',
+            'alertness_input' => 'required|string',
+            'excitement_input' => 'required|string',
+            'stress_input' => 'required|string',
+            'soreness_input' => 'required|string',
+            'score' => 'required|integer',
+        ]);
+
+        $user = $request->user();
+
+        // Find an existing score for the same user and date, or create a new one
+        $score = $user->scores()->updateOrCreate(
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            $validatedData
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Score saved successfully.',
+            'data' => $score
+        ], 200);
+    }
+
 }
