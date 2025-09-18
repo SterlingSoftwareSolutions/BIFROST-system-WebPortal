@@ -693,4 +693,135 @@ class MobileController extends Controller
             'defaultTime' => '06:00:00'
         ], 200);
     }
+
+    public function storescoremobile(Request $request)
+    {
+        $validatedData = $request->validate([
+            'selected_day' => 'required|string',
+            'sleep_input' => 'required|string',
+            'alertness_input' => 'required|string',
+            'excitement_input' => 'required|string',
+            'stress_input' => 'required|string',
+            'soreness_input' => 'required|string',
+            'score' => 'required|integer',
+        ]);
+
+        $user = $request->user();
+
+        // Find an existing score for the same user and date, or create a new one
+        $score = $user->scores()->updateOrCreate(
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            $validatedData
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Score saved successfully.',
+            'data' => $score
+        ], 200);
+    }
+
+    public function getscore(Request $request)
+    {
+        $request->validate([
+            'selected_day' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        $score = $user->scores()
+            ->where('selected_day', $request->selected_day)
+            ->first();
+
+        if ($score) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Score found.',
+                'data' => $score
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No score found for this day.',
+            'data' => null
+        ], 404);
+    }
+
+
+    public function getworkout(Request $request)
+    {
+        $request->validate([
+            'selected_day' => 'required|string', // e.g., "Tuesday 09/09/2025"
+        ]);
+
+        try {
+            // Convert the incoming date string to Carbon
+            $dateString = $request->input('selected_day');
+            $date = \Carbon\Carbon::createFromFormat('l d/m/Y', $dateString);
+
+            // Build formats
+            $dayName = $date->format('l');
+            $formattedDate = $date->format('d/m/y');
+            $dayWithDate = $formattedDate . ' ' . $dayName;
+
+            // Warmup
+            $detailswarmup = Warmup::where('date', $dayWithDate)
+                ->where('is_assigned', 1)
+                ->with('workout')
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Strength
+            $detailsstrength = Strength::where('date', $dayWithDate)
+                ->where('is_assigned', 1)
+                ->with('sets')
+                ->with('sets.strengthing')
+                ->with('workout')
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Conditioning
+            $detailsconditioning = Conditioning::where('date', $dayWithDate)
+                ->where('is_assigned', 1)
+                ->with('workout')
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Weightlifting
+            $detailsweight = Weightlifting::where('date', $dayWithDate)
+                ->where('is_assigned', 1)
+                ->with('sets')
+                ->with('sets.weightlifting')
+                ->with('workouts')
+                ->with('workouts.categoryOption')
+                ->get();
+
+            // Test
+            $detailstest = Test::where('date', $dayWithDate)
+                ->with('workout')
+                ->with('workouts.categoryOption')
+                ->with('member')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'selected_day' => $dateString,
+                'dayWithDate' => $dayWithDate,
+                'warmup' => $detailswarmup,
+                'strength' => $detailsstrength,
+                'conditioning' => $detailsconditioning,
+                'weightlifting' => $detailsweight,
+                'test' => $detailstest,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching workout data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

@@ -26,4 +26,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('reserve', [MobileController::class, 'reserve'])->name('class.reserve');
     Route::post('/cancel', [MobileController::class, 'cancel'])->name('class.cancel');
 
+    Route::post('storescore', [MobileController::class, 'storescoremobile']);
+    Route::post('getscore', [MobileController::class, 'getscore']);
+
+    Route::post('getworkout', [MobileController::class, 'getworkout']);
 });
