@@ -18,6 +18,7 @@ use App\Http\Controllers\MobileController;
 
 
 Route::post('mobilelogin', [AuthController::class, 'mobilelogin'])->name('mobilelogin');
+Route::post('mobilelogout', [AuthController::class, 'mobilelogout'])->name('mobilelogout');
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
 
