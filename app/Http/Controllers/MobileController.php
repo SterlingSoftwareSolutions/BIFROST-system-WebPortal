@@ -793,8 +793,8 @@ class MobileController extends Controller
                 ->where('is_assigned', 1)
                 ->with('sets')
                 ->with('sets.weightlifting')
-                ->with('workouts')
-                ->with('workouts.categoryOption')
+                ->with('workout')
+                ->with('workout.categoryOption')
                 ->get();
 
             // Test

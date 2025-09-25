@@ -141,4 +141,20 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function mobilelogout(Request $request)
+    {
+        // Logout the user
+        Auth::logout();
+
+        // Clear session data
+        session()->flush();
+
+        // Return JSON response
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout successful',
+        ], 200);
+    }
+
 }
