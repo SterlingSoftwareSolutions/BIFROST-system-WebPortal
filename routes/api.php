@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MobileController;
+use App\Http\Controllers\UserMobileController;
 use App\Http\Controllers\UserProfileController;
 
 /*
@@ -32,5 +33,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getscore', [MobileController::class, 'getscore']);
 
     Route::post('getworkout', [MobileController::class, 'getworkout']);
+i
+    //profile
+    Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
     Route::post('nextvdata', [UserProfileController::class, 'handleNextData'])->name('nextvdata');
 });
