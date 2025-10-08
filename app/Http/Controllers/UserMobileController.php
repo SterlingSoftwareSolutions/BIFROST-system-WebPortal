@@ -45,26 +45,20 @@ class UserMobileController extends Controller
 
     // Fetch images for the current and previous two months
     $images = MonthlyImage::where('user_id', $user->id)
-        ->where(function ($query) use ($months) {
-            foreach ($months as $month) {
-                $query->orWhere(function ($query) use ($month) {
-                    $query->whereMonth('month', $month['month'])
-                        ->whereYear('month', $month['year']);
-                });
-            }
-        })
-        ->get()
-        ->groupBy(function ($item) {
-            return Carbon::parse($item->month)->format('Y-m'); // Group by year-month
-        });
+    ->get()
+    ->groupBy(function ($item) {
+        return Carbon::parse($item->month)->format('Y-m');
+    });
 
     // Convert grouped images into a clean JSON-friendly format
     $formattedImages = $images->map(function ($group) {
         return $group->map(function ($item) {
             return [
                 'id' => $item->id,
-                'image_path' => asset('storage/' . $item->image_path),
                 'month' => Carbon::parse($item->month)->format('F Y'),
+                'front_image' => $item->front_image ? asset('storage/' . $item->front_image) : null,
+                'side_image' => $item->side_image ? asset('storage/' . $item->side_image) : null,
+                'back_image' => $item->back_image ? asset('storage/' . $item->back_image) : null,
                 'created_at' => $item->created_at,
             ];
         });
