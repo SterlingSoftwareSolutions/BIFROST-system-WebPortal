@@ -55,18 +55,11 @@ class UserProfileController extends Controller
 
         // Fetch images for the current and previous two months
         $images = MonthlyImage::where('user_id', $user->id)
-            ->where(function ($query) use ($months) {
-                foreach ($months as $month) {
-                    $query->orWhere(function ($query) use ($month) {
-                        $query->whereMonth('month', $month['month'])
-                            ->whereYear('month', $month['year']);
-                    });
-                }
-            })
             ->get()
             ->groupBy(function ($item) {
-                return Carbon::parse($item->month)->format('Y-m'); // Group by year-month
+                return Carbon::parse($item->month)->format('Y-m');
             });
+
 
         // Pass the data to the view
         return view('user.user.profile', [
