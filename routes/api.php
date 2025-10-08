@@ -33,7 +33,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getscore', [MobileController::class, 'getscore']);
 
     Route::post('getworkout', [MobileController::class, 'getworkout']);
-
+i
     //profile
     Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
     Route::post('nextvdata', [UserProfileController::class, 'handleNextData'])->name('nextvdata');

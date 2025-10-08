@@ -22,6 +22,7 @@ use App\Http\Controllers\UserGoalController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\UserSettingController;
 use App\Http\Controllers\WorkoutLibraryController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +44,10 @@ Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // logout
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/symlink', function () {
+    Artisan::call('storage:link');
+    return 'Storage link created!';
+});
 // Display the forget password form
 Route::get('forget/password', function () {
     return view('auth.forget-password');
