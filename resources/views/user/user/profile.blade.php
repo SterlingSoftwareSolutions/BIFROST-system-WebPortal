@@ -41,7 +41,7 @@
                     <div>
                         <div class="justify-between flex mx-4 text-sm">
                             <div><span class="text-gray-700">Home / </span><strong>Profile</strong></div>
-                            {{-- 
+                            {{--
                             To DO -> button move admin panel
                             <div>
                                 <a href="{{ route('usernewprofile') }}">
@@ -246,7 +246,7 @@
                     },
                     success: function(response) {
                         console.log(response);
-                        updateImageList(response); 
+                        updateImageList(response);
                     },
                     error: function(xhr, status, error) {
                         console.error(error); // Handle error
