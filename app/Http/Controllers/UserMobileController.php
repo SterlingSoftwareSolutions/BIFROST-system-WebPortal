@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DailyStrength;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
+use App\Models\WorkoutLibrary;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -125,6 +127,140 @@ class UserMobileController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to upload images.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    //get strength type workouts
+    public function getStrengthWorkouts()
+    {
+        try {
+            // Fetch all workouts where type = 'strength'
+            $workouts = WorkoutLibrary::where('type', 'strength')->get();
+
+            if ($workouts->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No strength workouts found.',
+                    'data' => [],
+                ], 200);
+            }
+
+            // Return JSON response
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Strength workouts retrieved successfully.',
+                'count' => $workouts->count(),
+                'data' => $workouts,
+            ], 200);
+
+        } catch (Exception $e) {
+            // Handle any unexpected errors
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch strength workouts.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getStrengthProgress(Request $request)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized access.'
+            ], 401);
+        }
+
+        // Validate input
+        $request->validate([
+            'strength_id' => 'required|exists:workout_libraries,id',
+        ]);
+
+        try {
+            // Get member ID from user
+            $member = Newprofile::where('user_id', $user->id)->first();
+
+            if (!$member) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Member profile not found.'
+                ], 404);
+            }
+
+            // Fetch all daily strength records for this member and strength ID
+            $strengthData = DailyStrength::where('member_id', $member->id)
+                ->where('strength_id', $request->strength_id)
+                ->orderBy('date', 'asc')
+                ->get();
+
+            if ($strengthData->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'No strength data found for this workout.',
+                    'data' => []
+                ], 200);
+            }
+
+            // Prepare data for graph
+            $graphData = $strengthData->map(function ($item) {
+                try {
+
+                    $date = Carbon::createFromFormat('d/m/y l', $item->date)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $date = $item->date;
+                }
+                return [
+                    'date' => $date,
+                    'reps' => (int) $item->reps,
+                    'weight' => (float) $item->weight,
+                ];
+            });
+
+            // Calculate summary metrics
+            $totalReps = $strengthData->sum('reps');
+            $totalWeight = $strengthData->sum('weight');
+            $totalSets = $strengthData->count();
+            $oneRepMax = $strengthData->max(function ($item) {
+                return $item->weight * (1 + ($item->reps / 30)); // Epley formula
+            });
+
+            // Return JSON response
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Strength progress retrieved successfully.',
+                'data' => [
+                    'strength_id' => (int) $request->strength_id,
+                    'graph' => [
+                        'labels' => $graphData->pluck('date'),
+                        'datasets' => [
+                            [
+                                'label' => 'Reps',
+                                'data' => $graphData->pluck('reps'),
+                            ],
+                            [
+                                'label' => 'Weight (kg)',
+                                'data' => $graphData->pluck('weight'),
+                            ]
+                        ]
+                    ],
+                    'summary' => [
+                        'total_reps' => $totalReps,
+                        'total_weight' => $totalWeight,
+                        'total_sets' => $totalSets,
+                        'one_rep_max' => round($oneRepMax, 2)
+                    ]
+                ]
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch strength data.',
                 'error' => $e->getMessage(),
             ], 500);
         }
