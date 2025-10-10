@@ -42,4 +42,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     //achievements
     Route::get('getexercises', [UserMobileController::class, 'getStrengthWorkouts'])->name('getexercise');
     Route::post('getacheivementgraph', [UserMobileController::class, 'getStrengthProgress'])->name('get.strength.details');
+    Route::get('getworkouthistory', [UserMobileController::class, 'getMemberWorkoutDetails'])->name('getworkouthistory');
 });
