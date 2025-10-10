@@ -22,7 +22,7 @@ class DailyStrength extends Model
     {
         return $this->belongsTo(Newprofile::class, 'member_id');
     }
-    
+
     public function strenght()
     {
         return $this->belongsTo(Strength::class, 'strength_id');
