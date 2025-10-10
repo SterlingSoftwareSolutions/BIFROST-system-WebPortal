@@ -329,10 +329,11 @@ class UserMobileController extends Controller
                 return [
                     'type' => 'warmup',
                     'date' => $item->date,
-                    'weight' => $item->weight,
+                    //'weight' => $item->weight,
+                    'weight' => $item->warmup ? $item->warmup->weight : null,
                     'reps' => $item->reps,
                     'category_name' => $item->warmup && $item->warmup->category ? $item->warmup->category->category_name : null,
-                'workout' => $item->warmup && $item->warmup->workout ? $item->warmup->workout->workout : null,
+                    'workout' => $item->warmup && $item->warmup->workout ? $item->warmup->workout->workout : null,
                 ];
             });
 
