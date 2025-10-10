@@ -320,8 +320,8 @@ class UserMobileController extends Controller
                     'date' => $item->date,
                     'weight' => $item->weight,
                     'reps' => $item->reps,
-                    'category_name' => optional($item->strenght->category)->category_name,
-                    'workout' => optional($item->strenght->workout)->workout,
+                    'category_name' => $item->strenght && $item->strenght->category ? $item->strenght->category->category_name : null,
+                    'workout' => $item->strenght && $item->strenght->workout ? $item->strenght->workout->workout : null,
                 ];
             });
 
@@ -331,8 +331,8 @@ class UserMobileController extends Controller
                     'date' => $item->date,
                     'weight' => $item->weight,
                     'reps' => $item->reps,
-                    'category_name' => optional($item->warmup->category)->category_name,
-                    'workout' => optional($item->warmup->workout)->workout,
+                    'category_name' => $item->warmup && $item->warmup->category ? $item->warmup->category->category_name : null,
+                'workout' => $item->warmup && $item->warmup->workout ? $item->warmup->workout->workout : null,
                 ];
             });
 
