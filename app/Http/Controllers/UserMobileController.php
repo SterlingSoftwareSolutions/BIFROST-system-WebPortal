@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DailyStrength;
+use App\Models\DailyWarmup;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
 use App\Models\Strength;
@@ -281,5 +282,75 @@ class UserMobileController extends Controller
         }
     }
 
+    public function getMemberWorkoutDetails(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $member = Newprofile::where('user_id', $user->id)->first();
+
+            if (!$member) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Member profile not found.',
+                ], 404);
+            }
+
+            // Get Strength records
+            $dailyStrengths = DailyStrength::where('member_id', $member->id)
+                ->with([
+                    'strenght.workout',   // Strength -> WorkoutLibrary
+                    'strenght.category',  // Strength -> CategoryOption
+                ])
+                ->orderBy('date', 'asc')
+                ->get();
+
+            // Get Warmup records
+            $dailyWarmups = DailyWarmup::where('member_id', $member->id)
+                ->with([
+                    'warmup.workout',     // Warmup -> WorkoutLibrary
+                    'warmup.category',    // Warmup -> CategoryOption
+                ])
+                ->orderBy('date', 'asc')
+                ->get();
+
+            // Format both datasets
+            $strengthData = $dailyStrengths->map(function ($item) {
+                return [
+                    'type' => 'strength',
+                    'date' => $item->date,
+                    'weight' => $item->weight,
+                    'reps' => $item->reps,
+                    'category_name' => optional($item->strenght->category)->category_name,
+                    'workout' => optional($item->strenght->workout)->workout,
+                ];
+            });
+
+            $warmupData = $dailyWarmups->map(function ($item) {
+                return [
+                    'type' => 'warmup',
+                    'date' => $item->date,
+                    'weight' => $item->weight,
+                    'reps' => $item->reps,
+                    'category_name' => optional($item->warmup->category)->category_name,
+                    'workout' => optional($item->warmup->workout)->workout,
+                ];
+            });
+
+            // Combine both
+            $combinedData = $strengthData->merge($warmupData)->sortBy('date')->values();
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $combinedData,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch workout details.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
 }
