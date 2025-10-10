@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DailyStrength;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
+use App\Models\Strength;
 use App\Models\WorkoutLibrary;
 use Carbon\Carbon;
 use Exception;
@@ -178,7 +179,7 @@ class UserMobileController extends Controller
 
         // Validate input
         $request->validate([
-            'strength_id' => 'required|exists:workout_libraries,id',
+            'workout_id' => 'required|exists:workout_libraries,id',
         ]);
 
         try {
@@ -192,9 +193,22 @@ class UserMobileController extends Controller
                 ], 404);
             }
 
-            // Fetch all daily strength records for this member and strength ID
+            // ✅ Get all related strength records for this workout
+            $strengths = Strength::where('workout_id', $request->workout_id)->get();
+
+            if ($strengths->isEmpty()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No strength records found for this workout.'
+                ], 404);
+            }
+
+            // Collect all strength IDs
+            $strengthIds = $strengths->pluck('id');
+
+            // ✅ Fetch all daily strength records for this member and all strength IDs
             $strengthData = DailyStrength::where('member_id', $member->id)
-                ->where('strength_id', $request->strength_id)
+                ->whereIn('strength_id', $strengthIds)
                 ->orderBy('date', 'asc')
                 ->get();
 
@@ -206,14 +220,14 @@ class UserMobileController extends Controller
                 ], 200);
             }
 
-            // Prepare data for graph
+            // ✅ Prepare data for graph
             $graphData = $strengthData->map(function ($item) {
                 try {
-
                     $date = Carbon::createFromFormat('d/m/y l', $item->date)->format('Y-m-d');
                 } catch (\Exception $e) {
                     $date = $item->date;
                 }
+
                 return [
                     'date' => $date,
                     'reps' => (int) $item->reps,
@@ -221,7 +235,7 @@ class UserMobileController extends Controller
                 ];
             });
 
-            // Calculate summary metrics
+            // ✅ Calculate summary metrics
             $totalReps = $strengthData->sum('reps');
             $totalWeight = $strengthData->sum('weight');
             $totalSets = $strengthData->count();
@@ -229,12 +243,13 @@ class UserMobileController extends Controller
                 return $item->weight * (1 + ($item->reps / 30)); // Epley formula
             });
 
-            // Return JSON response
+            // ✅ Return JSON response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Strength progress retrieved successfully.',
                 'data' => [
-                    'strength_id' => (int) $request->strength_id,
+                    'workout_id' => (int) $request->workout_id,
+                    'strength_ids' => $strengthIds,
                     'graph' => [
                         'labels' => $graphData->pluck('date'),
                         'datasets' => [
@@ -265,5 +280,6 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
+
 
 }
