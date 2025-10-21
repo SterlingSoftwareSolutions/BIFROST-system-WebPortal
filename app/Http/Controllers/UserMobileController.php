@@ -354,4 +354,68 @@ class UserMobileController extends Controller
         }
     }
 
+    public function getMemberProfile()
+    {
+        try {
+            $user = Auth::user();
+
+            // Check authentication
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized access.'
+                ], 401);
+            }
+
+            // Find member profile linked to this user
+            $member = Newprofile::where('user_id', $user->id)->first();
+
+            if (!$member) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Member profile not found for this user.'
+                ], 404);
+            }
+
+            // Return combined user + member data
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Member profile retrieved successfully.',
+                'data' => [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                    ],
+                    'member' => [
+                        'id' => $member->id,
+                        'firstname' => $member->firstname,
+                        'lastname' => $member->lastname,
+                        'dob' => $member->dob,
+                        'gender' => $member->gender,
+                        'age' => $member->age,
+                        'phone' => $member->phone,
+                        'email' => $member->email,
+                        'address' => $member->address,
+                        'height' => $member->height,
+                        'weight' => $member->weight,
+                        'bmr' => $member->bmr,
+                        'primary_goal' => $member->{'primary-goal'},
+                        'subscription_level' => $member->subscription_level,
+                        'startdate' => $member->startdate,
+                        'is_subsactive' => (bool) $member->is_subsactive,
+                    ]
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to fetch member profile.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 }
