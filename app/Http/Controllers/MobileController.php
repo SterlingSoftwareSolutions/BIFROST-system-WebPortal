@@ -756,6 +756,16 @@ class MobileController extends Controller
         ]);
 
         try {
+            $user = Auth::user();
+            $member = Newprofile::where('user_id', $user->id)->first();
+
+            if (!$member) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Member profile not found for this user.',
+                ], 404);
+            }
+
             // Convert the incoming date string to Carbon
             $dateString = $request->input('selected_day');
             $date = \Carbon\Carbon::createFromFormat('l d/m/Y', $dateString);
@@ -797,12 +807,54 @@ class MobileController extends Controller
                 ->with('workout.categoryOption')
                 ->get();
 
-            // Test
+            // Test (filtered by member)
             $detailstest = Test::where('date', $dayWithDate)
+                ->where('member_id', $member->id)
                 ->with('workout')
-                ->with('workouts.categoryOption')
+                ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
+
+            // Create a map of [workout name + category_options_id] => weight from test
+            $testWeights = $detailstest->mapWithKeys(function ($test) {
+                $key = $test->workout->workout . '_' . $test->workout->category_options_id;
+                return [$key => $test->weight];
+            });
+
+            // Append matching weight to Strength workouts
+            $detailsstrength->transform(function ($item) use ($testWeights) {
+                if ($item->workout) {
+                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
+                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
+                } else {
+                    $item->test_weight = null;
+                }
+                return $item;
+            });
+
+            // Append matching weight to Conditioning workouts
+            $detailsconditioning->transform(function ($item) use ($testWeights) {
+                if ($item->workout) {
+                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
+                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
+                } else {
+                    $item->test_weight = null;
+                }
+                return $item;
+            });
+
+            // Append matching weight to Weightlifting workouts
+            $detailsweight->transform(function ($item) use ($testWeights) {
+                if ($item->workout) {
+                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
+                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
+                } else {
+                    $item->test_weight = null;
+                }
+                return $item;
+            });
+
+
 
             return response()->json([
                 'success' => true,
@@ -822,6 +874,38 @@ class MobileController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function updateWeight(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:tests,id',
+            'workout_id' => 'required|integer|exists:workout_libraries,id',
+            'member_id' => 'required|integer|exists:members,id',
+            'weight' => 'required|numeric',
+        ]);
+
+        $test = Test::where('id', $request->id)
+                    ->where('workout_id', $request->workout_id)
+                    ->where('member_id', $request->member_id)
+                    ->first();
+
+        if (!$test) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No matching test found.',
+            ], 404);
+        }
+
+        $test->update([
+            'weight' => $request->weight,
+            'date' => $request->date ?? $test->date,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Weight updated successfully.',
+        ]);
     }
 
 }
