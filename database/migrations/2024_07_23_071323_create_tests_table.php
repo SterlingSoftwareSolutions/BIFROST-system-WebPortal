@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('workoutname')->nullable();
             $table->boolean('is_assigned')->default(false);
             $table->string('date');
+            $table->float('weight');
             $table->timestamps();
         });
     }

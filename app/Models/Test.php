@@ -17,7 +17,8 @@ class Test extends Model
         'member_id',
         'workoutname',
         'is_assigned',
-        'date'
+        'date',
+        'weight'
     ];
 
     public function category()

@@ -33,6 +33,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getscore', [MobileController::class, 'getscore']);
 
     Route::post('getworkout', [MobileController::class, 'getworkout']);
+    Route::post('updateweight', [MobileController::class, 'updateWeight']);
 
     //profile
     Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
