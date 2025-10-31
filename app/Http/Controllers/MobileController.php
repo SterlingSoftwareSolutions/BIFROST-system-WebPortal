@@ -756,7 +756,7 @@ class MobileController extends Controller
         ]);
 
         try {
-            $user = Auth::user();
+            $user = $request->user();
             $member = Newprofile::where('user_id', $user->id)->first();
 
             if (!$member) {
@@ -854,7 +854,9 @@ class MobileController extends Controller
                 return $item;
             });
 
-
+            $score = $user->scores()
+            ->where('selected_day', $request->selected_day)
+            ->first();
 
             return response()->json([
                 'success' => true,
@@ -865,6 +867,7 @@ class MobileController extends Controller
                 'conditioning' => $detailsconditioning,
                 'weightlifting' => $detailsweight,
                 'test' => $detailstest,
+                'score' => $score,
             ], 200);
 
         } catch (\Exception $e) {
