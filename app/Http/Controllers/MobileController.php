@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CategoryOption;
 use App\Models\Classes;
 use App\Models\ClientManagement;
 use App\Models\Conditioning;
@@ -17,6 +18,7 @@ use App\Models\Strength;
 use App\Models\UserScore;
 use App\Models\Warmup;
 use App\Models\Weightlifting;
+use App\Models\WorkoutLibrary;
 use Illuminate\Http\Request;
 use PhpParser\Node\Expr\FuncCall;
 use Illuminate\Support\Facades\Auth;
@@ -858,6 +860,21 @@ class MobileController extends Controller
             ->where('selected_day', $request->selected_day)
             ->first();
 
+            $categoryOptions = CategoryOption::select('id', 'category_name')->get();
+
+            // Get all workouts with category option name
+            $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'workout' => $item->workout,
+                    'type' => $item->type,
+                    'category_option_id' => $item->category_options_id,
+                    'category_option_name' => $item->categoryOption->category_name ?? null,
+                ];
+            });
+
             return response()->json([
                 'success' => true,
                 'selected_day' => $dateString,
@@ -868,6 +885,8 @@ class MobileController extends Controller
                 'weightlifting' => $detailsweight,
                 'test' => $detailstest,
                 'score' => $score,
+                'workoutlibrary' => $workoutlibrary,
+                'categoryOptions' => $categoryOptions,
             ], 200);
 
         } catch (\Exception $e) {
