@@ -6,9 +6,11 @@ use App\Models\CategoryOption;
 use App\Models\Classes;
 use App\Models\ClientManagement;
 use App\Models\Conditioning;
+use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
 use App\Models\Test;
 use App\Models\DailyWarmup;
+use App\Models\DailyWeightlifting;
 use App\Models\Newprofile;
 use App\Models\ReservationSession;
 use Exception;
@@ -368,30 +370,31 @@ class MobileController extends Controller
         try {
             Log::info('storewarmupdaily function called.');
 
-            $storedDay = session('selected_day');
-            Log::info('Stored day from session: ' . $storedDay);
+            // $storedDay = session('selected_day');
+            // Log::info('Stored day from session: ' . $storedDay);
 
-            // Format the stored day to the desired format
-            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
-            Log::info('Formatted date: ' . $date);
+            // // Format the stored day to the desired format
+            // $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            // Log::info('Formatted date: ' . $date);
 
-            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
-            $formattedDate = $date->format('d/m/y'); // Format the date
+            // $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
+            // $formattedDate = $date->format('d/m/y'); // Format the date
 
-            // Combine day name and date
-            $dayWithDate = $formattedDate . ' ' . $dayName;
-            Log::info('Day with date: ' . $dayWithDate);
+            // // Combine day name and date
+            // $dayWithDate = $formattedDate . ' ' . $dayName;
+            // Log::info('Day with date: ' . $dayWithDate);
 
             $validatedData = $request->validate([
                 'warmup_id' => 'required|integer|exists:warmups,id',
                 'reps' => 'required|integer',
+                'selected_day' => 'required|string',
             ]);
             Log::info('Validated data: ', $validatedData);
 
             $userId = Auth::user()->id;
             $memberId = Newprofile::where('user_id', $userId)->value('id');
             Log::info('Authenticated user ID: ' . $userId);
-
+            $storedDay = $validatedData['selected_day'];
             // Check if a record already exists for this user and workout
             $dailyWarmup = DailyWarmup::where('member_id', $memberId)
                 ->where('warmup_id', $validatedData['warmup_id'])
@@ -411,7 +414,7 @@ class MobileController extends Controller
                     'member_id' => $memberId,
                     'warmup_id' => $validatedData['warmup_id'],
                     'reps' => $validatedData['reps'],
-                    'date' => $dayWithDate,
+                    'date' => $storedDay,
                 ]);
                 $message = 'Warm-up saved successfully';
                 Log::info('New warm-up created: ', ['dailyWarmup' => $dailyWarmup]);
@@ -435,9 +438,9 @@ class MobileController extends Controller
         // Validate the incoming request data
         $validated = $request->validate([
             'strength_id' => 'required|exists:strengths,id',
-            'type' => 'required|in:Primary,Alternative',
             'reps' => 'required|integer',
             'weight' => 'nullable|numeric', // Add validation rule for weight
+            'selected_day' => 'required|string',
         ]);
 
         // Log the validated data
@@ -452,7 +455,7 @@ class MobileController extends Controller
         }
 
         // Retrieve and format the date from session
-        $storedDay = session('selected_day');
+        $storedDay = $validated['selected_day'];
         if (!$storedDay) {
             Log::warning('Selected day is missing from session');
             return response()->json(['error' => 'Selected day is missing from session'], 400);
@@ -488,7 +491,7 @@ class MobileController extends Controller
             // Check if a record already exists for this user and workout and type
             $dailyStrength = DailyStrength::where('member_id', $memberId)
                 ->where('strength_id', $validated['strength_id'])
-                ->where('date', $dayWithDate)
+                ->where('date', $storedDay)
                 ->where('type', $validated['type'])
                 ->first();
 
@@ -505,7 +508,7 @@ class MobileController extends Controller
                 Log::info('Updated DailyStrength Record:', [
                     'user_id' => $memberId,
                     'strength_id' => $validated['strength_id'],
-                    'date' => $dayWithDate,
+                    'date' => $storedDay,
                     'weight' => $weight,
                     'type' => $validated['type'],
                     'updated_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
@@ -516,7 +519,7 @@ class MobileController extends Controller
                     'member_id' => $memberId,
                     'strength_id' => $validated['strength_id'],
                     'type' => $validated['type'],
-                    'date' => $dayWithDate,
+                    'date' => $storedDay,
                     'reps' => $validated['reps'],
                     'weight' => $weight, // Save weight
                 ]);
@@ -526,7 +529,7 @@ class MobileController extends Controller
                 Log::info('Created New DailyStrength Record:', [
                     'user_id' => $memberId,
                     'strength_id' => $validated['strength_id'],
-                    'date' => $dayWithDate,
+                    'date' => $storedDay,
                     'weight' => $weight,
                     'type' => $validated['type'],
                     'created_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
@@ -548,8 +551,239 @@ class MobileController extends Controller
             return response()->json(['error' => 'An error occurred while saving the strength'], 500);
         }
     }
+    public function storeweightliftingdaily(Request $request)
+    {
+        // Log the received request data
+        Log::info('Received Request Data:', $request->all());
 
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'weightlifting_id' => 'required|exists:weightliftings,id',
+            'reps' => 'required|integer',
+            'weight' => 'nullable|numeric', // Add validation rule for weight
+            'selected_day' => 'required|string',
+        ]);
 
+        // Log the validated data
+        Log::info('Validated Data:', $validated);
+
+        // Retrieve the authenticated user ID
+        $userId = Auth::id();
+        $memberId = Newprofile::where('user_id', $userId)->value('id');
+        if (!$memberId) {
+            Log::warning('User is not authenticated.');
+            return response()->json(['error' => 'User is not authenticated'], 401);
+        }
+
+        // Retrieve and format the date from session
+        $storedDay = $validated['selected_day'];
+        if (!$storedDay) {
+            Log::warning('Selected day is missing from session');
+            return response()->json(['error' => 'Selected day is missing from session'], 400);
+        }
+
+        try {
+
+            $storedDay = session('selected_day');
+            Log::info('Stored day from session: ' . $storedDay);
+
+            // Format the stored day to the desired format
+            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            Log::info('Formatted date: ' . $date);
+
+            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
+            $formattedDate = $date->format('d/m/y'); // Format the date
+
+            // Combine day name and date
+            $dayWithDate = $formattedDate . ' ' . $dayName;
+
+            // $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            // $formattedDate = $date->format('d/m/Y'); // Correct format
+
+            // Log the formatted date
+            Log::info('Formatted Date:', ['date' => $formattedDate]);
+
+            // Ensure weight is a float and handle null value
+            $weight = isset($validated['weight']) ? floatval($validated['weight']) : null;
+
+            // Log the weight being saved
+            Log::info('Weight Value:', ['weight' => $weight]);
+
+            // Check if a record already exists for this user and workout and type
+            $dailyWeightlifting  = DailyWeightlifting::where('member_id', $memberId)
+                ->where('weightlifting_id', $validated['weightlifting_id'])
+                ->where('date', $storedDay)
+                ->first();
+
+            if ($dailyWeightlifting) {
+                // Update existing record
+                $dailyWeightlifting->update([
+                    'reps' => $validated['reps'],
+                    'weight' => $weight, // Update weight
+                ]);
+                $message = 'Data successfully updated';
+
+                // Log the update action
+                Log::info('Updated dailyWeightlifting Record:', [
+                    'user_id' => $memberId,
+                    'weightlifting_id' => $validated['weightlifting_id'],
+                    'date' => $storedDay,
+                    'weight' => $weight,
+                    'updated_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
+                ]);
+            } else {
+                // Create a new record
+                DailyWeightlifting::create([
+                    'member_id' => $memberId,
+                    'weightlifting_id' => $validated['weightlifting_id'],
+                    'date' => $storedDay,
+                    'reps' => $validated['reps'],
+                    'weight' => $weight, // Save weight
+                ]);
+                $message = 'Data successfully saved';
+
+                // Log the creation action with weight included
+                Log::info('Created New DailyWeightlifting Record:', [
+                    'user_id' => $memberId,
+                    'weightlifting_id' => $validated['weightlifting_id'],
+                    'date' => $storedDay,
+                    'weight' => $weight,
+                    'created_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
+                ]);
+            }
+
+            // Respond with success message
+            return response()->json([
+                'message' => $message,
+                'data' => $validated
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error('Error saving weightlifting: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'exception' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['error' => 'An error occurred while saving the weightlifting'], 500);
+        }
+    }
+
+    public function storeconditioningdaily(Request $request)
+    {
+        // Log the received request data
+        Log::info('Received Request Data:', $request->all());
+
+        // Validate the incoming request data
+        $validated = $request->validate([
+            'conditioning_id' => 'required|exists:conditionings,id',
+            'reps' => 'required|integer',
+            'weight' => 'nullable|numeric', // Add validation rule for weight
+            'selected_day' => 'required|string',
+        ]);
+
+        // Log the validated data
+        Log::info('Validated Data:', $validated);
+
+        // Retrieve the authenticated user ID
+        $userId = Auth::id();
+        $memberId = Newprofile::where('user_id', $userId)->value('id');
+        if (!$memberId) {
+            Log::warning('User is not authenticated.');
+            return response()->json(['error' => 'User is not authenticated'], 401);
+        }
+
+        // Retrieve and format the date from session
+        $storedDay = $validated['selected_day'];
+        if (!$storedDay) {
+            Log::warning('Selected day is missing from session');
+            return response()->json(['error' => 'Selected day is missing from session'], 400);
+        }
+
+        try {
+
+            $storedDay = session('selected_day');
+            Log::info('Stored day from session: ' . $storedDay);
+
+            // Format the stored day to the desired format
+            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            Log::info('Formatted date: ' . $date);
+
+            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
+            $formattedDate = $date->format('d/m/y'); // Format the date
+
+            // Combine day name and date
+            $dayWithDate = $formattedDate . ' ' . $dayName;
+
+            // $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            // $formattedDate = $date->format('d/m/Y'); // Correct format
+
+            // Log the formatted date
+            Log::info('Formatted Date:', ['date' => $formattedDate]);
+
+            // Ensure weight is a float and handle null value
+            $weight = isset($validated['weight']) ? floatval($validated['weight']) : null;
+
+            // Log the weight being saved
+            Log::info('Weight Value:', ['weight' => $weight]);
+
+            // Check if a record already exists for this user and workout and type
+            $dailyConditioning  = DailyConditioning::where('member_id', $memberId)
+                ->where('conditioning_id', $validated['conditioning_id'])
+                ->where('date', $storedDay)
+                ->first();
+
+            if ($dailyConditioning) {
+                // Update existing record
+                $dailyConditioning->update([
+                    'reps' => $validated['reps'],
+                    'weight' => $weight, // Update weight
+                ]);
+                $message = 'Data successfully updated';
+
+                // Log the update action
+                Log::info('Updated dailyConditioning Record:', [
+                    'user_id' => $memberId,
+                    'conditioning_id' => $validated['conditioning_id'],
+                    'date' => $storedDay,
+                    'weight' => $weight,
+                    'updated_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
+                ]);
+            } else {
+                // Create a new record
+                DailyConditioning::create([
+                    'member_id' => $memberId,
+                    'conditioning_id' => $validated['conditioning_id'],
+                    'date' => $storedDay,
+                    'reps' => $validated['reps'],
+                    'weight' => $weight, // Save weight
+                ]);
+                $message = 'Data successfully saved';
+
+                // Log the creation action with weight included
+                Log::info('Created New DailyConditioning Record:', [
+                    'user_id' => $memberId,
+                    'conditioning_id' => $validated['conditioning_id'],
+                    'date' => $storedDay,
+                    'weight' => $weight,
+                    'created_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
+                ]);
+            }
+
+            // Respond with success message
+            return response()->json([
+                'message' => $message,
+                'data' => $validated
+            ]);
+        } catch (\Exception $e) {
+            // Log the exception message
+            Log::error('Error saving conditioning: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'exception' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(['error' => 'An error occurred while saving the conditioning'], 500);
+        }
+    }
     // public function storestrengthdaily(Request $request)
     // {
     //     Log::info('Received Request Data:', $request->all());
