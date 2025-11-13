@@ -35,6 +35,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getworkout', [MobileController::class, 'getworkout']);
     Route::post('updateweight', [MobileController::class, 'updateWeight']);
 
+    //workout complete
+    Route::post('/warmup-daily',  [MobileController::class, 'storewarmupdaily']);
+    Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthdaily']);
+    Route::post('/save-weightligting-workout',  [MobileController::class, 'storeweightliftingdaily']);
+    Route::post('/save-conditioning-workout',  [MobileController::class, 'storeconditioningdaily']);
+
     //profile
     Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
     Route::post('monthlyimages-store', [UserMobileController::class, 'store'])->name('monthly_images.store');

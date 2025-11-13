@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DailyStrength extends Model
+class DailyWeightlifting extends Model
 {
     use HasFactory;
-
+    protected $table = 'daily_weightlifting';
     protected $fillable = [
         'member_id',
-        'strength_id',
+        'weightlifting_id',
         'reps',
         'date',
-        'type',
         'weight',
         'set_number',
     ];
@@ -24,9 +23,8 @@ class DailyStrength extends Model
         return $this->belongsTo(Newprofile::class, 'member_id');
     }
 
-    public function strenght()
+    public function weightlifting()
     {
-        return $this->belongsTo(Strength::class, 'strength_id');
+        return $this->belongsTo(Weightlifting::class, 'weightlifting_id');
     }
-
 }
