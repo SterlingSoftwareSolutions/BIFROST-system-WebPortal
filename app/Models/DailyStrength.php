@@ -16,6 +16,7 @@ class DailyStrength extends Model
         'date',
         'type',
         'weight',
+        'set_number',
     ];
 
     public function member()

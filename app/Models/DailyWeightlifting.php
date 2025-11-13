@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class DailyWeightlifting extends Model
 {
     use HasFactory;
+    protected $table = 'daily_weightlifting';
     protected $fillable = [
         'member_id',
         'weightlifting_id',
         'reps',
         'date',
         'weight',
+        'set_number',
     ];
 
     public function member()

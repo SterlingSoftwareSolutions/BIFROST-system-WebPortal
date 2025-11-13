@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('member_id')->nullable()->constrained('members')->onDelete('cascade');
             $table->foreignId('weightlifting_id')->nullable()->constrained('weightliftings')->onDelete('cascade');
+            $table->integer('set_number')->nullable();
             $table->integer('reps')->nullable();
             $table->string('weight')->nullable();
             $table->string('date');
