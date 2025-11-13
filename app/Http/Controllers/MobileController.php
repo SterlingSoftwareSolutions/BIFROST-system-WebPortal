@@ -6,9 +6,11 @@ use App\Models\CategoryOption;
 use App\Models\Classes;
 use App\Models\ClientManagement;
 use App\Models\Conditioning;
+use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
 use App\Models\Test;
 use App\Models\DailyWarmup;
+use App\Models\DailyWeightlifting;
 use App\Models\Newprofile;
 use App\Models\ReservationSession;
 use Exception;
@@ -24,6 +26,8 @@ use PhpParser\Node\Expr\FuncCall;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
+
 
 class MobileController extends Controller
 {
@@ -368,187 +372,414 @@ class MobileController extends Controller
         try {
             Log::info('storewarmupdaily function called.');
 
-            $storedDay = session('selected_day');
-            Log::info('Stored day from session: ' . $storedDay);
-
-            // Format the stored day to the desired format
-            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
-            Log::info('Formatted date: ' . $date);
-
-            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
-            $formattedDate = $date->format('d/m/y'); // Format the date
-
-            // Combine day name and date
-            $dayWithDate = $formattedDate . ' ' . $dayName;
-            Log::info('Day with date: ' . $dayWithDate);
-
-            $validatedData = $request->validate([
-                'warmup_id' => 'required|integer|exists:warmups,id',
-                'reps' => 'required|integer',
-            ]);
-            Log::info('Validated data: ', $validatedData);
-
-            $userId = Auth::user()->id;
+            $userId = Auth::id();
             $memberId = Newprofile::where('user_id', $userId)->value('id');
-            Log::info('Authenticated user ID: ' . $userId);
+            Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
-            // Check if a record already exists for this user and workout
-            $dailyWarmup = DailyWarmup::where('member_id', $memberId)
-                ->where('warmup_id', $validatedData['warmup_id'])
-                ->first();
-            Log::info('Existing DailyWarmup record: ', ['dailyWarmup' => $dailyWarmup]);
+            // Get warmup array directly
+            $warmupItems = $request->all();
+            Log::info('Received warmup payload:', ['warmupItems' => $warmupItems]);
 
-            if ($dailyWarmup) {
-                Log::info('Warm-up updated111: ', ['dailyWarmup' => $dailyWarmup]);
-                // Update the existing record
-                $dailyWarmup->update(['reps' => $validatedData['reps']]);
-                $dailyWarmup->touch(); // Update the timestamps
-                $message = 'Warm-up updated successfully';
-                Log::info('Warm-up updated: ', ['dailyWarmup' => $dailyWarmup]);
-            } else {
-                Log::info('New warm-up created11: ', ['dailyWarmup' => $dailyWarmup]);
-                DailyWarmup::create([
-                    'member_id' => $memberId,
-                    'warmup_id' => $validatedData['warmup_id'],
-                    'reps' => $validatedData['reps'],
-                    'date' => $dayWithDate,
+            $responses = [];
+
+            foreach ($warmupItems as $item) {
+                $validator = Validator::make($item, [
+                    'warmup_id' => 'required|integer|exists:warmups,id',
+                    'reps' => 'required|integer',
+                    'selected_day' => 'required|string',
                 ]);
-                $message = 'Warm-up saved successfully';
-                Log::info('New warm-up created: ', ['dailyWarmup' => $dailyWarmup]);
+
+                if ($validator->fails()) {
+                    $responses[] = [
+                        'warmup_id' => $item['warmup_id'] ?? null,
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors(),
+                    ];
+                    continue;
+                }
+
+                $validatedData = $validator->validated();
+                $storedDay = $validatedData['selected_day'];
+
+                $dailyWarmup = DailyWarmup::where('member_id', $memberId)
+                    ->where('warmup_id', $validatedData['warmup_id'])
+                    ->first();
+
+                Log::info('Existing warmup record:', ['dailyWarmup' => $dailyWarmup?->toArray()]);
+
+                if ($dailyWarmup) {
+                    $dailyWarmup->update([
+                        'reps' => $validatedData['reps'],
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Warm-up updated successfully';
+                    Log::info('Warm-up updated', ['warmup_id' => $validatedData['warmup_id']]);
+                } else {
+                    $dailyWarmup = DailyWarmup::create([
+                        'member_id' => $memberId,
+                        'warmup_id' => $validatedData['warmup_id'],
+                        'reps' => $validatedData['reps'],
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Warm-up saved successfully';
+                    Log::info('New warm-up created', ['warmup_id' => $validatedData['warmup_id']]);
+                }
+
+                $responses[] = [
+                    'warmup_id' => $validatedData['warmup_id'],
+                    'message' => $message,
+                    'daily_warmup_id' => $dailyWarmup->id,
+                ];
             }
 
             return response()->json([
-                'success' => $message,
-                'daily_warmup_id' => $dailyWarmup->id
+                'success' => true,
+                'message' => 'Warm-ups processed successfully',
+                'results' => $responses,
             ]);
+
         } catch (\Exception $e) {
             Log::error('Error saving warm-up: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while saving the warm-up'], 500);
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while saving the warm-ups',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
 
     public function storestrengthdaily(Request $request)
     {
-        // Log the received request data
-        Log::info('Received Request Data:', $request->all());
-
-        // Validate the incoming request data
-        $validated = $request->validate([
-            'strength_id' => 'required|exists:strengths,id',
-            'type' => 'required|in:Primary,Alternative',
-            'reps' => 'required|integer',
-            'weight' => 'nullable|numeric', // Add validation rule for weight
-        ]);
-
-        // Log the validated data
-        Log::info('Validated Data:', $validated);
-
-        // Retrieve the authenticated user ID
-        $userId = Auth::id();
-        $memberId = Newprofile::where('user_id', $userId)->value('id');
-        if (!$memberId) {
-            Log::warning('User is not authenticated.');
-            return response()->json(['error' => 'User is not authenticated'], 401);
-        }
-
-        // Retrieve and format the date from session
-        $storedDay = session('selected_day');
-        if (!$storedDay) {
-            Log::warning('Selected day is missing from session');
-            return response()->json(['error' => 'Selected day is missing from session'], 400);
-        }
-
         try {
+            Log::info('storestrengthdaily function called.');
 
-            $storedDay = session('selected_day');
-            Log::info('Stored day from session: ' . $storedDay);
+            $userId = Auth::id();
+            $memberId = Newprofile::where('user_id', $userId)->value('id');
+            Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
-            // Format the stored day to the desired format
-            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
-            Log::info('Formatted date: ' . $date);
+            if (!$memberId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
 
-            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
-            $formattedDate = $date->format('d/m/y'); // Format the date
+            $strengthItems = $request->all();
+            Log::info('Received strength payload:', ['strengthItems' => $strengthItems]);
 
-            // Combine day name and date
-            $dayWithDate = $formattedDate . ' ' . $dayName;
-
-            // $date = Carbon::createFromFormat('d/m/Y', $storedDay);
-            // $formattedDate = $date->format('d/m/Y'); // Correct format
-
-            // Log the formatted date
-            Log::info('Formatted Date:', ['date' => $formattedDate]);
-
-            // Ensure weight is a float and handle null value
-            $weight = isset($validated['weight']) ? floatval($validated['weight']) : null;
-
-            // Log the weight being saved
-            Log::info('Weight Value:', ['weight' => $weight]);
-
-            // Check if a record already exists for this user and workout and type
-            $dailyStrength = DailyStrength::where('member_id', $memberId)
-                ->where('strength_id', $validated['strength_id'])
-                ->where('date', $dayWithDate)
-                ->where('type', $validated['type'])
-                ->first();
-
-            if ($dailyStrength) {
-                // Update existing record
-                $dailyStrength->update([
-                    'reps' => $validated['reps'],
-                    'weight' => $weight, // Update weight
-                    'type' => $validated['type'], // Ensure type is updated
-                ]);
-                $message = 'Data successfully updated';
-
-                // Log the update action
-                Log::info('Updated DailyStrength Record:', [
-                    'user_id' => $memberId,
-                    'strength_id' => $validated['strength_id'],
-                    'date' => $dayWithDate,
-                    'weight' => $weight,
-                    'type' => $validated['type'],
-                    'updated_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
-                ]);
-            } else {
-                // Create a new record
-                DailyStrength::create([
-                    'member_id' => $memberId,
-                    'strength_id' => $validated['strength_id'],
-                    'type' => $validated['type'],
-                    'date' => $dayWithDate,
-                    'reps' => $validated['reps'],
-                    'weight' => $weight, // Save weight
-                ]);
-                $message = 'Data successfully saved';
-
-                // Log the creation action with weight included
-                Log::info('Created New DailyStrength Record:', [
-                    'user_id' => $memberId,
-                    'strength_id' => $validated['strength_id'],
-                    'date' => $dayWithDate,
-                    'weight' => $weight,
-                    'type' => $validated['type'],
-                    'created_data' => array_merge($validated, ['weight' => $weight]) // Include weight in log
+            if (!is_array($strengthItems) || count($strengthItems) === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No strength data received.',
                 ]);
             }
 
-            // Respond with success message
+            $responses = [];
+
+            foreach ($strengthItems as $item) {
+                $validator = Validator::make($item, [
+                    'strength_id' => 'required|integer|exists:strengths,id',
+                    'reps' => 'required|integer',
+                    'weight' => 'nullable|numeric',
+                    'set_number' => 'required|integer|min:1',
+                    'selected_day' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    $responses[] = [
+                        'strength_id' => $item['strength_id'] ?? null,
+                        'set_number' => $item['set_number'] ?? null,
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors(),
+                    ];
+                    continue;
+                }
+
+                $validatedData = $validator->validated();
+                $storedDay = $validatedData['selected_day'];
+                $weight = $validatedData['weight'] ?? null;
+                $setNumber = $validatedData['set_number'];
+
+                // Check if record exists for this member + strength_id + date + set_number
+                $dailyStrength = DailyStrength::where('member_id', $memberId)
+                    ->where('strength_id', $validatedData['strength_id'])
+                    ->where('date', $storedDay)
+                    ->where('set_number', $setNumber)
+                    ->first();
+
+                Log::info('Existing strength record:', ['dailyStrength' => $dailyStrength?->toArray()]);
+
+                if ($dailyStrength) {
+                    // Update existing record
+                    $dailyStrength->update([
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Strength updated successfully';
+                    Log::info('Strength updated', [
+                        'strength_id' => $validatedData['strength_id'],
+                        'set_number' => $setNumber
+                    ]);
+                } else {
+                    // Create new record
+                    $dailyStrength = DailyStrength::create([
+                        'member_id' => $memberId,
+                        'strength_id' => $validatedData['strength_id'],
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'set_number' => $setNumber,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Strength saved successfully';
+                    Log::info('New strength record created', [
+                        'strength_id' => $validatedData['strength_id'],
+                        'set_number' => $setNumber
+                    ]);
+                }
+
+                $responses[] = [
+                    'strength_id' => $validatedData['strength_id'],
+                    'set_number' => $setNumber,
+                    'message' => $message,
+                    'daily_strength_id' => $dailyStrength->id,
+                ];
+            }
+
             return response()->json([
-                'message' => $message,
-                'data' => $validated
-            ]);
-        } catch (\Exception $e) {
-            // Log the exception message
-            Log::error('Error saving strength: ' . $e->getMessage(), [
-                'request' => $request->all(),
-                'exception' => $e->getTraceAsString()
+                'success' => true,
+                'message' => 'Strength workouts processed successfully',
+                'results' => $responses,
             ]);
 
-            return response()->json(['error' => 'An error occurred while saving the strength'], 500);
+        } catch (\Exception $e) {
+            Log::error('Error saving strength workout: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while saving the strength workouts',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
 
+
+    public function storeweightliftingdaily(Request $request)
+    {
+        try {
+            Log::info('storeweightliftingdaily function called.');
+
+            $userId = Auth::id();
+            $memberId = Newprofile::where('user_id', $userId)->value('id');
+            Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
+
+            if (!$memberId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
+
+            // ✅ Get weightlifting array directly
+            $weightliftingItems = $request->all();
+            Log::info('Received weightlifting payload:', ['weightliftingItems' => $weightliftingItems]);
+
+            if (!is_array($weightliftingItems) || count($weightliftingItems) === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No weightlifting data received.',
+                ]);
+            }
+
+            $responses = [];
+
+            foreach ($weightliftingItems as $item) {
+                $validator = Validator::make($item, [
+                    'weightlifting_id' => 'required|integer|exists:weightliftings,id',
+                    'reps' => 'required|integer',
+                    'weight' => 'nullable|numeric',
+                    'set_number' => 'required|integer|min:1',
+                    'selected_day' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    $responses[] = [
+                        'weightlifting_id' => $item['weightlifting_id'] ?? null,
+                        'set_number' => $item['set_number'] ?? null,
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors(),
+                    ];
+                    continue;
+                }
+
+                $validatedData = $validator->validated();
+                $storedDay = $validatedData['selected_day'];
+                $weight = $validatedData['weight'] ?? null;
+                $setNumber = $validatedData['set_number'];
+
+                // ✅ Check if record exists for this member + weightlifting_id + date + set_number
+                $dailyWeightlifting = DailyWeightlifting::where('member_id', $memberId)
+                    ->where('weightlifting_id', $validatedData['weightlifting_id'])
+                    ->where('date', $storedDay)
+                    ->where('set_number', $setNumber)
+                    ->first();
+
+                Log::info('Existing weightlifting record:', ['dailyWeightlifting' => $dailyWeightlifting?->toArray()]);
+
+                if ($dailyWeightlifting) {
+                    // ✅ Update existing record
+                    $dailyWeightlifting->update([
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Weightlifting updated successfully';
+                    Log::info('Weightlifting updated', [
+                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'set_number' => $setNumber
+                    ]);
+                } else {
+                    // ✅ Create new record
+                    $dailyWeightlifting = DailyWeightlifting::create([
+                        'member_id' => $memberId,
+                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'set_number' => $setNumber,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Weightlifting saved successfully';
+                    Log::info('New weightlifting record created', [
+                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'set_number' => $setNumber
+                    ]);
+                }
+
+                $responses[] = [
+                    'weightlifting_id' => $validatedData['weightlifting_id'],
+                    'set_number' => $setNumber,
+                    'message' => $message,
+                    'daily_weightlifting_id' => $dailyWeightlifting->id,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Weightlifting workouts processed successfully',
+                'results' => $responses,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error saving weightlifting workout: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while saving the weightlifting workouts',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeconditioningdaily(Request $request)
+    {
+        try {
+            Log::info('storeconditioningdaily function called.');
+
+            $userId = Auth::id();
+            $memberId = Newprofile::where('user_id', $userId)->value('id');
+            Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
+
+            if (!$memberId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
+
+            // ✅ Get conditioning array directly
+            $conditioningItems = $request->all();
+            Log::info('Received conditioning payload:', ['conditioningItems' => $conditioningItems]);
+
+            if (!is_array($conditioningItems) || count($conditioningItems) === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No conditioning data received.',
+                ]);
+            }
+
+            $responses = [];
+
+            foreach ($conditioningItems as $item) {
+                $validator = Validator::make($item, [
+                    'conditioning_id' => 'required|integer|exists:conditionings,id',
+                    'reps' => 'required|integer',
+                    'weight' => 'nullable|numeric',
+                    'selected_day' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    $responses[] = [
+                        'conditioning_id' => $item['conditioning_id'] ?? null,
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors(),
+                    ];
+                    continue;
+                }
+
+                $validatedData = $validator->validated();
+                $storedDay = $validatedData['selected_day'];
+                $weight = $validatedData['weight'] ?? null;
+
+                // ✅ Check if record exists for this member + conditioning + date
+                $dailyConditioning = DailyConditioning::where('member_id', $memberId)
+                    ->where('conditioning_id', $validatedData['conditioning_id'])
+                    ->where('date', $storedDay)
+                    ->first();
+
+                Log::info('Existing conditioning record:', ['dailyConditioning' => $dailyConditioning?->toArray()]);
+
+                if ($dailyConditioning) {
+                    // ✅ Update existing record
+                    $dailyConditioning->update([
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Conditioning updated successfully';
+                    Log::info('Conditioning updated', ['conditioning_id' => $validatedData['conditioning_id']]);
+                } else {
+                    // ✅ Create new record
+                    $dailyConditioning = DailyConditioning::create([
+                        'member_id' => $memberId,
+                        'conditioning_id' => $validatedData['conditioning_id'],
+                        'reps' => $validatedData['reps'],
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Conditioning saved successfully';
+                    Log::info('New conditioning record created', ['conditioning_id' => $validatedData['conditioning_id']]);
+                }
+
+                $responses[] = [
+                    'conditioning_id' => $validatedData['conditioning_id'],
+                    'message' => $message,
+                    'daily_conditioning_id' => $dailyConditioning->id,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Conditioning workouts processed successfully',
+                'results' => $responses,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error saving conditioning workout: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while saving the conditioning workouts',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     // public function storestrengthdaily(Request $request)
     // {
