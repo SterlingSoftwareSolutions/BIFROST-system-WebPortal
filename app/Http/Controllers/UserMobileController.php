@@ -417,5 +417,103 @@ class UserMobileController extends Controller
         }
     }
 
+    public function updateMemberProfile(Request $request)
+    {
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized access.'
+                ], 401);
+            }
+
+            // Validate inputs
+            $validated = $request->validate([
+                'firstname' => 'sometimes|string|max:255',
+                'lastname' => 'sometimes|string|max:255',
+                'dob' => 'sometimes|date',
+                'gender' => 'sometimes|string',
+                'age' => 'sometimes|integer',
+                'phone' => 'sometimes|string|max:20',
+                'email' => 'sometimes|email|max:255',
+                'address' => 'sometimes|string',
+                'height' => 'sometimes|numeric',
+                'weight' => 'sometimes|numeric',
+                'bmr' => 'sometimes|numeric',
+                'primary_goal' => 'sometimes|string',
+                'subscription_level' => 'sometimes|string',
+                'startdate' => 'sometimes|date',
+                'is_subsactive' => 'sometimes|boolean',
+            ]);
+
+            // Get member record
+            $member = Newprofile::where('user_id', $user->id)->first();
+
+            if (!$member) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Member profile not found.'
+                ], 404);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | 1. UPDATE USER (name + email)
+            |--------------------------------------------------------------------------
+            */
+            if ($request->has('email')) {
+                $user->email = $request->email;
+            }
+
+            if ($request->has('firstname') || $request->has('lastname')) {
+                $user->name = trim(($request->firstname ?? $member->firstname) . ' ' . ($request->lastname ?? $member->lastname));
+            }
+
+            $user->save();
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2. UPDATE MEMBER TABLE
+            |--------------------------------------------------------------------------
+            */
+
+            $member->update([
+                'firstname' => $request->firstname ?? $member->firstname,
+                'lastname' => $request->lastname ?? $member->lastname,
+                'dob' => $request->dob ?? $member->dob,
+                'gender' => $request->gender ?? $member->gender,
+                'age' => $request->age ?? $member->age,
+                'phone' => $request->phone ?? $member->phone,
+                'email' => $request->email ?? $member->email,
+                'address' => $request->address ?? $member->address,
+                'height' => $request->height ?? $member->height,
+                'weight' => $request->weight ?? $member->weight,
+                'bmr' => $request->bmr ?? $member->bmr,
+                'primary_goal' => $request->primary_goal ?? $member->primary_goal, // uses accessor/mutator
+                'subscription_level' => $request->subscription_level ?? $member->subscription_level,
+                'startdate' => $request->startdate ?? $member->startdate,
+                'is_subsactive' => $request->is_subsactive ?? $member->is_subsactive,
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Profile updated successfully.',
+                'data' => [
+                    'user' => $user,
+                    'member' => $member
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to update profile.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
 }
