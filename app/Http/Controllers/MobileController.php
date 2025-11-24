@@ -1007,6 +1007,8 @@ class MobileController extends Controller
             $dayName = $date->format('l');
             $formattedDate = $date->format('d/m/y');
             $dayWithDate = $formattedDate . ' ' . $dayName;
+            $dayWithDateNew = $date->format('d/m/Y') . ' ' . $dayName;
+            //Log::info('dayWithDateNew', ['conditioning_id' => $dayWithDateNew]);
 
             // Warmup
             $detailswarmup = Warmup::where('date', $dayWithDate)
@@ -1084,6 +1086,27 @@ class MobileController extends Controller
                 } else {
                     $item->test_weight = null;
                 }
+                return $item;
+            });
+
+            $detailsweight->transform(function ($item) use ($member, $dayWithDateNew) {
+                $completed = DailyWeightlifting::where('member_id', $member->id)
+                    ->where('weightlifting_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->workout_completed = $completed ? 1 : 0;
+                return $item;
+            });
+
+            $detailsstrength->transform(function ($item) use ($member, $dayWithDateNew) {
+
+                $completed = DailyStrength::where('member_id', $member->id)
+                    ->where('strength_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->workout_completed = $completed ? 1 : 0;
                 return $item;
             });
 
