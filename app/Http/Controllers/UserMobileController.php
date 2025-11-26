@@ -50,10 +50,10 @@ class UserMobileController extends Controller
 
         // Fetch images for the current and previous two months
         $images = MonthlyImage::where('user_id', $user->id)
-        ->get()
-        ->groupBy(function ($item) {
-            return Carbon::parse($item->month)->format('Y-m');
-        });
+            ->get()
+            ->groupBy(function ($item) {
+                return Carbon::parse($item->month)->format('Y-m');
+            });
 
         // Convert grouped images into a clean JSON-friendly format
         $formattedImages = $images->map(function ($group) {
@@ -86,21 +86,50 @@ class UserMobileController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'month' => 'required|date',
-            'front_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
-            'side_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
-            'back_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
-            'user_id' => 'required|exists:users,id',
-        ]);
+
+        try {
+            $request->validate([
+                'month' => 'required|date',
+                'front_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:10240',
+                'side_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:10240',
+                'back_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:10240',
+                'user_id' => 'required|exists:users,id',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        }
 
         try {
             // Store uploaded images in 'public/images'
-            $frontImagePath = $request->file('front_image')->store('images', 'public');
-            $sideImagePath = $request->file('side_image')->store('images', 'public');
-            $backImagePath = $request->file('back_image')->store('images', 'public');
 
-            // Save to database
+            if (!$request->hasFile('front_image')) {
+                throw new Exception('Front image file is missing');
+            }
+
+            $frontFile = $request->file('front_image');
+
+            $frontImagePath = $frontFile->store('images', 'public');
+
+
+            if (!$request->hasFile('side_image')) {
+                throw new Exception('Side image file is missing');
+            }
+
+            $sideFile = $request->file('side_image');
+
+            $sideImagePath = $sideFile->store('images', 'public');
+
+
+            if (!$request->hasFile('back_image')) {
+                throw new Exception('Back image file is missing');
+            }
+
+            $backFile = $request->file('back_image');
+
+            $backImagePath = $backFile->store('images', 'public');
+
+
+
             $monthlyImage = MonthlyImage::create([
                 'month' => $request->month,
                 'front_image' => $frontImagePath,
@@ -123,13 +152,15 @@ class UserMobileController extends Controller
                     'created_at' => $monthlyImage->created_at,
                 ]
             ], 201);
+        } catch (\Exception $e) {
 
-        } catch (Exception $e) {
+
             // Return JSON error response
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to upload images.',
                 'error' => $e->getMessage(),
+                'error_type' => get_class($e),
             ], 500);
         }
     }
@@ -140,8 +171,8 @@ class UserMobileController extends Controller
         try {
             // Fetch all workouts where type = 'strength'
             $workouts = WorkoutLibrary::where('type', 'strength')
-                    ->orderBy('workout', 'asc')
-                    ->get();
+                ->orderBy('workout', 'asc')
+                ->get();
 
             if ($workouts->isEmpty()) {
                 return response()->json([
@@ -158,7 +189,6 @@ class UserMobileController extends Controller
                 'count' => $workouts->count(),
                 'data' => $workouts,
             ], 200);
-
         } catch (Exception $e) {
             // Handle any unexpected errors
             return response()->json([
@@ -274,7 +304,6 @@ class UserMobileController extends Controller
                     ]
                 ]
             ], 200);
-
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -346,7 +375,6 @@ class UserMobileController extends Controller
                 'status' => 'success',
                 'data' => $combinedData,
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -409,7 +437,6 @@ class UserMobileController extends Controller
                     ]
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -507,7 +534,6 @@ class UserMobileController extends Controller
                     'member' => $member
                 ]
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -516,6 +542,4 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
-
-
 }
