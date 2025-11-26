@@ -88,9 +88,9 @@ class UserMobileController extends Controller
     {
         $request->validate([
             'month' => 'required|date',
-            'front_image' => 'required|image|mimes:png,jpg,jpeg,gif,img',
-            'side_image' => 'required|image|mimes:png,jpg,jpeg,gif,img',
-            'back_image' => 'required|image|mimes:png,jpg,jpeg,gif,img',
+            'front_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
+            'side_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
+            'back_image' => 'required|image|mimes:jpeg,png,jpg,heic,heif|max:4096',
             'user_id' => 'required|exists:users,id',
         ]);
 
