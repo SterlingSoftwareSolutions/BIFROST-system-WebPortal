@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Conditioning;
+use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
 use App\Models\DailyWarmup;
+use App\Models\DailyWeightlifting;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
 use App\Models\Strength;
+use App\Models\Weightlifting;
 use App\Models\WorkoutLibrary;
 use Carbon\Carbon;
 use Exception;
@@ -165,19 +169,19 @@ class UserMobileController extends Controller
         }
     }
 
-    //get strength type workouts
+    //get strength and weightlifting type workouts
     public function getStrengthWorkouts()
     {
         try {
-            // Fetch all workouts where type = 'strength'
-            $workouts = WorkoutLibrary::where('type', 'strength')
-                ->orderBy('workout', 'asc')
-                ->get();
+            // Fetch all workouts where type = 'strength' or 'weightlifting'
+            $workouts = WorkoutLibrary::whereIn('type', ['strength', 'weightlifting'])
+                    ->orderBy('workout', 'asc')
+                    ->get();
 
             if ($workouts->isEmpty()) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'No strength workouts found.',
+                    'message' => 'No strength or weightlifting workouts found.',
                     'data' => [],
                 ], 200);
             }
@@ -185,7 +189,7 @@ class UserMobileController extends Controller
             // Return JSON response
             return response()->json([
                 'status' => 'success',
-                'message' => 'Strength workouts retrieved successfully.',
+                'message' => 'Strength and weightlifting workouts retrieved successfully.',
                 'count' => $workouts->count(),
                 'data' => $workouts,
             ], 200);
@@ -193,7 +197,7 @@ class UserMobileController extends Controller
             // Handle any unexpected errors
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to fetch strength workouts.',
+                'message' => 'Failed to fetch workouts.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -226,35 +230,62 @@ class UserMobileController extends Controller
                 ], 404);
             }
 
-            // ✅ Get all related strength records for this workout
-            $strengths = Strength::where('workout_id', $request->workout_id)->get();
+            // Get the workout to determine its type
+            $workout = WorkoutLibrary::find($request->workout_id);
 
-            if ($strengths->isEmpty()) {
+            if (!$workout) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'No strength records found for this workout.'
+                    'message' => 'Workout not found.'
                 ], 404);
             }
 
-            // Collect all strength IDs
-            $strengthIds = $strengths->pluck('id');
+            $allData = collect();
 
-            // ✅ Fetch all daily strength records for this member and all strength IDs
-            $strengthData = DailyStrength::where('member_id', $member->id)
-                ->whereIn('strength_id', $strengthIds)
-                ->orderBy('date', 'asc')
-                ->get();
+            // ✅ Get all related strength records for this workout
+            if ($workout->type === 'strength') {
+                $strengths = Strength::where('workout_id', $request->workout_id)->get();
 
-            if ($strengthData->isEmpty()) {
+                if (!$strengths->isEmpty()) {
+                    $strengthIds = $strengths->pluck('id');
+
+                    // Fetch all daily strength records
+                    $strengthData = DailyStrength::where('member_id', $member->id)
+                        ->whereIn('strength_id', $strengthIds)
+                        ->orderBy('date', 'asc')
+                        ->get();
+
+                    $allData = $allData->merge($strengthData);
+                }
+            }
+
+            // ✅ Get all related weightlifting records for this workout
+            if ($workout->type === 'weightlifting') {
+                $weightliftings = Weightlifting::where('workout_id', $request->workout_id)->get();
+
+                if (!$weightliftings->isEmpty()) {
+                    $weightliftingIds = $weightliftings->pluck('id');
+
+                    // Fetch all daily weightlifting records
+                    $weightliftingData = DailyWeightlifting::where('member_id', $member->id)
+                        ->whereIn('weightlifting_id', $weightliftingIds)
+                        ->orderBy('date', 'asc')
+                        ->get();
+
+                    $allData = $allData->merge($weightliftingData);
+                }
+            }
+
+            if ($allData->isEmpty()) {
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'No strength data found for this workout.',
+                    'message' => 'No workout data found for this workout.',
                     'data' => []
                 ], 200);
             }
 
             // ✅ Prepare data for graph
-            $graphData = $strengthData->map(function ($item) {
+            $graphData = $allData->map(function ($item) {
                 try {
                     $date = Carbon::createFromFormat('d/m/y l', $item->date)->format('Y-m-d');
                 } catch (\Exception $e) {
@@ -266,23 +297,23 @@ class UserMobileController extends Controller
                     'reps' => (int) $item->reps,
                     'weight' => (float) $item->weight,
                 ];
-            });
+            })->sortBy('date')->values();
 
             // ✅ Calculate summary metrics
-            $totalReps = $strengthData->sum('reps');
-            $totalWeight = $strengthData->sum('weight');
-            $totalSets = $strengthData->count();
-            $oneRepMax = $strengthData->max(function ($item) {
+            $totalReps = $allData->sum('reps');
+            $totalWeight = $allData->sum('weight');
+            $totalSets = $allData->count();
+            $oneRepMax = $allData->max(function ($item) {
                 return $item->weight * (1 + ($item->reps / 30)); // Epley formula
             });
 
             // ✅ Return JSON response
             return response()->json([
                 'status' => 'success',
-                'message' => 'Strength progress retrieved successfully.',
+                'message' => 'Workout progress retrieved successfully.',
                 'data' => [
                     'workout_id' => (int) $request->workout_id,
-                    'strength_ids' => $strengthIds,
+                    'workout_type' => $workout->type,
                     'graph' => [
                         'labels' => $graphData->pluck('date'),
                         'datasets' => [
@@ -307,7 +338,7 @@ class UserMobileController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Failed to fetch strength data.',
+                'message' => 'Failed to fetch workout data.',
                 'error' => $e->getMessage(),
             ], 500);
         }
@@ -344,7 +375,25 @@ class UserMobileController extends Controller
                 ->orderBy('date', 'asc')
                 ->get();
 
-            // Format both datasets
+            // Get Weightlifting records
+            $dailyWeightliftings = DailyWeightlifting::where('member_id', $member->id)
+                ->with([
+                    'weightlifting.workout',   // Weightlifting -> WorkoutLibrary
+                    'weightlifting.category',  // Weightlifting -> CategoryOption
+                ])
+                ->orderBy('date', 'asc')
+                ->get();
+
+            // Get Conditioning records
+            $dailyConditionings = DailyConditioning::where('member_id', $member->id)
+                ->with([
+                    'conditioning.workout',   // Conditioning -> WorkoutLibrary
+                    'conditioning.category',  // Conditioning -> CategoryOption
+                ])
+                ->orderBy('date', 'asc')
+                ->get();
+
+            // Format all datasets
             $strengthData = $dailyStrengths->map(function ($item) {
                 return [
                     'type' => 'strength',
@@ -360,7 +409,6 @@ class UserMobileController extends Controller
                 return [
                     'type' => 'warmup',
                     'date' => $item->date,
-                    //'weight' => $item->weight,
                     'weight' => $item->warmup ? $item->warmup->weight : null,
                     'reps' => $item->reps,
                     'category_name' => $item->warmup && $item->warmup->category ? $item->warmup->category->category_name : null,
@@ -368,8 +416,36 @@ class UserMobileController extends Controller
                 ];
             });
 
-            // Combine both
-            $combinedData = $strengthData->merge($warmupData)->sortBy('date')->values();
+            $weightliftingData = $dailyWeightliftings->map(function ($item) {
+                return [
+                    'type' => 'weightlifting',
+                    'date' => $item->date,
+                    'weight' => $item->weight,
+                    'reps' => $item->reps,
+                    'set_number' => $item->set_number,
+                    'category_name' => $item->weightlifting && $item->weightlifting->category ? $item->weightlifting->category->category_name : null,
+                    'workout' => $item->weightlifting && $item->weightlifting->workout ? $item->weightlifting->workout->workout : null,
+                ];
+            });
+
+            $conditioningData = $dailyConditionings->map(function ($item) {
+                return [
+                    'type' => 'conditioning',
+                    'date' => $item->date,
+                    'weight' => $item->weight,
+                    'reps' => $item->reps,
+                    'category_name' => $item->conditioning && $item->conditioning->category ? $item->conditioning->category->category_name : null,
+                    'workout' => $item->conditioning && $item->conditioning->workout ? $item->conditioning->workout->workout : null,
+                ];
+            });
+
+            // Combine all workout types
+            $combinedData = $strengthData
+                ->merge($warmupData)
+                ->merge($weightliftingData)
+                ->merge($conditioningData)
+                ->sortBy('date')
+                ->values();
 
             return response()->json([
                 'status' => 'success',
