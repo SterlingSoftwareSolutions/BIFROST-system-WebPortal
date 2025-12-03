@@ -278,7 +278,7 @@
                         <!-- Training Load -->
                         <div class="flex items-center border-b mt-2">
                             <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem] mb-2">
+
                                     <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>
@@ -287,15 +287,27 @@
                                 </select>
                                 <div class="relative h-[60px] min-w-0">
                                     <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                    <div class="flex space-x-2 items-center absolute top-0 left-1 invisible" data-gender-inputs>
+                                    <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
                                         <label class="text-sm">M</label>
                                         <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
                                         <label class="text-sm">F</label>
                                         <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
                                     </div>
                                 </div>
-                            </div>
+                                <div class="relative ml-auto mr-10 flex items-center">
+                                    <span onclick="toggleInfoPopup(this)"
+                                        class="text-red-500 text-xl cursor-pointer select-none">
+                                        ?
+                                    </span>
 
+                                    <!-- Popup (positioned relative to the ?) -->
+                                    <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                        <p><b>/10</b> – Effort out of 10</p>
+                                        <p><b>%</b> – Percentage of effort</p>
+                                        <p><b>Cal</b> – Number of calories</p>
+                                        <p><b>Kg</b> – Weight</p>
+                                    </div>
+                                </div>
                         </div>
                         </div>
                 </div>
