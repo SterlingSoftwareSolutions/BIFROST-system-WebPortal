@@ -161,7 +161,7 @@
                                 <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left">Type</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
                                     Category</th>
-                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Workout</th>
+                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Exercise</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Link</th>
                                 <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="rtl">
                                 </th>
