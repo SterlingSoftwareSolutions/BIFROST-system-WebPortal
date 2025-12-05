@@ -402,8 +402,10 @@ class MobileController extends Controller
                 $storedDay = $validatedData['selected_day'];
 
                 $dailyWarmup = DailyWarmup::where('member_id', $memberId)
-                    ->where('warmup_id', $validatedData['warmup_id'])
-                    ->first();
+                        ->where('warmup_id', $validatedData['warmup_id'])
+                        ->where('date', $storedDay)
+                        ->first();
+
 
                 Log::info('Existing warmup record:', ['dailyWarmup' => $dailyWarmup?->toArray()]);
 
@@ -1163,6 +1165,9 @@ class MobileController extends Controller
 
         $test = Test::where('id', $request->id)
                     ->where('workout_id', $request->workout_id)
+
+
+                    
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1183,5 +1188,33 @@ class MobileController extends Controller
             'message' => 'Weight updated successfully.',
         ]);
     }
+
+   public function insertWeight(Request $request)
+    {
+    $dateStr = Carbon::now()->format('d/m/y l'); // ✅ 07/04/25 Monday
+    $request->validate([
+        'workout_id'   => 'required|integer|exists:workout_libraries,id',
+        'member_id'    => 'required|integer|exists:members,id',
+        'weight'       => 'required|numeric',
+        'workoutname'  => 'required|string',
+        'category_id'  => 'nullable|integer',
+    ]);
+   
+    $test = Test::create([
+        'workout_id'  => $request->workout_id,
+        'member_id'   => $request->member_id,
+        'weight'      => $request->weight,
+        'workoutname' => $request->workoutname,
+        'date'=>$dateStr,
+        'category_id' => $request->category_id, // only if column exists
+    ]);
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Weight inserted successfully.',
+        'data' => $test,
+    ]);
+}
+
 
 }

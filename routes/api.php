@@ -34,6 +34,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     Route::post('getworkout', [MobileController::class, 'getworkout']);
     Route::post('updateweight', [MobileController::class, 'updateWeight']);
+    Route::post('insertweight', [MobileController::class, 'insertWeight']);
 
     //workout complete
     Route::post('/warmup-daily',  [MobileController::class, 'storewarmupdaily']);
