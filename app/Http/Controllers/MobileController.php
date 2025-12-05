@@ -1191,29 +1191,29 @@ class MobileController extends Controller
 
    public function insertWeight(Request $request)
     {
-    $dateStr = Carbon::now()->format('d/m/y l'); // ✅ 07/04/25 Monday
-    $request->validate([
-        'workout_id'   => 'required|integer|exists:workout_libraries,id',
-        'member_id'    => 'required|integer|exists:members,id',
-        'weight'       => 'required|numeric',
-        'workoutname'  => 'required|string',
-        'category_id'  => 'nullable|integer',
-    ]);
-   
-    $test = Test::create([
-        'workout_id'  => $request->workout_id,
-        'member_id'   => $request->member_id,
-        'weight'      => $request->weight,
-        'workoutname' => $request->workoutname,
-        'date'=>$dateStr,
-        'category_id' => $request->category_id, // only if column exists
-    ]);
+    try {
+        $dateStr = Carbon::now()->format('d/m/y l');
 
-    return response()->json([
-        'status' => true,
-        'message' => 'Weight inserted successfully.',
-        'data' => $test,
-    ]);
+        $test = Test::create([
+            'workout_id'  => $request->workout_id,
+            'member_id'   => $request->member_id,
+            'weight'      => $request->weight,
+            'workoutname' => $request->workoutname,
+            'date'        => $dateStr,
+            'category_id' => $request->category_id ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Weight inserted successfully.',
+            'data'    => $test,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to insert weight. Please try again.',
+        ], 500);
+    }
 }
 
 
