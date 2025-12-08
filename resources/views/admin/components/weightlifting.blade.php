@@ -298,7 +298,6 @@
                                 <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
                                 <select name="unitwe_1" class="border bg-white py-3.5 mb-2 rounded">
                                     <option value="%">%</option>
-                                    <option value="%^">%^</option>
                                 </select>
                                 <input type="number" id="weigthwe_1" name="weigthwe_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
                             </div>

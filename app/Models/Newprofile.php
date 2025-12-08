@@ -21,7 +21,7 @@ class Newprofile extends Model
         'height',
         'weight',
         'bmr',
-        'primary-goal',
+        'primary_goal',
         'subscription_level',
         'startdate',
         'is_subsactive',

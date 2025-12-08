@@ -278,7 +278,7 @@
                         <!-- Training Load -->
                         <div class="flex items-center border-b mt-2">
                             <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
-                            <div class="relative flex items-center max-w-[8rem] mb-2">
+
                                     <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>
@@ -287,15 +287,30 @@
                                 </select>
                                 <div class="relative h-[60px] min-w-0">
                                     <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                    <div class="flex space-x-2 items-center absolute top-0 left-1 invisible" data-gender-inputs>
+                                    <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
                                         <label class="text-sm">M</label>
                                         <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
                                         <label class="text-sm">F</label>
                                         <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
                                     </div>
                                 </div>
-                            </div>
+                                <div class="relative ml-auto mr-10 flex items-center">
+                                    <span onclick="toggleInfoPopup(this, event)"
+                                        class="text-red-500 text-xl cursor-pointer select-none">
+                                        <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
+                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                        </svg>
+                                    </span>
 
+                                    <!-- Popup (positioned relative to the ?) -->
+                                    <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                        <p><b>/10</b> – Effort out of 10</p>
+                                        <p><b>%</b> – Percentage of effort</p>
+                                        <p><b>Cal</b> – Number of calories</p>
+                                        <p><b>Kg</b> – Weight</p>
+                                    </div>
+                                </div>
                         </div>
                         </div>
                 </div>

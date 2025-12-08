@@ -22,18 +22,16 @@ class AuthController extends Controller
                 'pin_3' => 'required|integer|min:0|max:9',
                 'pin_4' => 'required|integer|min:0|max:9',
             ]);
-            $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
+                 $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
 
-            $user = User::where(function ($query) use ($request) {
-                if ($request->portal === 'admin') {
-                    $query->whereIn('user_type', ['admin', 'super admin']);
-                } else {
-                    $query->where('user_type', 'client')->orWhere('user_type', 'worker');
+                $user = User::where('pin', $pin)->first();
+
+                if($request->portal != $user->user_type  && $user->pin == $pin){
+                        return redirect()->back()->with('error', 'Please enter a correct pin number.');
                 }
-            })
-                ->where('pin', $pin)
-                ->first();
-
+                else if($request->portal == $user->user_type  && $user->pin != $pin){
+                    return redirect()->back()->with('error', 'Please enter a correct pin number.');
+                }
 
             if ($user) {
                 // Log the user in
@@ -79,6 +77,10 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         return view('auth.login');
+    }
+    public function showUserLoginForm()
+    {
+        return view('auth.userlogin');
     }
     // log out
     public function logout(Request $request)

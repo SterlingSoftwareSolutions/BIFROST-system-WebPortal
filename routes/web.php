@@ -40,6 +40,8 @@ Route::get('/', function () {
 });
 // Display the login form
 Route::get('login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::get('login/user', [AuthController::class, 'showUserLoginForm'])->name('login');
+
 // login
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // logout

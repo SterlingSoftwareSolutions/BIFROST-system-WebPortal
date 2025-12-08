@@ -402,8 +402,10 @@ class MobileController extends Controller
                 $storedDay = $validatedData['selected_day'];
 
                 $dailyWarmup = DailyWarmup::where('member_id', $memberId)
-                    ->where('warmup_id', $validatedData['warmup_id'])
-                    ->first();
+                        ->where('warmup_id', $validatedData['warmup_id'])
+                        ->where('date', $storedDay)
+                        ->first();
+
 
                 Log::info('Existing warmup record:', ['dailyWarmup' => $dailyWarmup?->toArray()]);
 
@@ -1163,6 +1165,9 @@ class MobileController extends Controller
 
         $test = Test::where('id', $request->id)
                     ->where('workout_id', $request->workout_id)
+
+
+                    
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1183,5 +1188,33 @@ class MobileController extends Controller
             'message' => 'Weight updated successfully.',
         ]);
     }
+
+   public function insertWeight(Request $request)
+    {
+    try {
+        $dateStr = Carbon::now()->format('d/m/y l');
+
+        $test = Test::create([
+            'workout_id'  => $request->workout_id,
+            'member_id'   => $request->member_id,
+            'weight'      => $request->weight,
+            'workoutname' => $request->workoutname,
+            'date'        => $dateStr,
+            'category_id' => $request->category_id ?? null,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Weight inserted successfully.',
+            'data'    => $test,
+        ]);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to insert weight. Please try again.',
+        ], 500);
+    }
+}
+
 
 }

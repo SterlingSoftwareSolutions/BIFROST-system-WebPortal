@@ -584,32 +584,46 @@
 
         {{-- BMI Calculator Script --}}
         <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                // Function to calculate BMR
-                function calculateBMR() {
-                    const weight = parseFloat(document.getElementById('weight').value) || 0;
-                    const height = parseFloat(document.getElementById('height').value) || 0;
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Function to calculate BMR (Mifflin–St Jeor)
+                    function calculateBMR() {
+                    const weight = parseFloat(document.getElementById('weight').value) || 0; // kg
+                    const height = parseFloat(document.getElementById('height').value) || 0; // cm
+                    const age = parseFloat(document.getElementById('age').value) || 0;       // years
 
-                    if(weight && height){
-                        const heightInM = height / 100;
-                        return weight / heightInM;
+                    const genderEl = document.querySelector('input[name="gender"]:checked');
+                    const gender = genderEl ? genderEl.value : null; // "Male" or "Female"
+
+                    if (weight && height && age && gender) {
+                        const base = (10 * weight) + (6.25 * height) - (5 * age);
+                        return (gender === "Male") ? (base + 5) : (base - 161);
                     }
                     return 0;
-                }
+                    }
 
-                // Update BMR when inputs change
-                function updateBMR() {
+                    // Update BMR when inputs change
+                    function updateBMR() {
                     const bmrInput = document.getElementById('bmr');
                     if (bmrInput) {
-                        bmrInput.value = calculateBMR().toFixed(2);
+                        const bmr = calculateBMR();
+                        bmrInput.value = bmr ? bmr.toFixed(2) : '';
                     }
-                }
+                    }
 
-                // Event listeners for inputs
-                document.getElementById('weight').addEventListener('input', updateBMR);
-                document.getElementById('height').addEventListener('input', updateBMR);
-            });
+                    // Event listeners for inputs
+                    document.getElementById('weight')?.addEventListener('input', updateBMR);
+                    document.getElementById('height')?.addEventListener('input', updateBMR);
+                    document.getElementById('age')?.addEventListener('input', updateBMR);
+
+                    // Event listeners for gender selection
+                    document.getElementById('gender-male')?.addEventListener('change', updateBMR);
+                    document.getElementById('gender-female')?.addEventListener('change', updateBMR);
+
+                    // Calculate on load (useful when Laravel old() pre-fills)
+                    updateBMR();
+                });
         </script>
+
 
 
     @endsection
