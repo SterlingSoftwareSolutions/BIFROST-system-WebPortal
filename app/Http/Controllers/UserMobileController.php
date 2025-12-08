@@ -33,12 +33,9 @@ class UserMobileController extends Controller
 
         $member = Newprofile::where('user_id', $user->id)->first();
 
-        // Decode the image paths if available
-        $imagePaths = json_decode($member->image_paths ?? '[]', true);
-
-        // Determine profile image
-        $profileImage = (!empty($imagePaths) && is_array($imagePaths))
-            ? asset('storage/' . $imagePaths[0])
+        // Determine profile image (image_paths is a STRING like "profile/xxx.jpg")
+        $profileImage = ($member && !empty($member->image_paths))
+            ? asset('storage/' . ltrim($member->image_paths, '/'))
             : asset('storage/default-profile.png');
 
         // Get the current and previous two months
@@ -82,6 +79,8 @@ class UserMobileController extends Controller
                 'email' => $user->email,
             ],
             'member' => $member,
+            'firstname' => $member?->firstname ?? '',
+            'lastname'  => $member?->lastname ?? '',
             'profileImage' => $profileImage,
             'months' => $months,
             'images' => $formattedImages,
@@ -168,6 +167,42 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
+     // profile image upload 
+    public function profileImageStore(Request $request)
+            {
+                $request->validate([
+                    'user_id' => 'required|exists:users,id',
+                    'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:10240',
+                ]);
+
+                $path = $request->file('profile_image')->store('profile', 'public'); // profile/xxx.jpg
+
+                // if user already has row -> update, else -> insert
+                $profile = Newprofile::updateOrCreate(
+                    ['user_id' => $request->user_id],
+                    ['image_paths' => $path]
+                );
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Profile photo saved.',
+                    'profile_image_url' => asset('storage/' . $path),
+                    'data' => $profile,
+                ]);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //get strength and weightlifting type workouts
     public function getStrengthWorkouts()
@@ -506,7 +541,7 @@ class UserMobileController extends Controller
                         'height' => $member->height,
                         'weight' => $member->weight,
                         'bmr' => $member->bmr,
-                        'primary_goal' => $member->{'primary-goal'},
+                        'primary_goal' => $member->primary_goal,
                         'subscription_level' => $member->subscription_level,
                         'startdate' => $member->startdate,
                         'is_subsactive' => (bool) $member->is_subsactive,

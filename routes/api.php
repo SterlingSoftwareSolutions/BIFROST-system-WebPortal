@@ -44,6 +44,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     //profile
     Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
+    Route::post('profileimage', [UserMobileController::class, 'profileImageStore']);
+
     Route::post('monthlyimages-store', [UserMobileController::class, 'store'])->name('monthly_images.store');
     Route::post('nextvdata', [UserProfileController::class, 'handleNextData'])->name('nextvdata');
     Route::get('memberdetails', [UserMobileController::class, 'getMemberProfile'])->name('memberdetails');
