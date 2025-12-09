@@ -607,8 +607,8 @@ class UserMobileController extends Controller
                 $user->email = $request->email;
             }
 
-            if ($request->has('firstname') || $request->has('lastname')) {
-                $user->name = trim(($request->firstname ?? $member->firstname) . ' ' . ($request->lastname ?? $member->lastname));
+            if ($request->has('username')) {
+                $user->name = $request->username;
             }
 
             $user->save();
