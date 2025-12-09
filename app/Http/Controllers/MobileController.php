@@ -1143,6 +1143,7 @@ class MobileController extends Controller
                 'score' => $score,
                 'workoutlibrary' => $workoutlibrary,
                 'categoryOptions' => $categoryOptions,
+                'member'=>$member
             ], 200);
 
         } catch (\Exception $e) {
