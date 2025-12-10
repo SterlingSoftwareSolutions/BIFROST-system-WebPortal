@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class WorkoutLibrary extends Model
 {
     use HasFactory;
+    protected $table = 'workout_libraries';
     protected $fillable = [
         'category_options_id',
         'type',
