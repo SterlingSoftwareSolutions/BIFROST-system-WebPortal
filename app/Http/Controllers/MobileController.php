@@ -1010,7 +1010,7 @@ class MobileController extends Controller
             $formattedDate = $date->format('d/m/y');
             $dayWithDate = $formattedDate . ' ' . $dayName;
             $dayWithDateNew = $date->format('d/m/Y') . ' ' . $dayName;
-            //Log::info('dayWithDateNew', ['conditioning_id' => $dayWithDateNew]);
+            //Log::info('dayWithDateNew', ['conditioning_id' => $dayWithDateNew]);  
 
             // Warmup
             $detailswarmup = Warmup::where('date', $dayWithDate)
@@ -1058,6 +1058,18 @@ class MobileController extends Controller
                 return [$key => $test->weight];
             });
 
+            $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
+
+                $completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->workout_completed = $completed ? 1 : 0;
+                return $item;
+            });
+
+
             // Append matching weight to Strength workouts
             $detailsstrength->transform(function ($item) use ($testWeights) {
                 if ($item->workout) {
@@ -1091,6 +1103,7 @@ class MobileController extends Controller
                 return $item;
             });
 
+
             $detailsweight->transform(function ($item) use ($member, $dayWithDateNew) {
                 $completed = DailyWeightlifting::where('member_id', $member->id)
                     ->where('weightlifting_id', $item->id)
@@ -1111,6 +1124,17 @@ class MobileController extends Controller
                 $item->workout_completed = $completed ? 1 : 0;
                 return $item;
             });
+
+            $detailsconditioning->transform(function ($item) use ($member, $dayWithDateNew) {
+                $completed = DailyConditioning::where('member_id', $member->id)
+                    ->where('conditioning_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->workout_completed = $completed ? 1 : 0;
+                return $item;
+            });
+
 
             $score = $user->scores()
             ->where('selected_day', $request->selected_day)

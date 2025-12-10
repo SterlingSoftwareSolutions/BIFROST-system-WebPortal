@@ -15,6 +15,7 @@ use App\Models\WorkoutLibrary;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 class UserMobileController extends Controller
@@ -277,10 +278,23 @@ class UserMobileController extends Controller
 
             $allData = collect();
 
+            Log::info('Strength progress start', [
+                'user_id' => $user->id,
+                'workout_id' => $request->workout_id,
+                'member_id' => optional($member)->id,
+                'workout_type' => optional($workout)->type,
+            ]);
+
+
             // ✅ Get all related strength records for this workout
             if ($workout->type === 'strength') {
                 $strengths = Strength::where('workout_id', $request->workout_id)->get();
 
+                   Log::info('Strength records fetched', [
+                        'strengths_count' => $strengths->count(),
+                        'strength_ids' => $strengths->pluck('id')->take(20), // prevent huge log
+                    ]);
+                
                 if (!$strengths->isEmpty()) {
                     $strengthIds = $strengths->pluck('id');
 
@@ -290,9 +304,18 @@ class UserMobileController extends Controller
                         ->orderBy('date', 'asc')
                         ->get();
 
+
+                        Log::info('DailyStrength fetched', [
+                                'daily_strength_count' => $strengthData->count(),
+                                'first_row' => $strengthData->first(), // shows sample
+                            ]);
+
                     $allData = $allData->merge($strengthData);
                 }
             }
+
+
+            
 
             // ✅ Get all related weightlifting records for this workout
             if ($workout->type === 'weightlifting') {
