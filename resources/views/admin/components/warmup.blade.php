@@ -114,46 +114,49 @@
                     {{-- Serach Section --}}
                     <div class="flex-col w-full">
                         <div class="bg-gray-50 p-4">
-                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout
-                                List</div>
-                            <div class="flex items-start space-x-6">
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
+                            <div class="flex items-center space-x-2 flex-nowrap">
+
                                 <!-- Category Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="categoryw_2" class="w-28">Category</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="categoryw_2" class="w-20 text-xs">Category</label>
                                     <select id="categoryw_2" name="categoryw_2" onchange="getworkoutw(this)"
-                                        class="flex-1 px-3 py-2 border rounded">
-                                        <option value="" selected disabled>-- Select Category --</option>
+                                        class="flex-1 px-1 py-1 border rounded text-xs">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
 
                                 <!-- Exercise Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="workoutw_2" class="w-28">Exercise</label>
-                                    <select id="workoutw_2" name="workoutw_2" class="flex-1 px-3 py-2 border rounded">
-                                        <option value="" selected disabled>-- Select Exercise --</option>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="workoutw_2" class="w-20 text-xs">Exercise</label>
+                                    <select id="workoutw_2" name="workoutw_2" class="flex-1 px-1 py-1 border rounded text-xs">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="flex items-start space-x-6 mt-3">
                                 <!-- Name Field -->
-                                <div class="flex flex-row items-center flex-[2] space-x-2">
-                                    <label for="namew_2" class="w-28">Name Search</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="namew_2" class="w-20 text-xs">Name</label>
                                     <input type="text" id="namew_2" name="namew_2"
-                                        class="flex-1 px-3 py-2 border rounded mb-2">
+                                        class="flex-1 px-1 py-1 border rounded text-xs">
                                 </div>
 
                                 <!-- Go Button -->
-                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                <div class="flex items-center">
                                     <button id="addsetwarmup_1" onclick="filterWarmup(date)" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Go</button>
                                 </div>
 
-                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                <!-- Clear Button -->
+                                <div class="flex items-center">
                                     <button id="searchclearsetwarmup_1" onclick="clearSearchWarmup()" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
                                 </div>
+
                             </div>
+
+
+
                         </div>
 
                         <!-- Scroll Section -->
@@ -202,50 +205,76 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center border-b mt-2 overflow-visible">
-                                <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
-                                <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                <option value="/10">/10</option>
-                                <option value="Cal">Cal</option>
-                                <option value="%">%</option>
-                                <option value="Kg">Kg</option>
-                                </select>
-                                <div class="relative h-[60px] min-w-0">
-                                    <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                    <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-                                        <label class="text-sm ml-1">M</label>
-                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                            <div class="flex items-center border-b mt-2">
+                                <label class="w-60 block mb-1">
+                                    Training Load <span class="text-red-500">*</span>
+                                </label>
+
+                                <!-- Same width as workout select -->
+                                <div class="w-1/3 flex items-center gap-3">
+
+                                    <!-- Main input -->
+                                    <input
+                                        type="number"
+                                        name="weigthc_1"
+                                        class="flex-1 px-3 py-3 border rounded mb-2"
+                                        data-main-input
+                                        required
+                                    >
+
+                                    <!-- Gender inputs -->
+                                    <div class="hidden flex items-center gap-2 mb-2" data-gender-inputs>
+                                        <label class="text-sm">M</label>
+                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded">
                                         <label class="text-sm">F</label>
-                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded">
                                     </div>
+
+                                    <!-- Unit selector -->
+                                    <select
+                                        name="unit_1"
+                                        class="px-3 py-3 border rounded mb-2"
+                                        onchange="toggleWarmupGenderInputs(this)">
+                                        <option value="RPE">RPE</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="%">%</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="Kg">BW</option>
+                                        <option value="Kg">N/A</option>
+                                    </select>
                                 </div>
-                                <div class="relative ml-auto mr-10 flex items-center">
-                                    <span onclick="toggleInfoPopup(this, event)"
-                                        class="text-red-500 text-xl cursor-pointer select-none">
+
+                                <!-- Info icon stays aligned right -->
+                                <div class="relative ml-auto mr-10 mb-2">
+                                    <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
                                         <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
                                             <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
                                         </svg>
                                     </span>
 
-                                    <!-- Popup (positioned relative to the ?) -->
                                     <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
-                                        <p><b>/10</b> – Effort out of 10</p>
+                                        <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
                                         <p><b>%</b> – Percentage of effort</p>
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
+                                        <p><b>BW</b> – Body Weight</p>
+                                        <p><b>N/A</b> – N/A</p>
                                     </div>
                                 </div>
                             </div>
+
+
+
                         </div>
 
 
         <!-- Add Another Button -->
-        <div class="flex flex-row justify-end gap-4 mt-5" id="add-another-btn">
+        {{-- <div class="flex flex-row justify-end gap-4 mt-5" id="add-another-btn">
             <button type="button" onclick="addAnotherWorkout()" class="bg-[#000000] text-white py-2 px-4 rounded mr-8 hover:bg-gray-800 w-30">
                 + Add Another
             </button>
-        </div>
+        </div> --}}
 
         <!-- Save & Cancel -->
         <div class="flex flex-row justify-end gap-4 mt-5">
@@ -269,6 +298,28 @@
     </form>
 </div>
 <script>
+    function toggleWarmupGenderInputs(selectElement) {
+    // Get the main row container
+    const row = selectElement.closest('.flex');
+
+    const defaultInput = row.querySelector('[data-main-input]');
+    const genderDiv = row.querySelector('[data-gender-inputs]');
+
+    if (!defaultInput || !genderDiv) return;
+
+    const selected = selectElement.value;
+
+    if (selected === 'Cal' || selected === 'Kg') {
+        genderDiv.classList.remove('hidden');
+        defaultInput.classList.add('hidden');
+        defaultInput.removeAttribute('required');
+    } else {
+        genderDiv.classList.add('hidden');
+        defaultInput.classList.remove('hidden');
+        defaultInput.setAttribute('required', 'true');
+    }
+}
+
     function toggleInfoPopup(el, event) {
     event.stopPropagation(); // Prevent document click listener from firing
 
@@ -467,8 +518,7 @@
         warmups.forEach((item, index) => {
 
             let html = `
-            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
-                <div class="border border-black rounded-xl shadow p-4 bg-white">
+            <div class="border-2 border-gray-200 rounded-md shadow p-2 bg-white w-full">
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
                         <div class="space-x-2">
@@ -500,7 +550,6 @@
                              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
                         </label>
                     </div>
-                </div>
             </div>
             `;
 
