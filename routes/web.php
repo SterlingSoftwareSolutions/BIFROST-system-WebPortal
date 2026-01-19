@@ -223,6 +223,8 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/classes', [ClassesController::class, 'store'])->name('classes.store');
     // delete classes
     Route::delete('/classes/{id}', [ClassesController::class, 'delete'])->name('classes.delete');
+    Route::get('/classes/{id}/edit', [ClassesController::class, 'edit'])->name('classes.edit');
+    Route::put('/classes/{id}', [ClassesController::class, 'update'])->name('classes.update');
     // update toggle in classes
     Route::post('/classes/{id}/toggle-workout', [ClassesController::class, 'toggleWorkout'])->name('classes.toggleWorkout');
     // get classes by date
