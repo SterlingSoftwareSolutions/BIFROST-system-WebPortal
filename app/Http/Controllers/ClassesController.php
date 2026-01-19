@@ -23,25 +23,88 @@ class ClassesController extends Controller
     }
 
     // Store new class
-    public function store(Request $request)
+     public function store(Request $request)
     {
         $request->validate([
             'time' => 'required',
             'duration' => 'required|integer',
             'spots' => 'required|integer',
             'selectdatecla' => 'required',
+            'days' => 'array|nullable',
         ]);
-
+        $startDate = Carbon::createFromFormat('d/m/y l', $request->selectdatecla)->format('Y-m-d');
+        
+        // If no recurring days selected, just create one
+        if (!$request->has('days') || empty($request->days)) {
+             $this->createClass($request, $request->selectdatecla);
+             return redirect()->back()->with('success', 'Class added successfully.');
+        }
+        // Recurring Logic
+        $selectedDays = $request->days; // e.g., ['Mon', 'Wed']
+        $currentDate = Carbon::parse($startDate);
+        $endOfYear = Carbon::now()->endOfYear();
+        $createdCount = 0;
+        $conflicts = [];
+        while ($currentDate->lte($endOfYear)) {
+            // Check if current day short name (e.g., 'Mon') is in selected days
+            if (in_array($currentDate->format('D'), $selectedDays)) {
+                
+                // Format date back to your system's format
+                // Ensure this matches your DB format e.g. "19/01/26 Sunday"
+                $formattedDate = $currentDate->format('d/m/y l');
+                // Check for Overlap (Simple check: same date and time)
+                $exists = Classes::where('date', $formattedDate)
+                                ->where('time', $request->time)
+                                ->exists();
+                if (!$exists) {
+                    $this->createClass($request, $formattedDate);
+                    $createdCount++;
+                } else {
+                    $conflicts[] = $formattedDate;
+                }
+            }
+            $currentDate->addDay();
+        }
+        if (count($conflicts) > 0) {
+            $msg = "Created $createdCount classes. Skipped " . count($conflicts) . " due to conflicts.";
+            return redirect()->back()->with('warning', $msg);
+        }
+        return redirect()->back()->with('success', "Recursively created $createdCount classes!");
+    }
+    // Helper function to keep code clean
+    private function createClass($request, $date) {
         Classes::create([
             'time' => $request->time,
             'duration' => $request->duration,
             'spots' => $request->spots,
             'availablespots' => $request->spots,
             'workout_assigned' => $request->has('workout_assigned'),
-            'date' => $request->selectdatecla,
+            'date' => $date,
+        ]);
+    }
+    
+    public function edit($id)
+    {
+        $class = Classes::findOrFail($id);
+        return response()->json($class);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'time' => 'required',
+            'duration' => 'required|integer',
+            'spots' => 'required|integer',
         ]);
 
-        return redirect()->back()->with('success', 'Class added successfully.');
+        $class = Classes::findOrFail($id);
+        $class->update([
+            'time' => $request->time,
+            'duration' => $request->duration,
+            'spots' => $request->spots,
+        ]);
+
+        return redirect()->back()->with('success', 'Class updated successfully.');
     }
 
     // Delete class
@@ -75,6 +138,7 @@ class ClassesController extends Controller
             }
 
             // Delete the class (will also delete workout_assign records due to cascade)
+
             Classes::findOrFail($id)->delete();
 
             return response()->json(['success' => true, 'message' => 'Class and workout assignments deleted successfully.']);

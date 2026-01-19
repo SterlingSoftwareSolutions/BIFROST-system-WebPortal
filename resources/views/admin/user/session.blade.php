@@ -99,7 +99,7 @@
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
-                    <div class="w-1/4">
+                    <div class="w-[30%]">
 
                         <div class="flex flex-col text-lg weekday pr-5">
                             <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>
@@ -401,11 +401,13 @@
             let dateLinks = document.querySelectorAll(".day");
             dateLinks.forEach(function(link) {
                 link.classList.add("hover:bg-black", "hover:text-white", "border-r");
+                link.classList.remove("bg-[#EEE8AA]");
             });
 
-            // Add active styles to the selected date link
+            // Add active styles to the selected date link -updated
             let selectedDateElement = document.getElementById(selectedDate);
             selectedDateElement.classList.remove("hover:bg-black", "hover:text-white", "border-r");
+            selectedDateElement.classList.add("bg-[#EEE8AA]");
             // Log selected tab and date
             logSelection(tabName, selectedDate);
             changeTab(tabName, selectedDate);
