@@ -1069,6 +1069,18 @@ class MobileController extends Controller
                 return $item;
             });
 
+            $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
+
+                $item_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('reps', '>', 0)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->warmup_item_completed = $item_completed ? 1 : 0;
+                return $item;
+            });
+
 
             // Append matching weight to Strength workouts
             $detailsstrength->transform(function ($item) use ($testWeights) {
