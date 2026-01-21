@@ -145,47 +145,41 @@
                         <div class="flex-col w-full">
                             <div class="bg-gray-50 p-4">
                                 <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
-                                <div class="flex items-start space-x-6">
-                                    <!-- Category Field -->
-                                    <div class="flex flex-row items-center w-1/2 space-x-2">
-                                        <label for="categorywe_2" class="w-28">Category</label>
-                                        <select id="categorywe_2" name="categorywe_2" onchange="getworkoutWe(this)"
-                                            class="flex-1 px-3 py-2 border rounded">
-                                            <option value="" selected disabled>-- Select Category --</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Exercise Field -->
-                                    <div class="flex flex-row items-center w-1/2 space-x-2">
-                                        <label for="workoutwe_2" class="w-28">Exercise</label>
-                                        <select id="workoutwe_2" name="workoutwe_2"
-                                            class="flex-1 px-3 py-2 border rounded">
-                                            <option value="" selected disabled>-- Select Exercise --</option>
-                                        </select>
-                                    </div>
+                            <div class="flex items-center gap-3">
+                                <!-- Category Field -->
+                                <div class="flex items-center gap-2">
+                                    <label for="categorywe_2" class="whitespace-nowrap font-medium text-base">Category</label>
+                                    <select id="categorywe_2" name="categorywe_2" onchange="getworkoutWe(this)"
+                                        class="px-3 py-2 border rounded w-48 bg-white text-base">
+                                        <option value="" selected disabled>-- Select Category --</option>
+                                    </select>
                                 </div>
 
-                                <div class="flex items-start space-x-6 mt-3">
-                                    <!-- Name Field -->
-                                    <div class="flex flex-row items-center flex-[2] space-x-2">
-                                        <label for="namewe_2" class="w-28">Name Search</label>
-                                        <input type="text" id="namewe_2" name="namewe_2"
-                                            class="flex-1 px-3 py-2 border rounded mb-2">
-                                    </div>
-
-                                    <!-- Go Button -->
-                                    <div class="flex flex-row items-center flex-1 space-x-2">
-                                        <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
-                                            type="button"
-                                            class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
-                                    </div>
-
-                                    <div class="flex flex-row items-center flex-1 space-x-2">
-                                        <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()"
-                                            type="button"
-                                            class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
-                                    </div>
+                                <!-- Exercise Field -->
+                                <div class="flex items-center gap-2">
+                                    <label for="workoutwe_2" class="whitespace-nowrap font-medium text-base">Exercise</label>
+                                    <select id="workoutwe_2" name="workoutwe_2"
+                                        class="px-3 py-2 border rounded w-48 bg-white text-base">
+                                        <option value="" selected disabled>-- Select Exercise --</option>
+                                    </select>
                                 </div>
+
+                                <!-- Name Field -->
+                                <div class="flex items-center gap-2">
+                                    <label for="namewe_2" class="whitespace-nowrap font-medium text-base">Name</label>
+                                    <input type="text" id="namewe_2" name="namewe_2"
+                                        class="px-3 py-2 border rounded w-40 text-base">
+                                </div>
+
+                                <!-- Go and Clear Group -->
+                                <div class="flex flex-col items-center gap-0 ml-2">
+                                     <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()" type="button"
+                                        class="text-black hover:text-gray-700 text-sm whitespace-nowrap mb-1">clear</button>
+                                    <button id="addsetstrength_1" onclick="filterWeightlifting(date)"
+                                        type="button"
+                                        class="bg-black text-white py-2 px-4 rounded text-base hover:bg-gray-800 transition-colors">Go</button>
+                                </div>
+                            </div>
                             </div>
 
                             <!-- Scroll Section -->
@@ -294,19 +288,40 @@
                                     <option value="" selected disabled>-- Select Exercise --</option>
                                 </select>
                             </div>
-                            <div class="flex items-center border-b mt-2">
+                            <div class="flex items-center border-b mt-2 overflow-visible">
                                 <label for="weigthwe_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
-                                <select name="unitwe_1" class="border bg-white py-3.5 mb-2 rounded">
-                                    <option value="%">%</option>
-                                </select>
-                                <input type="number" id="weigthwe_1" name="weigthwe_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
+                                <div class="flex items-center w-1/3 gap-2">
+                                    <input type="number" id="weigthwe_1" name="weigthwe_1" class="flex-1 px-3 py-3 border rounded" required>
+                                    <select name="unitwe_1" class="border bg-white py-3 px-2 rounded">
+                                        <option value="%">%</option>
+                                        <option value="/10">/10</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="Kg">Kg</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="relative ml-4 flex items-center">
+                                    <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
+                                        <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
+                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                        </svg>
+                                    </span>
+                                    <!-- Popup -->
+                                    <div class="hidden absolute left-8 top-0 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                        <p><b>/10</b> – Effort out of 10</p>
+                                        <p><b>%</b> – Percentage of effort</p>
+                                        <p><b>Cal</b> – Number of calories</p>
+                                        <p><b>Kg</b> – Weight</p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
                                         <label for="setswe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
                                         <input type="text" id="setwid_1" name="setwid_1"  class="hidden"/>
-                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                                        <div class="relative flex items-center gap-2" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="setswe_1" name="setswe_1" value="1" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
@@ -340,6 +355,31 @@
                                                 </svg>
                                             </button>
                                             <label for="repswe_1" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Weight Stepper -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#setweightwe_1').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none ml-2">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" id="setweightwe_1" name="setweightwe_1" data-input-counter
+                                                class="w-12 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#setweightwe_1').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                            {{-- <label for="setweightwe_1" class="text-sm mr-2">%</label> --}}
                                         </div>
                                     </div>
 
@@ -989,6 +1029,18 @@
         const originalSet = document.getElementById(id);
         console.log(originalSet);
 
+        // Determine default weight based on context (Create vs Edit)
+        let defaultWeight = '';
+        if (originalSet.closest('#weightlifting-container')) {
+            // Edit mode (items loaded dynamically)
+            const input = document.getElementById(`weigthweight_${remainingfind}`);
+            if (input) defaultWeight = input.value;
+        } else {
+            // Create mode (static form)
+            const input = document.getElementById('weigthwe_1');
+            if (input) defaultWeight = input.value;
+        }
+
         if (!originalSet) {
             console.error('Original set element with id "' + id + '" not found');
             return;
@@ -1024,7 +1076,7 @@
         setuiElement.innerHTML = `
         <div class="flex items-center sets-view mt-1">
                                         <div class="w-60 block mb-1"></div>
-        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+        <div class="relative flex items-center gap-2" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="setswe_${remainingfind}${setCounter}" name="setswe_${remainingfind}${setCounter}" value="${setCounter}" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
@@ -1058,6 +1110,32 @@
                                                 </svg>
                                             </button>
                                             <label for="repsnowe_${remainingfind}${setCounter}" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Weight Stepper (New) -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#setweightwe_${remainingfind}${setCounter}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none ml-2">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" id="setweightwe_${remainingfind}${setCounter}" name="setweightwe_${remainingfind}${setCounter}" data-input-counter
+                                                value="${defaultWeight}"
+                                                class="w-12 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#setweightwe_${remainingfind}${setCounter}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                    viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
+                                            
                                         </div>
 
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">
@@ -1122,7 +1200,7 @@
         altsetuiElement.innerHTML = `
         <div class="flex items-center sets-view mt-1">
                                         <div class="w-60 block mb-1"></div>
-        <div class="relative flex items-center max-w-[12rem] gap-2" id="altduplicateSetUI">
+        <div class="relative flex items-center gap-2" id="altduplicateSetUI">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="alt-repsnowe_${remainingfind}${altsetCounter}" name="alt-repsnowe_${remainingfind}${altsetCounter}" value="${altsetCounter}" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
@@ -1192,6 +1270,36 @@
     document.addEventListener('DOMContentLoaded', function() {
         getcategorywe();
     });
+
+
+
+    // Update first set weight when Training Load changes
+    document.getElementById('weigthwe_1').addEventListener('input', function() {
+        const val = this.value;
+        const set1Input = document.getElementById('setweightwe_1');
+        if (set1Input) {
+            set1Input.value = val;
+        }
+    });
+
+    function toggleInfoPopup(el, event) {
+        event.stopPropagation(); // Prevent document click listener from firing
+
+        const popup = el.nextElementSibling;
+        if (!popup) return;
+
+        document.querySelectorAll('.info-popup').forEach(p => {
+            if (p !== popup) p.classList.add('hidden');
+        });
+
+        popup.classList.toggle('hidden');
+    }
+
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest('.info-popup') && !e.target.matches('.text-red-500')) {
+            document.querySelectorAll('.info-popup').forEach(p => p.classList.add('hidden'));
+        }
+    });
 </script>
 
 
@@ -1221,7 +1329,7 @@
                 allWeightliftingData = response.weightlifting;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                    setWeightliftings(response.weightlifting, response.categoryOptions);
+                    setWeightliftings(response.weightlifting, response.categoryOptions, response.daily_classes);
                 console.log('aaaaaaaaaa',response.weightlifting);
                 // });
             },
@@ -1272,7 +1380,7 @@
                     <div>
                         ${isRepsVisible ? `
                         <input name="setsid_${index}" value="${set.id}" hidden>
-                            <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI">
+                            <div class="relative flex items-center gap-2" id="duplicateRepsUI">
                                 <input type="text" id="repsnowe_${index}" name="repsnowe_${index}" value="${index}" data-input-counter
                                                     class="mb-1 w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                     placeholder="0" readonly required />
@@ -1307,7 +1415,7 @@
                     ${isAltSetsVisible ? `
                     <div class="flex items-center sets-view">
                         <label for="altcustomnumberweight_${index}" class="w-60 block mb-1">SETS <span class="text-red-500">*</span></label>
-                        <div class="relative flex items-center max-w-[8rem]">
+                        <div class="relative flex items-center">
                             <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-custom bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1325,7 +1433,7 @@
                     ${isAltRepsVisible ? `
                     <div class="flex items-center border-b">
                         <label for="altrepsweight_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
-                        <div class="relative flex items-center max-w-[8rem]">
+                        <div class="relative flex items-center">
                             <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -1498,7 +1606,7 @@
                                     <label for="altweigthweight_${item.id}" class="w-60 block mb-1">Weight </label>
                                     <input type="number" id="altweigthweight_${item.id}" name="altweigthweight_${item.id}" value="${item.alt_weight}"
                                         class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                    <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label>
+                                    /* <label for="" class="border bg-white py-3 px-3 mb-2 ">%</label> */
                                 </div>
                                 ${altSetsHTML ? `
                                     <div class="border-b" id="duplicateSetUIAlterEdit">
@@ -1620,7 +1728,8 @@
                 allWeightliftingData = response.weightlifting;
                 const weightliftingArray = Object.values(response.weightlifting);
                 const categoryArray = Object.values(response.categoryOptions);
-                setWeightliftings(weightliftingArray, categoryArray);
+                const dailyClasses = response.daily_classes || [];
+                setWeightliftings(weightliftingArray, categoryArray, dailyClasses);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                     //setstrengths(response.Strength, response.categoryOptions);
@@ -1642,13 +1751,13 @@
 
     }
     // get filterd weigths
-    function setWeightliftings(weightlifting, categoryOptions) {
+    function setWeightliftings(weightlifting, categoryOptions, availableClasses = []) {
         const container = $("#setweights"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
         weightlifting.forEach((item, index) => {
             let setsHTML = '';
-            console.log('fffgfgf',)
+            // console.log('fffgfgf',)
             if (Array.isArray(item.sets) && item.sets.length > 0) {
                 item.sets.forEach((set, idx) => {
                     setsHTML += `
@@ -1661,6 +1770,57 @@
             } else {
                 setsHTML = '<tr><td colspan="2">No set data</td></tr>';
             }
+
+            const assignedClassIds = item.assigned_class_ids || [];
+            
+            // Generate Class Buttons
+            let classButtonsHTML = '';
+            
+            if (availableClasses && availableClasses.length > 0) {
+                 availableClasses.forEach(cls => {
+                     // Check if assigned
+                     const isAssigned = assignedClassIds.includes(cls.id);
+                     
+                     // Format time (e.g. 09:00:00 -> 9:00am)
+                     let timeParts = cls.time.split(':');
+                     let dateObj = new Date();
+                     dateObj.setHours(timeParts[0]);
+                     dateObj.setMinutes(timeParts[1]);
+                     let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                     // Style: Green border/text if assigned, else Gray
+                     const activeClass = isAssigned
+                         ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                         : 'border-gray-300 text-gray-600';
+
+                     classButtonsHTML += `
+                         <button type="button"
+                             class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                             onclick="assignWorkoutToClass(${item.id}, ${cls.id}, '${isAssigned ? 'unassign' : 'assign'}', '${item.date || ''}')">
+                             ${timeString}
+                         </button>
+                     `;
+                 });
+            } else {
+                classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+            }
+            
+            // "All" Button Logic
+            const availableClassIds = availableClasses.map(c => c.id);
+            const allAssigned = availableClassIds.length > 0 && availableClassIds.every(id => assignedClassIds.includes(id));
+            const allButtonClass = allAssigned 
+                ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                : 'border-gray-300 text-gray-600';
+
+            // Prepend "All" button
+            classButtonsHTML = `
+                <button type="button"
+                    class="border px-3 py-1 rounded ${allButtonClass} hover:bg-gray-100 transition-colors text-sm"
+                    onclick="assignWorkoutToClass(${item.id}, 'all', '${allAssigned ? 'unassign' : 'assign_all'}', '${item.date || ''}')">
+                    All
+                </button>
+            ` + classButtonsHTML;
+
 
             let html = `
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
@@ -1708,12 +1868,11 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer weightlifting-toggle" data-workout-id="${item.id}" data-workout-type="weightlifting" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                             ${classButtonsHTML}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1805,6 +1964,26 @@
                         </button>
 
                         <label for="repswe_${suffix}" class="text-sm mr-2">REPS</label>
+
+                        <!-- Weight Stepper (New) -->
+                        <button type="button"
+                            onclick="decrement(this.parentNode.querySelector('input#setweightwe_${suffix}').id)"
+                            class="decrement-reps bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 ml-2">
+                             <svg class="w-3 h-3 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                            </svg>
+                        </button>
+                        <input type="text" id="setweightwe_${suffix}" name="setweightwe_${suffix}" value="${set.weight || 0}" data-input-counter
+                             class="w-12 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5"
+                            placeholder="0" readonly required />
+                        <button type="button"
+                            onclick="increment(this.parentNode.querySelector('input#setweightwe_${suffix}').id)"
+                            class="increment-reps bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11">
+                             <svg class="w-3 h-3 text-gray-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                            </svg>
+                        </button>
+                        <label for="setweightwe_${suffix}" class="text-sm mr-2">%</label>
                     </div>
 
                     <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-2">Remove</button>
@@ -1882,43 +2061,51 @@
         });
     }
 
-    $(document).on('change', '.weightlifting-toggle', function () {
-        const date = document.getElementById('selectdateweDelete').value;
-        var workoutId = $(this).data('workout-id');
-        var workoutType = $(this).data('workout-type');
-        let selectedClassId = localStorage.getItem("selected_class_id");
-        var classId = selectedClassId;
-        localStorage.removeItem("selected_class_id");
-        console.log('selected class Id----',classId);
-        var assigned = $(this).is(':checked') ? 1 : 0;
-
-        // Optional: check that classId is present
-        if (!classId) {
-            alert("Please select a class first.");
-            $(this).prop('checked', !assigned);
-            return;
+    function assignWorkoutToClass(workoutId, classId, action, date) {
+        let confirmMsg = '';
+        if (action === 'assign_all') {
+            confirmMsg = "Are you sure you want to assign this workout to ALL classes?";
+        } else if (action === 'unassign' && classId === 'all') {
+            confirmMsg = "Are you sure you want to unassign this workout from ALL classes?";
+        } else {
+             // For single class, we try to find the button text if possible, or generic message
+             // Since we don't easily have the time string here without passing it, generic is okay,
+             // or we rely on the specific action context.
+             const actionText = action === 'assign' ? 'assign' : 'unassign';
+             confirmMsg = `Are you sure you want to ${actionText} this workout?`;
         }
 
-        $.ajax({
-            url: "/assign-weightlifting-to-class",
-            type: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                class_id: classId,
-                workout_id: workoutId,
-                workout_type: workoutType,
-                date: date,
-                assigned: assigned
-            },
-            success: function (response) {
-                alert(response.message);
-                getdateName(date);
-            },
-            error: function (xhr, status, error) {
-                console.error("AJAX error:", xhr.responseText);
-                alert("An error occurred while assigning the workout.");
-            }
-        });
-    });
+        if (confirm(confirmMsg)) {
+            $.ajax({
+                url: "{{ route('workout.assign_class') }}",
+                type: "POST",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    workout_id: workoutId,
+                    class_id: classId,
+                    type: 'weightlifting',
+                    action: action,
+                    date: date
+                },
+                success: function(response) {
+                     if (response.status === 'success') {
+                        // Refresh to show updated button states
+                        filterWeightlifting(date);
+                        
+                        // Also refresh classes list to show green icon if the function exists
+                        if (typeof getdateName === 'function') {
+                             getdateName(date);
+                        }
+                     } else {
+                         alert(response.message || 'Action failed.');
+                     }
+                },
+                error: function(xhr) {
+                    console.error("AJAX error:", xhr.responseText);
+                    alert("An error occurred while assigning the workout.");
+                }
+            });
+        }
+    }
 
 </script>

@@ -25,6 +25,8 @@ class ClassesController extends Controller
     // Store new class
      public function store(Request $request)
     {
+        Log::info('Store Class Request Data:', $request->all());
+
         $request->validate([
             'time' => 'required',
             'duration' => 'required|integer',
@@ -32,20 +34,44 @@ class ClassesController extends Controller
             'selectdatecla' => 'required',
             'days' => 'array|nullable',
         ]);
-        $startDate = Carbon::createFromFormat('d/m/y l', $request->selectdatecla)->format('Y-m-d');
+        
+        try {
+            $startDate = Carbon::createFromFormat('d/m/y l', $request->selectdatecla)->format('Y-m-d');
+        } catch (\Exception $e) {
+             Log::error('Date Parsing Error: ' . $e->getMessage());
+             return redirect()->back()->with('error', 'Invalid date format provided.');
+        }
+
         
         // If no recurring days selected, just create one
         if (!$request->has('days') || empty($request->days)) {
+             Log::info('Creating single class. Date input: ' . $request->selectdatecla);
+             
+             // Log the start date calculated
+             Log::info('Parsed start date: ' . $startDate);
+
              $this->createClass($request, $request->selectdatecla);
+             
+             Log::info('Single class creation called successfully.');
              return redirect()->back()->with('success', 'Class added successfully.');
         }
+
         // Recurring Logic
         $selectedDays = $request->days; // e.g., ['Mon', 'Wed']
+        Log::info('Creating recurring classes for days: ' . implode(', ', $selectedDays));
+
         $currentDate = Carbon::parse($startDate);
         $endOfYear = Carbon::now()->endOfYear();
         $createdCount = 0;
         $conflicts = [];
-        while ($currentDate->lte($endOfYear)) {
+        
+        // Safety Break: avoid infinite loops if something goes wrong with dates
+        $maxIterations = 366; 
+        $iterations = 0;
+
+        while ($currentDate->lte($endOfYear) && $iterations < $maxIterations) {
+            $iterations++;
+
             // Check if current day short name (e.g., 'Mon') is in selected days
             if (in_array($currentDate->format('D'), $selectedDays)) {
                 
@@ -73,7 +99,9 @@ class ClassesController extends Controller
     }
     // Helper function to keep code clean
     private function createClass($request, $date) {
-        Classes::create([
+        Log::info("createClass helper called. Date: $date, Time: {$request->time}, Spots: {$request->spots}");
+        
+        $class = Classes::create([
             'time' => $request->time,
             'duration' => $request->duration,
             'spots' => $request->spots,
@@ -81,6 +109,8 @@ class ClassesController extends Controller
             'workout_assigned' => $request->has('workout_assigned'),
             'date' => $date,
         ]);
+        
+        Log::info("Class created in DB with ID: " . $class->id);
     }
     
     public function edit($id)
@@ -115,25 +145,31 @@ class ClassesController extends Controller
             $assignments = WorkoutAssign::where('class_id', $id)->get();
 
             foreach ($assignments as $assign) {
-                switch ($assign->workout_type) {
-                    case 'strength':
-                        Strength::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                        break;
-                    case 'weightlifting':
-                        Weightlifting::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                        break;
-                    case 'conditioning':
-                        Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                        break;
-                    case 'warmup':
-                        Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                        break;
-                    case 'test':
-                        Test::where('id', $assign->workout_id)->update(['is_assigned' => false]);
-                        break;
-                    default:
-                        // Unknown type - skip
-                        break;
+                // Check if this workout is assigned to any OTHER class (excluding the one being deleted)
+                $otherAssignmentsExist = WorkoutAssign::where('workout_id', $assign->workout_id)
+                    ->where('workout_type', $assign->workout_type)
+                    ->where('class_id', '!=', $id) // Exclude the class being deleted
+                    ->exists();
+
+                // If no other classes have this workout, then mark it as unassigned
+                if (!$otherAssignmentsExist) {
+                    switch ($assign->workout_type) {
+                        case 'strength':
+                            Strength::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            break;
+                        case 'weightlifting':
+                            Weightlifting::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            break;
+                        case 'conditioning':
+                            Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            break;
+                        case 'warmup':
+                            Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            break;
+                        case 'test':
+                            Test::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            break;
+                    }
                 }
             }
 

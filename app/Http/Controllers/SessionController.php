@@ -677,14 +677,27 @@ class SessionController extends Controller
 
                     'alt_intensity' => $item->alt_intensity,
 
+                    'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'weightlifting',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
+
                     'date' => $item->date,
                     'sets' => $sets, // Include the sets in the result
                 ];
             });
+
+            // Fetch classes for the specific date
+            $dailyClasses = Classes::where('date', $date)
+                ->orderBy('time', 'asc')
+                ->get();
+
             Log::info('return Weightlifting Request Data: ', $result->all());
             return response()->json([
                 'weightlifting' => $result,
                 'categoryOptions' => $categoryOptions,
+                'daily_classes' => $dailyClasses,
             ]);
 
         } catch (\Exception $e) {
@@ -735,6 +748,10 @@ class SessionController extends Controller
             $workouts = WorkoutLibrary::where('type', 'Weightlifting')->with('categoryOption')->get();
             $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
 
+            $dailyClasses = Classes::where('date', $date)
+                ->orderBy('time', 'asc')
+                ->get();
+
             $result = $weightliftingRecords->map(function ($item) {
                 return [
                     'id' => $item->id,
@@ -759,14 +776,21 @@ class SessionController extends Controller
                     'alt_restgreen' => $item->altrestgreen,
                     'alt_intensity' => $item->altintensity,
 
+                    'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'weightlifting',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
+
                     'date' => $item->date,
                     'sets' => $item->sets,
-                ];
+                ];/* dd($result); */
             });
 
             return response()->json([
                 'weightlifting' => $result,
                 'categoryOptions' => $categoryOptions,
+                'daily_classes' => $dailyClasses,
             ]);
         } catch (\Exception $e) {
             Log::error('Error in getweightlifting: ' . $e->getMessage());
@@ -1053,6 +1077,124 @@ class SessionController extends Controller
         return response()->json(['message' => $message], 200);
     }
 
+    // Assign generic workout to class (Strength, etc)
+    public function assignWorkoutToClass(Request $request)
+    {
+        Log::info('assignWorkoutToClass: ', $request->all());
+
+        $request->validate([
+            'workout_id' => 'required|integer',
+            'class_id' => 'required', // Removed 'integer' to allow 'all' flag
+            'type' => 'required|string', // 'strength', 'warmup', etc.
+            'action' => 'required|string|in:assign,unassign,detach,assign_all',
+            'date' => 'required|string',
+        ]);
+
+        $workoutId = $request->workout_id;
+        $classId = $request->class_id;
+        $type = $request->type; // 'strength'
+        $action = $request->action;
+        $date = $request->date;
+
+        if ($action === 'assign_all') {
+            // Fetch all classes for this date
+            // Note: date format in classes table is "d/m/y l" (e.g., "20/01/26 Monday") based on ClassesController store method
+            // But here $date might be coming from frontend input (Y-m-d) ? 
+            // Let's check how getstrength sends date. It sends whatever is in the input.
+            // Assumption: The input 'selectdatestrenghtDelete' has the correct format matching DB which seems to be Y-m-d based on getstrength query.
+            // Wait, ClassesController::getByDay uses 'date' column directly.
+            
+            $classes = Classes::where('date', $date)->get();
+            
+            foreach ($classes as $cls) {
+                WorkoutAssign::firstOrCreate([
+                    'class_id' => $cls->id,
+                    'workout_id' => $workoutId,
+                    'workout_type' => $type,
+                    'date' => $date,
+                ]);
+                
+                // Update Class Flag
+                switch ($type) {
+                    case 'strength': $cls->is_strength = 1; break;
+                    case 'weightlifting': $cls->is_weightlifting = 1; break;
+                    case 'warmup': $cls->is_warmup = 1; break;
+                    case 'conditioning': $cls->is_conditioning = 1; break;
+                    case 'test': $cls->is_test = 1; break;
+                }
+                $cls->save();
+            }
+            
+            // Update Workout Flag
+             switch ($type) {
+                case 'strength':
+                    Strength::where('id', $workoutId)->update(['is_assigned' => 1]);
+                    break;
+                 // Add others if needed
+            }
+
+            return response()->json(['message' => 'Assignments updated for all classes.', 'status' => 'success']);
+        }
+
+        if ($action === 'assign') {
+            WorkoutAssign::firstOrCreate([
+                'class_id' => $classId,
+                'workout_id' => $workoutId,
+                'workout_type' => $type,
+                'date' => $date,
+            ]);
+            $message = 'Workout assigned successfully.';
+        } else {
+            WorkoutAssign::where([
+                'class_id' => $classId,
+                'workout_id' => $workoutId,
+                'workout_type' => $type,
+            ])->delete();
+            $message = 'Workout unassigned successfully.';
+        }
+
+        // --- Post-Assignment Updates ---
+
+        // 1. Update Class 'is_TYPE' flag (e.g. is_strength)
+        // Check if ANY workout of this type is assigned to this class
+        $hasAnyType = WorkoutAssign::where([
+            'class_id' => $classId,
+            'workout_type' => $type
+        ])->exists();
+
+        $class = Classes::find($classId);
+        if ($class) {
+            switch ($type) {
+                case 'strength': $class->is_strength = $hasAnyType ? 1 : 0; break;
+                case 'weightlifting': $class->is_weightlifting = $hasAnyType ? 1 : 0; break;
+                case 'warmup': $class->is_warmup = $hasAnyType ? 1 : 0; break;
+                case 'conditioning': $class->is_conditioning = $hasAnyType ? 1 : 0; break;
+                case 'test': $class->is_test = $hasAnyType ? 1 : 0; break;
+            }
+            $class->save();
+        }
+
+        // 2. Update Workout 'is_assigned' flag
+        // Check if THIS workout is assigned to ANY class
+        $isAssignedAny = WorkoutAssign::where([
+            'workout_id' => $workoutId,
+            'workout_type' => $type
+        ])->exists();
+
+        switch ($type) {
+            case 'strength':
+                Strength::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                break;
+            case 'weightlifting':
+                 // If needed in future
+                 // Weightlifting::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                 break;
+             // Add others as needed
+        }
+
+        return response()->json(['message' => $message, 'status' => 'success']);
+    }
+
 
     // strenght store
     public function strengthstore(Request $request)
@@ -1208,6 +1350,11 @@ class SessionController extends Controller
                     'alt_workout_id' => $item->alt_workout_id,
                     'alt_workout_type' => $item->altWorkout ? $item->altWorkout->workout : null,
 
+                    'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'strength',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
 
                     'alt_weight' => $item->altweight,
                     'alt_restred' => $item->altrestred,
