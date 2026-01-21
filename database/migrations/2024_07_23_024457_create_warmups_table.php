@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('reps');
             $table->string('date');
             $table->float('weight')->nullable();
-            $table->enum('unit', ['%', 'Kg', 'Cal', '/10']);
+            $table->enum('unit', ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A']);
             $table->float('male')->nullable();
             $table->float('female')->nullable();
             $table->boolean('is_assigned')->default(false);
