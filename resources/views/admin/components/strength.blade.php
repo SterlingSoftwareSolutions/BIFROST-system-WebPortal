@@ -145,42 +145,37 @@
                         <div class="bg-gray-50 p-4">
                             <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout
                                 List</div>
-                            <div class="flex items-start space-x-6">
+                            <div class="flex items-center gap-3">
                                 <!-- Category Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="categorys_2" class="w-28">Category</label>
+                                <div class="flex items-center gap-2">
+                                    <label for="categorys_2" class="whitespace-nowrap font-medium text-base">Category</label>
                                     <select id="categorys_2" name="categorys_2" onchange="getworkoutS(this)"
-                                        class="flex-1 px-3 py-2 border rounded">
+                                        class="px-3 py-2 border rounded w-48 bg-white text-base">
                                         <option value="" selected disabled>-- Select Category --</option>
                                     </select>
                                 </div>
 
                                 <!-- Exercise Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="workouts_2" class="w-28">Exercise</label>
-                                    <select id="workouts_2" name="workouts_2" class="flex-1 px-3 py-2 border rounded">
+                                <div class="flex items-center gap-2">
+                                    <label for="workouts_2" class="whitespace-nowrap font-medium text-base">Exercise</label>
+                                    <select id="workouts_2" name="workouts_2" class="px-3 py-2 border rounded w-48 bg-white text-base">
                                         <option value="" selected disabled>-- Select Exercise --</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="flex items-start space-x-6 mt-3">
                                 <!-- Name Field -->
-                                <div class="flex flex-row items-center flex-[2] space-x-2">
-                                    <label for="name_1" class="w-28">Name Search</label>
+                                <div class="flex items-center gap-2">
+                                    <label for="name_1" class="whitespace-nowrap font-medium text-base">Name</label>
                                     <input type="text" id="name_1" name="name_1"
-                                        class="flex-1 px-3 py-2 border rounded mb-2">
+                                        class="px-3 py-2 border rounded w-40 text-base">
                                 </div>
 
-                                <!-- Go Button -->
-                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                <!-- Go and Clear Group -->
+                                <div class="flex flex-col items-center gap-0 ml-2">
+                                     <button id="searchclearsetstrength_1" onclick="clearSearchStrength()" type="button"
+                                        class="text-black hover:text-gray-700 text-sm whitespace-nowrap mb-1">clear</button>
                                     <button id="addsetstrength_1" onclick="filterStrength(date)" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
-                                </div>
-
-                                <div class="flex flex-row items-center flex-1 space-x-2">
-                                    <button id="searchclearsetstrength_1" onclick="clearSearchStrength()" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
+                                        class="bg-black text-white py-2 px-4 rounded text-base hover:bg-gray-800 transition-colors">Go</button>
                                 </div>
                             </div>
                         </div>
@@ -292,13 +287,33 @@
                                 <option value="" selected disabled>-- Select Exercise --</option>
                             </select>
                         </div>
-                        <div class="flex items-center border-b mt-2 ">
+                        <div class="flex items-center border-b mt-2 overflow-visible">
                             <label for="weigths_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
-                            <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                <option value="%">%</option>
-                            </select>
-                            <input type="text" id="weigths_1" name="weigths_1" class="w-1/3 px-3 py-3 border flex rounded mb-2">
-
+                            <div class="flex items-center w-1/3 gap-2">
+                                <input type="number" id="weigths_1" name="weigths_1" class="flex-1 px-3 py-3 border rounded" required>
+                                <select name="unit_1" class="border bg-white py-3 px-2 rounded" onchange="toggleGenderInputs(this)">
+                                    <option value="%">%</option>
+                                    <option value="/10">/10</option>
+                                    <option value="Cal">Cal</option>
+                                    <option value="Kg">Kg</option>
+                                </select>
+                            </div>
+                            
+                            <div class="relative ml-4 flex items-center">
+                                 <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
+                                        <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
+                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                        </svg>
+                                    </span>
+                                <!-- Popup -->
+                                <div class="hidden absolute left-8 top-0 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                    <p><b>/10</b> – Effort out of 10</p>
+                                    <p><b>%</b> – Percentage of effort</p>
+                                    <p><b>Cal</b> – Number of calories</p>
+                                    <p><b>Kg</b> – Weight</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="border-b mt-2" id="duplicateSetUI">
                             <div class="">
@@ -306,7 +321,7 @@
                                     <label for="sets_1" class="w-60 block mb-1">SET <span
                                             class="text-red-500">*</span></label>
                                     <input type="text" id="setsid_1" name="setsid_1" class="hidden" />
-                                    <div class="relative flex items-center max-w-[12rem] gap-2"
+                                    <div class="relative flex items-center gap-2"
                                         id="duplicateRepsUIStrength">
                                         <!-- Optional extra input (first one) -->
                                         <input type="text" id="sets_1" name="sets_1" value="1"
@@ -344,6 +359,40 @@
                                             </svg>
                                         </button>
                                         <label for="reps_1" class="text-sm mr-2">REPS</label>
+
+                                         <!-- Weight Stepper (New) -->
+                                         <button type="button"
+                                            onclick="decrement(this.parentNode.querySelector('input#setweight_1').id)"
+                                            class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none ml-2">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                            </svg>
+                                        </button>
+                                        <div class="flex items-center border border-gray-300 rounded bg-gray-50 h-11 px-2">
+                                            <input
+                                                type="text"
+                                                id="setweight_1"
+                                                name="setweight_1"
+                                                class=" bg-transparent text-center text-gray-900 text-sm focus:outline-none"
+                                                placeholder="80"
+                                                readonly
+                                                required
+                                            />
+                                            <span class="text-gray-500 text-sm">%</span>
+                                        </div>
+                                        <button type="button"
+                                            onclick="increment(this.parentNode.querySelector('input#setweight_1').id)"
+                                            class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 18 18">
+                                                <path stroke="currentColor" stroke-linecap="round"
+                                                    stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
+                                            </svg>
+                                        </button>
+                                        {{-- <label for="setweight_1" class="text-sm mr-2">%</label> --}}
                                     </div>
                                 </div>
 
@@ -828,27 +877,51 @@
 
     function getstrength(date) {
         console.log("Fetching strength data for date: " + date);
-        $.ajax({
-            url: "/get-strengthdata",
-            type: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                date: date
-            },
-            success: function(response) {
-                console.log("this is strenth response", response);
-                allStrengthData = response.Strength;
-                // Assuming response is an array of arrays
-                // response.forEach(subArray => {
-                setstrengths(response.Strength, response.categoryOptions);
-                // });
-            },
 
+        // First, fetch the classes for this date
+        $.ajax({
+            url: "/get-classes-by-day",
+            type: "GET",
+            data: { day: date },
+            success: function(classesResponse) {
+                const classesData = classesResponse || [];
+
+                // Then fetch the strength data
+                $.ajax({
+                    url: "/get-strengthdata",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        date: date
+                    },
+                    success: function(response) {
+                        console.log("this is strenth response", response);
+                        allStrengthData = response.Strength;
+                        setstrengths(response.Strength, response.categoryOptions, classesData);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error during AJAX request (strength):", {
+                            status: status,
+                            xhr: xhr,
+                            error: error
+                        });
+                    }
+                });
+            },
             error: function(xhr, status, error) {
-                console.error("Error during AJAX request:", {
-                    status: status,
-                    xhr: xhr,
-                    error: error
+                console.error("Error fetching classes:", error);
+                // Fallback: load strength without classes if class fetch fails
+                $.ajax({
+                    url: "/get-strengthdata",
+                    type: "POST",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        date: date
+                    },
+                    success: function(response) {
+                        allStrengthData = response.Strength;
+                        setstrengths(response.Strength, response.categoryOptions, []);
+                    }
                 });
             }
         });
@@ -928,13 +1001,17 @@
         });
     });
 
-    function setstrengths(strengthData, categoryOptions) {
+    function setstrengths(strengthData, categoryOptions, classesData = []) {
         const container = $("#setstrengths"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
+        // Sort classes by time
+        classesData.sort((a, b) => {
+            return new Date('1970-01-01T' + a.time) - new Date('1970-01-01T' + b.time);
+        });
+
         strengthData.forEach((item, index) => {
             let setsHTML = '';
-            console.log('ndnvdnldnvv', )
             if (Array.isArray(item.sets) && item.sets.length > 0) {
                 item.sets.forEach((set, idx) => {
                     setsHTML += `
@@ -948,20 +1025,59 @@
                 setsHTML = '<tr><td colspan="2">No set data</td></tr>';
             }
 
+            // Generate Class Buttons
+            let classButtonsHTML = '';
+            if (classesData.length > 0) {
+                 // Check if item has assigned_class_ids array, if not default to empty
+                 const assignedIds = item.assigned_class_ids || [];
+                 // Or fallback to the old boolean for now if the array doesn't exist yet on backend
+                 // logical fallback: if assignedIds is empty but item.is_assigned is true, maybe show visual cue?
+                 // But for this update, we are moving to specific classes.
+
+                 classesData.forEach(cls => {
+                     // Format time 24h -> 12h
+                     let timeParts = cls.time.split(':');
+                     let dateObj = new Date();
+                     dateObj.setHours(timeParts[0]);
+                     dateObj.setMinutes(timeParts[1]);
+                     let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                     // Determine if assigned
+                     // NOTE: backend must send 'assigned_class_ids' array in strength object
+                     const isAssigned = assignedIds.includes(cls.id);
+
+                     // Style: Green border/text if assigned (similar to image), else Gray
+                     const activeClass = isAssigned
+                         ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                         : 'border-gray-300 text-gray-600';
+
+                     classButtonsHTML += `
+                         <button type="button"
+                             class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                             onclick="toggleAssignment(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                             ${timeString}
+                         </button>
+                     `;
+                 });
+            } else {
+                classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+            }
+
+
             let html = `
             <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
                 <div class="border border-black rounded-xl shadow p-4 bg-white">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
-                        <div class="space-x-2">
-                            <button class="edit-strength-btn" data-id="${item.id}" type="button">
+                        <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
+                        <div class="space-x-2 flex">
+                            <button class="edit-strength-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
 
-                            <button class="delete-strength-btn" data-id="${item.id}" type="button">
+                            <button class="delete-strength-btn text-red-600 hover:text-red-800" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
@@ -972,18 +1088,18 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}${item.unit} for ${item.sets?.length || 0} sets</div>
+                    <div class="mb-2 text-gray-800 font-semibold text-base">${item.workout_type} at ${item.weight || 0}${item.unit || ''} for ${item.sets?.length || 0} sets</div>
 
                     <div class="grid grid-cols-2 gap-4 text-gray-700">
                         <div>
-                            <table class="w-full text-left">
+                            <table class="w-full text-left text-sm">
                                 <tbody>
                                     ${setsHTML}
                                 </tbody>
                             </table>
                         </div>
                         <div>
-                            <table class="w-full text-left">
+                            <table class="w-full text-left text-sm">
                                 <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
                                 <tbody>
                                     <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restred || '-'} min</td></tr>
@@ -994,25 +1110,93 @@
                         </div>
                     </div>
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer strength-toggle" data-workout-id="${item.id}" data-workout-type="strength" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                            <button type="button" class="border border-gray-400 px-3 py-1 rounded hover:bg-gray-100 text-sm whitespace-nowrap" onclick="toggleAllAssignments(${item.id})">All</button>
+                            ${classButtonsHTML}
+                        </div>
                     </div>
                 </div>
             </div>
             `;
-
             container.append(html);
 
             // Bind the Edit button after appending
-            container.find('.edit-strength-btn').off('click').on('click', function() {
+            container.find(`.edit-strength-btn[data-id="${item.id}"]`).off('click').on('click', function() {
                 const strengthId = $(this).data('id');
                 populateStrengthForm(strengthId);
             });
 
+        });
+    }
+
+    // Toggle Assignment Function
+    function toggleAssignment(workoutId, classId, timeString, isCurrentlyAssigned) {
+        const action = isCurrentlyAssigned ? 'unassign' : 'assign';
+        const confirmMsg = isCurrentlyAssigned
+            ? `Are you sure you want to unassign this workout from the ${timeString} class?`
+            : `Are you sure you want to assign this workout to the ${timeString} class?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatestrenghtDelete').value;
+
+        $.ajax({
+            url: "/assign-workout-class", // User will implement this
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: classId,
+                type: 'strength',
+                action: action, // 'assign' or 'unassign'
+                date: date
+            },
+            success: function(response) {
+                // Refresh data to show updated status
+                getstrength(date);
+                // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error updating assignment. Please check backend implementation.");
+            }
+        });
+    }
+
+
+    function toggleAllAssignments(workoutId) {
+       if(!confirm("Are you sure you want to assign this workout to ALL classes for this day?")) return;
+
+       const date = document.getElementById('selectdatestrenghtDelete').value;
+
+       $.ajax({
+            url: "/assign-workout-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: 'all',  // Special flag
+                type: 'strength',
+                action: 'assign_all', // Specific action
+                date: date
+            },
+            success: function(response) {
+                alert(response.message);
+                getstrength(date);
+               // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error assigning to all classes.");
+            }
         });
     }
 
@@ -1711,6 +1895,47 @@
     document.querySelectorAll(".duplicateBtnStrength").forEach(function(button) {
         button.addEventListener("click", handleUiDuplications);
     });
+
+    // Function to handle the duplication of UI elements
+    function handleUiDuplications(event) {
+        // ... (existing code) ...
+    }
+</script>
+
+<script>
+    function toggleInfoPopup(el, event) {
+        event.stopPropagation(); // Prevent document click listener from firing
+
+        const popup = el.nextElementSibling;
+        if (!popup) return;
+
+        document.querySelectorAll('.info-popup').forEach(p => {
+            if (p !== popup) p.classList.add('hidden');
+        });
+
+        popup.classList.toggle('hidden');
+    }
+
+    document.addEventListener("click", function(e) {
+        if (!e.target.closest('.info-popup') && !e.target.matches('.text-gray-500')) {
+             document.querySelectorAll('.info-popup').forEach(p => p.classList.add('hidden'));
+        }
+    });
+
+    // Also close using Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.info-popup').forEach(p => p.classList.add('hidden'));
+        }
+    });
+
+    // Auto-sync Training Load to Set 1 Weight
+    document.getElementById('weigths_1').addEventListener('input', function(e) {
+        const set1 = document.getElementById('setweight_1');
+        if (set1) {
+            set1.value = e.target.value;
+        }
+    });
 </script>
 
 
@@ -1742,6 +1967,12 @@
             return;
         }
 
+        // Get default weight from the main input
+        // The id format for main weight is 'weigths_' + index (e.g. weigths_1)
+        // 'remainingfind' holds the index (e.g. '1')
+        const mainWeightInput = document.getElementById('weigths_' + remainingfind);
+        const defaultWeight = mainWeightInput ? mainWeightInput.value : '';
+
         // Clone the original set
         const clone = originalSet.cloneNode(true);
 
@@ -1772,7 +2003,7 @@
         setstrengthuiElement.innerHTML = `
         <div class="flex items-center sets-view mt-1">
                                         <div class="w-60 block mb-1"></div>
-        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
+        <div class="relative flex items-center gap-2" id="duplicateRepsUIStrength">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="sets_${remainingfind}${setCounterstrength}" name="sets_${remainingfind}${setCounterstrength}" value="${setCounterstrength}" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
@@ -1806,6 +2037,28 @@
                                                 </svg>
                                             </button>
                                             <label for="sets_${remainingfind}${setCounterstrength}" class="text-sm mr-2">REPS</label>
+
+                                            <!-- Weight Stepper (New) -->
+                                            <button type="button"
+                                                onclick="decrement(this.parentNode.querySelector('input#setweight_${remainingfind}${setCounterstrength}').id)"
+                                                class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none ml-2">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                </svg>
+                                            </button>
+                                            <input type="text" id="setweight_${remainingfind}${setCounterstrength}" name="setweight_${remainingfind}${setCounterstrength}" value="${defaultWeight}" data-input-counter
+                                                class="w-12 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
+                                                placeholder="0" readonly required />
+                                            <button type="button"
+                                                onclick="increment(this.parentNode.querySelector('input#setweight_${remainingfind}${setCounterstrength}').id)"
+                                                class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 1v16M1 9h16" />
+                                                </svg>
+                                            </button>
                                         </div>
 
             <button type="button" class="remove-set-strength bg-red-500 text-white p-2 rounded ml-2">

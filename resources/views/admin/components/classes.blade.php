@@ -1,5 +1,4 @@
 <style>
-  /* optional: hide horizontal scrollbar for the icons row */
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
@@ -31,7 +30,7 @@
     <div class="p-4 text-right">
       <button
         type="button"
-        onclick="closeModal(); document.getElementById('addModal').classList.remove('hidden')"
+        onclick="openAddModal()"
         class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         + Add Class
@@ -293,6 +292,10 @@
   let isEditMode = false;
 
   function openEditClassModal(classId) {
+    // Ensure hidden date is set from current view
+    const currentDayName = document.getElementById('selectdatecla').value;
+    document.getElementById('selectdatecla_modal').value = currentDayName;
+
     fetch(`/classes/${classId}/edit`) 
         .then(res => res.json())
         .then(data => {
@@ -339,6 +342,22 @@
             document.getElementById('addModal').classList.remove('hidden');
         })
         .catch(err => console.error(err));
+  }
+
+  function openAddModal() {
+      // 1. Reset form/state (clears inputs including hidden ones)
+      closeModal(); 
+      
+      // 2. Re-populate the hidden date input from the current page state
+      const currentDay = document.getElementById('selectdatecla') ? document.getElementById('selectdatecla').value : '';
+      if(currentDay) {
+          document.getElementById('selectdatecla_modal').value = currentDay;
+      } else {
+          console.warn("No date selected found in 'selectdatecla'.");
+      }
+
+      // 3. Show modal
+      document.getElementById('addModal').classList.remove('hidden');
   }
 
   function closeModal() {

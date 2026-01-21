@@ -14,6 +14,22 @@
         .w-1\/3 {
             width: 50% !important;
         }
+        /* Custom Thin Scrollbar */
+        .thin-scrollbar::-webkit-scrollbar {
+            height: 6px; /* Horizontal scrollbar height */
+            width: 6px;  /* Vertical scrollbar width */
+        }
+        .thin-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* gray-300 */
+            border-radius: 4px;
+        }
+        .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* gray-400 */
+        }
     </style>
 </head>
 

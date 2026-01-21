@@ -172,7 +172,7 @@ Route::middleware(['admin'])->group(function () {
     // delete selected Weightlifting data
     Route::post('/delete-weightlifting', [SessionController::class, 'deleteweightlifting'])->name('weightlifting.delete');
     // asign weightligting to class
-    Route::post('/assign-weightlifting-to-class', [SessionController::class, 'assignweightlifting'])->name('weightlifting.assign');
+        Route::post('/assign-weightlifting-to-class', [SessionController::class, 'assignweightlifting'])->name('weightlifting.assign');
 
     // store conditioning
     Route::post('/store-conditioning', [SessionController::class, 'storeconditioning']);
@@ -198,6 +198,9 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/search-setstrength', [SessionController::class, 'searchSetStrength'])->name('search.setstrength');
     // delete selected strength data
     Route::post('/delete-strength', [SessionController::class, 'delete'])->name('strength.delete');
+    
+    // Assign generic workout (Strength, etc) to class
+    Route::post('/assign-workout-class', [SessionController::class, 'assignWorkoutToClass'])->name('workout.assign_class');
 
 
 
