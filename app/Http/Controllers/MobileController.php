@@ -1069,6 +1069,18 @@ class MobileController extends Controller
                 return $item;
             });
 
+            $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
+
+                $item_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('reps', '>', 0)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
+
+                $item->warmup_item_completed = $item_completed ? 1 : 0;
+                return $item;
+            });
+
 
             // Append matching weight to Strength workouts
             $detailsstrength->transform(function ($item) use ($testWeights) {
@@ -1216,15 +1228,24 @@ class MobileController extends Controller
 
    public function insertWeight(Request $request)
     {
+
+    $request->validate([
+        'workout_id' => 'required|integer',
+        'member_id' => 'required|integer',
+        'weight' => 'required|numeric',
+        'selected_day' => 'required|string',
+    ]);
+    
     try {
-        $dateStr = Carbon::now()->format('d/m/y l');
+        $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
+        $dayWithDate = $date->format('d/m/y l');
 
         $test = Test::create([
             'workout_id'  => $request->workout_id,
             'member_id'   => $request->member_id,
             'weight'      => $request->weight,
             'workoutname' => $request->workoutname,
-            'date'        => $dateStr,
+            'date'        => $dayWithDate, 
             'category_id' => $request->category_id ?? null,
         ]);
 
