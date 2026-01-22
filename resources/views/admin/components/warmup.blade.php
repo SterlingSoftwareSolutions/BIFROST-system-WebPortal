@@ -48,7 +48,7 @@
 
                 // AJAX request
                 $.ajax({
-                    url: '{{ route('warmups.deleteAllBySelectDate') }}',
+                    url: '{{ route("warmups.deleteAllBySelectDate") }}',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
@@ -239,8 +239,8 @@
                                         <option value="Cal">Cal</option>
                                         <option value="%">%</option>
                                         <option value="Kg">Kg</option>
-                                        <option value="Kg">BW</option>
-                                        <option value="Kg">N/A</option>
+                                        <option value="BW">BW</option>
+                                        <option value="N/A">N/A</option>
                                     </select>
                                 </div>
 
