@@ -119,7 +119,7 @@
 
                                 <!-- Category Field -->
                                 <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
-                                    <label for="categoryw_2" class="w-20 text-xs">Category</label>
+                                    <label for="categoryw_2" class="w-15 text-xs">Category</label>
                                     <select id="categoryw_2" name="categoryw_2" onchange="getworkoutw(this)"
                                         class="flex-1 px-1 py-1 border rounded text-xs">
                                         <option value="" selected disabled>-- Select --</option>
@@ -128,7 +128,7 @@
 
                                 <!-- Exercise Field -->
                                 <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
-                                    <label for="workoutw_2" class="w-20 text-xs">Exercise</label>
+                                    <label for="workoutw_2" class="w-15 text-xs pl-3">Exercise</label>
                                     <select id="workoutw_2" name="workoutw_2" class="flex-1 px-1 py-1 border rounded text-xs">
                                         <option value="" selected disabled>-- Select --</option>
                                     </select>
@@ -136,7 +136,7 @@
 
                                 <!-- Name Field -->
                                 <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
-                                    <label for="namew_2" class="w-20 text-xs">Name</label>
+                                    <label for="namew_2" class="w-15 text-xs ">Name</label>
                                     <input type="text" id="namew_2" name="namew_2"
                                         class="flex-1 px-1 py-1 border rounded text-xs">
                                 </div>

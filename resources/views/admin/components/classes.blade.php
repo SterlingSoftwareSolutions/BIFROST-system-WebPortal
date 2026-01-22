@@ -14,8 +14,8 @@
           <tr>
             <th class="px-4 py-2 w-[15%] whitespace-nowrap">Time</th>
             <th class="px-4 py-2 w-[15%]">Duration</th>
-            <th class="px-4 py-2 w-[15%]">Spots</th>
-            <th class="px-4 py-2 w-[45%]">Workout Assigned</th>
+            <th class="px-4 py-2 w-[10%]">Spots</th>
+            <th class="px-4 py-2 w-[50%]">Workout Assigned</th>
             <th class="px-4 py-2 w-[10%] text-right whitespace-nowrap"></th>
           </tr>
         </thead>
@@ -50,32 +50,32 @@
 
       <div>
         <label class="block font-medium">Time</label>
-        
+
         <!-- Custom Time Picker Wrapper -->
         <div class="relative w-full mt-1" id="customTimePicker">
             <!-- Hidden input for form submission (24h format) -->
             <input type="hidden" name="time" id="timeInput" required>
-            
+
             <!-- Visible input for user interaction -->
-            <input 
-                type="text" 
-                id="timeDisplay" 
-                class="w-full border rounded px-3 py-2 cursor-pointer focus:outline-none focus:border-blue-500 bg-white" 
-                placeholder="--:-- --" 
+            <input
+                type="text"
+                id="timeDisplay"
+                class="w-full border rounded px-3 py-2 cursor-pointer focus:outline-none focus:border-blue-500 bg-white"
+                placeholder="--:-- --"
                 readonly
                 onclick="toggleTimePicker()"
             >
 
             <!-- Dropdown Container -->
             <div id="timeDropdown" class="hidden absolute top-full left-0 mt-1 w-[200px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
-                
+
                 <!-- Columns Container -->
                 <div class="flex h-64 text-sm">
                     <!-- Hours Column -->
                     <div class="w-1/3 overflow-y-auto no-scrollbar border-r border-gray-100" id="hourList">
                         <!-- Generated via JS -->
                     </div>
-                    
+
                     <!-- Minutes Column -->
                     <div class="w-1/3 overflow-y-auto no-scrollbar border-r border-gray-100" id="minuteList">
                         <!-- Generated via JS -->
@@ -201,10 +201,10 @@
                 style="${outlineStyle}">
               <td class="px-4 py-2 w-[15%] whitespace-nowrap">${time}</td>
               <td class="px-4 py-2 w-[15%]">${cls.duration} <span class="ml-2">hr</span></td>
-              <td class="px-4 py-2 w-[15%]">${cls.spots}</td>
+              <td class="px-4 py-2 w-[10%]">${cls.spots}</td>
 
               <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
-              <td class="px-4 py-2 w-[45%] pr-4">
+              <td class="m-[-10px] py-2 w-[50%] pr-4">
                 <div class="flex flex-nowrap items-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap no-scrollbar py-1">
                   <div class="p-1">
                     <img src="/icon/warmup.png"
@@ -334,7 +334,7 @@
     const currentDayName = document.getElementById('selectdatecla').value;
     document.getElementById('selectdatecla_modal').value = currentDayName;
 
-    fetch(`/classes/${classId}/edit`) 
+    fetch(`/classes/${classId}/edit`)
         .then(res => res.json())
         .then(data => {
             // Populate Fields
@@ -348,11 +348,11 @@
                     if(hour > 12) hour -= 12;
                 }
                 if(hour === 0) hour = 12;
-                
+
                 currentHour = hour.toString().padStart(2, '0');
                 currentMinute = m;
                 currentPeriod = period;
-                
+
                 updatePickerUI();
             }
 
@@ -363,15 +363,15 @@
 
             document.querySelector('input[name="duration"]').value = data.duration;
             document.querySelector('input[name="spots"]').value = data.spots;
-            
+
             // Set Edit Mode
             isEditMode = true;
-            
+
             // Update UI
             document.querySelector('#addModal h2').innerText = "Edit Class";
             const submitBtn = document.querySelector('#addModal button[type="submit"]');
             submitBtn.innerText = "Update";
-            
+
             // Disable Repeat Section
             const repeatSection = document.querySelector('.mt-4.repeat-section'); // Will add this class to div
             if(repeatSection) {
@@ -382,8 +382,8 @@
 
             // Update Form Action
             const form = document.querySelector('#addModal form');
-            form.action = `/classes/${classId}`; 
-            
+            form.action = `/classes/${classId}`;
+
             // Add hidden Request Method Spoofing
             let methodInput = form.querySelector('input[name="_method"]');
             if (!methodInput) {
@@ -403,8 +403,8 @@
 
   function openAddModal() {
       // 1. Reset form/state (clears inputs including hidden ones)
-      closeModal(); 
-      
+      closeModal();
+
       // 2. Re-populate the hidden date input from the current page state
       const currentDay = document.getElementById('selectdatecla') ? document.getElementById('selectdatecla').value : '';
       if(currentDay) {
@@ -412,13 +412,13 @@
       } else {
           console.warn("No date selected found in 'selectdatecla'.");
       }
-      
+
       // Reset Picker to Default & Enable
       currentHour = '12';
       currentMinute = '00';
       currentPeriod = 'AM';
       updatePickerUI();
-      
+
       const timeDisplay = document.getElementById('timeDisplay');
       timeDisplay.classList.remove('bg-gray-100', 'cursor-not-allowed');
       timeDisplay.onclick = toggleTimePicker; // Re-bind click handler
@@ -429,17 +429,17 @@
 
   function closeModal() {
     isEditMode = false;
-    
+
     document.querySelector('#addModal h2').innerText = "Add New Class";
     document.querySelector('#addModal button[type="submit"]').innerText = "Save";
     document.querySelector('#addModal form').reset();
-    
+
     // Reset Time Input & Picker State
     const timeInput = document.querySelector('input[name="time"]'); // This is the hidden one now
     if(timeInput) timeInput.value = '';
-    
+
     document.getElementById('timeDisplay').value = '';
-    
+
     // Reset picker defaults
     currentHour = '12';
     currentMinute = '00';
@@ -458,20 +458,20 @@
     form.action = "{{ route('classes.store') }}";
     const methodInput = form.querySelector('input[name="_method"]');
     if (methodInput) methodInput.remove();
-    
+
     document.getElementById('addModal').classList.add('hidden');
     document.getElementById('timeDropdown').classList.add('hidden');
   }
 
   // --- Custom Time Picker Logic ---
-  
+
   let currentHour = '12';
   let currentMinute = '00';
   let currentPeriod = 'AM';
 
   document.addEventListener('DOMContentLoaded', () => {
     initTimePicker();
-    
+
     // Close picker when clicking outside
     document.addEventListener('click', (e) => {
         const picker = document.getElementById('customTimePicker');
@@ -485,7 +485,7 @@
   function initTimePicker() {
     const hourList = document.getElementById('hourList');
     const minuteList = document.getElementById('minuteList');
-    
+
     if(!hourList || !minuteList) return;
 
     // Populate Hours (01-12)
@@ -546,7 +546,7 @@
     // Update Inputs
     const displayVal = `${currentHour}:${currentMinute} ${currentPeriod}`;
     document.getElementById('timeDisplay').value = displayVal;
-    
+
     // Convert to 24h for hidden input
     let h = parseInt(currentHour);
     if (currentPeriod === 'PM' && h !== 12) h += 12;
