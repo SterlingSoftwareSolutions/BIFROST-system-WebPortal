@@ -143,40 +143,45 @@
                     {{-- start alternative --}}
                     <div class="flex-col w-full">
                         <div class="bg-gray-50 p-4">
-                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout
-                                List</div>
-                            <div class="flex items-center gap-3">
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
+                            <div class="flex items-center space-x-2 flex-nowrap">
+
                                 <!-- Category Field -->
-                                <div class="flex items-center gap-2">
-                                    <label for="categorys_2" class="whitespace-nowrap font-medium text-base">Category</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="categorys_2" class="w-15 text-xs">Category</label>
                                     <select id="categorys_2" name="categorys_2" onchange="getworkoutS(this)"
-                                        class="px-3 py-2 border rounded w-48 bg-white text-base">
-                                        <option value="" selected disabled>-- Select Category --</option>
+                                        class="flex-1 px-1 py-1 border rounded text-xs bg-white">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
 
                                 <!-- Exercise Field -->
-                                <div class="flex items-center gap-2">
-                                    <label for="workouts_2" class="whitespace-nowrap font-medium text-base">Exercise</label>
-                                    <select id="workouts_2" name="workouts_2" class="px-3 py-2 border rounded w-48 bg-white text-base">
-                                        <option value="" selected disabled>-- Select Exercise --</option>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="workouts_2" class="w-15 text-xs pl-3">Exercise</label>
+                                    <select id="workouts_2" name="workouts_2" class="flex-1 px-1 py-1 border rounded text-xs bg-white">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
 
                                 <!-- Name Field -->
-                                <div class="flex items-center gap-2">
-                                    <label for="name_1" class="whitespace-nowrap font-medium text-base">Name</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="name_1" class="w-15 text-xs ">Name</label>
                                     <input type="text" id="name_1" name="name_1"
-                                        class="px-3 py-2 border rounded w-40 text-base">
+                                        class="flex-1 px-1 py-1 border rounded text-xs">
                                 </div>
 
-                                <!-- Go and Clear Group -->
-                                <div class="flex items-center gap-2 ml-2">
+                                <!-- Go Button -->
+                                <div class="flex items-center">
                                     <button id="addsetstrength_1" onclick="filterStrength(date)" type="button"
-                                        class="bg-black text-white py-2 px-4 rounded text-base hover:bg-gray-800 transition-colors">Go</button>
-                                     <button id="searchclearsetstrength_1" onclick="clearSearchStrength()" type="button"
-                                        class="bg-black text-white py-2 px-4 rounded text-base hover:bg-gray-800 transition-colors">Clear</button>
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Go</button>
                                 </div>
+
+                                <!-- Clear Button -->
+                                <div class="flex items-center">
+                                    <button id="searchclearsetstrength_1" onclick="clearSearchStrength()" type="button"
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
+                                </div>
+
                             </div>
                         </div>
 
@@ -268,28 +273,28 @@
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-3xl">Create</div>
                         <input type="hidden" id="strength_id" name="strength_id" value="">
                         <div class="flex items-center border-b mt-2">
-                            <label for="names_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
+                            <label for="names_1" class="w-40 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                             <input type="text" id="names_1" name="names_1"
-                                class="px-3 py-3 border flex rounded mb-2" style="width: 26rem" required>
+                                class="w-2/3 px-3 py-3 border flex rounded mb-2" required>
                         </div>
                         <div class="flex items-center border-b ">
-                            <label for="categorys_1" class="w-60 block mb-1">Category <span
+                            <label for="categorys_1" class="w-40 block mb-1">Category <span
                                     class="text-red-500">*</span></label>
                             <select id="categorys_1" name="categorys_1" onchange="getworkoutS(this)"
-                                class="px-3 py-3 border flex rounded mb-2" style="width: 26rem">
+                                class="w-2/3 px-3 py-3 border flex rounded mb-2">
                                 <option value="" selected disabled>-- Select Category --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 ">
-                            <label for="workouts_1" class="w-60 block mb-1">Exercise <span
+                            <label for="workouts_1" class="w-40 block mb-1">Workout <span
                                     class="text-red-500">*</span></label>
-                            <select id="workouts_1" name="workouts_1" class="px-3 py-3 border flex rounded mb-2" style="width: 26rem">
-                                <option value="" selected disabled>-- Select Exercise --</option>
+                            <select id="workouts_1" name="workouts_1" class="w-2/3 px-3 py-3 border flex rounded mb-2">
+                                <option value="" selected disabled>-- Select Workout --</option>
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2 overflow-visible">
-                            <label for="weigths_1" class="w-60 block mb-1">Training Load <span class="text-red-500">*</span></label>
-                            <div class="flex items-center gap-2" style="width: 26rem">
+                            <label for="weigths_1" class="w-40 block mb-1">Training Load <span class="text-red-500">*</span></label>
+                            <div class="flex items-center gap-2 w-2/3">
                                 <input type="text" id="weigths_1" name="weigths_1" class="flex-1 px-3 py-3 border rounded" required>
                                 <select name="unit_1" class="border bg-white py-3 px-2 rounded" onchange="toggleGenderInputs(this)">
                                     <option value="%">%</option>
@@ -318,10 +323,10 @@
                         <div class="border-b mt-2" id="duplicateSetUI">
                             <div class="">
                                 <div class="flex items-center sets-view">
-                                    <label for="sets_1" class="w-60 block mb-1">SET <span
+                                    <label for="sets_1" class="w-40 block mb-1">SET <span
                                             class="text-red-500">*</span></label>
                                     <input type="text" id="setsid_1" name="setsid_1" class="hidden" />
-                                    <div class="relative flex items-center gap-2"
+                                    <div class="relative flex items-center gap-1"
                                         id="duplicateRepsUIStrength">
                                         <!-- Optional extra input (first one) -->
                                         <input type="text" id="sets_1" name="sets_1" value="1"
@@ -387,7 +392,7 @@
                                  </div>
 
                                 <div class="duplicate-sets-strength" id="duplicate-sets-strength_1"></div>
-                                <div class="ml-60">
+                                <div class="ml-40">
                                     <button id="duplicatesetstrength_1" onclick="duplicateStrengthSet(this.id)"
                                         type="button"
                                         class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">
@@ -397,7 +402,7 @@
                         </div>
 
                         <div class="flex items-center border-b">
-                            <label for="restreds_1" class="w-60 block mb-1">Rest <span
+                            <label for="restreds_1" class="w-32 block mb-1">Rest <span
                                     class="text-red-500">*</span></label>
                             <div class="">
                                 <div class="relative flex items-center max-w-[12rem] mb-4">
@@ -485,9 +490,9 @@
                             </div>
                         </div>
                         <div class="flex items-center border-b ">
-                            <label for="intensity" class="w-60 block mb-1">Intensity</label>
+                            <label for="intensity" class="w-32 block mb-1">Intensity</label>
                             <select id="intensitys_1" name="intensitys_1"
-                                class="w-1/3 px-3 py-3 border flex rounded my-2">
+                                class="w-2/3 px-3 py-3 border flex rounded my-2">
                                 <option value=""selected disabled>-- Select Intensity --
                                 </option>
                                 <option value="low">Low</option>
@@ -1019,174 +1024,201 @@
             let classButtonsHTML = '';
             if (classesData.length > 0) {
                  // Check if item has assigned_class_ids array, if not default to empty
-                 const assignedIds = item.assigned_class_ids || [];
-                 // Or fallback to the old boolean for now if the array doesn't exist yet on backend
-                 // logical fallback: if assignedIds is empty but item.is_assigned is true, maybe show visual cue?
-                 // But for this update, we are moving to specific classes.
+                     const assignedIds = item.assigned_class_ids || [];
+                     
+                     // Check if ALL classes are assigned
+                     const allClassIds = classesData.map(c => c.id);
+                     const isAllAssigned = classesData.length > 0 && allClassIds.every(id => assignedIds.includes(id));
+                     
+                     const allBtnClass = isAllAssigned 
+                        ? 'border-green-600 bg-green-50 text-green-700 font-bold' 
+                        : 'border-gray-400 text-gray-600';
+                     
+                     // Define action for All button: if currently all assigned, we unassign all. Else assign all.
+                     // But wait, user might have mixed state. 
+                     // Typically if *all* are assigned, we unassign. If *some* or *none*, we assign all.
+                     // Let's pass the boolean isAllAssigned to the toggle function.
 
-                 classesData.forEach(cls => {
-                     // Format time 24h -> 12h
-                     let timeParts = cls.time.split(':');
-                     let dateObj = new Date();
-                     dateObj.setHours(timeParts[0]);
-                     dateObj.setMinutes(timeParts[1]);
-                     let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+                     classesData.forEach(cls => {
+                         // Format time 24h -> 12h
+                         let timeParts = cls.time.split(':');
+                         let dateObj = new Date();
+                         dateObj.setHours(timeParts[0]);
+                         dateObj.setMinutes(timeParts[1]);
+                         let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
 
-                     // Determine if assigned
-                     // NOTE: backend must send 'assigned_class_ids' array in strength object  
-                     const isAssigned = assignedIds.includes(cls.id);
+                         // Determine if assigned
+                         const isAssigned = assignedIds.includes(cls.id);
 
-                     // Style: Green border/text if assigned (similar to image), else Gray
-                     const activeClass = isAssigned
-                         ? 'border-green-600 bg-green-50 text-green-700 font-bold'
-                         : 'border-gray-300 text-gray-600';
-                        //check the upates in the page 
-                     classButtonsHTML += `
-                         <button type="button"
-                             class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
-                             onclick="toggleAssignment(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
-                             ${timeString}
-                         </button>
-                     `;
-                 });
-            } else {
-                classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
-            }
+                         // Style: Green border/text if assigned (similar to image), else Gray
+                         const activeClass = isAssigned
+                             ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                             : 'border-gray-300 text-gray-600';
+                            
+                         classButtonsHTML += `
+                             <button type="button"
+                                 class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                                 onclick="toggleAssignment(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                                 ${timeString}
+                             </button>
+                         `;
+                     });
+
+                    /* Prepend All Button Logic */
+                    classButtonsHTML = `
+                        <button type="button" 
+                            class="border px-3 py-1 rounded ${allBtnClass} hover:bg-gray-100 text-sm whitespace-nowrap" 
+                            onclick="toggleAllAssignments(${item.id}, ${isAllAssigned})">
+                            All
+                        </button>
+                    ` + classButtonsHTML;
+
+                } else {
+                    classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+                }
 
 
-            let html = `
-            <div class="border-2 border-gray-300 rounded-md shadow p-4 bg-white w-full">
-                    <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
-                        <div class="space-x-2 flex">
-                            <button class="edit-strength-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" type="button">
-                                <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                            </button>
+                let html = `
+                <div class="border-2 border-gray-300 rounded-md shadow p-4 bg-white w-full">
+                        <div class="pb-2 mb-2 flex justify-between items-center">
+                            <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
+                            <div class="space-x-2 flex">
+                                <button class="edit-strength-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" type="button">
+                                    <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </button>
 
-                            <button class="delete-strength-btn text-red-600 hover:text-red-800" data-id="${item.id}" type="button">
-                                <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                                    <g>
-                                        <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
-                                        <path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625C22.5117188,22.9023438,22.2558594,23,22,23z"/>
-                                    </g>
-                                </svg>
-                            </button>
+                                <button class="delete-strength-btn text-red-600 hover:text-red-800" data-id="${item.id}" type="button">
+                                    <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
+                                            <path d="M22,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688l-12-12c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625s1.0234375-0.390625,1.4140625,0l12,12c0.390625,0.390625,0.390625,1.0234375,0,1.4140625C22.5117188,22.9023438,22.2558594,23,22,23z"/>
+                                        </g>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold text-base">${item.workout_type} at ${item.weight || 0}${item.unit || ''} for ${item.sets?.length || 0} sets</div>
+                        <div class="mb-2 text-gray-800 font-semibold text-base">${item.workout_type} at ${item.weight || 0}${item.unit || ''} for ${item.sets?.length || 0} sets</div>
 
-                    <div class="grid grid-cols-2 gap-4 text-gray-700">
-                        <div>
-                            <table class="w-full text-left text-sm">
-                                <tbody>
-                                    ${setsHTML}
-                                </tbody>
-                            </table>
+                        <div class="grid grid-cols-2 gap-4 text-gray-700">
+                            <div>
+                                <table class="w-full text-left text-sm">
+                                    <tbody>
+                                        ${setsHTML}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <table class="w-full text-left text-sm">
+                                    <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restred || '-'} min</td></tr>
+                                        <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restyellow || '-'} min</td></tr>
+                                        <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restgreen || '-'} min</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div>
-                            <table class="w-full text-left text-sm">
-                                <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
-                                <tbody>
-                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restred || '-'} min</td></tr>
-                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restyellow || '-'} min</td></tr>
-                                    <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restgreen || '-'} min</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
 
-                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
-                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
-                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
-                            <button type="button" class="border border-gray-400 px-3 py-1 rounded hover:bg-gray-100 text-sm whitespace-nowrap" onclick="toggleAllAssignments(${item.id})">All</button>
-                            ${classButtonsHTML}
+                        <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                            <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                            <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                                ${classButtonsHTML}
+                            </div>
                         </div>
-                    </div>
-            </div>
-            `;
-            container.append(html);
+                </div>
+                `;
+                container.append(html);
 
-            // Bind the Edit button after appending
-            container.find(`.edit-strength-btn[data-id="${item.id}"]`).off('click').on('click', function() {
-                const strengthId = $(this).data('id');
-                populateStrengthForm(strengthId);
+                // Bind the Edit button after appending
+                container.find(`.edit-strength-btn[data-id="${item.id}"]`).off('click').on('click', function() {
+                    const strengthId = $(this).data('id');
+                    populateStrengthForm(strengthId);
+                });
+
             });
+        }
 
-        });
-    }
-
-    // Toggle Assignment Function
-    function toggleAssignment(workoutId, classId, timeString, isCurrentlyAssigned) {
-        const action = isCurrentlyAssigned ? 'unassign' : 'assign';
-        const confirmMsg = isCurrentlyAssigned
-            ? `Are you sure you want to unassign this workout from the ${timeString} class?`
-            : `Are you sure you want to assign this workout to the ${timeString} class?`;
-
-        if (!confirm(confirmMsg)) return;
-
-        const date = document.getElementById('selectdatestrenghtDelete').value;
-
-        $.ajax({
-            url: "/assign-workout-class", // User will implement this
-            type: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                workout_id: workoutId,
-                class_id: classId,
-                type: 'strength',
-                action: action, // 'assign' or 'unassign'
-                date: date
-            },
-            success: function(response) {
-                // Refresh data to show updated status
-                getstrength(date);
-                // Also refresh classes list to show green icon if the function exists
-                if (typeof getdateName === 'function') {
-                    getdateName(date);
+        // Toggle Assignment Function
+        function toggleAssignment(workoutId, classId, timeString, isCurrentlyAssigned) {
+            const action = isCurrentlyAssigned ? 'unassign' : 'assign';
+            const confirmMsg = isCurrentlyAssigned
+                ? `Are you sure you want to unassign this workout from the ${timeString} class?`
+                : `Are you sure you want to assign this workout to the ${timeString} class?`;
+    
+            if (!confirm(confirmMsg)) return;
+    
+            const date = document.getElementById('selectdatestrenghtDelete').value;
+    
+            $.ajax({
+                url: "/assign-workout-class", 
+                type: "POST",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    workout_id: workoutId,
+                    class_id: classId,
+                    type: 'strength',
+                    action: action, // 'assign' or 'unassign'
+                    date: date
+                },
+                success: function(response) {
+                    // Refresh data to show updated status
+                    getstrength(date);
+                    // Also refresh classes list to show green icon if the function exists
+                    if (typeof getdateName === 'function') {
+                        getdateName(date);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert("Error updating assignment. Please check backend implementation.");
                 }
-            },
-            error: function(xhr) {
-                console.error(xhr.responseText);
-                alert("Error updating assignment. Please check backend implementation.");
-            }
-        });
-    }
-
-
-    function toggleAllAssignments(workoutId) {
-       if(!confirm("Are you sure you want to assign this workout to ALL classes for this day?")) return;
-
-       const date = document.getElementById('selectdatestrenghtDelete').value;
-
-       $.ajax({
-            url: "/assign-workout-class",
-            type: "POST",
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                workout_id: workoutId,
-                class_id: 'all',  // Special flag
-                type: 'strength',
-                action: 'assign_all', // Specific action
-                date: date
-            },
-            success: function(response) {
-                alert(response.message);
-                getstrength(date);
-               // Also refresh classes list to show green icon if the function exists
-                if (typeof getdateName === 'function') {
-                    getdateName(date);
+            });
+        }
+    
+    
+        function toggleAllAssignments(workoutId, isAllAssigned) {
+           const action = isAllAssigned ? 'unassign' : 'assign_all';
+           // If we are unassigning "All", we need to pass class_id='all' based on our backend logic.
+           // However, if we are ASSIGNING all, we pass class_id='all' (or maybe it doesn't matter for assign_all since we fetch all classes).
+           // But for unassign logic in controller: `if ($action === 'unassign' && $classId === 'all')`
+           
+           const confirmMsg = isAllAssigned 
+                ? "Are you sure you want to unassign this workout from ALL classes?" 
+                : "Are you sure you want to assign this workout to ALL classes?";
+    
+           if(!confirm(confirmMsg)) return;
+    
+           const date = document.getElementById('selectdatestrenghtDelete').value;
+    
+           $.ajax({
+                url: "/assign-workout-class",
+                type: "POST",
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    workout_id: workoutId,
+                    class_id: 'all',  // Special flag
+                    type: 'strength',
+                    action: action, 
+                    date: date
+                },
+                success: function(response) {
+                    alert(response.message);
+                    getstrength(date);
+                   // Also refresh classes list to show green icon if the function exists
+                    if (typeof getdateName === 'function') {
+                        getdateName(date);
+                    }
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                    alert("Error assigning to all classes.");
                 }
-            },
-            error: function(xhr) {
-                console.error(xhr.responseText);
-                alert("Error assigning to all classes.");
-            }
-        });
-    }
+            });
+        }
 
     function populateStrengthForm(strengthId) {
 
@@ -1240,7 +1272,7 @@
                 <div class="flex items-center sets-view mt-1">
                     <div class="w-60 block mb-1"></div>
                     <input type="text" id="setsid_${setCounterstrength}" name="setsid_${setCounterstrength}" value="${setData.id}" class="hidden"/>
-                    <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUIStrength">
+                    <div class="relative flex items-center max-w-[12rem] gap-1" id="duplicateRepsUIStrength">
                         <input type="text" id="sets_${setCounterstrength}" name="sets_${setCounterstrength}" value="${setData.sets}" data-input-counter
                             class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                             placeholder="0" readonly required />
@@ -2005,7 +2037,7 @@
         // Add remove button
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
-        removeButton.className = 'remove-set-strength bg-red-500 text-white p-2 rounded ml-2 w-24';
+        removeButton.className = 'remove-set-strength bg-red-500 text-white p-2 rounded ml-2 w-15';
         removeButton.onclick = function() {
             clone.remove();
         };
@@ -2020,8 +2052,8 @@
         const setstrengthuiElement = document.createElement('div');
         setstrengthuiElement.innerHTML = `
         <div class="flex items-center sets-view mt-1">
-                                        <div class="w-60 block mb-1"></div>
-        <div class="relative flex items-center gap-2" id="duplicateRepsUIStrength">
+                                        <div class="w-40 block mb-1"></div>
+        <div class="relative flex items-center gap-1" id="duplicateRepsUIStrength">
                                             <!-- Optional extra input (first one) -->
                                             <input type="text" id="sets_${remainingfind}${setCounterstrength}" name="sets_${remainingfind}${setCounterstrength}" value="${setCounterstrength}" data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
@@ -2080,7 +2112,7 @@
                                             </div>
                                         </div>
 
-            <button type="button" class="remove-set-strength bg-red-500 text-white p-2 rounded ml-2 w-24">
+            <button type="button" class="remove-set-strength bg-red-500 text-white p-1 rounded ml-1 w-15">
                     Remove
             </button>
         </div>
@@ -2258,7 +2290,7 @@
         const altsetuiElement = document.createElement('div');
         altsetuiElement.innerHTML = `
         <div class="flex items-center sets-view">
-            <label for="alt-custom-numberwe_${remainingfind}${altsetCounterstrength}" class="w-60 block mb-1">
+            <label for="alt-custom-numberwe_${remainingfind}${altsetCounterstrength}" class="w-32 block mb-1">
                 SETS <span class="text-red-500">*</span>
             </label>
             <div class="relative flex items-center max-w-[8rem]">
@@ -2276,7 +2308,7 @@
             </div>
         </div>
         <div class="flex items-center border-b">
-            <label for="alt-reps_${remainingfind}${altsetCounterstrength}" class="w-60 block mb-1">
+            <label for="alt-reps_${remainingfind}${altsetCounterstrength}" class="w-32 block mb-1">
                 REPS <span class="text-red-500">*</span>
             </label>
             <div class="relative flex items-center max-w-[8rem]">
