@@ -50,7 +50,45 @@
 
       <div>
         <label class="block font-medium">Time</label>
-        <input name="time" type="time" required class="w-full border rounded px-3 py-2 mt-1" />
+        
+        <!-- Custom Time Picker Wrapper -->
+        <div class="relative w-full mt-1" id="customTimePicker">
+            <!-- Hidden input for form submission (24h format) -->
+            <input type="hidden" name="time" id="timeInput" required>
+            
+            <!-- Visible input for user interaction -->
+            <input 
+                type="text" 
+                id="timeDisplay" 
+                class="w-full border rounded px-3 py-2 cursor-pointer focus:outline-none focus:border-blue-500 bg-white" 
+                placeholder="--:-- --" 
+                readonly
+                onclick="toggleTimePicker()"
+            >
+
+            <!-- Dropdown Container -->
+            <div id="timeDropdown" class="hidden absolute top-full left-0 mt-1 w-[200px] bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
+                
+                <!-- Columns Container -->
+                <div class="flex h-64 text-sm">
+                    <!-- Hours Column -->
+                    <div class="w-1/3 overflow-y-auto no-scrollbar border-r border-gray-100" id="hourList">
+                        <!-- Generated via JS -->
+                    </div>
+                    
+                    <!-- Minutes Column -->
+                    <div class="w-1/3 overflow-y-auto no-scrollbar border-r border-gray-100" id="minuteList">
+                        <!-- Generated via JS -->
+                    </div>
+
+                    <!-- Period Column -->
+                    <div class="w-1/3 overflow-y-auto no-scrollbar bg-gray-50" id="periodList">
+                        <div class="p-2 text-center cursor-pointer hover:bg-gray-100 py-3" onclick="selectPeriod('AM')" data-val="AM">AM</div>
+                        <div class="p-2 text-center cursor-pointer hover:bg-gray-100 py-3" onclick="selectPeriod('PM')" data-val="PM">PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
       </div>
 
       <div>
@@ -300,9 +338,28 @@
         .then(res => res.json())
         .then(data => {
             // Populate Fields
-            const timeInput = document.querySelector('input[name="time"]');
-            timeInput.value = data.time.toLowerCase();
-            timeInput.readOnly = true;
+            // Parse 24h time "HH:mm:ss" -> 12h format
+            if(data.time) {
+                const [h, m] = data.time.split(':');
+                let hour = parseInt(h);
+                let period = 'AM';
+                if(hour >= 12) {
+                    period = 'PM';
+                    if(hour > 12) hour -= 12;
+                }
+                if(hour === 0) hour = 12;
+                
+                currentHour = hour.toString().padStart(2, '0');
+                currentMinute = m;
+                currentPeriod = period;
+                
+                updatePickerUI();
+            }
+
+            // Disable Time Editing in Edit Mode (matching previous behavior)
+             const timeDisplay = document.getElementById('timeDisplay');
+             timeDisplay.classList.add('bg-gray-100', 'cursor-not-allowed');
+             timeDisplay.onclick = null; // Remove click handler
 
             document.querySelector('input[name="duration"]').value = data.duration;
             document.querySelector('input[name="spots"]').value = data.spots;
@@ -355,6 +412,16 @@
       } else {
           console.warn("No date selected found in 'selectdatecla'.");
       }
+      
+      // Reset Picker to Default & Enable
+      currentHour = '12';
+      currentMinute = '00';
+      currentPeriod = 'AM';
+      updatePickerUI();
+      
+      const timeDisplay = document.getElementById('timeDisplay');
+      timeDisplay.classList.remove('bg-gray-100', 'cursor-not-allowed');
+      timeDisplay.onclick = toggleTimePicker; // Re-bind click handler
 
       // 3. Show modal
       document.getElementById('addModal').classList.remove('hidden');
@@ -367,9 +434,17 @@
     document.querySelector('#addModal button[type="submit"]').innerText = "Save";
     document.querySelector('#addModal form').reset();
     
-    // Reset Time Input
-    const timeInput = document.querySelector('input[name="time"]');
-    timeInput.readOnly = false;
+    // Reset Time Input & Picker State
+    const timeInput = document.querySelector('input[name="time"]'); // This is the hidden one now
+    if(timeInput) timeInput.value = '';
+    
+    document.getElementById('timeDisplay').value = '';
+    
+    // Reset picker defaults
+    currentHour = '12';
+    currentMinute = '00';
+    currentPeriod = 'AM';
+    updatePickerUI();
 
     // Reset Repeat Section
     const repeatSection = document.querySelector('.mt-4.repeat-section');
@@ -385,5 +460,124 @@
     if (methodInput) methodInput.remove();
     
     document.getElementById('addModal').classList.add('hidden');
+    document.getElementById('timeDropdown').classList.add('hidden');
+  }
+
+  // --- Custom Time Picker Logic ---
+  
+  let currentHour = '12';
+  let currentMinute = '00';
+  let currentPeriod = 'AM';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initTimePicker();
+    
+    // Close picker when clicking outside
+    document.addEventListener('click', (e) => {
+        const picker = document.getElementById('customTimePicker');
+        const dropdown = document.getElementById('timeDropdown');
+        if (picker && !picker.contains(e.target) && !dropdown.classList.contains('hidden')) {
+            dropdown.classList.add('hidden');
+        }
+    });
+  });
+
+  function initTimePicker() {
+    const hourList = document.getElementById('hourList');
+    const minuteList = document.getElementById('minuteList');
+    
+    if(!hourList || !minuteList) return;
+
+    // Populate Hours (01-12)
+    hourList.innerHTML = '';
+    for(let i=1; i<=12; i++) {
+        const val = i.toString().padStart(2, '0');
+        const div = document.createElement('div');
+        div.className = 'p-2 text-center cursor-pointer hover:bg-gray-100';
+        div.innerText = val;
+        div.onclick = () => selectHour(val);
+        div.setAttribute('data-val', val);
+        hourList.appendChild(div);
+    }
+
+    // Populate Minutes (00-59)
+    minuteList.innerHTML = '';
+    for(let i=0; i<60; i++) {
+        const val = i.toString().padStart(2, '0');
+        const div = document.createElement('div');
+        div.className = 'p-2 text-center cursor-pointer hover:bg-gray-100';
+        div.innerText = val;
+        div.onclick = () => selectMinute(val);
+        div.setAttribute('data-val', val);
+        minuteList.appendChild(div);
+    }
+
+    updatePickerUI();
+  }
+
+  function toggleTimePicker() {
+    document.getElementById('timeDropdown').classList.toggle('hidden');
+    scrollToSelection();
+  }
+
+  function selectHour(val) {
+    currentHour = val;
+    updatePickerUI();
+    scrollToSelection();
+  }
+
+  function selectMinute(val) {
+    currentMinute = val;
+    updatePickerUI();
+    scrollToSelection();
+  }
+
+  function selectPeriod(val) {
+    currentPeriod = val;
+    updatePickerUI();
+  }
+
+  function updatePickerUI() {
+    // Highlight Lists
+    highlightList('hourList', currentHour);
+    highlightList('minuteList', currentMinute);
+    highlightList('periodList', currentPeriod);
+
+    // Update Inputs
+    const displayVal = `${currentHour}:${currentMinute} ${currentPeriod}`;
+    document.getElementById('timeDisplay').value = displayVal;
+    
+    // Convert to 24h for hidden input
+    let h = parseInt(currentHour);
+    if (currentPeriod === 'PM' && h !== 12) h += 12;
+    if (currentPeriod === 'AM' && h === 12) h = 0;
+    const hStr = h.toString().padStart(2, '0');
+    document.getElementById('timeInput').value = `${hStr}:${currentMinute}`;
+  }
+
+  function highlightList(listId, val) {
+    const list = document.getElementById(listId);
+    if(!list) return;
+    Array.from(list.children).forEach(child => {
+        if(child.getAttribute('data-val') === val) {
+            child.classList.add('bg-blue-600', 'text-white');
+            child.classList.remove('hover:bg-gray-100');
+        } else {
+            child.classList.remove('bg-blue-600', 'text-white');
+            child.classList.add('hover:bg-gray-100');
+        }
+    });
+  }
+
+  function scrollToSelection() {
+    setTimeout(() => {
+        ['hourList', 'minuteList'].forEach(id => {
+            const list = document.getElementById(id);
+            const selected = list.querySelector('.bg-blue-600');
+            if(selected) {
+                list.scrollTop = selected.offsetTop - list.offsetTop - (list.clientHeight / 2) + (selected.clientHeight / 2);
+            }
+        });
+    }, 0);
   }
 </script>
