@@ -156,7 +156,7 @@
                                     </div>
                                     <!-- Exercise Field -->
                                     <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
-                                        <label for="workoutwe_2" class="w-15 text-xs pl-3 ml-2">Exercise</label>
+                                        <label for="workoutwe_2" class="w-15 text-xs pl-3 ml-0">Exercise</label>
                                         <select id="workoutwe_2" name="workoutwe_2"
                                             class="flex-1 px-1 py-1 border rounded text-xs bg-white">
                                             <option value="" selected disabled>-- Select --</option>
@@ -216,7 +216,7 @@
                             <div class="flex items-center border-b mt-2 overflow-visible">
                                 <label for="weigthwe_1" class="w-40 block mb-1">Training Load <span class="text-red-500">*</span></label>
                                 <div class="flex items-center w-2/3">
-                                    <input type="text" id="weigthwe_1" name="weigthwe_1" class="flex-grow px-3 py-3 border border-r-0" required>
+                                    <input type="text" id="weigthwe_1" name="weigthwe_1" class="flex-grow px-1 py-2 border border-r-0 mr-2" required>
                                     <select name="unitwe_1" class="border bg-white py-3 px-2 w-16 text-center border-l-0">
                                         <option value="%">%</option>
                                         <option value="/10">/10</option>
@@ -233,7 +233,7 @@
                                         </svg>
                                     </span>
                                     <!-- Popup -->
-                                    <div class="hidden absolute left-8 top-0 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                    <div class="hidden absolute left-[-110px] top-[45px] w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                         <p><b>/10</b> – Effort out of 10</p>
                                         <p><b>%</b> – Percentage of effort</p>
                                         <p><b>Cal</b> – Number of calories</p>
@@ -257,7 +257,7 @@
                                             <!-- Decrement Button -->
                                             <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input#repswe_1').id)"
-                                                class="decrement-reps bg-gray-800 text-white hover:bg-gray-700 border border-gray-600 rounded-s-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                class="decrement-reps bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-s-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                     fill="none" viewBox="0 0 18 2">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
@@ -272,7 +272,7 @@
                                             <!-- Increment Button -->
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input#repswe_1').id)"
-                                                class="increment-reps bg-gray-800 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                                class="increment-reps bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                                 <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                                     fill="none" viewBox="0 0 18 18">
                                                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -323,7 +323,7 @@
                                         <label class="text-red-500 font-bold w-16 text-right pr-8">RSet</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
-                                            class="decrement-rest bg-gray-800 text-white hover:bg-gray-700 border border-gray-600 rounded-s-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            class="decrement-rest bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-s-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-white" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
                                                 <path stroke="currentColor" stroke-linecap="round"
@@ -336,7 +336,7 @@
                                             readonly required>
                                         <button type="button"
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
-                                            class="increment-rest bg-gray-800 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
+                                            class="increment-rest bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-white" aria-hidden="true"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none"
                                                 viewBox="0 0 18 18">
@@ -1692,7 +1692,7 @@
             if (Array.isArray(item.sets) && item.sets.length > 0) {
                 item.sets.forEach((set, idx) => {
                     setsHTML += `
-                        <tr class="">
+                        <tr>
                             <td class="py-1 pr-4">Set ${idx + 1}</td>
                             <td class="py-1">${set.reps} Reps</td>
                         </tr>
@@ -1759,14 +1759,14 @@
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
                         <div class="space-x-2 flex">
-                            <button class="edit-weightlifting-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" type="button">
+                            <button class="edit-weightlifting-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
 
-                            <button class="delete-weightlifting-btn text-red-600 hover:text-red-800" data-id="${item.id}" type="button">
+                            <button class="delete-weightlifting-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>

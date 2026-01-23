@@ -2113,6 +2113,11 @@ foreach ($request->all() as $key => $value) {
                 'rounds' => $item->rounds,
                 'amrap' => $item->amrap,
                 'is_assigned' => $item->is_assigned,
+                'assigned_class_ids' => WorkoutAssign::where([
+                    'workout_id' => $item->id,
+                    'workout_type' => 'conditioning',
+                    'date' => $item->date
+                ])->pluck('class_id')->toArray(),
             ];
 
             // Only include 'rounds' or 'amrap'
@@ -2185,6 +2190,11 @@ foreach ($request->all() as $key => $value) {
                     'rounds' => $item->rounds,
                     'amrap' => $item->amrap,
                     'is_assigned' => $item->is_assigned,
+                     'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'conditioning',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
                 ];
 
                 // Only include 'rounds' or 'amrap'
