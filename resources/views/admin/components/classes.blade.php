@@ -224,7 +224,7 @@
 
                   <!-- Weightlifting -->
                   <div class="p-1">
-                    <img src="/icon/weightlifting.png"
+                    <img src="/icon/weightliftingnew.png"
                       class="w-8 h-8 ${cls.is_weightlifting ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Weightlifting">
                   </div>
@@ -235,14 +235,6 @@
                       class="w-8 h-8 ${cls.is_conditioning ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Conditioning">
                   </div>
-
-                  <!-- Test -->
-                  <div class="p-1">
-                    <img src="/icon/test.png"
-                      class="w-8 h-8 ${cls.is_test ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
-                      title="Test">
-                  </div>
-
                 </div>
               </td>
 

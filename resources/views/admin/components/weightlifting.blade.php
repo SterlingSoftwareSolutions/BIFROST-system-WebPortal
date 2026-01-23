@@ -1692,7 +1692,7 @@
             if (Array.isArray(item.sets) && item.sets.length > 0) {
                 item.sets.forEach((set, idx) => {
                     setsHTML += `
-                        <tr class="border-b border-gray-200 last:border-0">
+                        <tr class="">
                             <td class="py-1 pr-4">Set ${idx + 1}</td>
                             <td class="py-1">${set.reps} Reps</td>
                         </tr>
@@ -1791,8 +1791,8 @@
                             <table class="w-full text-left text-sm">
                                 <thead><tr><th class="py-1">Rest:</th><th></th></tr></thead>
                                 <tbody>
-                                    <tr class="border-b border-gray-200"><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restwered || '-'} min</td></tr>
-                                    <tr class="border-b border-gray-200"><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restweyellow || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 1</td><td class="py-1">${item.restwered || '-'} min</td></tr>
+                                    <tr><td class="py-1 pr-4">Stage 2</td><td class="py-1">${item.restweyellow || '-'} min</td></tr>
                                     <tr><td class="py-1 pr-4">Stage 3</td><td class="py-1">${item.restwegreen || '-'} min</td></tr>
                                 </tbody>
                             </table>

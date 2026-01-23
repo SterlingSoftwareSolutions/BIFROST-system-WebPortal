@@ -487,6 +487,7 @@
     // get warmup
     function getwarmup(date) {
         console.log("get warmup date: " + date);
+
         $.ajax({
             url: "/get-wormup",
             type: "POST",
@@ -497,12 +498,9 @@
             success: function(response) {
                 console.log(response);
                 allWarmupData = response.result;
-                // Assuming response is an array of arrays
-                // response.forEach(subArray => {
-                setwarmups(response.result, response.categoryOptions);
-                // });
+                const classesData = response.daily_classes || [];
+                setwarmups(response.result, response.categoryOptions, classesData);
             },
-
             error: function(xhr, status, error) {
                 console.error(error);
             },
@@ -511,11 +509,68 @@
 
 
     //set new warmup cards
-    function setwarmups(warmups, categoryOptions) {
+    function setwarmups(warmups, categoryOptions, classesData = []) {
         const container = $("#setwarmups"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
+        // Sort classes by time
+        classesData.sort((a, b) => {
+            return new Date('1970-01-01T' + a.time) - new Date('1970-01-01T' + b.time);
+        });
+
         warmups.forEach((item, index) => {
+
+             // Generate Class Buttons
+            let classButtonsHTML = '';
+            if (classesData.length > 0) {
+                 // Check if item has assigned_class_ids array, if not default to empty
+                     const assignedIds = item.assigned_class_ids || [];
+                     
+                     // Check if ALL classes are assigned
+                     const allClassIds = classesData.map(c => c.id);
+                     const isAllAssigned = classesData.length > 0 && allClassIds.every(id => assignedIds.includes(id));
+                     
+                     const allBtnClass = isAllAssigned 
+                        ? 'border-green-600 bg-green-50 text-green-700 font-bold' 
+                        : 'border-gray-400 text-gray-600';
+
+                     classesData.forEach(cls => {
+                         // Format time 24h -> 12h
+                         let timeParts = cls.time.split(':');
+                         let dateObj = new Date();
+                         dateObj.setHours(timeParts[0]);
+                         dateObj.setMinutes(timeParts[1]);
+                         let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                         // Determine if assigned
+                         const isAssigned = assignedIds.includes(cls.id);
+
+                         // Style: Green border/text if assigned, else Gray
+                         const activeClass = isAssigned
+                             ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                             : 'border-gray-300 text-gray-600';
+                            
+                         classButtonsHTML += `
+                             <button type="button"
+                                 class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                                 onclick="toggleAssignmentWarmup(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                                 ${timeString}
+                             </button>
+                         `;
+                     });
+
+                    /* Prepend All Button Logic */
+                    classButtonsHTML = `
+                        <button type="button" 
+                            class="border px-3 py-1 rounded ${allBtnClass} hover:bg-gray-100 text-sm whitespace-nowrap" 
+                            onclick="toggleAllAssignmentsWarmup(${item.id}, ${isAllAssigned})">
+                            All
+                        </button>
+                    ` + classButtonsHTML;
+
+                } else {
+                    classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+                }
 
             let html = `
             <div class="border-2 border-gray-200 rounded-md shadow p-2 bg-white w-full">
@@ -543,12 +598,11 @@
                     <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weightvalu || 0}${item.unit} for ${item.reps} reps</div>
 
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer warmups-toggle" data-workout-id="${item.id}" data-workout-type="warmup" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                            ${classButtonsHTML}
+                        </div>
                     </div>
             </div>
             `;
@@ -563,6 +617,80 @@
 
         });
 
+    }
+
+    // Toggle Assignment Function for Warmup
+    function toggleAssignmentWarmup(workoutId, classId, timeString, isCurrentlyAssigned) {
+        const action = isCurrentlyAssigned ? 'unassign' : 'assign';
+        const confirmMsg = isCurrentlyAssigned
+            ? `Are you sure you want to unassign this workout from the ${timeString} class?`
+            : `Are you sure you want to assign this workout to the ${timeString} class?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatewd').value;
+
+        $.ajax({
+            url: "/assign-workout-class", 
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: classId,
+                type: 'warmup', // Correct type
+                action: action, // 'assign' or 'unassign'
+                date: date
+            },
+            success: function(response) {
+                // Refresh data to show updated status
+                getwarmup(date);
+                // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error updating assignment. Please check backend implementation.");
+            }
+        });
+    }
+
+    function toggleAllAssignmentsWarmup(workoutId, isAllAssigned) {
+        const action = isAllAssigned ? 'unassign' : 'assign_all';
+        
+        const confirmMsg = isAllAssigned 
+            ? "Are you sure you want to unassign this workout from ALL classes?" 
+            : "Are you sure you want to assign this workout to ALL classes?";
+
+        if(!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatewd').value;
+
+        $.ajax({
+            url: "/assign-workout-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: 'all',  // Special flag
+                type: 'warmup',
+                action: action, 
+                date: date
+            },
+            success: function(response) {
+                alert(response.message);
+                getwarmup(date);
+               // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error assigning to all classes.");
+            }
+        });
     }
 
     // get editing details to form
@@ -646,7 +774,8 @@
                 allWarmupData = response.warmup;
                 const warmupArray = Object.values(response.warmup);
                 const categoryArray = Object.values(response.categoryOptions);
-                setwarmups(warmupArray, categoryArray);
+                const classesData = response.daily_classes || [];
+                setwarmups(warmupArray, categoryArray, classesData);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                 //setstrengths(response.Strength, response.categoryOptions);
@@ -767,51 +896,7 @@
         warmupInfoDiv.innerHTML = htmlContent;
     }
 
-    //assign warmup to class
-    $(document).on('change', '.warmups-toggle', function() {
-        const date = document.getElementById('selectdatewd').value;
-        const workoutId = $(this).data('workout-id');
-        const workoutType = $(this).data('workout-type');
-        const assigned = $(this).is(':checked') ? 1 : 0;
 
-        // Get and conditionally remove class_id from local storage
-        let selectedClassId = localStorage.getItem("selected_class_id");
-        if (assigned) {
-            if (!selectedClassId) {
-                alert("Please select a class first.");
-                $(this).prop('checked', false);
-                return;
-            }
-        }
-
-        // Only send class_id if assigning
-        const payload = {
-            _token: $('meta[name="csrf-token"]').attr('content'),
-            workout_id: workoutId,
-            workout_type: workoutType,
-            date: date,
-            assigned: assigned
-        };
-
-        if (assigned) {
-            payload.class_id = selectedClassId;
-            localStorage.removeItem("selected_class_id");
-        }
-
-        $.ajax({
-            url: "/assign-weightlifting-to-class",
-            type: "POST",
-            data: payload,
-            success: function(response) {
-                alert(response.message);
-                getdateName(date); // Refresh classes or UI
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX error:", xhr.responseText);
-                alert("An error occurred while assigning the workout.");
-            }
-        });
-    });
 
     // Call getCategoryW on page load
     document.addEventListener('DOMContentLoaded', function() {
