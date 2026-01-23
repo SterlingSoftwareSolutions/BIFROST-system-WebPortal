@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('workoutname')->nullable();
             $table->integer('reps');
             $table->float('weight')->nullable();
-            $table->enum('unit', ['%', 'Kg', 'Cal', '/10']); // Enum column for unit
+            $table->enum('unit', ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A']); // Enum column for unit
             $table->string('date');
             $table->string('time_to_complete');
             $table->boolean('is_assigned')->default(false);

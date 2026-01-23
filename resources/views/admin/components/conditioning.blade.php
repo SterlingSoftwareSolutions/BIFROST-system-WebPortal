@@ -192,10 +192,12 @@
                                             <label for="weigthPy_1" class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
                                             <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="/10">/10</option>
-                                            <option value="Cal">Cal</option>
-                                            <option value="%">%</option>
-                                            <option value="Kg">Kg</option>
+                                                <option value="RPE">RPE</option>
+                                                <option value="Cal">Cal</option>
+                                                <option value="%">%</option>
+                                                <option value="Kg">Kg</option>
+                                                <option value="BW">BW</option>
+                                                <option value="N/A">N/A</option>
                                             </select>
 
                                             <div class="relative h-[60px] min-w-0">
@@ -279,7 +281,59 @@
                         <div class="flex items-center border-b mt-2">
                             <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
-                                    <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                            <div class="w-1/3 flex items-center gap-3">
+
+                                <!-- Main input -->
+                                <input
+                                    type="number"
+                                    name="weigthc_1"
+                                    class="flex-1 px-3 py-3 border rounded mb-2"
+                                    data-main-input
+                                    required
+                                >
+
+                                <!-- Gender inputs -->
+                                <div class="hidden flex items-center gap-2 mb-2" data-gender-inputs>
+                                    <label class="text-sm">M</label>
+                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded">
+                                    <label class="text-sm">F</label>
+                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded">
+                                </div>
+
+                                <!-- Unit selector -->
+                                <select
+                                    name="unit_1"
+                                    class="px-3 py-3 border rounded mb-2"
+                                    onchange="toggleWarmupGenderInputs(this)">
+                                    <option value="RPE">RPE</option>
+                                    <option value="Cal">Cal</option>
+                                    <option value="%">%</option>
+                                    <option value="Kg">Kg</option>
+                                    <option value="BW">BW</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+
+                            <!-- Info icon stays aligned right -->
+                            <div class="relative ml-auto mr-10 mb-2">
+                                <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
+                                    <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
+                                        <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                    </svg>
+                                </span>
+
+                                <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                    <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
+                                    <p><b>%</b> – Percentage of effort</p>
+                                    <p><b>Cal</b> – Number of calories</p>
+                                    <p><b>Kg</b> – Weight</p>
+                                    <p><b>BW</b> – Body Weight</p>
+                                    <p><b>N/A</b> – N/A</p>
+                                </div>
+                            </div>
+
+                                    {{-- <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>
                                         <option value="%">%</option>
@@ -310,7 +364,7 @@
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
                                     </div>
-                                </div>
+                                </div> --}}
                         </div>
                         </div>
                 </div>
@@ -799,7 +853,7 @@
         let totalSeconds = (minutes * 60) + seconds;
 
         // Update the time based on adjustment
-        totalSeconds += adjustment;
+        totalSeconds += adjustment * 60;
         if (totalSeconds < 0) totalSeconds = 0; // Prevent negative values
 
         // Convert back to minutes and seconds
@@ -1367,10 +1421,12 @@ function removeExerciseGroup(button) {
                                     <label class="w-28 block mb-1 whitespace-nowrap ml-1">Training Load <span class="text-red-500">*</span></label>
 
                                     <select name="unit_${remainingfind}${setCounterPyramid}" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                        <option value="/10">/10</option>
-                                            <option value="Cal">Cal</option>
-                                            <option value="%">%</option>
-                                            <option value="Kg">Kg</option>
+                                        <option value="RPE">RPE</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="%">%</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="BW">BW</option>
+                                        <option value="N/A">N/A</option>
                                     </select>
 
                                     <div class="relative h-[60px] min-w-0">
