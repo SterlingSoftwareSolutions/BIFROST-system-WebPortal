@@ -270,7 +270,7 @@
                     {{-- end primary --}}
                     {{-- start primary --}}
                     <div class=" flex-col w-full bg-gray-50 p-4">
-                        <div class="flex justify-center text-center items-center font-bold mb-3 text-3xl">Create</div>
+                        <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
                         <input type="hidden" id="strength_id" name="strength_id" value="">
                         <div class="flex items-center border-b mt-2">
                             <label for="names_1" class="w-40 block mb-1">Workout Name <span class="text-red-500">*</span></label>

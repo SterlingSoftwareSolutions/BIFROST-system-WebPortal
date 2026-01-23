@@ -204,33 +204,45 @@
               <td class="px-4 py-2 w-[10%]">${cls.spots}</td>
 
               <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
+              <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
               <td class="m-[-10px] py-2 w-[50%] pr-4">
                 <div class="flex flex-nowrap items-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap no-scrollbar py-1">
+                  
+                  <!-- Warmup -->
                   <div class="p-1">
                     <img src="/icon/warmup.png"
-                      class="${cls.is_warmup ? 'ring-2 ring-green-500 rounded' : ''} w-8 h-8"
+                      class="w-10 h-10 ${cls.is_warmup ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Warmup">
                   </div>
+
+                  <!-- Strength -->
                   <div class="p-1">
                     <img src="/icon/strength.png"
-                      class="${cls.is_strength ? 'ring-2 ring-green-500 rounded' : ''} w-8 h-8"
+                      class="w-8 h-8 ${cls.is_strength ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Strength">
                   </div>
+
+                  <!-- Weightlifting -->
                   <div class="p-1">
                     <img src="/icon/weightlifting.png"
-                      class="${cls.is_weightlifting ? 'ring-2 ring-green-500 rounded' : ''} w-8 h-8"
+                      class="w-8 h-8 ${cls.is_weightlifting ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Weightlifting">
                   </div>
+
+                  <!-- Conditioning -->
                   <div class="p-1">
                     <img src="/icon/conditioning.png"
-                      class="${cls.is_conditioning ? 'ring-2 ring-green-500 rounded' : ''} w-8 h-8"
+                      class="w-8 h-8 ${cls.is_conditioning ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Conditioning">
                   </div>
+
+                  <!-- Test -->
                   <div class="p-1">
                     <img src="/icon/test.png"
-                      class="${cls.is_test ? 'ring-2 ring-green-500 rounded' : ''} w-8 h-8"
+                      class="w-8 h-8 ${cls.is_test ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
                       title="Test">
                   </div>
+
                 </div>
               </td>
 
