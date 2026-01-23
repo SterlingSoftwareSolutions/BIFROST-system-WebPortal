@@ -389,6 +389,11 @@ class SessionController extends Controller
                 'workout_type' => $item->workout ? $item->workout->type : null,
                 'reps' => $item->reps,
                 'is_assigned' => $item->is_assigned,
+                'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'warmup',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
             ];
             
             if ($item->unit === 'Cal' || $item->unit === 'Kg') {
@@ -400,7 +405,12 @@ class SessionController extends Controller
             return $data;
         });
 
-        return response()->json(['result' => $result, 'categoryOptions' => $categoryOptions]);
+        // Fetch classes for the specific date
+        $dailyClasses = Classes::where('date', $date)
+            ->orderBy('time', 'asc')
+            ->get();
+
+        return response()->json(['result' => $result, 'categoryOptions' => $categoryOptions, 'daily_classes' => $dailyClasses]);
     }
 
 
@@ -457,6 +467,11 @@ class SessionController extends Controller
                     'workout_type' => $item->workout ? $item->workout->type : null,
                     'reps' => $item->reps,
                     'is_assigned' => $item->is_assigned,
+                    'assigned_class_ids' => WorkoutAssign::where([
+                        'workout_id' => $item->id,
+                        'workout_type' => 'warmup',
+                        'date' => $item->date
+                    ])->pluck('class_id')->toArray(),
                 ];
 
                 if ($item->unit === 'Cal' || $item->unit === 'Kg') {
@@ -468,9 +483,15 @@ class SessionController extends Controller
                 return $data;
             });
 
+            // Fetch classes for the specific date
+            $dailyClasses = Classes::where('date', $date)
+                ->orderBy('time', 'asc')
+                ->get();
+
             return response()->json([
                 'warmup' => $result,
                 'categoryOptions' => $categoryOptions,
+                'daily_classes' => $dailyClasses
             ]);
         } catch (\Exception $e) {
             Log::error('Error in getwarmup: ' . $e->getMessage());
@@ -1147,12 +1168,21 @@ class SessionController extends Controller
             ]);
             $message = 'Workout assigned successfully.';
         } else {
-            WorkoutAssign::where([
-                'class_id' => $classId,
-                'workout_id' => $workoutId,
-                'workout_type' => $type,
-            ])->delete();
-            $message = 'Workout unassigned successfully.';
+            if ($classId === 'all') {
+                 WorkoutAssign::where([
+                    'workout_id' => $workoutId,
+                    'workout_type' => $type,
+                    'date' => $date
+                ])->delete();
+                $message = 'Workout unassigned from all classes.';
+            } else {
+                WorkoutAssign::where([
+                    'class_id' => $classId,
+                    'workout_id' => $workoutId,
+                    'workout_type' => $type,
+                ])->delete();
+                $message = 'Workout unassigned successfully.';
+            }
         }
 
         // --- Post-Assignment Updates ---
@@ -1186,6 +1216,9 @@ class SessionController extends Controller
         switch ($type) {
             case 'strength':
                 Strength::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                break;
+            case 'warmup':
+                Warmup::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
                 break;
             case 'weightlifting':
                  // If needed in future
