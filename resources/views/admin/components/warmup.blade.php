@@ -577,14 +577,14 @@
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
                         <div class="space-x-2">
-                            <button class="edit-warmups-btn" data-id="${item.id}" type="button">
+                            <button class="edit-warmups-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
 
-                            <button class="delete-warmups-btn" data-id="${item.id}" type="button">
+                            <button class="delete-warmups-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>

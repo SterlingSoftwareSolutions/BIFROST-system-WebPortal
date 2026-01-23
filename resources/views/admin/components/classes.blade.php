@@ -192,18 +192,16 @@
             .replace(' ', '&nbsp;');
 
           const isSelected = selectedStoredClassId && selectedStoredClassId == cls.id;
-          const outlineStyle = isSelected ? 'outline:2px solid #22c55e; outline-offset:-2px;' : '';
+          // const outlineStyle = isSelected ? 'outline:2px solid #22c55e; outline-offset:-2px;' : '';
 
           const row = `
             <tr class="border-t class-row cursor-pointer"
                 data-id="${cls.id}"
-                onclick="selectClassRow(this)"
-                style="${outlineStyle}">
+                onclick="selectClassRow(this)">
               <td class="px-4 py-2 w-[15%] whitespace-nowrap">${time}</td>
               <td class="px-4 py-2 w-[15%]">${cls.duration} <span class="ml-2">hr</span></td>
               <td class="px-4 py-2 w-[10%]">${cls.spots}</td>
 
-              <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
               <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
               <td class="m-[-10px] py-2 w-[50%] pr-4">
                 <div class="flex flex-nowrap items-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap no-scrollbar py-1">
@@ -211,28 +209,28 @@
                   <!-- Warmup -->
                   <div class="p-1">
                     <img src="/icon/warmup.png"
-                      class="w-10 h-10 ${cls.is_warmup ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_warmup ? 'border-green-500' : 'border-transparent'}"
                       title="Warmup">
                   </div>
 
                   <!-- Strength -->
                   <div class="p-1">
                     <img src="/icon/strength.png"
-                      class="w-8 h-8 ${cls.is_strength ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_strength ? 'border-green-500' : 'border-transparent'}"
                       title="Strength">
                   </div>
 
                   <!-- Weightlifting -->
                   <div class="p-1">
                     <img src="/icon/weightliftingnew.png"
-                      class="w-8 h-8 ${cls.is_weightlifting ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_weightlifting ? 'border-green-500' : 'border-transparent'}"
                       title="Weightlifting">
                   </div>
 
                   <!-- Conditioning -->
                   <div class="p-1">
                     <img src="/icon/conditioning.png"
-                      class="w-8 h-8 ${cls.is_conditioning ? 'border-2 border-green-500 rounded-md p-0.5' : 'grayscale opacity-40'}"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
                 </div>
@@ -284,7 +282,7 @@
 
     // toggle off if same
     if (selectedClassId === clickedClassId) {
-      rowElement.style.outline = 'none';
+      // rowElement.style.outline = 'none';
       localStorage.removeItem("selected_class_id");
       selectedClassRow = null;
       selectedClassId = null;
@@ -292,11 +290,11 @@
     }
 
     // clear old
-    if (selectedClassRow) selectedClassRow.style.outline = 'none';
+    // if (selectedClassRow) selectedClassRow.style.outline = 'none';
 
     // set new
-    rowElement.style.outline = '2px solid #22c55e';
-    rowElement.style.outlineOffset = '-2px';
+    // rowElement.style.outline = '2px solid #22c55e';
+    // rowElement.style.outlineOffset = '-2px';
 
     selectedClassRow = rowElement;
     selectedClassId = clickedClassId;

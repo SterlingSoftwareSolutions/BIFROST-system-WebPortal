@@ -298,9 +298,6 @@
                                 <input type="text" id="weigths_1" name="weigths_1" class="flex-1 px-3 py-3 border rounded" required>
                                 <select name="unit_1" class="border bg-white py-3 px-2 rounded" onchange="toggleGenderInputs(this)">
                                     <option value="%">%</option>
-                                    <option value="/10">/10</option>
-                                    <option value="Cal">Cal</option>
-                                    <option value="Kg">Kg</option>
                                 </select>
                             </div>
                             
@@ -312,11 +309,8 @@
                                         </svg>
                                     </span>
                                 <!-- Popup -->
-                                <div class="hidden absolute left-8 top-0 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
-                                    <p><b>/10</b> – Effort out of 10</p>
+                                <div class="hidden absolute left-[-110px] top-[45px] w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                     <p><b>%</b> – Percentage of effort</p>
-                                    <p><b>Cal</b> – Number of calories</p>
-                                    <p><b>Kg</b> – Weight</p>
                                 </div>
                             </div>
                         </div>
@@ -402,7 +396,7 @@
                         </div>
 
                         <div class="flex items-center border-b">
-                            <label for="restreds_1" class="w-32 block mb-1">Rest <span
+                            <label for="restreds_1" class="w-40 block mb-1">Rest <span
                                     class="text-red-500">*</span></label>
                             <div class="">
                                 <div class="relative flex items-center max-w-[12rem] mb-4">
@@ -1083,14 +1077,14 @@
                         <div class="pb-2 mb-2 flex justify-between items-center">
                             <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
                             <div class="space-x-2 flex">
-                                <button class="edit-strength-btn text-blue-600 hover:text-blue-800" data-id="${item.id}" type="button">
+                                <button class="edit-strength-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                     <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                     </svg>
                                 </button>
 
-                                <button class="delete-strength-btn text-red-600 hover:text-red-800" data-id="${item.id}" type="button">
+                                <button class="delete-strength-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                     <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                         <g>
                                             <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
