@@ -511,11 +511,49 @@
 
 
     //set new warmup cards
-    function setwarmups(warmups, categoryOptions) {
+    function setwarmups(warmups, categoryOptions, classesData = []) {
         const container = $("#setwarmups"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
         warmups.forEach((item, index) => {
+
+            // Generate Class Buttons
+            let classButtonsHTML = '';
+            if (classesData.length > 0) {
+                 // Check if item has assigned_class_ids array, if not default to empty
+                 const assignedIds = item.assigned_class_ids || [];
+                 // Or fallback to the old boolean for now if the array doesn't exist yet on backend
+                 // logical fallback: if assignedIds is empty but item.is_assigned is true, maybe show visual cue?
+                 // But for this update, we are moving to specific classes.
+
+                 classesData.forEach(cls => {
+                     // Format time 24h -> 12h
+                     let timeParts = cls.time.split(':');
+                     let dateObj = new Date();
+                     dateObj.setHours(timeParts[0]);
+                     dateObj.setMinutes(timeParts[1]);
+                     let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                     // Determine if assigned
+                     // NOTE: backend must send 'assigned_class_ids' array in strength object
+                     const isAssigned = assignedIds.includes(cls.id);
+
+                     // Style: Green border/text if assigned (similar to image), else Gray
+                     const activeClass = isAssigned
+                         ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                         : 'border-gray-300 text-gray-600';
+                        //check the upates in the page
+                     classButtonsHTML += `
+                         <button type="button"
+                             class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                             onclick="toggleAssignment(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                             ${timeString}
+                         </button>
+                     `;
+                 });
+            } else {
+                classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+            }
 
             let html = `
             <div class="border-2 border-gray-200 rounded-md shadow p-2 bg-white w-full">
@@ -543,12 +581,12 @@
                     <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weightvalu || 0}${item.unit} for ${item.reps} reps</div>
 
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer warmups-toggle" data-workout-id="${item.id}" data-workout-type="warmup" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                            <button type="button" class="border border-gray-400 px-3 py-1 rounded hover:bg-gray-100 text-sm whitespace-nowrap" onclick="toggleAllAssignments(${item.id})">All</button>
+                            ${classButtonsHTML}
+                        </div>
                     </div>
             </div>
             `;
