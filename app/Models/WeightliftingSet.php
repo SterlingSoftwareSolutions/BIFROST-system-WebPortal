@@ -12,6 +12,7 @@ class WeightliftingSet extends Model
     protected $fillable = [
         'sets',
         'reps',
+        'weight',
         'alt_sets',
         'alt_reps',
         'weightlifting_id',
@@ -33,6 +34,7 @@ class WeightliftingSet extends Model
         return self::create([
             'sets' => $data['sets'] ?? null,
             'reps' => $data['reps'] ?? null,
+            'weight' => $data['weight'] ?? null,
             'alt_sets' => $data['alt_sets'] ?? null,
             'alt_reps' => $data['alt_reps'] ?? null,
             'weightlifting_id' => $data['weightlifting_id'] ?? null,

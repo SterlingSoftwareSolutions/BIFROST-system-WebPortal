@@ -136,9 +136,9 @@
     <form id="storeFromWe">
         @csrf
         <input type="text" name="selectdatewe" id="selectdatewe" hidden>
-        <div class="duplicateUi flex flex-col text-lg mr-8 rounded-md gap-4 mb-4 " id="uiContainer">
+        <div class="duplicateUi flex flex-col text-lg mr-8 gap-4 mb-4 " id="uiContainer">
             <div class="" data-index="1">
-                <div class="ui-block flex flex-col text-lg px-4 rounded-md gap-4 mb-4 ">
+                <div class="ui-block flex flex-col text-lg px-4 gap-4 mb-4 ">
                     <!-- Your UI block content here -->
                     <div class="flex gap-5 justify-between">
                         {{-- Serach Section --}}
@@ -154,29 +154,25 @@
                                             <option value="" selected disabled>-- Select --</option>
                                         </select>
                                     </div>
-
                                     <!-- Exercise Field -->
                                     <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
-                                        <label for="workoutwe_2" class="w-15 text-xs pl-5">Exercise</label>
+                                        <label for="workoutwe_2" class="w-15 text-xs pl-3 ml-2">Exercise</label>
                                         <select id="workoutwe_2" name="workoutwe_2"
                                             class="flex-1 px-1 py-1 border rounded text-xs bg-white">
                                             <option value="" selected disabled>-- Select --</option>
                                         </select>
                                     </div>
-
                                     <!-- Name Field -->
                                     <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
                                         <label for="namewe_2" class="w-15 text-xs">Name</label>
                                         <input type="text" id="namewe_2" name="namewe_2"
                                             class="flex-1 px-1 py-1 border rounded text-xs">
                                     </div>
-
                                     <!-- Go Button -->
                                     <div class="flex items-center">
                                         <button id="addsetstrength_1" onclick="filterWeightlifting(date)" type="button"
                                             class="bg-black text-white py-1 px-2 rounded text-xs">Go</button>
                                     </div>
-
                                     <!-- Clear Button -->
                                     <div class="flex items-center">
                                         <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()" type="button"
@@ -219,9 +215,9 @@
                             </div>
                             <div class="flex items-center border-b mt-2 overflow-visible">
                                 <label for="weigthwe_1" class="w-40 block mb-1">Training Load <span class="text-red-500">*</span></label>
-                                <div class="flex items-center gap-2 w-2/3">
-                                    <input type="text" id="weigthwe_1" name="weigthwe_1" class="flex-1 px-3 py-3 border rounded" required>
-                                    <select name="unitwe_1" class="border bg-white py-3 px-2 rounded">
+                                <div class="flex items-center w-2/3">
+                                    <input type="text" id="weigthwe_1" name="weigthwe_1" class="flex-grow px-3 py-3 border border-r-0" required>
+                                    <select name="unitwe_1" class="border bg-white py-3 px-2 w-16 text-center border-l-0">
                                         <option value="%">%</option>
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>

@@ -14,6 +14,7 @@ class StrengthSetRep extends Model
     protected $fillable = [
         'sets',
         'reps',
+        'weight',
         'alt_sets',
         'alt_reps',
         'strength_id',
@@ -39,6 +40,7 @@ class StrengthSetRep extends Model
         return self::create([
             'sets' => $data['sets'] ?? null,
             'reps' => $data['reps'] ?? null,
+            'weight' => $data['weight'] ?? null,
             'alt_sets' => $data['alt_sets'] ?? null,
             'alt_reps' => $data['alt_reps'] ?? null,
             'strength_id' => $data['strength_id'] ?? null,

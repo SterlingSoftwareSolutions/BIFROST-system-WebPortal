@@ -511,6 +511,7 @@ class SessionController extends Controller
             'weigthwe_*' => 'required|integer',
             'setswe_*' => 'required|integer',
             'repswe_*' => 'required|integer',
+            'setweightwe_*' => 'nullable',
             // Add restwe_* validation
             'restredwe_*' => 'nullable',
             'restyellowwe_*' => 'nullable',
@@ -595,7 +596,7 @@ class SessionController extends Controller
         // Now handle all set-related fields from entire request (not just _1)
         $allRepsSets = [];
         foreach (request()->all() as $key => $value) {
-            if (preg_match('/^(setswe|repswe|alt-setswe|alt-repswe)_(\d+)$/', $key, $matches)) {
+            if (preg_match('/^(setswe|repswe|setweightwe|alt-setswe|alt-repswe)_(\d+)$/', $key, $matches)) {
                 $type = $matches[1];   // e.g., 'setswe', 'repswe'
                 $suffix = $matches[2]; // e.g., '1', '12', '13'
 
@@ -606,8 +607,9 @@ class SessionController extends Controller
         // Convert to final row format and save
         foreach ($allRepsSets as $suffix => $values) {
             $row = [
-                'sets' => isset($values['setswe']) ? $values['setswe'] : 1,
+                  'sets' => isset($values['setswe']) ? $values['setswe'] : 1,
                 'reps' => $values['repswe'] ?? null,
+                'weight' => $values['setweightwe'] ?? null, 
                 'alt_set' => $values['alt-setswe'] ?? null,
                 'alt_reps' => $values['alt-repswe'] ?? null,
                 'weightlifting_id' => $foreignKey,
@@ -1223,6 +1225,7 @@ class SessionController extends Controller
             'selectdate_*' => 'required',
             'sets_*' => 'required',
             'reps_*' => 'required',
+            'setweight_*' => 'nullable',
             'alt_sets_*' => 'nullable',
             'alt_reps_*' => 'nullable',
         ]);
@@ -1283,7 +1286,7 @@ class SessionController extends Controller
         // Now handle all set-related fields from entire request (not just _1)
         $allRepsSets = [];
         foreach (request()->all() as $key => $value) {
-            if (preg_match('/^(sets|reps|alt-sets|alt-reps)_(\d+)$/', $key, $matches)) {
+            if (preg_match('/^(sets|reps|setweight|alt-sets|alt-reps)_(\d+)$/', $key, $matches)) {
                 $type = $matches[1];   // e.g., 'setswe', 'repswe'
                 $suffix = $matches[2]; // e.g., '1', '12', '13'
 
@@ -1296,6 +1299,7 @@ class SessionController extends Controller
             $row = [
                 'sets' => isset($values['sets']) ? $values['sets'] : 1,
                 'reps' => $values['reps'] ?? null,
+                'weight' => $values['setweight'] ?? null, // <--- ADD THIS
                 'alt_set' => $values['alt-sets'] ?? null,
                 'alt_reps' => $values['alt-reps'] ?? null,
                 'strength_id' => $foreignKey,
