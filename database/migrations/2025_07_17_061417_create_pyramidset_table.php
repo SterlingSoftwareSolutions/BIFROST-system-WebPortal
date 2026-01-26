@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('sets')->nullable();
             $table->integer('reps')->nullable();
-            $table->enum('unit', ['%', 'Kg', 'Cal', '/10']); // Enum column for unit
+            $table->enum('unit', ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A']); // Enum column for unit
             $table->float('pyramidweight')->nullable();
             $table->float('pyramidmale')->nullable();
             $table->float('pyramidfemale')->nullable();
