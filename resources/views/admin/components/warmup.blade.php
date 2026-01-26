@@ -48,7 +48,7 @@
 
                 // AJAX request
                 $.ajax({
-                    url: '{{ route('warmups.deleteAllBySelectDate') }}',
+                    url: '{{ route("warmups.deleteAllBySelectDate") }}',
                     type: 'POST',
                     data: formData,
                     success: function(response) {
@@ -114,46 +114,49 @@
                     {{-- Serach Section --}}
                     <div class="flex-col w-full">
                         <div class="bg-gray-50 p-4">
-                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout
-                                List</div>
-                            <div class="flex items-start space-x-6">
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
+                            <div class="flex items-center space-x-2 flex-nowrap">
+
                                 <!-- Category Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="categoryw_2" class="w-28">Category</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="categoryw_2" class="w-15 text-xs">Category</label>
                                     <select id="categoryw_2" name="categoryw_2" onchange="getworkoutw(this)"
-                                        class="flex-1 px-3 py-2 border rounded">
-                                        <option value="" selected disabled>-- Select Category --</option>
+                                        class="flex-1 px-1 py-1 border rounded text-xs">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
 
                                 <!-- Exercise Field -->
-                                <div class="flex flex-row items-center w-1/2 space-x-2">
-                                    <label for="workoutw_2" class="w-28">Exercise</label>
-                                    <select id="workoutw_2" name="workoutw_2" class="flex-1 px-3 py-2 border rounded">
-                                        <option value="" selected disabled>-- Select Exercise --</option>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="workoutw_2" class="w-15 text-xs pl-3">Exercise</label>
+                                    <select id="workoutw_2" name="workoutw_2" class="flex-1 px-1 py-1 border rounded text-xs">
+                                        <option value="" selected disabled>-- Select --</option>
                                     </select>
                                 </div>
-                            </div>
 
-                            <div class="flex items-start space-x-6 mt-3">
                                 <!-- Name Field -->
-                                <div class="flex flex-row items-center flex-[2] space-x-2">
-                                    <label for="namew_2" class="w-28">Name Search</label>
+                                <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                                    <label for="namew_2" class="w-15 text-xs ">Name</label>
                                     <input type="text" id="namew_2" name="namew_2"
-                                        class="flex-1 px-3 py-2 border rounded mb-2">
+                                        class="flex-1 px-1 py-1 border rounded text-xs">
                                 </div>
 
                                 <!-- Go Button -->
-                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                <div class="flex items-center">
                                     <button id="addsetwarmup_1" onclick="filterWarmup(date)" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Go</button>
                                 </div>
 
-                                <div class="flex flex-row items-center flex-1 space-x-2">
+                                <!-- Clear Button -->
+                                <div class="flex items-center">
                                     <button id="searchclearsetwarmup_1" onclick="clearSearchWarmup()" type="button"
-                                        class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
+                                        class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
                                 </div>
+
                             </div>
+
+
+
                         </div>
 
                         <!-- Scroll Section -->
@@ -202,50 +205,76 @@
                                 </div>
                             </div>
 
-                            <div class="flex items-center border-b mt-2 overflow-visible">
-                                <label for="weigthw_1" class="w-60 block mb-1">Weight <span class="text-red-500">*</span></label>
-                                <select name="unit_1" class="border bg-white py-3.5 px-2 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                <option value="/10">/10</option>
-                                <option value="Cal">Cal</option>
-                                <option value="%">%</option>
-                                <option value="Kg">Kg</option>
-                                </select>
-                                <div class="relative h-[60px] min-w-0">
-                                    <input type="number" name="weigthc_1" class="w-20 py-3 border rounded mb-2 absolute top-0 left-0" required>
-                                    <div class="flex space-x-2 items-center absolute top-0 left-0 invisible" data-gender-inputs>
-                                        <label class="text-sm ml-1">M</label>
-                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded mb-2">
+                            <div class="flex items-center border-b mt-2">
+                                <label class="w-60 block mb-1">
+                                    Training Load <span class="text-red-500">*</span>
+                                </label>
+
+                                <!-- Same width as workout select -->
+                                <div class="w-1/3 flex items-center gap-3">
+
+                                    <!-- Main input -->
+                                    <input
+                                        type="number"
+                                        name="weigthc_1"
+                                        class="flex-1 px-3 py-3 border rounded mb-2"
+                                        data-main-input
+                                        required
+                                    >
+
+                                    <!-- Gender inputs -->
+                                    <div class="hidden flex items-center gap-2 mb-2" data-gender-inputs>
+                                        <label class="text-sm">M</label>
+                                        <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded">
                                         <label class="text-sm">F</label>
-                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded mb-2">
+                                        <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded">
                                     </div>
+
+                                    <!-- Unit selector -->
+                                    <select
+                                        name="unit_1"
+                                        class="px-3 py-3 border rounded mb-2"
+                                        onchange="toggleWarmupGenderInputs(this)">
+                                        <option value="RPE">RPE</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="%">%</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="BW">BW</option>
+                                        <option value="N/A">N/A</option>
+                                    </select>
                                 </div>
-                                <div class="relative ml-auto mr-10 flex items-center">
-                                    <span onclick="toggleInfoPopup(this, event)"
-                                        class="text-red-500 text-xl cursor-pointer select-none">
+
+                                <!-- Info icon stays aligned right -->
+                                <div class="relative ml-auto mr-10 mb-2">
+                                    <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
                                         <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
                                             <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
                                         </svg>
                                     </span>
 
-                                    <!-- Popup (positioned relative to the ?) -->
                                     <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
-                                        <p><b>/10</b> – Effort out of 10</p>
+                                        <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
                                         <p><b>%</b> – Percentage of effort</p>
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
+                                        <p><b>BW</b> – Body Weight</p>
+                                        <p><b>N/A</b> – N/A</p>
                                     </div>
                                 </div>
                             </div>
+
+
+
                         </div>
 
 
         <!-- Add Another Button -->
-        <div class="flex flex-row justify-end gap-4 mt-5" id="add-another-btn">
+        {{-- <div class="flex flex-row justify-end gap-4 mt-5" id="add-another-btn">
             <button type="button" onclick="addAnotherWorkout()" class="bg-[#000000] text-white py-2 px-4 rounded mr-8 hover:bg-gray-800 w-30">
                 + Add Another
             </button>
-        </div>
+        </div> --}}
 
         <!-- Save & Cancel -->
         <div class="flex flex-row justify-end gap-4 mt-5">
@@ -269,6 +298,28 @@
     </form>
 </div>
 <script>
+    function toggleWarmupGenderInputs(selectElement) {
+    // Get the main row container
+    const row = selectElement.closest('.flex');
+
+    const defaultInput = row.querySelector('[data-main-input]');
+    const genderDiv = row.querySelector('[data-gender-inputs]');
+
+    if (!defaultInput || !genderDiv) return;
+
+    const selected = selectElement.value;
+
+    if (selected === 'Cal' || selected === 'Kg') {
+        genderDiv.classList.remove('hidden');
+        defaultInput.classList.add('hidden');
+        defaultInput.removeAttribute('required');
+    } else {
+        genderDiv.classList.add('hidden');
+        defaultInput.classList.remove('hidden');
+        defaultInput.setAttribute('required', 'true');
+    }
+}
+
     function toggleInfoPopup(el, event) {
     event.stopPropagation(); // Prevent document click listener from firing
 
@@ -436,6 +487,7 @@
     // get warmup
     function getwarmup(date) {
         console.log("get warmup date: " + date);
+
         $.ajax({
             url: "/get-wormup",
             type: "POST",
@@ -446,12 +498,9 @@
             success: function(response) {
                 console.log(response);
                 allWarmupData = response.result;
-                // Assuming response is an array of arrays
-                // response.forEach(subArray => {
-                setwarmups(response.result, response.categoryOptions);
-                // });
+                const classesData = response.daily_classes || [];
+                setwarmups(response.result, response.categoryOptions, classesData);
             },
-
             error: function(xhr, status, error) {
                 console.error(error);
             },
@@ -460,26 +509,82 @@
 
 
     //set new warmup cards
-    function setwarmups(warmups, categoryOptions) {
+    function setwarmups(warmups, categoryOptions, classesData = []) {
         const container = $("#setwarmups"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
+        // Sort classes by time
+        classesData.sort((a, b) => {
+            return new Date('1970-01-01T' + a.time) - new Date('1970-01-01T' + b.time);
+        });
+
         warmups.forEach((item, index) => {
 
+             // Generate Class Buttons
+            let classButtonsHTML = '';
+            if (classesData.length > 0) {
+                 // Check if item has assigned_class_ids array, if not default to empty
+                     const assignedIds = item.assigned_class_ids || [];
+                     
+                     // Check if ALL classes are assigned
+                     const allClassIds = classesData.map(c => c.id);
+                     const isAllAssigned = classesData.length > 0 && allClassIds.every(id => assignedIds.includes(id));
+                     
+                     const allBtnClass = isAllAssigned 
+                        ? 'border-green-600 bg-green-50 text-green-700 font-bold' 
+                        : 'border-gray-400 text-gray-600';
+
+                     classesData.forEach(cls => {
+                         // Format time 24h -> 12h
+                         let timeParts = cls.time.split(':');
+                         let dateObj = new Date();
+                         dateObj.setHours(timeParts[0]);
+                         dateObj.setMinutes(timeParts[1]);
+                         let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                         // Determine if assigned
+                         const isAssigned = assignedIds.includes(cls.id);
+
+                         // Style: Green border/text if assigned, else Gray
+                         const activeClass = isAssigned
+                             ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                             : 'border-gray-300 text-gray-600';
+                            
+                         classButtonsHTML += `
+                             <button type="button"
+                                 class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                                 onclick="toggleAssignmentWarmup(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                                 ${timeString}
+                             </button>
+                         `;
+                     });
+
+                    /* Prepend All Button Logic */
+                    classButtonsHTML = `
+                        <button type="button" 
+                            class="border px-3 py-1 rounded ${allBtnClass} hover:bg-gray-100 text-sm whitespace-nowrap" 
+                            onclick="toggleAllAssignmentsWarmup(${item.id}, ${isAllAssigned})">
+                            All
+                        </button>
+                    ` + classButtonsHTML;
+
+                } else {
+                    classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+                }
+
             let html = `
-            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
-                <div class="border border-black rounded-xl shadow p-4 bg-white">
+            <div class="border-2 border-gray-200 rounded-md shadow p-2 bg-white w-full">
                     <div class="pb-2 mb-2 flex justify-between items-center">
                         <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
                         <div class="space-x-2">
-                            <button class="edit-warmups-btn" data-id="${item.id}" type="button">
+                            <button class="edit-warmups-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
 
-                            <button class="delete-warmups-btn" data-id="${item.id}" type="button">
+                            <button class="delete-warmups-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
@@ -493,14 +598,12 @@
                     <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weightvalu || 0}${item.unit} for ${item.reps} reps</div>
 
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer warmups-toggle" data-workout-id="${item.id}" data-workout-type="warmup" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                            ${classButtonsHTML}
+                        </div>
                     </div>
-                </div>
             </div>
             `;
 
@@ -514,6 +617,80 @@
 
         });
 
+    }
+
+    // Toggle Assignment Function for Warmup
+    function toggleAssignmentWarmup(workoutId, classId, timeString, isCurrentlyAssigned) {
+        const action = isCurrentlyAssigned ? 'unassign' : 'assign';
+        const confirmMsg = isCurrentlyAssigned
+            ? `Are you sure you want to unassign this workout from the ${timeString} class?`
+            : `Are you sure you want to assign this workout to the ${timeString} class?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatewd').value;
+
+        $.ajax({
+            url: "/assign-workout-class", 
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: classId,
+                type: 'warmup', // Correct type
+                action: action, // 'assign' or 'unassign'
+                date: date
+            },
+            success: function(response) {
+                // Refresh data to show updated status
+                getwarmup(date);
+                // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error updating assignment. Please check backend implementation.");
+            }
+        });
+    }
+
+    function toggleAllAssignmentsWarmup(workoutId, isAllAssigned) {
+        const action = isAllAssigned ? 'unassign' : 'assign_all';
+        
+        const confirmMsg = isAllAssigned 
+            ? "Are you sure you want to unassign this workout from ALL classes?" 
+            : "Are you sure you want to assign this workout to ALL classes?";
+
+        if(!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatewd').value;
+
+        $.ajax({
+            url: "/assign-workout-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: 'all',  // Special flag
+                type: 'warmup',
+                action: action, 
+                date: date
+            },
+            success: function(response) {
+                alert(response.message);
+                getwarmup(date);
+               // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error assigning to all classes.");
+            }
+        });
     }
 
     // get editing details to form
@@ -597,7 +774,8 @@
                 allWarmupData = response.warmup;
                 const warmupArray = Object.values(response.warmup);
                 const categoryArray = Object.values(response.categoryOptions);
-                setwarmups(warmupArray, categoryArray);
+                const classesData = response.daily_classes || [];
+                setwarmups(warmupArray, categoryArray, classesData);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
                 //setstrengths(response.Strength, response.categoryOptions);
@@ -718,51 +896,7 @@
         warmupInfoDiv.innerHTML = htmlContent;
     }
 
-    //assign warmup to class
-    $(document).on('change', '.warmups-toggle', function() {
-        const date = document.getElementById('selectdatewd').value;
-        const workoutId = $(this).data('workout-id');
-        const workoutType = $(this).data('workout-type');
-        const assigned = $(this).is(':checked') ? 1 : 0;
 
-        // Get and conditionally remove class_id from local storage
-        let selectedClassId = localStorage.getItem("selected_class_id");
-        if (assigned) {
-            if (!selectedClassId) {
-                alert("Please select a class first.");
-                $(this).prop('checked', false);
-                return;
-            }
-        }
-
-        // Only send class_id if assigning
-        const payload = {
-            _token: $('meta[name="csrf-token"]').attr('content'),
-            workout_id: workoutId,
-            workout_type: workoutType,
-            date: date,
-            assigned: assigned
-        };
-
-        if (assigned) {
-            payload.class_id = selectedClassId;
-            localStorage.removeItem("selected_class_id");
-        }
-
-        $.ajax({
-            url: "/assign-weightlifting-to-class",
-            type: "POST",
-            data: payload,
-            success: function(response) {
-                alert(response.message);
-                getdateName(date); // Refresh classes or UI
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX error:", xhr.responseText);
-                alert("An error occurred while assigning the workout.");
-            }
-        });
-    });
 
     // Call getCategoryW on page load
     document.addEventListener('DOMContentLoaded', function() {

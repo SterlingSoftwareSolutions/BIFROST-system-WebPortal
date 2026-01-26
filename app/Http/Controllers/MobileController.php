@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\WorkoutAssign;
 
 class MobileController extends Controller
 {
@@ -988,6 +988,7 @@ class MobileController extends Controller
     {
         $request->validate([
             'selected_day' => 'required|string', // e.g., "Tuesday 09/09/2025"
+            'class_id'     => 'required|integer',
         ]);
 
         try {
@@ -1001,43 +1002,115 @@ class MobileController extends Controller
                 ], 404);
             }
 
-            // Convert the incoming date string to Carbon
-            $dateString = $request->input('selected_day');
-            $date = \Carbon\Carbon::createFromFormat('l d/m/Y', $dateString);
+            // Sanitize and normalize incoming date string
+            $rawDateString = trim($request->input('selected_day'));
+            Log::info('Day received (raw):', ['day' => $rawDateString]);
 
-            // Build formats
+            // Remove any characters except digits, slashes, spaces, letters and hyphen
+            $sanitized = preg_replace('/[^\d\/\sA-Za-z\-]/', '', $rawDateString);
+            $sanitized = preg_replace('/\s+/', ' ', trim($sanitized));
+            Log::info('Day received (sanitized):', ['day' => $sanitized]);
+
+            // Try to extract a date substring like d/m/y or d/m/Y
+            $datePart = null;
+            if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $sanitized, $m)) {
+                $datePart = $m[0];
+            }
+
+            $date = null;
+            if ($datePart) {
+                // Choose format based on year length
+                $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
+
+                try {
+                    $date = \Carbon\Carbon::createFromFormat($fmt, $datePart);
+                } catch (\Exception $e) {
+                    // fallback to parse
+                    try {
+                        $date = \Carbon\Carbon::parse($datePart);
+                    } catch (\Exception $e2) {
+                        $date = null;
+                    }
+                }
+            } else {
+                // Last resort: try to parse the sanitized string directly
+                try {
+                    $date = \Carbon\Carbon::parse($sanitized);
+                } catch (\Exception $e) {
+                    $date = null;
+                }
+            }
+
+            if (!$date) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid date format for selected_day.',
+                    'provided' => $rawDateString
+                ], 400);
+            }
+
+            // Build normalized patterns (both two-digit and four-digit year, dayname before/after)
             $dayName = $date->format('l');
-            $formattedDate = $date->format('d/m/y');
-            $dayWithDate = $formattedDate . ' ' . $dayName;
-            $dayWithDateNew = $date->format('d/m/Y') . ' ' . $dayName;
-            //Log::info('dayWithDateNew', ['conditioning_id' => $dayWithDateNew]);  
+            $shortDateTwo = $date->format('d/m/y');   // e.g., 23/01/26
+            $shortDateFour = $date->format('d/m/Y');  // e.g., 23/01/2026
+            $dayWithDate = $shortDateTwo . ' ' . $dayName;
+            $dayWithDateNew = $shortDateFour . ' ' . $dayName;
+            $dayNameFirst = $dayName . ' ' . $shortDateTwo;
+            $dayNameFirstNew = $dayName . ' ' . $shortDateFour;
+
+            $classId = $request->class_id;
+
+            // Search for any assignment containing the date in any reasonable format
+            $assignedRaw = WorkoutAssign::where('class_id', $classId)
+                ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
+                    $q->where('date', 'LIKE', '%' . $shortDateTwo . '%')
+                      ->orWhere('date', 'LIKE', '%' . $shortDateFour . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
+                })
+                ->get();
+
+            $assigned = $assignedRaw->groupBy('workout_type');
+
+            Log::info('Assigned workouts', [
+                'class_id' => $classId,
+                'search_patterns' => [
+                    '%' . $shortDateTwo . '%',
+                    '%' . $shortDateFour . '%',
+                    '%' . $dayWithDate . '%',
+                    '%' . $dayWithDateNew . '%',
+                    '%' . $dayNameFirst . '%',
+                    '%' . $dayNameFirstNew . '%',
+                ],
+                'assigned_count' => $assigned->map->count()->toArray(),
+            ]);
+
+            // Helper function
+            $getIds = fn ($type) => isset($assigned[$type])
+                ? $assigned[$type]->pluck('workout_id')->toArray()
+                : [];
 
             // Warmup
-            $detailswarmup = Warmup::where('date', $dayWithDate)
-                ->where('is_assigned', 1)
-                ->with('workout')
+            $detailswarmup = Warmup::whereIn('id', $getIds('warmup'))
                 ->with('workout.categoryOption')
                 ->get();
 
             // Strength
-            $detailsstrength = Strength::where('date', $dayWithDate)
-                ->where('is_assigned', 1)
-                ->with('sets')
+            $detailsstrength = Strength::whereIn('id', $getIds('strength'))
                 ->with('sets.strengthing')
-                ->with('workout')
                 ->with('workout.categoryOption')
                 ->get();
 
             // Conditioning
-            $detailsconditioning = Conditioning::where('date', $dayWithDate)
-                ->where('is_assigned', 1)
+            $detailsconditioning = Conditioning::whereIn('id', $getIds('conditioning'))
                 ->with('workout')
                 ->with('workout.categoryOption')
                 ->get();
 
             // Weightlifting
-            $detailsweight = Weightlifting::where('date', $dayWithDate)
-                ->where('is_assigned', 1)
+            $detailsweight = Weightlifting::whereIn('id', $getIds('weightlifting'))
                 ->with('sets')
                 ->with('sets.weightlifting')
                 ->with('workout')
@@ -1045,12 +1118,20 @@ class MobileController extends Controller
                 ->get();
 
             // Test (filtered by member)
-            $detailstest = Test::where('date', $dayWithDate)
+            $detailstest = Test::whereIn('id', $getIds('test'))
                 ->where('member_id', $member->id)
-                ->with('workout')
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
+
+            if ($assigned->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No workouts assigned for this class & date',
+                    'class_id' => $classId,
+                    'date' => $dayWithDate
+                ]);
+            }
 
             // Create a map of [workout name + category_options_id] => weight from test
             $testWeights = $detailstest->mapWithKeys(function ($test) {
@@ -1059,7 +1140,6 @@ class MobileController extends Controller
             });
 
             $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
-
                 $completed = DailyWarmup::where('member_id', $member->id)
                     ->where('warmup_id', $item->id)
                     ->where('date', $dayWithDateNew)
@@ -1069,40 +1149,31 @@ class MobileController extends Controller
                 return $item;
             });
 
+            $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
+                $item_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('reps', '>', 0)
+                    ->where('date', $dayWithDateNew)
+                    ->exists();
 
-            // Append matching weight to Strength workouts
-            $detailsstrength->transform(function ($item) use ($testWeights) {
+                $item->warmup_item_completed = $item_completed ? 1 : 0;
+                return $item;
+            });
+
+            // Append matching weight to Strength/Conditioning/Weightlifting workouts
+            $appendTestWeight = function ($item) use ($testWeights) {
                 if ($item->workout) {
                     $key = $item->workout->workout . '_' . $item->workout->category_options_id;
-                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
+                    $item->test_weight = $testWeights[$key] ?? null;
                 } else {
                     $item->test_weight = null;
                 }
                 return $item;
-            });
+            };
 
-            // Append matching weight to Conditioning workouts
-            $detailsconditioning->transform(function ($item) use ($testWeights) {
-                if ($item->workout) {
-                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
-                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
-                } else {
-                    $item->test_weight = null;
-                }
-                return $item;
-            });
-
-            // Append matching weight to Weightlifting workouts
-            $detailsweight->transform(function ($item) use ($testWeights) {
-                if ($item->workout) {
-                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
-                    $item->test_weight = isset($testWeights[$key]) ? $testWeights[$key] : null;
-                } else {
-                    $item->test_weight = null;
-                }
-                return $item;
-            });
-
+            $detailsstrength->transform($appendTestWeight);
+            $detailsconditioning->transform($appendTestWeight);
+            $detailsweight->transform($appendTestWeight);
 
             $detailsweight->transform(function ($item) use ($member, $dayWithDateNew) {
                 $completed = DailyWeightlifting::where('member_id', $member->id)
@@ -1115,7 +1186,6 @@ class MobileController extends Controller
             });
 
             $detailsstrength->transform(function ($item) use ($member, $dayWithDateNew) {
-
                 $completed = DailyStrength::where('member_id', $member->id)
                     ->where('strength_id', $item->id)
                     ->where('date', $dayWithDateNew)
@@ -1135,29 +1205,28 @@ class MobileController extends Controller
                 return $item;
             });
 
-
             $score = $user->scores()
-            ->where('selected_day', $request->selected_day)
-            ->first();
+                ->where('selected_day', $request->selected_day)
+                ->first();
 
             $categoryOptions = CategoryOption::select('id', 'category_name')->get();
 
             // Get all workouts with category option name
             $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
-            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
-            ->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'workout' => $item->workout,
-                    'type' => $item->type,
-                    'category_option_id' => $item->category_options_id,
-                    'category_option_name' => $item->categoryOption->category_name ?? null,
-                ];
-            });
+                ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+                ->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'workout' => $item->workout,
+                        'type' => $item->type,
+                        'category_option_id' => $item->category_options_id,
+                        'category_option_name' => $item->categoryOption->category_name ?? null,
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
-                'selected_day' => $dateString,
+                'selected_day' => $rawDateString,
                 'dayWithDate' => $dayWithDate,
                 'warmup' => $detailswarmup,
                 'strength' => $detailsstrength,
@@ -1167,7 +1236,7 @@ class MobileController extends Controller
                 'score' => $score,
                 'workoutlibrary' => $workoutlibrary,
                 'categoryOptions' => $categoryOptions,
-                'member'=>$member
+                'member' => $member
             ], 200);
 
         } catch (\Exception $e) {
@@ -1216,15 +1285,24 @@ class MobileController extends Controller
 
    public function insertWeight(Request $request)
     {
+
+    $request->validate([
+        'workout_id' => 'required|integer',
+        'member_id' => 'required|integer',
+        'weight' => 'required|numeric',
+        'selected_day' => 'required|string',
+    ]);
+    
     try {
-        $dateStr = Carbon::now()->format('d/m/y l');
+        $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
+        $dayWithDate = $date->format('d/m/y l');
 
         $test = Test::create([
             'workout_id'  => $request->workout_id,
             'member_id'   => $request->member_id,
             'weight'      => $request->weight,
             'workoutname' => $request->workoutname,
-            'date'        => $dateStr,
+            'date'        => $dayWithDate, 
             'category_id' => $request->category_id ?? null,
         ]);
 

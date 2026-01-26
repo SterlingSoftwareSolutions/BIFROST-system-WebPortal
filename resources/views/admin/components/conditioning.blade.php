@@ -12,43 +12,44 @@
                 <div class="bg-gray-50 p-4">
                     <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout
                         List</div>
-                    <div class="flex items-start space-x-6">
+                    <div class="flex items-center space-x-2 flex-nowrap">
+
                         <!-- Category Field -->
-                        <div class="flex flex-row items-center w-1/2 space-x-2">
-                            <label for="categoryc_2" class="w-28">Category</label>
+                        <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                            <label for="categoryc_2" class="w-15 text-xs">Category</label>
                             <select id="categoryc_2" name="categoryc_2" onchange="getworkoutC(this)"
-                                class="flex-1 px-3 py-2 border rounded">
-                                <option value="" selected disabled>-- Select Category --</option>
+                                class="flex-1 px-1 py-1 border rounded text-xs bg-white">
+                                <option value="" selected disabled>-- Select --</option>
                             </select>
                         </div>
 
                         <!-- Exercise Field -->
-                        <div class="flex flex-row items-center w-1/2 space-x-2">
-                            <label for="workoutc_2" class="w-28">Exercise</label>
-                            <select id="workoutc_2" name="workoutc_2" class="flex-1 px-3 py-2 border rounded">
-                                <option value="" selected disabled>-- Select Exercise --</option>
+                        <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                            <label for="workoutc_2" class="w-15 text-xs pl-3">Exercise</label>
+                            <select id="workoutc_2" name="workoutc_2" class="flex-1 px-1 py-1 border rounded text-xs bg-white">
+                                <option value="" selected disabled>-- Select --</option>
                             </select>
                         </div>
-                    </div>
 
-                    <div class="flex items-start space-x-6 mt-3">
                         <!-- Name Field -->
-                        <div class="flex flex-row items-center flex-[2] space-x-2">
-                            <label for="namec_2" class="w-28">Name Search</label>
+                        <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                            <label for="namec_2" class="w-15 text-xs ">Name</label>
                             <input type="text" id="namec_2" name="namec_2"
-                                class="flex-1 px-3 py-2 border rounded mb-2">
+                                class="flex-1 px-1 py-1 border rounded text-xs">
                         </div>
 
                         <!-- Go Button -->
-                        <div class="flex flex-row items-center flex-1 space-x-2">
-                            <button id="addsetwarmup_1" onclick="filterConditioning(date)" type="button"
-                                class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Go</button>
+                        <div class="flex items-center">
+                            <button id="filterConditioningBtn" onclick="filterConditioning(date)" type="button"
+                                class="bg-black text-white py-1 px-2 rounded text-xs">Go</button>
                         </div>
 
-                        <div class="flex flex-row items-center flex-1 space-x-2">
-                            <button id="searchclearsetwarmup_1" onclick="clearSearchConditioning()" type="button"
-                                class="bg-black text-white py-3 px-4 rounded mb-2  text-base">Clear</button>
+                        <!-- Clear Button -->
+                        <div class="flex items-center">
+                            <button id="clearSearchConditioningBtn" onclick="clearSearchConditioning()" type="button"
+                                class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
                         </div>
+
                     </div>
                 </div>
 
@@ -192,10 +193,12 @@
                                             <label for="weigthPy_1" class="w-28 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
                                             <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                            <option value="/10">/10</option>
-                                            <option value="Cal">Cal</option>
-                                            <option value="%">%</option>
-                                            <option value="Kg">Kg</option>
+                                                <option value="RPE">RPE</option>
+                                                <option value="Cal">Cal</option>
+                                                <option value="%">%</option>
+                                                <option value="Kg">Kg</option>
+                                                <option value="BW">BW</option>
+                                                <option value="N/A">N/A</option>
                                             </select>
 
                                             <div class="relative h-[60px] min-w-0">
@@ -279,7 +282,59 @@
                         <div class="flex items-center border-b mt-2">
                             <label class="w-60 block mb-1 whitespace-nowrap">Training Load <span class="text-red-500">*</span></label>
 
-                                    <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
+                            <div class="w-1/3 flex items-center gap-3">
+
+                                <!-- Main input -->
+                                <input
+                                    type="number"
+                                    name="weigthc_1"
+                                    class="flex-1 px-3 py-3 border rounded mb-2"
+                                    data-main-input
+                                    required
+                                >
+
+                                <!-- Gender inputs -->
+                                <div class="hidden flex items-center gap-2 mb-2" data-gender-inputs>
+                                    <label class="text-sm">M</label>
+                                    <input type="number" name="male_1" class="w-20 px-2 py-2 border rounded">
+                                    <label class="text-sm">F</label>
+                                    <input type="number" name="female_1" class="w-20 px-2 py-2 border rounded">
+                                </div>
+
+                                <!-- Unit selector -->
+                                <select
+                                    name="unit_1"
+                                    class="px-3 py-3 border rounded mb-2"
+                                    onchange="toggleWarmupGenderInputs(this)">
+                                    <option value="RPE">RPE</option>
+                                    <option value="Cal">Cal</option>
+                                    <option value="%">%</option>
+                                    <option value="Kg">Kg</option>
+                                    <option value="BW">BW</option>
+                                    <option value="N/A">N/A</option>
+                                </select>
+                            </div>
+
+                            <!-- Info icon stays aligned right -->
+                            <div class="relative ml-auto mr-10 mb-2">
+                                <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
+                                    <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
+                                        <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                    </svg>
+                                </span>
+
+                                <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                    <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
+                                    <p><b>%</b> – Percentage of effort</p>
+                                    <p><b>Cal</b> – Number of calories</p>
+                                    <p><b>Kg</b> – Weight</p>
+                                    <p><b>BW</b> – Body Weight</p>
+                                    <p><b>N/A</b> – N/A</p>
+                                </div>
+                            </div>
+
+                                    {{-- <select name="unit_1" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>
                                         <option value="%">%</option>
@@ -310,7 +365,7 @@
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
                                     </div>
-                                </div>
+                                </div> --}}
                         </div>
                         </div>
                 </div>
@@ -799,7 +854,7 @@
         let totalSeconds = (minutes * 60) + seconds;
 
         // Update the time based on adjustment
-        totalSeconds += adjustment;
+        totalSeconds += adjustment * 60;
         if (totalSeconds < 0) totalSeconds = 0; // Prevent negative values
 
         // Convert back to minutes and seconds
@@ -817,45 +872,129 @@
     function getconditioning(date) {
         var selectDate = date;
         console.log(selectDate);
+
+        // First, fetch the classes for this date
         $.ajax({
-            url: "/getConditioning",
-            type: "POST",
-            data: {
-                date: selectDate,
-                _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-            },
-            success: function(response) {
-                console.log(response);
-                allConditioningData = response.result;
-                setConditionings(response.result, response.categoryOptions);
+            url: "/get-classes-by-day",
+            type: "GET",
+            data: { day: date },
+            success: function(classesResponse) {
+                const classesData = classesResponse || [];
+
+                $.ajax({
+                    url: "/getConditioning",
+                    type: "POST",
+                    data: {
+                        date: selectDate,
+                        _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        allConditioningData = response.result;
+                        setConditionings(response.result, response.categoryOptions, classesData);
+                    },
+                    error: function(xhr, status, error) {
+                        console.log(error);
+                    }
+                });
             },
             error: function(xhr, status, error) {
-                console.log(error);
+                console.error("Error fetching classes:", error);
+                 // Fallback
+                $.ajax({
+                    url: "/getConditioning",
+                    type: "POST",
+                    data: {
+                        date: selectDate,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        allConditioningData = response.result;
+                        setConditionings(response.result, response.categoryOptions, []);
+                    },
+                    error: function(xhr, status, error) { console.log(error); }
+                });
             }
         });
     }
-    function setConditionings(conditionings, categoryOptions) {
+    function setConditionings(conditionings, categoryOptions, classesData = []) {
         const container = $("#setconditionings"); // Replace with your actual container class or ID
         container.empty(); // Clear previous content
 
+        // Sort classes by time
+        classesData.sort((a, b) => {
+            return new Date('1970-01-01T' + a.time) - new Date('1970-01-01T' + b.time);
+        });
+
         conditionings.forEach((item, index) => {
 
+            // Generate Class Buttons
+            let classButtonsHTML = '';
+            if (classesData.length > 0) {
+                 // Check if item has assigned_class_ids array, if not default to empty
+                     const assignedIds = item.assigned_class_ids || [];
+                     
+                     // Check if ALL classes are assigned
+                     const allClassIds = classesData.map(c => c.id);
+                     const isAllAssigned = classesData.length > 0 && allClassIds.every(id => assignedIds.includes(id));
+                     
+                     const allBtnClass = isAllAssigned 
+                        ? 'border-green-600 bg-green-50 text-green-700 font-bold' 
+                        : 'border-gray-400 text-gray-600';
+
+                     classesData.forEach(cls => {
+                         // Format time 24h -> 12h
+                         let timeParts = cls.time.split(':');
+                         let dateObj = new Date();
+                         dateObj.setHours(timeParts[0]);
+                         dateObj.setMinutes(timeParts[1]);
+                         let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+                         // Determine if assigned
+                         const isAssigned = assignedIds.includes(cls.id);
+
+                         // Style: Green border/text if assigned (similar to image), else Gray
+                         const activeClass = isAssigned
+                             ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                             : 'border-gray-300 text-gray-600';
+                            
+                         classButtonsHTML += `
+                             <button type="button"
+                                 class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
+                                 onclick="toggleAssignmentCon(${item.id}, ${cls.id}, '${timeString}', ${isAssigned})">
+                                 ${timeString}
+                             </button>
+                         `;
+                     });
+
+                    /* Prepend All Button Logic */
+                    classButtonsHTML = `
+                        <button type="button" 
+                            class="border px-3 py-1 rounded ${allBtnClass} hover:bg-gray-100 text-sm whitespace-nowrap" 
+                            onclick="toggleAllAssignmentsCon(${item.id}, ${isAllAssigned})">
+                            All
+                        </button>
+                    ` + classButtonsHTML;
+
+                } else {
+                    classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
+                }
+
             let html = `
-            <div class="border border-green-900 rounded-2xl shadow p-2 bg-white mx-10">
-                <div class="border border-black rounded-xl shadow p-4 bg-white">
+            <div class="border-2 border-gray-300 rounded-md shadow p-4 bg-white w-full">
                     <div class="pb-2 mb-2 flex justify-between items-center">
-                        <div class="text-gray-700">${item.workoutname || 'N/A'} :</div>
+                        <div class="text-gray-700 font-bold text-lg">${item.workoutname || 'N/A'} :</div>
                         <div class="text-gray-700">Rounds: ${item.rounds || '0'} </div>
                         <div class="text-gray-700">Time To Complete: ${item.time_to_complete || 'N/A'} </div>
-                        <div class="space-x-2">
-                            <button class="edit-conditionings-btn" data-id="${item.id}" type="button">
+                        <div class="space-x-2 flex">
+                            <button class="edit-conditionings-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg class="feather feather-edit" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                                 </svg>
                             </button>
 
-                            <button class="delete-conditionings-btn" data-id="${item.id}" type="button">
+                            <button class="delete-conditionings-btn text-black hover:text-gray-700" data-id="${item.id}" type="button">
                                 <svg fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M10,23c-0.2558594,0-0.5117188-0.0976563-0.7070313-0.2929688c-0.390625-0.390625-0.390625-1.0234375,0-1.4140625l12-12c0.390625-0.390625,1.0234375-0.390625,1.4140625,0s0.390625,1.0234375,0,1.4140625l-12,12C10.5117188,22.9023438,10.2558594,23,10,23z"/>
@@ -866,17 +1005,15 @@
                         </div>
                     </div>
 
-                    <div class="mb-2 text-gray-800 font-semibold">${item.workout_type} at ${item.weight || 0}${item.unit}  ${item.reps} reps</div>
+                    <div class="mb-2 text-gray-800 font-semibold text-base">${item.workout_type} at ${item.weight || 0}${item.unit}  ${item.reps} reps</div>
 
 
-                    <div class="mt-4 flex justify-end">
-                        <p class="mr-4 font-bold">Assign Workout to Class</p>
-                        <label class="inline-flex items-center cursor-pointer">
-                            <input type="checkbox" value="" class="sr-only peer conditionings-toggle" data-workout-id="${item.id}" data-workout-type="conditioning" ${item.is_assigned ? 'checked' : ''}>
-                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600 dark:peer-checked:bg-green-600"></div>
-                        </label>
+                    <div class="mt-4 flex items-center gap-2 border-t pt-3 w-full">
+                        <span class="font-bold text-sm whitespace-nowrap">Assign to Class :</span>
+                        <div class="flex flex-nowrap overflow-x-auto gap-2 pb-1 w-0 flex-1 thin-scrollbar">
+                            ${classButtonsHTML}
+                        </div>
                     </div>
-                </div>
             </div>
             `;
 
@@ -903,12 +1040,10 @@
         }
 
         const card = document.querySelector(`.edit-conditionings-btn[data-id="${conditioningsId}"]`).closest(
-            '.border.border-green-900');
+            '.border-2.border-gray-300');
         if (card) {
-            card.classList.remove('border-green-900');
-            card.classList.remove('border');
+            card.classList.remove('border-gray-300');
             card.classList.add('border-red-600');
-            card.classList.add('border-2');
         }
         // Set category and trigger onchange to load workouts
         const categorySelect = document.getElementById('categoryc_1');
@@ -945,8 +1080,8 @@
         document.getElementById('clearcbtn').classList.add('hidden');
         const redCard = document.querySelector('.border-red-600.border-2');
         if (redCard) {
-            redCard.classList.remove('border-red-600', 'border-2');
-            redCard.classList.add('border', 'border-green-900');
+            redCard.classList.remove('border-red-600');
+            redCard.classList.add('border-gray-300');
         }
     }
 
@@ -1084,6 +1219,81 @@
         `;
         });
         conditioningDiv.innerHTML = htmlContent;
+    }
+
+    // Toggle Assignment Function
+    function toggleAssignmentCon(workoutId, classId, timeString, isCurrentlyAssigned) {
+        const action = isCurrentlyAssigned ? 'unassign' : 'assign';
+        const confirmMsg = isCurrentlyAssigned
+            ? `Are you sure you want to unassign this workout from the ${timeString} class?`
+            : `Are you sure you want to assign this workout to the ${timeString} class?`;
+
+        if (!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatec').value;
+
+        $.ajax({
+            url: "/assign-workout-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: classId,
+                type: 'conditioning',
+                action: action, // 'assign' or 'unassign'
+                date: date
+            },
+            success: function(response) {
+                // Refresh data to show updated status
+                getconditioning(date);
+                // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error updating assignment. Please check backend implementation.");
+            }
+        });
+    }
+
+
+    function toggleAllAssignmentsCon(workoutId, isAllAssigned) {
+        const action = isAllAssigned ? 'unassign' : 'assign_all';
+        
+        const confirmMsg = isAllAssigned 
+            ? "Are you sure you want to unassign this workout from ALL classes?" 
+            : "Are you sure you want to assign this workout to ALL classes?";
+
+        if(!confirm(confirmMsg)) return;
+
+        const date = document.getElementById('selectdatec').value;
+
+        $.ajax({
+            url: "/assign-workout-class",
+            type: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                workout_id: workoutId,
+                class_id: 'all',  // Special flag
+                type: 'conditioning',
+                action: action, 
+                date: date
+            },
+            success: function(response) {
+                alert(response.message);
+                getconditioning(date);
+                // Also refresh classes list to show green icon if the function exists
+                if (typeof getdateName === 'function') {
+                    getdateName(date);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Error assigning to all classes.");
+            }
+        });
     }
 
     // search Conditioning
@@ -1367,10 +1577,12 @@ function removeExerciseGroup(button) {
                                     <label class="w-28 block mb-1 whitespace-nowrap ml-1">Training Load <span class="text-red-500">*</span></label>
 
                                     <select name="unit_${remainingfind}${setCounterPyramid}" class="border bg-white py-3.5 mb-2 rounded" onchange="toggleGenderInputs(this)">
-                                        <option value="/10">/10</option>
-                                            <option value="Cal">Cal</option>
-                                            <option value="%">%</option>
-                                            <option value="Kg">Kg</option>
+                                        <option value="RPE">RPE</option>
+                                        <option value="Cal">Cal</option>
+                                        <option value="%">%</option>
+                                        <option value="Kg">Kg</option>
+                                        <option value="BW">BW</option>
+                                        <option value="N/A">N/A</option>
                                     </select>
 
                                     <div class="relative h-[60px] min-w-0">

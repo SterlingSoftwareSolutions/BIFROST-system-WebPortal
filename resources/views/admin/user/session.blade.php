@@ -14,6 +14,22 @@
         .w-1\/3 {
             width: 50% !important;
         }
+        /* Custom Thin Scrollbar */
+        .thin-scrollbar::-webkit-scrollbar {
+            height: 6px; /* Horizontal scrollbar height */
+            width: 6px;  /* Vertical scrollbar width */
+        }
+        .thin-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 4px;
+        }
+        .thin-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* gray-300 */
+            border-radius: 4px;
+        }
+        .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* gray-400 */
+        }
     </style>
 </head>
 
@@ -40,50 +56,42 @@
                 </div>
 
             </div>
-            <div class="border rounded-b-lg bg-white shadow-md mt-10 text-sm">
+            <div class="border rounded-b-lg bg-white shadow-md mt-6 text-sm">
                 <div>
                     {{-- Tab Names --}}
-                    <div class="rounded w-12/12 mx-auto mt-4 mb-4 px-5">
+                    <div class="rounded w-12/12 mx-auto mt-3 mb-2 px-5">
                         <!-- Tabs -->
-                        <ul id="tabs" class="inline-flex pt-2 px-1 w-full border-black border-b">
+                        <ul id="tabs" class="flex justify-center  px-1 w-full gap-5">
 
-                            <li class="me-2 tab-item text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black">
-                                <a href="warmup" id="warmupTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">
-                                    <img src="{{ asset('icon/warmup.png') }}" alt="Warmup Icon" class="w-5 h-5 mr-2" />
+                            <li class="tab-item text-black">
+                                <a href="warmup" id="warmupTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
+                                    <img src="{{ asset('icon/warmup.png') }}" alt="Warmup Icon" class="w-7 h-7 mr-2" />
                                     <span>Warmup</span>
                                 </a>
                             </li>
 
-                            <li class="me-2 tab-item text-black  rounded-t hover:border-t hover:border-l hover:border-r hover:border-black"
-                                id="default-tab">
-                                <a href="strength" id="strenghtTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500 px-6">
-                                    <img src="{{ asset('icon/strength.png') }}" alt="Strength Icon" class="w-5 h-5 mr-2" />
+                            <li class="tab-item text-black" id="default-tab">
+                                <a href="strength" id="strenghtTab" class="inline-flex items-center p-4 rounded text-black bg-white border-2 border-yellow-400 px-6">
+                                    <img src="{{ asset('icon/strength.png') }}" alt="Strength Icon" class="w-6 h-6 mr-2" />
                                     <span>Strength</span>
                                 </a>
                             </li>
-                            <li
-                                class="me-2 tab-item  text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black">
-                                <a href="weightlifting" id="weightliftingTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">
-                                    <img src="{{ asset('icon/weightlifting.png') }}" alt="Weightlifting Icon" class="w-5 h-5 mr-2" />
+                            <li class="tab-item text-black">
+                                <a href="weightlifting" id="weightliftingTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
+                                    <img src="{{ asset('icon/weightliftingnew.png') }}" alt="Weightlifting Icon" class="w-6 h-6 mr-2" />
                                     <span>Weightlifting</span>
                                 </a>
                             </li>
-                            <li
-                                class="me-2 tab-item  text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black">
-                                <a href="conditioning" id="conditioningTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">
-                                    <img src="{{ asset('icon/conditioning.png') }}" alt="Conditioning Icon" class="w-5 h-5 mr-2" />
+                            <li class="tab-item text-black">
+                                <a href="conditioning" id="conditioningTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
+                                    <img src="{{ asset('icon/conditioning.png') }}" alt="Conditioning Icon" class="w-6 h-6 mr-2" />
                                     <span>Conditioning</span>
-                                </a>
-                            </li>
-                            <li
-                                class="me-2 tab-item text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black w-100">
-                                <a href="test" id="testTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500 px-10">
-                                    <img src="{{ asset('icon/test.png') }}" alt="Test Icon" class="w-5 h-5 mr-2" />
-                                    <span>Test</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
+                    {{-- Separator Line with Gap --}}
+                    <div class="w-full border-b-[3px] border-gray-500 mb-3"></div>
 
                     {{-- Top Week and year display --}}
                     {{-- <div class="flex flex-col items-center  gap-2 mb-6">
@@ -99,7 +107,7 @@
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
-                    <div class="w-1/4">
+                    <div class="w-[30%]">
 
                         <div class="flex flex-col text-lg weekday pr-5">
                             <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>
@@ -388,24 +396,30 @@
             let tabTogglers = document.querySelectorAll("#tabs a");
 
             // Remove active styles from all tabs
+            // Remove active styles from all tabs
             tabTogglers.forEach(function(toggler) {
-                toggler.parentElement.classList.remove("border-t", "border-r", "border-l", "-mb-px", "bg-white",
-                    "border-black");
+                // Remove active classes
+                toggler.classList.remove("bg-white", "border-yellow-400");
+                // Add inactive classes
+                toggler.classList.add("bg-gray-200", "border-transparent", "hover:bg-gray-300");
             });
 
             // Add active styles to the clicked tab
             let toggler = document.querySelector(`#tabs a[href="${tabName}"]`);
-            toggler.parentElement.classList.add("border-t", "border-r", "border-l", "-mb-px", "bg-white", "border-black");
+            toggler.classList.remove("bg-gray-200", "border-transparent", "hover:bg-gray-300");
+            toggler.classList.add("bg-white", "border-yellow-400");
 
             // Remove active styles from all date links
             let dateLinks = document.querySelectorAll(".day");
             dateLinks.forEach(function(link) {
-                link.classList.add("hover:bg-black", "hover:text-white", "border-r");
+                link.classList.add("hover:bg-black", "hover:text-white");
+                link.classList.remove("bg-[#EEE8AA]");
             });
 
-            // Add active styles to the selected date link
+            // Add active styles to the selected date link -updated
             let selectedDateElement = document.getElementById(selectedDate);
-            selectedDateElement.classList.remove("hover:bg-black", "hover:text-white", "border-r");
+            selectedDateElement.classList.remove("hover:bg-black", "hover:text-white");
+            selectedDateElement.classList.add("bg-[#EEE8AA]");
             // Log selected tab and date
             logSelection(tabName, selectedDate);
             changeTab(tabName, selectedDate);
@@ -482,7 +496,13 @@
             categorySelectW.add(option);
         }
     </script>
-
+<!-- {{-- <li
+                                class="tab-item text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black w-100">
+                                <a href="test" id="testTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500 px-10">
+                                    <img src="{{ asset('icon/test.png') }}" alt="Test Icon" class="w-5 h-5 mr-2" />
+                                    <span>Test</span>
+                                </a>
+                            </li> --}} -->
 </body>
 
 </html>
