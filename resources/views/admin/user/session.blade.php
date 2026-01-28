@@ -61,7 +61,7 @@
                     {{-- Tab Names --}}
                     <div class="rounded w-12/12 mx-auto mt-3 mb-2 px-5">
                         <!-- Tabs -->
-                        <ul id="tabs" class="flex justify-center  px-1 w-full gap-5">
+                        {{-- <ul id="tabs" class="flex justify-center  px-1 w-full gap-5">
 
                             <li class="tab-item text-black">
                                 <a href="warmup" id="warmupTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
@@ -88,10 +88,10 @@
                                     <span>Conditioning</span>
                                 </a>
                             </li>
-                        </ul>
+                        </ul> --}}
                     </div>
                     {{-- Separator Line with Gap --}}
-                    <div class="w-full border-b-[3px] border-gray-500 mb-3"></div>
+                    <!-- <div class="w-full border-b-[3px] border-gray-500 mb-3"></div> -->
 
                     {{-- Top Week and year display --}}
                     {{-- <div class="flex flex-col items-center  gap-2 mb-6">
@@ -138,12 +138,27 @@
                             @include('admin.components.classes', ['classes' => $classes])
                         </div>
                     </div>
-                    <div class="w-3/4 tabs">
-                        @include('admin.components.warmup')
-                        @include('admin.components.strength')
-                        @include('admin.components.conditioning')
-                        @include('admin.components.weightlifting')
-                        @include('admin.components.test')
+                    <div class="w-[70%] tabs">
+                        <div class="flex flex-row gap-4 w-full items-start">
+                            {{-- Unified Search List (Visible always) --}}
+                            <div class="w-[55%]">
+                                @include('admin.components.search_workout_list')
+                            </div>
+                            
+                            {{-- Common Create Form --}}
+                            <div class="w-[40%]">
+                                @include('admin.components.create_workout_form')
+                            </div>
+                        </div>
+
+                        {{-- Hidden Components for Create/Edit Modal Logic if needed or just kept for reference --}}
+                        <div hidden>
+                            @include('admin.components.warmup')
+                            @include('admin.components.strength')
+                            @include('admin.components.conditioning')
+                            @include('admin.components.weightlifting')
+                            @include('admin.components.test')
+                        </div>
                     </div>
 
                     <script>
@@ -282,23 +297,25 @@
 
             // Event listeners for tab toggling
             let tabsContainer = document.querySelector("#tabs");
-            let tabTogglers = tabsContainer.querySelectorAll("a");
-            tabTogglers.forEach(function(toggler, index) {
-                toggler.addEventListener("click", function(e) {
-                    e.preventDefault();
-                    let tabName = this.getAttribute("href");
-                    selectedTab = tabName;
-                    changeui(selectedTab, selectedDate);
-                    //getdate(selectedDate);
-                    date = document.getElementById(selectedDate);
+            if (tabsContainer) {
+                let tabTogglers = tabsContainer.querySelectorAll("a");
+                tabTogglers.forEach(function(toggler, index) {
+                    toggler.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        let tabName = this.getAttribute("href");
+                        selectedTab = tabName;
+                        changeui(selectedTab, selectedDate);
+                        //getdate(selectedDate);
+                        date = document.getElementById(selectedDate);
 
+                    });
+
+                    // Activate default tab
+                    if (index === 0) {
+                        toggler.click();
+                    }
                 });
-
-                // Activate default tab
-                if (index === 0) {
-                    toggler.click();
-                }
-            });
+            }
 
             // Event listeners for date selection
             let dateLinks = document.querySelectorAll(".day");
@@ -394,20 +411,27 @@
             // set hiden fields to value
             // setHiddenData(tabName,selectedDate);
             let tabTogglers = document.querySelectorAll("#tabs a");
+            
+            if (tabTogglers.length > 0) {
+                 // Remove active styles from all tabs
+                // Remove active styles from all tabs
+                tabTogglers.forEach(function(toggler) {
+                    // Remove active classes
+                    toggler.classList.remove("bg-white", "border-yellow-400");
+                    // Add inactive classes
+                    toggler.classList.add("bg-gray-200", "border-transparent", "hover:bg-gray-300");
+                });
 
-            // Remove active styles from all tabs
-            // Remove active styles from all tabs
-            tabTogglers.forEach(function(toggler) {
-                // Remove active classes
-                toggler.classList.remove("bg-white", "border-yellow-400");
-                // Add inactive classes
-                toggler.classList.add("bg-gray-200", "border-transparent", "hover:bg-gray-300");
-            });
-
-            // Add active styles to the clicked tab
-            let toggler = document.querySelector(`#tabs a[href="${tabName}"]`);
-            toggler.classList.remove("bg-gray-200", "border-transparent", "hover:bg-gray-300");
-            toggler.classList.add("bg-white", "border-yellow-400");
+                // Add active styles to the clicked tab
+                if (tabName) {
+                    let toggler = document.querySelector(`#tabs a[href="${tabName}"]`);
+                    if (toggler) {
+                         toggler.classList.remove("bg-gray-200", "border-transparent", "hover:bg-gray-300");
+                         toggler.classList.add("bg-white", "border-yellow-400");
+                    }
+                }
+            }
+           
 
             // Remove active styles from all date links
             let dateLinks = document.querySelectorAll(".day");
@@ -422,7 +446,9 @@
             selectedDateElement.classList.add("bg-[#EEE8AA]");
             // Log selected tab and date
             logSelection(tabName, selectedDate);
-            changeTab(tabName, selectedDate);
+            if (tabName) {
+                changeTab(tabName, selectedDate);
+            }
             //getdate(selectedDate);
         }
 
@@ -438,8 +464,9 @@
 
             // Show the selected tab
             var tab = document.getElementById(tabName);
-            tab.removeAttribute("hidden");
-
+            if (tab) {
+                 tab.removeAttribute("hidden");
+            }
         }
 
 

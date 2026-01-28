@@ -171,36 +171,11 @@
 
                         <input type="hidden" id="warmup_id" name="warmup_id" value="">
                         <div class="flex items-center border-b mt-2">
-                            <label for="typew_1" class="w-60 block mb-1">Type <span class="text-red-500">*</span></label>
-                            <select id="typew_1" name="typew_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                <option value="" selected disabled>-- Select Type --</option>
-                                <option value="Warmup">Warmup</option>
-                                <option value="Strength">Strength</option>
-                                <option value="Conditioning">Conditioning</option>
-                                <option value="Weightlifting">Weightlifting</option>
-                                <option value="Accessory">Accessory</option>
-                                <option value="PR's">PR's</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center border-b mt-2">
                             <label for="namew_1" class="w-60 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                             <input type="text" id="namew_1" name="namew_1"
                                 class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                        </div>
-                        <div class="flex items-center border-b mt-2">
-                            <label for="formatw_1" class="w-60 block mb-1">Format <span class="text-red-500">*</span></label>
-                            <select id="formatw_1" name="formatw_1" class="w-1/3 px-3 py-3 border flex rounded mb-2" required>
-                                <option value="" selected disabled>-- Select Format --</option>
-                                <option value="Straight Sets">Straight Sets</option>
-                                <option value="Rounds">Rounds</option>
-                                <option value="AMRAP">AMRAP</option>
-                                <option value="EMOM">EMOM</option>
-                                <option value="For Time">For Time</option>
-                                <option value="Intervals">Intervals</option>
-                                <option value="Pyramid">Pyramid</option>
-                                <option value="Circuit">Circuit</option>
-                            </select>
-                        </div>
+
+                            </div>
                          <!-- Workout Entry Block -->
                         <div class="workout-entry border-b rounded mb-4" id="workout-entry-1">
                             <div class="flex items-center border-b">
