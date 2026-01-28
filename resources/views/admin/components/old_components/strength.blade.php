@@ -273,35 +273,9 @@
                         <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
                         <input type="hidden" id="strength_id" name="strength_id" value="">
                         <div class="flex items-center border-b mt-2">
-                            <label for="types_1" class="w-40 block mb-1">Type <span class="text-red-500">*</span></label>
-                            <select id="types_1" name="types_1" class="w-2/3 px-3 py-3 border flex rounded mb-2" required>
-                                <option value="" selected disabled>-- Select Type --</option>
-                                <option value="Warmup">Warmup</option>
-                                <option value="Strength">Strength</option>
-                                <option value="Conditioning">Conditioning</option>
-                                <option value="Weightlifting">Weightlifting</option>
-                                <option value="Accessory">Accessory</option>
-                                <option value="PR's">PR's</option>
-                            </select>
-                        </div>
-                        <div class="flex items-center border-b mt-2">
                             <label for="names_1" class="w-40 block mb-1">Workout Name <span class="text-red-500">*</span></label>
                             <input type="text" id="names_1" name="names_1"
                                 class="w-2/3 px-3 py-3 border flex rounded mb-2" required>
-                        </div>
-                        <div class="flex items-center border-b mt-2">
-                            <label for="formats_1" class="w-40 block mb-1">Format <span class="text-red-500">*</span></label>
-                            <select id="formats_1" name="formats_1" class="w-2/3 px-3 py-3 border flex rounded mb-2" required>
-                                <option value="" selected disabled>-- Select Format --</option>
-                                <option value="Straight Sets">Straight Sets</option>
-                                <option value="Rounds">Rounds</option>
-                                <option value="AMRAP">AMRAP</option>
-                                <option value="EMOM">EMOM</option>
-                                <option value="For Time">For Time</option>
-                                <option value="Intervals">Intervals</option>
-                                <option value="Pyramid">Pyramid</option>
-                                <option value="Circuit">Circuit</option>
-                            </select>
                         </div>
                         <div class="flex items-center border-b ">
                             <label for="categorys_1" class="w-40 block mb-1">Category <span
