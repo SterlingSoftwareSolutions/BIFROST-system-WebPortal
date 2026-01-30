@@ -875,51 +875,62 @@ class MobileController extends Controller
 
     public function getrainingdaysnclasses(Request $request)
     {
+        // default to 'current'
+        $mode = strtolower($request->query('mode', $request->query('week', 'current')));
+        if (!in_array($mode, ['current', 'previous'])) {
+            $mode = 'current';
+        }
+
         $userId = Auth::user()->id;
         $dates = [];
-        $today = Carbon::now()->startOfDay();
 
-        // Prepare next 7 days
+        if ($mode === 'previous') {
+            // previous 7 days (7 days before today, up to yesterday)
+            $startDate = Carbon::now()->subDays(7)->startOfDay();
+        } else {
+            // current -> next 7 days starting today
+            $startDate = Carbon::now()->startOfDay();
+        }
+
+        // Build 7-day list
         for ($i = 0; $i < 7; $i++) {
-            $dates[] = $today->copy()->addDays($i);
+            $dates[] = $startDate->copy()->addDays($i);
         }
 
         $classesByDate = [];
 
         foreach ($dates as $date) {
-            $dayName = $date->format('l');          // Monday, Tuesday, etc.
-            $formattedDate = $date->format('d/m/Y'); // For key
-            $dayWithDate = $date->format('d/m/y') . ' ' . $dayName; // Matches DB format
+            $dayName = $date->format('l');
+            $formattedDate = $date->format('d/m/Y');
+            $dayWithDate = $date->format('d/m/y') . ' ' . $dayName;
 
-            // Get 6AM class for that date
             $classes = Classes::where('date', $dayWithDate)
-                            ->orderBy('time', 'asc')
-                            ->get();
+                ->orderBy('time', 'asc')
+                ->get();
 
-            // Add class info or null
             $classesByDate[$formattedDate] = [
                 'dayName' => $dayName,
-                'classes' =>   $classes->isNotEmpty()
-                    ? $classes->map(function ($class) use ($date, $dayName, $userId) {
-                        $isReserved = ReservationSession::where('user_id', $userId)
+                'classes' => $classes->map(function ($class) use ($date, $dayName, $userId) {
+                    $isReserved = ReservationSession::where('user_id', $userId)
                         ->where('classes_id', $class->id)
                         ->where('is_reserved', 1)
                         ->exists();
-                        return [
-                            'id' => $class->id,
-                            'time' => \Carbon\Carbon::parse($class->time)->format('g:i A'),
-                            'date' => $date->format('d/m/Y'),
-                            'dayName' => $dayName,
-                            'availablespots' => $class->availablespots,
-                            'isReserved' => $isReserved,
-                        ];
-                    })
-                    : []
+
+                    return [
+                        'id' => $class->id,
+                        'time' => \Carbon\Carbon::parse($class->time)->format('g:i A'),
+                        'date' => $date->format('d/m/Y'),
+                        'dayName' => $dayName,
+                        'availablespots' => $class->availablespots,
+                        'isReserved' => $isReserved,
+                    ];
+                })->toArray()
             ];
         }
 
         return response()->json([
             'success' => true,
+            'weekMode' => $mode,
             'dates' => array_map(fn($d) => [
                 'date' => $d->format('d/m/Y'),
                 'dayName' => $d->format('l')
