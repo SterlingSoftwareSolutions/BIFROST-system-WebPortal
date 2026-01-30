@@ -8,6 +8,7 @@ use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinancialController;
 use App\Http\Controllers\MobileController;
+use App\Http\Controllers\WorkoutManagerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -143,7 +144,9 @@ Route::middleware(['admin'])->group(function () {
     // get data
     Route::post('/class-manager', [SessionController::class, 'getdata']);
     // // get workout
-    Route::post('/get-workout', [SessionController::class, 'getworkout']);
+    Route::post('/get-workout', [SessionController::class, 'getworkouts']);
+
+    Route::post('/workout/store', [WorkoutManagerController::class, 'store'])->name('workout.store');//new
 
     // store warmup
     Route::Post('/store-warmup', [SessionController::class, 'storewarmup']);

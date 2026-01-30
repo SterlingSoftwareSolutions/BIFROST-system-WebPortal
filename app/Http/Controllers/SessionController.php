@@ -181,6 +181,18 @@ class SessionController extends Controller
 
         return response()->json(['workouts' => $workouts]);
     }
+
+    public function getworkouts(Request $request)
+    {
+        $workouts = WorkoutLibrary::select('workout')
+            ->distinct()
+            ->get();
+
+        return response()->json(['workouts' => $workouts]);
+    }
+
+
+
     public function update(Request $request)
     {
         // Extracting data from the request
