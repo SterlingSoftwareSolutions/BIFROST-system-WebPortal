@@ -146,7 +146,7 @@
                             </div>
                             
                             {{-- Common Create Form --}}
-                            <div class="w-[40%]">
+                            <div class="w-[42%]">
                                 @include('admin.components.create_workout_form')
                             </div>
                         </div>
