@@ -145,8 +145,10 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/class-manager', [SessionController::class, 'getdata']);
     // // get workout
     Route::post('/get-workout', [SessionController::class, 'getworkouts']);
+    Route::post('/get-workout-filter', [SessionController::class, 'getworkout']);
 
     Route::post('/workout/store', [WorkoutManagerController::class, 'store'])->name('workout.store');//new
+    Route::get('/workout/get-manager-list', [WorkoutManagerController::class, 'getWorkouts']);
 
     // store warmup
     Route::Post('/store-warmup', [SessionController::class, 'storewarmup']);
