@@ -53,15 +53,13 @@ class SessionController extends Controller
         $tab = strtolower($request->input('tab'));
         Log::info('Tab value: ' . $tab);
         // Fetch workouts based on the type
-        if($tab == 'test'){
+        if($tab == 'test' || $tab == 'all'){
             $categoryOptions = CategoryOption::all();
         }
         else{
             $workouts = WorkoutLibrary::where('type', $tab)
             ->with('categoryOption') // Load the category options
             ->get();
-
-
 
         // Get unique category options based on the fetched workouts
         $categoryOptions = $workouts->pluck('categoryOption')->unique('id');
@@ -71,97 +69,9 @@ class SessionController extends Controller
         ]);
     }
 
-    public function store(Request $request)
-    {
-        // dd($request);
-        // Retrieve the date and tab from the request
-        $date = $request->selectdate;
-        $tab = strtolower($request->selecttab);
+    // ... (skipping store method)
 
-        // Initialize arrays to store the data
-        $arrays = [];
-
-        // Process primary data
-        foreach ($request->all() as $key => $value) {
-            if (preg_match('/^(category|workout|sets|reps|rest|intensity)$/', $key)) {
-                $arrays[1][$key] = $value;
-                $arrays[1]['type'] = 'primary';
-            } elseif (preg_match('/^(category|workout|sets|reps|rest|intensity)_(\d+)$/', $key, $matches)) {
-                $type = $matches[1];
-                $index = $matches[2];
-                if (!isset($arrays[$index])) {
-                    $arrays[$index] = [];
-                }
-                $arrays[$index][$type] = $value;
-                if (!isset($arrays[$index]['type'])) {
-                    $arrays[$index]['type'] = 'primary';
-                }
-            }
-            if (preg_match('/^(alt-category|alt-workout|alt-sets|alt-reps|alt-rest|alt-intensity)$/', $key)) {
-                $type = str_replace('alt-', '', $key);
-                $arrays['alt'][$type] = $value;
-                $arrays['alt']['type'] = 'alternate';
-            } elseif (preg_match('/^(alt-category|alt-workout|alt-sets|alt-reps|alt-rest|alt-intensity)_(\d+)$/', $key, $matches)) {
-                $type = str_replace('alt-', '', $matches[1]);
-                $index = $matches[2];
-                if (!isset($arrays['alt_' . $index])) {
-                    $arrays['alt_' . $index] = [];
-                }
-                $arrays['alt_' . $index][$type] = $value;
-                if (!isset($arrays['alt_' . $index]['type'])) {
-                    $arrays['alt_' . $index]['type'] = 'alternate';
-                }
-            }
-        }
-
-        // Save primary data to the database
-        foreach ($arrays as $index => $data) {
-            if (strpos($index, 'alt') === false) {
-                $clientManagement = new ClientManagement();
-                $clientManagement->category = $data['category'] ?? null;
-                $clientManagement->workout = $data['workout'] ?? null;
-                $clientManagement->sets = $data['sets'] ?? null;
-                $clientManagement->reps = $data['reps'] ?? null;
-                $clientManagement->rest = $data['rest'] ?? null;
-                $clientManagement->intensity = $data['intensity'] ?? null;
-                $clientManagement->date = $date;
-                $clientManagement->tab = $tab;
-                $clientManagement->type = $data['type'] ?? 'primary';
-                $clientManagement->save();
-            }
-        }
-
-        // Save alternate data to the database
-        foreach ($arrays as $index => $data) {
-            if (strpos($index, 'alt') !== false) {
-                $clientManagement = new ClientManagement();
-                $clientManagement->category = $data['category'] ?? null;
-                $clientManagement->workout = $data['workout'] ?? null;
-                $clientManagement->sets = $data['sets'] ?? null;
-                $clientManagement->reps = $data['reps'] ?? null;
-                $clientManagement->rest = $data['rest'] ?? null;
-                $clientManagement->intensity = $data['intensity'] ?? null;
-                $clientManagement->date = $date;
-                $clientManagement->tab = $tab;
-                $clientManagement->type = $data['type'] ?? 'alternate';
-                $clientManagement->save();
-            }
-        }
-
-        return redirect()->back();
-    }
-    public function getdata(Request $request)
-    {
-        $tab = strtolower($request->tab);
-        $date = $request->date;
-        $workouts = WorkoutLibrary::where('type', $tab)->with('categoryOption',)->get();
-        $details = ClientManagement::where('tab', $tab)
-            ->where('date', $date)
-            ->with('workouts.categoryOption')
-            ->get();
-
-        return response()->json(['workouts' => $workouts, 'details' => $details]);
-    }
+    // ... (skipping getdata method)
 
     public function getworkout(Request $request)
     {
@@ -169,14 +79,26 @@ class SessionController extends Controller
         $id = $request->id;
         // category option id andb type filter
         if($tab == 'test'){
-            $workouts = WorkoutLibrary::where([
-                ['category_options_id', $id],
-            ])->get();
-        }else{
-            $workouts = WorkoutLibrary::where([
-                ['type', $tab],
-                ['category_options_id', $id],
-            ])->get();
+            if($id){
+                $workouts = WorkoutLibrary::where([
+                    ['category_options_id', $id],
+                ])->get();
+            } else {
+                 $workouts = WorkoutLibrary::all();
+            }
+        } elseif ($tab == 'all') {
+            // New logic for 'all': No type filter
+            $query = WorkoutLibrary::query();
+            if($id){
+                $query->where('category_options_id', $id);
+            }
+             $workouts = $query->get();
+        } else{
+            $query = WorkoutLibrary::where('type', $tab);
+            if($id){
+                $query->where('category_options_id', $id);
+            }
+            $workouts = $query->get();
         }
 
         return response()->json(['workouts' => $workouts]);
@@ -523,7 +445,7 @@ class SessionController extends Controller
             $warmup = Warmup::findOrFail($request->id);
             $warmup->delete();
 
-            return response()->json(['status' => 'success', 'message' => 'Warmup record deleted.']);
+            return response()->json(['status' => 'success', 'message' => 'Warmup record deleted successfully.']);
         } catch (\Exception $e) {
             Log::error('Error in deletetwarmup: ' . $e->getMessage());
             return response()->json(['status' => 'error', 'message' => 'Failed to delete Warmup record.']);
@@ -1127,46 +1049,66 @@ class SessionController extends Controller
 
         $workoutId = $request->workout_id;
         $classId = $request->class_id;
-        $type = $request->type; // 'strength'
+        $type = $request->type; // incoming might be 'strength' or 'workout_manager'
         $action = $request->action;
         $date = $request->date;
 
+        // Resolve "Real" Type for storage
+        $storedType = $type;
+        if ($type === 'workout_manager') {
+            $wm = \App\Models\WorkoutManager::find($workoutId);
+            if ($wm && $wm->type) {
+                $storedType = strtolower($wm->type->name);
+            }
+        }
+
         if ($action === 'assign_all') {
             // Fetch all classes for this date
-            // Note: date format in classes table is "d/m/y l" (e.g., "20/01/26 Monday") based on ClassesController store method
-            // But here $date might be coming from frontend input (Y-m-d) ? 
-            // Let's check how getstrength sends date. It sends whatever is in the input.
-            // Assumption: The input 'selectdatestrenghtDelete' has the correct format matching DB which seems to be Y-m-d based on getstrength query.
-            // Wait, ClassesController::getByDay uses 'date' column directly.
-            
             $classes = Classes::where('date', $date)->get();
             
             foreach ($classes as $cls) {
                 WorkoutAssign::firstOrCreate([
                     'class_id' => $cls->id,
                     'workout_id' => $workoutId,
-                    'workout_type' => $type,
+                    'workout_type' => $storedType, // Use resolved type
                     'date' => $date,
                 ]);
                 
-                // Update Class Flag
+                // Update Class Flag based on type
                 switch ($type) {
                     case 'strength': $cls->is_strength = 1; break;
                     case 'weightlifting': $cls->is_weightlifting = 1; break;
                     case 'warmup': $cls->is_warmup = 1; break;
                     case 'conditioning': $cls->is_conditioning = 1; break;
                     case 'test': $cls->is_test = 1; break;
+                    case 'workout_manager':
+                         // Resolve the actual type from WorkoutManager
+                         $wm = \App\Models\WorkoutManager::find($workoutId);
+                         if ($wm && $wm->type) {
+                             $wmType = strtolower($wm->type->name); // e.g., 'strength', 'conditioning'
+                             if ($wmType == 'strength') $cls->is_strength = 1;
+                             elseif ($wmType == 'conditioning') $cls->is_conditioning = 1;
+                             elseif ($wmType == 'weightlifting') $cls->is_weightlifting = 1;
+                             elseif ($wmType == 'warmup') $cls->is_warmup = 1;
+                             elseif ($wmType == 'test') $cls->is_test = 1;
+                         }
+                         break;
                 }
                 $cls->save();
             }
             
-            // Update Workout Flag
-             switch ($type) {
-                case 'strength':
-                    Strength::where('id', $workoutId)->update(['is_assigned' => 1]);
-                    break;
-                 // Add others if needed
-            }
+            // Update Workout Flag (Legacy only)
+             if ($type !== 'workout_manager') {
+                 switch ($type) {
+                    case 'strength':
+                        Strength::where('id', $workoutId)->update(['is_assigned' => 1]);
+                        break;
+                    case 'warmup':
+                        Warmup::where('id', $workoutId)->update(['is_assigned' => 1]);
+                        break;
+                     // Add others if needed
+                }
+             }
 
             return response()->json(['message' => 'Assignments updated for all classes.', 'status' => 'success']);
         }
@@ -1175,7 +1117,7 @@ class SessionController extends Controller
             WorkoutAssign::firstOrCreate([
                 'class_id' => $classId,
                 'workout_id' => $workoutId,
-                'workout_type' => $type,
+                'workout_type' => $storedType, // Use resolved type
                 'date' => $date,
             ]);
             $message = 'Workout assigned successfully.';
@@ -1183,7 +1125,7 @@ class SessionController extends Controller
             if ($classId === 'all') {
                  WorkoutAssign::where([
                     'workout_id' => $workoutId,
-                    'workout_type' => $type,
+                    'workout_type' => $storedType, // Use resolved type
                     'date' => $date
                 ])->delete();
                 $message = 'Workout unassigned from all classes.';
@@ -1191,52 +1133,89 @@ class SessionController extends Controller
                 WorkoutAssign::where([
                     'class_id' => $classId,
                     'workout_id' => $workoutId,
-                    'workout_type' => $type,
+                    'workout_type' => $storedType, // Use resolved type
                 ])->delete();
                 $message = 'Workout unassigned successfully.';
             }
         }
 
-        // --- Post-Assignment Updates ---
 
-        // 1. Update Class 'is_TYPE' flag (e.g. is_strength)
-        // Check if ANY workout of this type is assigned to this class
-        $hasAnyType = WorkoutAssign::where([
-            'class_id' => $classId,
-            'workout_type' => $type
-        ])->exists();
 
-        $class = Classes::find($classId);
-        if ($class) {
-            switch ($type) {
-                case 'strength': $class->is_strength = $hasAnyType ? 1 : 0; break;
-                case 'weightlifting': $class->is_weightlifting = $hasAnyType ? 1 : 0; break;
-                case 'warmup': $class->is_warmup = $hasAnyType ? 1 : 0; break;
-                case 'conditioning': $class->is_conditioning = $hasAnyType ? 1 : 0; break;
-                case 'test': $class->is_test = $hasAnyType ? 1 : 0; break;
+        // B) WorkoutManager assignment where the manager item resolves to 'strength'
+        
+        $checkTypeExists = function($classId, $realType) {
+            if (WorkoutAssign::where('class_id', $classId)->where('workout_type', $realType)->exists()) {
+                return true;
             }
-            $class->save();
+            
+            // 2. Check WorkoutManager items
+            $wmAssignments = WorkoutAssign::where('class_id', $classId)
+                             ->where('workout_type', $realType)
+                             ->get();
+                             
+            foreach($wmAssignments as $assign) {
+                // If the ID exists in WorkoutManager, it's a match.
+                if (\App\Models\WorkoutManager::where('id', $assign->workout_id)->exists()) {
+                     return true;
+                }
+            }
+            
+            return false;
+        };
+
+        
+        $classesToUpdate = [];
+        if ($classId === 'all') {
+             $classesToUpdate = Classes::where('date', $date)->get();
+        } else {
+             $c = Classes::find($classId);
+             if ($c) $classesToUpdate[] = $c;
         }
 
-        // 2. Update Workout 'is_assigned' flag
-        // Check if THIS workout is assigned to ANY class
-        $isAssignedAny = WorkoutAssign::where([
-            'workout_id' => $workoutId,
-            'workout_type' => $type
-        ])->exists();
+        foreach ($classesToUpdate as $class) {
+             // We need to re-evaluate ALL flags for this class because we don't know exactly what was removed effectively 
+             
+             $typesToCheck = [];
+             $typesToCheck[] = $storedType; 
+             
+             foreach ($typesToCheck as $t) {
+                 $exists = $checkTypeExists($class->id, $t);
+                 switch ($t) {
+                     case 'strength': $class->is_strength = $exists ? 1 : 0; break;
+                     case 'weightlifting': $class->is_weightlifting = $exists ? 1 : 0; break;
+                     case 'warmup': $class->is_warmup = $exists ? 1 : 0; break;
+                     case 'conditioning': $class->is_conditioning = $exists ? 1 : 0; break;
+                     case 'test': $class->is_test = $exists ? 1 : 0; break;
+                 }
+             }
+             $class->save();
+        }
+        
+        // 2. Update Workout 'is_assigned' flag (Legacy ONLY)
+        // WorkoutManager items do not have an 'is_assigned' column.
+        if ($type !== 'workout_manager') {
+            $isAssignedAny = WorkoutAssign::where([
+                'workout_id' => $workoutId,
+                'workout_type' => $storedType
+            ])->exists();
 
-        switch ($type) {
-            case 'strength':
-                Strength::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
-                break;
-            case 'warmup':
-                Warmup::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
-                break;
-            case 'weightlifting':
-                 // If needed in future
-                 // Weightlifting::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
-                 break;
-             // Add others as needed
+            switch ($storedType) {
+                case 'strength':
+                    Strength::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                    break;
+                case 'warmup':
+                    Warmup::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                    break;
+                case 'weightlifting':
+                    Weightlifting::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                    break;
+                case 'conditioning':
+                    Conditioning::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                    break;
+                case 'test':
+                    Test::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
+                    break;
+            }
         }
 
         return response()->json(['message' => $message, 'status' => 'success']);

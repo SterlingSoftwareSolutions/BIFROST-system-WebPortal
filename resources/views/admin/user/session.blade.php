@@ -151,7 +151,7 @@
                             </div>
                         </div>
 
-                        {{-- Hidden Components for Create/Edit Modal Logic if needed or just kept for reference --}}
+                        {{-- Hidden Components for Create/Edit Modal Logic if needed or just kept for reference 
                         <div hidden>
                             @include('admin.components.warmup')
                             @include('admin.components.strength')
@@ -159,6 +159,7 @@
                             @include('admin.components.weightlifting')
                             @include('admin.components.test')
                         </div>
+                        --}}
                     </div>
 
                     <script>

@@ -344,8 +344,8 @@
                 
                 <div class="flex gap-3 mb-2 px-2">
                     <div class="w-6"></div> <!-- Number col -->
-                    <div class="flex-1 font-bold text-lg text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                    <div class="w-36 font-bold text-lg text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-gray-800">Exercise <span class="text-red-500">*</span></div>
+                    <div class="w-36 font-bold text-lg text-center text-gray-800">Training Load <span class="text-red-500">*</span></div>
                     <div class="w-28 font-bold text-lg text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     <div class="min-w-[80px]"></div> <!-- Action col -->
                 </div>
@@ -500,8 +500,8 @@
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                        &times;
+                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-11 text-sm min-w-[70px] flex items-center justify-center">
+                        Remove
                     </button>
                  `;
              }
@@ -564,8 +564,8 @@
                  const actionCol = lastRow.querySelector('.action-col');
                  if(actionCol) {
                      actionCol.innerHTML = `
-                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                            &times;
+                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-11 text-sm min-w-[70px] flex items-center justify-center">
+                            Remove
                         </button>
                      `;
                  }
@@ -575,7 +575,6 @@
                  const html = getUniversalRowHtml(newIdx, true, prefix);
                  container.insertAdjacentHTML('beforeend', html);
                  
-                 // Re-init generic dropdowns if needed (not needed if generic html function is used)
              } else {
                  container.insertAdjacentHTML('beforeend', getUniversalRowHtml(1, true, prefix));
              }
@@ -823,9 +822,7 @@
                 const rowId = row.id;
                 const setIndex = rowId.replace('ss_row_', ''); // e.g. "1", "2"
                 data[setIndex] = {};
-
-                // Determine how many exercises we expect based on current state (before update)
-                // We check for both single-view and super-set-view inputs
+ts
                 
                 // Check for single view inputs (legacy names)
                 const singleReps = document.getElementById(`ss_reps_${setIndex}`);
@@ -835,8 +832,8 @@
                 if (singleReps && singleLoad) {
                     // Start at index 1 for the first exercise
                     data[setIndex][1] = {
-                        reps: singleReps.value,
-                        load: singleLoad.value,
+                        reps: singleReps.value || singleReps.getAttribute('placeholder'),
+                        load: singleLoad.value || singleLoad.getAttribute('placeholder'),
                         unit: singleUnit ? singleUnit.value : '%'
                     };
                 }
@@ -851,17 +848,15 @@
 
                     if (reps && load) {
                         data[setIndex][exIndex] = {
-                            reps: reps.value,
-                            load: load.value,
+                            reps: reps.value || reps.getAttribute('placeholder'),
+                            load: load.value || load.getAttribute('placeholder'),
                             unit: unit ? unit.value : '%'
                         };
                         exIndex++;
                     } else {
-                        // If we didn't find _1 but found single view above, we already handled it.
-                        // If we found _1, keep going.
+                        
                         if (exIndex === 1 && data[setIndex][1]) {
-                             // Already got data from single view check, try expecting _2 next?
-                             // No, single view means ONLY 1 exercise.
+                             
                              break;
                         }
                         break;
@@ -929,10 +924,7 @@
                  }
              }
 
-             // 2. Try looking for a visible container that might hold the text (Select2/Custom)
-             // Assumption: The helper creates a structure where the visible text is near the input
-             // Common pattern: span.select2-selection__rendered
-             // Or we just fallback to generic
+             
              
              return `Exercise ${index}`;
         };
@@ -941,17 +933,12 @@
             const container = document.getElementById('straight_set_rows_container');
             if (!container) return;
 
-            // 1. Collect Data (or use override)
+            // 1. Collect Current Data
             let currentData = dataOverride || window.collectStraightSetData();
 
             // 2. Clear Container
             container.innerHTML = '';
 
-            // 3. Re-render based on Keys
-            // We assume keys are sequential 1..N if we just re-indexed.
-            // If they are gap-py (1, 3), we render them as is? 
-            // Better: We force normalize here? No, let separate function do normalization if needed.
-            // But if we just want to refresh view (e.g. after super set add), we keep IDs.
             
             const existingIds = Object.keys(currentData).sort((a,b) => a-b);
             
@@ -973,11 +960,9 @@
             // 2. Identify Index to Remove
             const indexToRemove = id.replace('ss_row_', '');
             
-            // 3. Create New Normalized Data Object
             const newData = {};
             let newIndex = 1;
             
-            // Sort existing keys (1, 2, 3)
             const keys = Object.keys(currentData).sort((a,b) => a-b);
             
             keys.forEach(key => {
@@ -992,7 +977,7 @@
             window.refreshStraightSetRows(newData);
         }
 
-        // NEW FUNCTION: Remove only specific exercise data from a SET row
+        // Remove only specific exercise data from a SET row
         window.removeExerciseFromSet = function(setIndex, exerciseId) {
             // Get the SET row
             const row = document.getElementById(`ss_row_${setIndex}`);
@@ -1015,13 +1000,11 @@
             const repsInput = document.getElementById(`ss_reps_${setIndex}${suffix}`);
             if (!repsInput) return;
             
-            // Find the parent container that holds this exercise's row
+            // Find the main container that holds this exercise's row
             // It should be the div with class containing "flex items-center gap-2 py-2 px-3"
             let exerciseContainer = repsInput.closest('.flex.items-center.gap-2');
             
-            // Find the corresponding Remove button in the action column
-            // The action buttons are in a separate container, we need to find the matching one
-            // They are generated in the same order as exercises, so we can use the array index
+            
             const actionColumn = row.querySelector('.w-\\[140px\\].flex.flex-col');
             if (actionColumn && exerciseContainer) {
                 // Get all exercise containers and all remove buttons
@@ -1039,6 +1022,12 @@
                         // Remove both the exercise row and its Remove button
                         exerciseContainer.remove();
                         removeButtonContainer.remove();
+
+                        const remainingExercises = contentColumn.querySelectorAll('.flex.items-center.gap-2');
+                        if (remainingExercises.length === 0) {
+                           
+                             window.removeStraightSetRow(`ss_row_${setIndex}`);
+                        }
                     }
                 }
             }
@@ -1047,14 +1036,24 @@
         // --- Main Logic ---
 
         window.renderStraightSetUI = function() {
-            // Header HTML
+            const setsCounterHtml = `
+                <div class="flex items-center mb-4 border-b pb-2 mt-2">
+                    <label class="w-60 block text-base font-semibold text-black">Number of Sets</label>
+                    <div class="flex items-center">
+                        <button type="button" onclick="updateStraightSetCount(-1)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
+                        <input type="text" id="num_sets" name="num_sets" value="1" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-base font-medium">
+                        <button type="button" onclick="updateStraightSetCount(1)" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
+                    </div>
+                </div>
+            `;
+
             // Header HTML
             const headersHtml = `
                 <div class="flex gap-2 mb-1 pl-2 pr-6 items-end">
                     <div class="w-[14rem] lg:w-[13rem] font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
                     <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
                     <div class="w-32 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
-                    <div class="w-[140px]"></div>
+                    <div class="w-[140px] pr-0 ml-auto"></div>
                 </div>
             `;
 
@@ -1079,7 +1078,7 @@
                             <button type="button" onclick="incrementValue('ss_reps_main')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
-                    <div class="w-[140px] flex justify-end pb-0 pr-6">
+                    <div class="w-[140px] flex justify-end pb-0 pr-0 ml-auto">
                           <button type="button" onclick="addSuperSet()" class="border border-black bg-white hover:bg-gray-50 text-black rounded px-2 flex items-center justify-center h-11 text-sm shadow-sm transition-all whitespace-nowrap w-[100px]">
                                <span class="font-bold">+ Add</span>&nbsp;Super Set
                           </button>
@@ -1089,6 +1088,7 @@
 
             const html = `
                 <div id="straight_set_container">
+                    ${setsCounterHtml}
                     <div class="mb-3 border-b pb-4">
                         ${headersHtml}
                         ${mainRowHtml}
@@ -1101,16 +1101,8 @@
                           
                           <!-- Right List -->
                           <div class="flex-1">
-                              <div id="straight_set_rows_container" class="overflow-y-auto max-h-96 pl-1 pt-1 custom-scroll pb-1">
-                                 <!-- Initial Sets -->
-                                 ${getStraightSetRowHtml(1, true)} 
-                              </div>
-                              
-                              <!-- Footer Add Button (Always Visible) -->
-                              <div class="flex justify-end mt-4 pr-10">
-                                   <button type="button" onclick="addStraightSetRow()" class="bg-black hover:bg-gray-800 text-white font-bold rounded px-4 h-10 text-sm w-[100px]">
-                                       + Add set
-                                   </button>
+                              <div id="straight_set_rows_container" class="overflow-y-auto max-h-96 pt-1 custom-scroll pb-1">
+                                 <!-- Rows generated by refreshStraightSetRows -->
                               </div>
                           </div>
                      </div>
@@ -1118,6 +1110,9 @@
             `;
             container.innerHTML = html;
             window.superSetCount = 0; // Reset count
+            
+            // Generate Initial Rows based on Counter (4)
+            window.refreshStraightSetRows();
 
             // ADDED: Live Sync Listeners for Top Inputs
             const topContainer = document.getElementById('straight_set_container');
@@ -1131,23 +1126,9 @@
             const target = e.target;
             let name = target.getAttribute('name') || target.id;
             
-            // Map +/- buttons to their inputs if they don't have name/id directly relevant
-            // Actually our incrementValue/decrementValue function updates the INPUT, which triggers nothing?
-            // Wait, incrementValue updates 'value' property. It does NOT trigger 'input' event automatically.
-            // We need to modify incrementValue/decrementValue to dispatch event OR handle click on button.
-            // The buttons call onclick="incrementValue(...)".
-            // Let's rely on the fact that we can wrap incrementValue to trigger logic, OR we just check if clicked button is part of top.
             
-            // If click was on a button, we might need to know which input changed.
-            // But simplifying: let's assume `incrementValue` triggers `change` or we add a hook there too.
-            // Actually, `wrapper` approach for incrementValue is better.
-            
-            // Allow checking generic inputs (Load/Unit)
             if (!name) return;
 
-            // Check if it is a Top Input
-            // Format: ss_load_1, ss_unit_1, ss_reps_main (for index 1)
-            // ss_load_{k}, ss_unit_{k}, ss_reps_{k} (for index > 1)
             
             let exIndex = null;
             let type = null; // 'load', 'unit', 'reps'
@@ -1155,49 +1136,12 @@
             if (name === 'ss_reps_main') {
                 exIndex = 1; type = 'reps';
             } else if (name.startsWith('ss_load_')) {
-                // Check if it's top or bottom.
-                // Top: ss_load_1, ss_load_2.
-                // Bottom: ss_load_1_1, ss_load_1_2 OR ss_load_1 (for single)
-                // Collision: ss_load_1 is top. ss_load_1 is ALSO bottom single view set 1?
-                // Wait.
-                // Single View Bottom Row 1: input name="ss_load_1".
-                // Top Row 1: input name="ss_load_1".
-                // NAME COLLISION!
-                // This is bad. `collectStraightSetData` relies on names.
-                // If names are duplicate, `document.querySelector('[name="ss_load_1"]')` returns the first one (Top).
-                // `collectStraightSetData` loop uses `document.querySelector('[name="ss_load_${setIndex}"]')`.
-                // If setIndex is 1, it matches Top.
-                // Correct logic: `collectStraightSetData` should look inside the row element to be safe, BUT `querySelector` is global.
-                // We need to fix the Naming strategy for Bottom Rows to avoid collision with Top Rows.
-                // Strategy: Top rows use `ss_top_load_...` or similar? 
-                // Too invasive to change Top names now? 
-                // Actually, `getStraightSetRowHtml` generates bottom rows.
-                // Code at 1179: `name="ss_load_${index}"`.
-                // Code at 1216: `name="ss_load_${index}${suffix}"`. Suffix is `_${exId}`.
-                // If index=1, exId=1: `ss_load_1_1`. No collision with `ss_load_1`.
-                // If Single View (index=1): `ss_load_1`. Collision with Top `ss_load_1`!
-                
-                // FIX: Rename Top Inputs or Bottom Inputs?
-                // Renaming Bottom inputs is safer for `collectStraightSetData` scope if we update `collect` function.
-                // Renaming Top inputs requires updating `addSuperSet` and `renderStraightSetUI`.
-                
-                // Let's check regex for Top input
-                // Top: has class `border-gray-300` etc? 
-                // Better: Check if `e.target` is inside `ss_supersets_container` or is the main row.
+               
             }
             
-            // Sync implementation is tricky with name collision.
-            // Let's assume unique IDs or handled context.
-            // But for SYNC:
             
             // Helper to update all bottom
             const updateBottom = (idx, field, value) => {
-                 // idx = exercise index (1-based)
-                 // field = 'load', 'reps', 'unit', 'exercise'
-                 
-                 // If field is exercise (name), we overwrite display.
-                 // If field is load/reps, we overwrite inputs.
-                 
                  const container = document.getElementById('straight_set_rows_container');
                  if(!container) return;
                  const rows = container.querySelectorAll('[id^="ss_row_"]');
@@ -1236,13 +1180,11 @@
                  });
             };
             
-            // Detect if source is Top
+           
             // Top elements are NOT inside `straight_set_rows_container`.
             if (target.closest('#straight_set_rows_container')) return; // Ignore bottom changes
             
-            // Identify field
-            // 1. Reps
-            // Main: ss_reps_main -> idx 1
+          
             if (target.id === 'ss_reps_main' || target.name === 'ss_reps_main') {
                  updateBottom(1, 'reps', target.value);
                  return;
@@ -1257,9 +1199,7 @@
                  }
             }
 
-            // 2. Load
-            // Main: ss_load_1
-            // Super: ss_load_{k}
+           
             if (target.name && target.name.startsWith('ss_load_')) {
                  const part = target.name.replace('ss_load_', '');
                  if (!part.includes('_')) { // Ensure it's not some other combo
@@ -1280,41 +1220,26 @@
 
         // Global Option Select Handler (called by modified selectOption)
         window.onGlobalSelectOption = function(id, value) {
-             // Check if it is a Straight Set Top Exercise
-             // ID format: input_ss_exercise_{k} usually (selectOption receives base ID?)
-             // No, selectOption receives `ss_exercise_1`.
              
              if (id.startsWith('ss_exercise_')) {
-                 // It could be top or bottom.
-                 // Top: ss_exercise_1, ss_exercise_2...
-                 // Bottom: ss_exercise_1_1 ? No, bottom uses `ss_exercise_{set}_{ex}`? 
-                 // Wait, bottom searchable dropdowns:
-                 // `getStraightSetRowHtml` calls `getSearchableDropdownHtml`?
-                 // No, in Super Set View, it behaves differently. 
-                 // It renders TEXT: `div title={exName}>{exName}</div>`.
-                 // So bottom rows DO NOT have dropdowns in Super Set view.
-                 // They DO have dropdowns in Single View (index 1 only).
-                 
-                 // If Single View: name `ss_exercise_{index}`. e.g. `ss_exercise_1`.
-                 // Top view: `ss_exercise_1`.
-                 // COLLISION AGAIN for Set 1.
-                 
-                 // However, we want to REFRESH rows if Top changes.
-                 // If I change Top `ss_exercise_1`, I want everything to update.
-                 // If I change Set 1 `ss_exercise_1` (in single view), I don't want to refresh whole table necessarily, but sync logic isn't bidirectional.
-                 
-                 // Distinction: Top `ss_exercise_1` is in `straight_set_container` (direct child roughly), 
-                 // Bottom `ss_exercise_1` is in `straight_set_rows_container`.
-                 // `selectOption` doesn't give us the element easily, just ID.
-                 // DOM check:
                  const el = document.getElementById(`input_${id}`);
                  if (el && !el.closest('#straight_set_rows_container')) {
-                      // It is Top.
+                      
                       window.refreshStraightSetRows();
                  }
              }
         }
 
+
+        window.updateStraightSetCount = function(delta) {
+            const input = document.getElementById('num_sets');
+            if(!input) return;
+            let val = parseInt(input.value) || 0;
+            val += delta;
+            if(val < 1) val = 1; // Minimum 1 set
+            input.value = val;
+            window.refreshStraightSetRows();
+        }
 
         window.addSuperSet = function() {
             // 1. Add Super Set Row (Top)
@@ -1342,7 +1267,7 @@
                             <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
-                    <div class="w-[140px] flex justify-end pb-0">
+                    <div class="w-[140px] flex justify-end pb-0 pr-0 ml-auto">
                          <button type="button" onclick="removeSuperSet(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm px-2 h-11 flex items-center justify-center w-[100px]">Remove</button>
                     </div>
                 </div>
@@ -1358,83 +1283,71 @@
              const row = document.getElementById(`ss_superset_row_${index}`);
              if(row) {
                  row.remove();
-                 // Decrement superSetCount? 
-                 // If we strictly rely on count for "how many exercises", removing one in the middle breaks sequential indexing.
-                 // Ideally, we should recalculate layout.
-                 // For now, assume remove works. But we need to handle the fact that we might have skipped IDs.
-                 // Logic Update: superSetCount should ideally track *active* count or we use loop.
-                 // Simplification: Just refresh. But `getStraightSetRowHtml` depends on `window.superSetCount`. 
-                 // If we remove one, count decreases.
-                 window.superSetCount--;
-                 
-                 // Renaming IDs isn't feasible easily. 
-                 // If the user removes the *middle* one, we have a gap.
-                 // BUT `getStraightSetRowHtml` generates lines derived from 1..superSetCount.
-                 // This implies we assume sequentiality.
-                 // If we allow removal of middle items, we should ideally re-index the top rows.
-                 // Re-indexing DOM is heavy. 
-                 // Let's assume for this task that the user removes only last or we don't handle gap filling extensively.
-                 // OR, we just refresh.
-                 
+                 window.superSetCount--; 
                  window.refreshStraightSetRows();
              }
         }
 
-        window.addStraightSetRow = function() {
+        window.refreshStraightSetRows = function(dataOverride = null) {
             const container = document.getElementById('straight_set_rows_container');
-            if(container) {
-                // Calculate new index
-                let newIndex = 1;
-                const allRows = container.querySelectorAll('[id^="ss_row_"]');
-                if(allRows.length > 0) {
-                     const lastId = allRows[allRows.length - 1].id;
-                     const parts = lastId.split('_');
-                     newIndex = parseInt(parts[parts.length - 1]) + 1;
-                }
-                container.insertAdjacentHTML('beforeend', getStraightSetRowHtml(newIndex, false));
+            if(!container) return;
+            
+            let countInput = document.getElementById('num_sets');
+            let targetCount = 1;
+            
+            // 1. Determine Data and Count
+            let currentData = null;
+            
+            if (dataOverride) {
+                currentData = dataOverride;
+                targetCount = Object.keys(currentData).length;
+                // Update Input to match new data count
+                if (countInput) countInput.value = targetCount;
+            } else {
+                currentData = window.collectStraightSetData();
+                targetCount = countInput ? (parseInt(countInput.value) || 1) : 1;
             }
+            
+            // 2. Clear Container (Force Re-render)
+            container.innerHTML = '';
+            
+            // 3. Re-render Layout
+            for(let i = 1; i <= targetCount; i++) {
+                container.insertAdjacentHTML('beforeend', getStraightSetRowHtml(i));
+            }
+            
+            // 4. Restore Data
+            window.restoreStraightSetData(currentData);
         }
 
         window.getStraightSetRowHtml = function(index, isLast) {
             const exerciseIds = window.getStraightSetExerciseIds();
             const hasSuperSets = exerciseIds.length > 1;
             
-            const repsControl = (idx, suffix) => `
-                <div class="flex items-center">
-                    <button type="button" onclick="decrementValue('ss_reps_${idx}${suffix}')" class="bg-gray-100 border border-gray-300 rounded-s p-1 h-8 w-7 flex justify-center items-center">-</button>
-                    <input type="text" id="ss_reps_${idx}${suffix}" name="ss_reps_${idx}${suffix}" placeholder="6" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold">
-                    <button type="button" onclick="incrementValue('ss_reps_${idx}${suffix}')" class="bg-gray-100 border border-gray-300 rounded-e p-1 h-8 w-7 flex justify-center items-center">+</button>
-                </div>
-            `;
-            
             if (!hasSuperSets) {
                  // Standard View (Single Line)
                  return `
-                    <div class="flex items-center gap-4 py-1" id="ss_row_${index}">
-                         <div class="w-8 text-center font-bold text-gray-600 text-sm">${index}</div>
-                         
-                         <!-- Reps Control -->
-                         <div class="flex items-center">
-                              <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">-</button>
-                              <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" value="6" class="border-y border-gray-300 h-10 w-12 text-center text-sm font-bold text-gray-400">
-                              <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">+</button>
-                         </div>
-                         
-                         <div class="font-bold text-sm text-gray-700">REPS</div>
-                         
-                         <!-- Load Display -->
-                         <div class="flex items-center">
-                             <input type="text" name="ss_load_${index}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
-                             <select name="ss_unit_${index}" class="ml-1 border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
-                                 ${getUnitSelectOptionsHtml('%')}
-                             </select>
-                         </div>
-                         
-                         <!-- Action Button -->
-                         <div class="ml-4 min-w-[90px] flex ">
-                              <button type="button" onclick="removeStraightSetRow('ss_row_${index}')" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-10 text-sm w-[100px]">
-                                  Remove
-                              </button>
+                    <div class="flex items-center gap-0 py-1" id="ss_row_${index}">
+                         <!-- Content Part -->
+                         <div class="flex-1 flex items-center gap-4">
+                             <div class="w-8 text-center font-bold text-gray-600 text-sm">${index}</div>
+                             
+                             <!-- Reps Control -->
+                             <div class="flex items-center">
+                                  <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">-</button>
+                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 6}" class="border-y border-gray-300 h-10 w-12 text-center text-sm font-bold ">
+                                  <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">+</button>
+                             </div>
+                             
+                             <div class="font-bold text-sm text-gray-700">REPS</div>
+                             
+                             <!-- Load Display -->
+                             <div class="flex items-center">
+                                 <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || 80}" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
+                                 <select name="ss_unit_${index}" class="ml-1 border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
+                                     ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
+                                 </select>
+                             </div>
                          </div>
                     </div>
                  `;
@@ -1473,27 +1386,27 @@
 
                      contentHtml += `
                          <div class="flex items-center gap-2 py-2 px-3 ${!isLastLine ? 'border-b border-gray-200' : ''}">
-                             <!-- Exercise Name: Flex-1 to fill space, consistent with Image 2 -->
+                             <!-- Exercise Name -->
                              <div class="flex-1 min-w-0 font-bold text-sm text-gray-800 truncate" title="${exName}">${exName}</div>
                              
-                             <!-- Controls Container: Fixed width alignment -->
+                             <!-- Controls Container -->
                              <div class="flex items-center ml-auto gap-3">
                                   <!-- Reps -->
                                   <div class="flex items-center">
                                       <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
-                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="6" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold placeholder-gray-400">
+                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="6" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
                                       <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
                                   </div>
                                   
                                   <div class="text-[10px] font-bold text-gray-500 uppercase">REPS</div>
                                   
-                                  <!-- Load: Separated Style -->
+                                  <!-- Load -->
                                   <div class="flex items-center gap-1">
                                       <div class="relative">
-                                          <input type="text" name="ss_load_${index}${suffix}" value="${defaultLoad}" placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold placeholder-gray-400">
+                                          <input type="text" name="ss_load_${index}${suffix}" value="${defaultLoad}" placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400">
                                       </div>
                                       <div class="relative">
-                                          <select name="ss_unit_${index}${suffix}" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0">
+                                          <select name="ss_unit_${index}${suffix}" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
                                               ${getUnitSelectOptionsHtml(defaultUnit)}
                                           </select>
                                       </div>
@@ -1501,18 +1414,14 @@
                              </div>
                          </div>
                      `;
-                     
-                     // Create separate button for this row
-                     // Only the first exercise in SET 1 has no Remove button
-                     if (index === 1 && arrayIndex === 0) {
-                         // First exercise in SET 1 only - no Remove button
+
+                     // Button Logic
+                     if (index == 1 && arrayIndex === 0) {
                          actionButtonsHtml += `
                              <div class="flex items-center h-[50px]"> 
-                                 <!-- No button for first exercise in SET 1 -->
                              </div>
                          `;
                      } else {
-                         // All other exercises (including first exercise in SET 2+) - show Remove button
                          actionButtonsHtml += `
                              <div class="flex items-center h-[50px]"> 
                                  <button type="button" onclick="removeExerciseFromSet(${index}, ${exId})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-10 text-sm w-[100px]">
@@ -1523,52 +1432,34 @@
                      }
                  });
                  
-                 // Table Logic:
-                 // Index 1: Full Border, Rounded Top
-                 // Index > 1: Border Left/Right/Bottom (Top overlapped or missing to collapse), Regular Bottom
-                 // Actually, to simulate table:
-                 // All: border-x border-b.
-                 // First: border-t also.
-                 // "not curve edges": Remove rounding internally. Keep outer rounding? User said "make these borders not curve edges" pointing to internal? 
-                 // Let's assume square table.
-                 // Table Logic:
-                 // Index 1: Full Border
-                 // Index > 1: Border Left/Bottom. Right depends on Odd/Even.
-                 // User request: "even rows in tabls should not have right side border"
-                 let borderClass = '';
-                 if (index == 1) {
-                     borderClass = 'border border-gray-400';
-                 } else {
-                     if (index % 2 == 0) {
-                         borderClass = 'border-l border-b border-gray-400'; // No Right
-                     } else {
-                         borderClass = 'border-x border-b border-gray-400'; // Has Right
-                     }
+                 let borderClass = 'border border-gray-400';
+                 if (index > 1) {
+                      if (index % 2 == 0) {
+                          borderClass = 'border-l border-b border-gray-400'; // No Right
+                      } else {
+                          borderClass = 'border-x border-b border-gray-400'; // Has Right
+                      }
                  }
-                 // Wait, if I use border-b on all, and border-t on first, do I get double borders? No.
-                 // Set 1: Top, Right, Bottom, Left.
-                 // Set 2: Right, Bottom, Left. (Top is Set 1's Bottom).
-                 // Perfect collapse.
-                 
+
                  return `
-                     <div class="flex items-start" id="ss_row_${index}">
-                         <!-- Table Part (Index + Content) -->
-                         <div class="ss-table-part flex-1 flex ${borderClass} bg-white mr-2">
-                             <!-- Index Column -->
-                             <div class="w-8 flex items-center justify-center border-r border-gray-400 font-bold text-gray-700 bg-gray-50 text-base">
-                                 ${index}
-                             </div>
+                    <div class="flex items-start" id="ss_row_${index}">
+                        <!-- Table Part (Index + Content) -->
+                        <div class="ss-table-part flex-1 flex ${borderClass} bg-white mr-2">
+                            <!-- Index Column -->
+                            <div class="w-8 flex items-center justify-center border-r border-gray-400 font-bold text-gray-700 bg-gray-50 text-base">
+                                ${index}
+                            </div>
 
-                             <!-- Content Column -->
-                             <div class="flex-1 flex flex-col justify-center">
-                                 ${contentHtml}
-                             </div>
-                         </div>
+                            <!-- Content Column -->
+                            <div class="flex-1 flex flex-col justify-center">
+                                ${contentHtml}
+                            </div>
+                        </div>
 
-                         <!-- Action Column (Outside Table) -->
-                         <div class="w-[140px] flex flex-col">
-                              ${actionButtonsHtml}
-                         </div>
+                        <!-- Action Column (Outside Table) -->
+                        <div class="w-[140px] flex flex-col">
+                             ${actionButtonsHtml}
+                        </div>
                     </div>
                  `;
             }
@@ -1900,13 +1791,11 @@
                     <div class="font-bold text-sm mb-2 text-gray-800">Interval ${index}</div>
                     
                     <!-- Headers -->
-                    <div class="flex gap-3 mb-2 px-2">
+                    <div class="flex gap-3 mb-2 px-2 items-center">
                          <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                         <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
-                         <div class="flex-1 flex gap-2">
-                             <div class="w-1/2 font-bold text-sm text-center text-gray-700">Work</div>
-                             <div class="w-1/2 font-bold text-sm text-center text-gray-700">Rest</div>
-                         </div>
+                         <div class="w-24 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
+                         <div class="w-28 font-bold text-sm text-center text-gray-700">Work</div>
+                         <div class="w-28 font-bold text-sm text-center text-gray-700">Rest</div>
                          <div class="min-w-[80px]"></div>
                     </div>
                     
@@ -1941,7 +1830,7 @@
                     </div>
                     
                     <!-- Training Load -->
-                    <div class="w-32">
+                    <div class="w-24">
                         <div class="flex gap-1">
                             <input type="text" name="interval_${intervalIndex}_load_${rowIndex}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
                             <select name="interval_${intervalIndex}_unit_${rowIndex}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
@@ -1951,18 +1840,18 @@
                     </div>
                     
                     <!-- Work/Rest -->
-                    <div class="flex-1 flex gap-2">
+                    <div class="flex gap-2">
                          <!-- Work -->
-                         <div class="flex items-center justify-center w-1/2">
-                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:04:00" class="w-full border-y border-gray-300 bg-white h-11 text-center text-sm font-medium text-gray-900 px-0">
-                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex items-center justify-center">+</button>
+                         <div class="flex items-center justify-center w-28">
+                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
-                         <div class="flex items-center justify-center w-1/2">
-                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:04:00" class="w-full border-y border-gray-300 bg-white h-11 text-center text-sm font-medium text-gray-900 px-0">
-                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex items-center justify-center">+</button>
+                         <div class="flex items-center justify-center w-28">
+                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
                     
@@ -2019,14 +1908,14 @@
              let btnHtml = '';
              if (isLast) {
                  btnHtml = `
-                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[70px] text-sm">
+                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[50px] text-xs">
                         + Add
                     </button>
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeRoundRow(${index})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                        &times;
+                    <button type="button" onclick="removeRoundRow(${index})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 h-11 text-xs w-[50px] flex items-center justify-center">
+                        Remove
                     </button>
                  `;
              }
@@ -2086,8 +1975,8 @@
             const lastIdx = lastRow.id.replace('round_row_', '');
             const actionCol = lastRow.querySelector('.action-col');
             actionCol.innerHTML = `
-                <button type="button" onclick="removeRoundRow(${lastIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                    &times;
+                <button type="button" onclick="removeRoundRow(${lastIdx})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 h-11 text-xs w-[50px] flex items-center justify-center">
+                    Remove
                 </button>
             `;
         }

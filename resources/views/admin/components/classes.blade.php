@@ -6,7 +6,6 @@
 <div class="max-w-4xl mx-auto bg-white rounded-2xl pr-5">
   <h1 class="text-2xl font-bold mb-4 text-center">Classes</h1>
 
-  <!-- NOTE: removed overflow-hidden here so icon rings/outlines won't get clipped -->
   <div class="border rounded-2xl">
     <div class="overflow-x-auto rounded-2xl">
       <table class="min-w-full table-fixed text-left border-collapse">
@@ -172,7 +171,6 @@
       .then(classes => {
         const tbody = document.getElementById('classesTableBody');
 
-        // rebuild hidden inputs (so tbody clearing doesn't remove them permanently)
         tbody.innerHTML = `
           <input type="text" name="selectdatecla" id="selectdatecla" hidden value="${dayName}">
           <input type="text" id="selected_class_id" hidden value="${selectedStoredClassId || ''}">
@@ -192,7 +190,6 @@
             .replace(' ', '&nbsp;');
 
           const isSelected = selectedStoredClassId && selectedStoredClassId == cls.id;
-          // const outlineStyle = isSelected ? 'outline:2px solid #22c55e; outline-offset:-2px;' : '';
 
           const row = `
             <tr class="border-t class-row cursor-pointer"
@@ -264,7 +261,6 @@
           tbody.insertAdjacentHTML('beforeend', row);
         });
 
-        // Restore selection references
         const selectedRow = document.querySelector(`tr[data-id="${selectedStoredClassId}"]`);
         if (selectedRow) {
           selectedClassRow = selectedRow;
@@ -288,13 +284,6 @@
       selectedClassId = null;
       return;
     }
-
-    // clear old
-    // if (selectedClassRow) selectedClassRow.style.outline = 'none';
-
-    // set new
-    // rowElement.style.outline = '2px solid #22c55e';
-    // rowElement.style.outlineOffset = '-2px';
 
     selectedClassRow = rowElement;
     selectedClassId = clickedClassId;
@@ -374,12 +363,37 @@
             const submitBtn = document.querySelector('#addModal button[type="submit"]');
             submitBtn.innerText = "Update";
 
-            // Disable Repeat Section
-            const repeatSection = document.querySelector('.mt-4.repeat-section'); // Will add this class to div
+            // Enable Repeat Section & Pre-select Current Day
+            const repeatSection = document.querySelector('.mt-4.repeat-section');
             if(repeatSection) {
-                repeatSection.style.pointerEvents = 'none';
-                repeatSection.style.opacity = '0.5';
+                repeatSection.style.pointerEvents = 'auto';
+                repeatSection.style.opacity = '1';
+                
+                // Reset checks first
                 repeatSection.querySelectorAll('input').forEach(el => el.checked = false);
+
+                // Parse Date to get Day (e.g. "20/05/26 Monday")
+                if (data.date) {
+                    const parts = data.date.split(' ');
+                    if (parts.length >= 2) {
+                        const dayFull = parts[1]; // "Monday"
+                        // Map to Short (Mon, Tue...) matches value="{{ $day }}"
+                        const dayMap = {
+                            'Monday': 'Mon',
+                            'Tuesday': 'Tue',
+                            'Wednesday': 'Wed',
+                            'Thursday': 'Thu',
+                            'Friday': 'Fri',
+                            'Saturday': 'Sat',
+                            'Sunday': 'Sun'
+                        };
+                        const shortDay = dayMap[dayFull];
+                        if (shortDay) {
+                            const checkbox = repeatSection.querySelector(`input[value="${shortDay}"]`);
+                            if (checkbox) checkbox.checked = true;
+                        }
+                    }
+                }
             }
 
             // Update Form Action
