@@ -494,13 +494,13 @@
              let btnHtml = '';
              if (isLast) {
                  btnHtml = `
-                    <button type="button" onclick="addNewUniversalRow('${prefix}')" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[70px] text-sm">
+                    <button type="button" onclick="addNewUniversalRow('${prefix}')" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
                         + Add
                     </button>
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-11 text-sm min-w-[70px] flex items-center justify-center">
+                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
                         Remove
                     </button>
                  `;
@@ -564,7 +564,7 @@
                  const actionCol = lastRow.querySelector('.action-col');
                  if(actionCol) {
                      actionCol.innerHTML = `
-                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-11 text-sm min-w-[70px] flex items-center justify-center">
+                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
                             Remove
                         </button>
                      `;
@@ -1617,14 +1617,14 @@ ts
              let btnHtml = '';
              if (isLast) {
                  btnHtml = `
-                    <button type="button" onclick="addStationRow(${stationIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[70px] text-sm">
+                    <button type="button" onclick="addStationRow(${stationIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
                         + Add
                     </button>
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeStationRow(${stationIndex}, ${rowIndex})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                        &times;
+                    <button type="button" onclick="removeStationRow(${stationIndex}, ${rowIndex})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
+                        Remove
                     </button>
                  `;
              }
@@ -1691,12 +1691,14 @@ ts
                 // Or just replace the button div?
                 // Replacing entire HTML is easiest but loses input state.
                 // Better: find the button container and replace innerHTML.
-                const btnContainer = lastRow.lastElementChild;
-                btnContainer.innerHTML = `
-                    <button type="button" onclick="removeStationRow(${stationIndex}, ${lastIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                        &times;
+                const btnContainer = lastRow.querySelector('.min-w-\\[80px\\]') || lastRow.lastElementChild;
+                if(btnContainer) {
+                    btnContainer.innerHTML = `
+                    <button type="button" onclick="removeStationRow(${stationIndex}, ${lastIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
+                        Remove
                     </button>
-                `;
+                    `;
+                }
             }
 
             container.insertAdjacentHTML('beforeend', getCircuitRowHtml(stationIndex, rowIndex, true));
@@ -1810,14 +1812,14 @@ ts
              let btnHtml = '';
              if (isLast) {
                  btnHtml = `
-                    <button type="button" onclick="addIntervalRow(${intervalIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[70px] text-sm">
+                    <button type="button" onclick="addIntervalRow(${intervalIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
                         + Add
                     </button>
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${rowIndex})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                        &times;
+                    <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${rowIndex})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
+                        Remove
                     </button>
                  `;
              }
@@ -1883,14 +1885,14 @@ ts
                      const cols = lastRow.querySelectorAll('div');
                      const lastCol = cols[cols.length - 1];
                      lastCol.innerHTML = `
-                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                            &times;
+                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
+                            Remove
                         </button>
                      `;
                  } else {
                      btnCol.innerHTML = `
-                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                            &times;
+                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
+                            Remove
                         </button>
                      `;
                  }
