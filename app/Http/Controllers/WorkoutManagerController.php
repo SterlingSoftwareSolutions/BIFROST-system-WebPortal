@@ -71,13 +71,23 @@ class WorkoutManagerController extends Controller
             // For Time usually has no counter number, unless we want to use specific inputs.
         }
 
-        // 3. Create main Record
+        $workout = null;
+        $message = '';
+
+        if ($request->filled('common_workout_id')) {
+            // Error if trying to update via store
+            return redirect()->back()->with('error', 'Use update route for existing workouts.');
+        } 
+
+        // --- CREATE MODE ---
         $workout = WorkoutManager::create([
             'workout_name' => $request->common_name,
             'type_id' => $type->id,
             'format_id' => $format->id,
             'number' => $numberValue,
         ]);
+        $message = 'Workout Created Successfully!';
+
         // 4. Handle Dynamic Rows based on Format
         switch($request->common_format) {
             case 'Rounds':
@@ -105,7 +115,85 @@ class WorkoutManagerController extends Controller
                 $this->saveCircuit($request, $workout->id);
                 break;
         }
-        return redirect()->back()->with('success', 'Workout Created Successfully!');
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    public function update(Request $request)
+    {
+        
+        $type = Type::where('name', $request->common_type)->first();
+        if (!$type) return redirect()->back()->with('error', 'Invalid Type Selected');
+
+        $format = Format::where('name', $request->common_format)->first();
+        if (!$format) return redirect()->back()->with('error', 'Invalid Format Selected');
+
+        // 2. Calculate 'Number' field based on format
+        $numberValue = null;
+        switch($request->common_format) {
+            case 'Rounds':
+                $numberValue = $request->input('num_rounds'); 
+                break;
+            case 'AMRAP':
+                $timeStr = $request->input('time_to_complete'); 
+                if ($timeStr) {
+                    $parts = explode(':', $timeStr);
+                    if (count($parts) >= 1) $numberValue = (int)$parts[0];
+                }
+                break;
+            case 'EMOM':
+                $numberValue = $request->input('num_minutes');
+                break;
+            case 'Intervals':
+                $numberValue = $request->input('num_intervals');
+                break;
+            case 'Pyramid':
+                $numberValue = $request->input('num_layers');
+                break;
+            case 'Circuit':
+                $numberValue = $request->input('num_stations');
+                break;
+        }
+
+        // 3. Find and Update
+        $workout = WorkoutManager::find($request->common_workout_id);
+        if (!$workout) {
+             return redirect()->back()->with('error', 'Workout not found for update.');
+        }
+
+        $workout->update([
+            'workout_name' => $request->common_name,
+            'type_id' => $type->id,
+            'format_id' => $format->id,
+            'number' => $numberValue,
+        ]);
+
+        // 4. Clear existing children
+        // Use relationship delete or explicit logic
+        $workout->rounds()->delete();
+        $workout->intervals()->delete();
+        
+        // Explicitly delete children of straights if needed (if cascade not set in DB)
+        foreach($workout->straights as $s) { $s->sets()->delete(); $s->delete(); }  
+        $workout->amraps()->delete();
+        $workout->emoms()->delete();
+        $workout->forTimes()->delete();
+        $workout->pyramids()->delete();
+        $workout->circuits()->delete();
+
+        // 5. Save Children
+        switch($request->common_format) {
+            case 'Rounds': $this->saveRounds($request, $workout->id); break;
+            case 'Intervals': $this->saveIntervals($request, $workout->id); break;
+            case 'Straight Sets': $this->saveStraightSets($request, $workout->id); break;
+            case 'AMRAP': $this->saveAmrap($request, $workout->id); break;
+            case 'EMOM': $this->saveEmom($request, $workout->id); break;
+            case 'For Time': $this->saveForTime($request, $workout->id); break;
+            case 'Pyramid': $this->savePyramid($request, $workout->id); break;
+            case 'Circuit': $this->saveCircuit($request, $workout->id); break;
+        }
+
+        return redirect()->back()->with('success', 'Workout Updated Successfully!');
     }
     private function getWorkoutLibId($name) {
         $lib = WorkoutLibrary::where('workout', $name)->first();
@@ -160,66 +248,90 @@ class WorkoutManagerController extends Controller
     }
     
     private function saveStraightSets(Request $request, $managerId) {
-        // 1. Handle Main Exercise
-        $mainExName = $request->input('ss_exercise_1');
-        $mainLibId = $this->getWorkoutLibId($mainExName);
-        
-        if($mainLibId) {
-            // Create Parent 'Straight' record for Main Exercise
-            $straightMain = \App\Models\Straight::create([
-                'workout_manager_id' => $managerId,
-                'workout_libraries_id' => $mainLibId,
-                'training_load' => $request->input('ss_load_1'), // Base load
-                'unit_type' => $request->input('ss_unit_1'),
-                'reps' => $request->input('ss_reps_main'), // Base reps target
-            ]);
-            // Save Sets for Main Exercise
-            // Loop through rows: ss_reps_1, ss_reps_2... (or ss_reps_1_1 if superset)
-            $i = 1;
-            while($request->has("ss_reps_" . $i) || $request->has("ss_reps_" . $i . "_1")) {
-                // Check if simple or superset key exists
-                $repsKey = $request->has("ss_reps_" . $i) ? "ss_reps_" . $i : "ss_reps_" . $i . "_1";
-                $loadKey = $request->has("ss_load_" . $i) ? "ss_load_" . $i : "ss_load_" . $i . "_1";
-                $unitKey = $request->has("ss_unit_" . $i) ? "ss_unit_" . $i : "ss_unit_" . $i . "_1";
-                
-                if($request->has($repsKey)) {
-                     \App\Models\StraightSet::create([
-                        'straight_id' => $straightMain->id,
-                        'workout_libraries_id' => $mainLibId, // Redundant but required by schema
+       
+
+        // 1. Identify all Exercise Indices present in request
+        $allKeys = $request->keys();
+        $exerciseIndices = [];
+        foreach($allKeys as $key) {
+            if(preg_match('/^ss_exercise_(\d+)$/', $key, $matches)) {
+                $exerciseIndices[] = intval($matches[1]);
+            }
+        }
+        sort($exerciseIndices);
+
+        // If no explicit keys found but format is straight sets, check explicit 'ss_exercise_1'
+        if (empty($exerciseIndices) && $request->has('ss_exercise_1')) {
+            $exerciseIndices[] = 1;
+        }
+
+        $hasMultipleExercises = count($exerciseIndices) > 1;
+
+        foreach($exerciseIndices as $k) {
+            $exName = $request->input("ss_exercise_$k");
+            // Skip if empty (though validation usually catches required)
+            if(!$exName) continue; 
+
+            $libId = $this->getWorkoutLibId($exName);
+            
+            if($libId) {
+                // A. Create Parent 'Straight' Record
+                // Determine Header/Default inputs
+                $baseReps = ($k == 1) ? $request->input('ss_reps_main') : $request->input("ss_reps_$k");
+                $baseLoad = $request->input("ss_load_$k"); 
+                $baseUnit = $request->input("ss_unit_$k");
+
+                $straight = \App\Models\Straight::create([
+                    'workout_manager_id' => $managerId,
+                    'workout_libraries_id' => $libId,
+                    'training_load' => $baseLoad,
+                    'unit_type' => $baseUnit,
+                    'reps' => $baseReps,
+                ]);
+
+                // B. Save Sets (StraightSet)
+                // Loop through sets i=1..N until inputs disappear
+                $i = 1;
+                while(true) {
+                    $repsKey = '';
+                    $loadKey = '';
+                    $unitKey = '';
+                    
+                    // Determine keys based on Single vs Super Set view
+                    if ($k == 1 && !$hasMultipleExercises) {
+                        // Standard Single View
+                        $repsKey = "ss_reps_$i"; 
+                        $loadKey = "ss_load_$i";
+                        $unitKey = "ss_unit_$i";
+                        
+                        // Fallback: If frontend sent super set format anyway (e.g. if logic changed)
+                        if (!$request->has($repsKey) && $request->has("ss_reps_{$i}_1")) {
+                             $repsKey = "ss_reps_{$i}_1"; 
+                             $loadKey = "ss_load_{$i}_1";
+                             $unitKey = "ss_unit_{$i}_1";
+                        }
+
+                    } else {
+                        // Super Set View (or k > 1)
+                        $repsKey = "ss_reps_{$i}_{$k}";
+                        $loadKey = "ss_load_{$i}_{$k}";
+                        $unitKey = "ss_unit_{$i}_{$k}";
+                    }
+
+                    // Check existence
+                    if (!$request->has($repsKey)) {
+                        break; 
+                    }
+
+                    \App\Models\StraightSet::create([
+                        'straight_id' => $straight->id,
+                        'workout_libraries_id' => $libId,
                         'res' => $request->input($repsKey),
                         'trainload' => $request->input($loadKey),
                         'unittype' => $request->input($unitKey),
                     ]);
-                }
-                $i++;
-            }
-        }
-        // 2. Handle Super Set if exists
-        if ($request->has('ss_exercise_2') && $request->input('ss_exercise_2')) {
-            $secExName = $request->input('ss_exercise_2');
-            $secLibId = $this->getWorkoutLibId($secExName);
-            
-            if($secLibId) {
-                // Create Parent 'Straight' record for Secondary
-                $straightSec = \App\Models\Straight::create([
-                    'workout_manager_id' => $managerId,
-                    'workout_libraries_id' => $secLibId,
-                    'training_load' => $request->input('ss_load_2'),
-                    'unit_type' => $request->input('ss_unit_2'),
-                    'reps' => $request->input('ss_reps_secondary'),
-                ]);
-                // Save Sets for Secondary Exercise
-                // Rows are named ss_reps_1_2, ss_reps_2_2...
-                $j = 1;
-                while($request->has("ss_reps_" . $j . "_2")) {
-                    \App\Models\StraightSet::create([
-                        'straight_id' => $straightSec->id,
-                        'workout_libraries_id' => $secLibId,
-                        'res' => $request->input("ss_reps_" . $j . "_2"),
-                        'trainload' => $request->input("ss_load_" . $j . "_2"),
-                        'unittype' => $request->input("ss_unit_" . $j . "_2"),
-                    ]);
-                    $j++;
+
+                    $i++;
                 }
             }
         }
@@ -386,6 +498,7 @@ class WorkoutManagerController extends Controller
             // 2. Fetch Workouts
             $query = WorkoutManager::with([
                 'format',
+                'type',
                 'straights.workoutLibrary', 'straights.sets',
                 'rounds.workoutLibrary',
                 'intervals.workoutLibrary',
@@ -443,13 +556,16 @@ class WorkoutManagerController extends Controller
                 });
             }
 
+            // FILTER: Show only Active workouts
+            $query->where('status', '!=', 'inactive');
+
             $workouts = $query->orderBy('created_at', 'desc')->get();
 
              //Attach Assignment Status (if date provided)
              if ($date) {
                 $workouts->transform(function ($workout) use ($date) {
                     $realType = $workout->type ? strtolower($workout->type->name) : 'unknown';
-
+                    Log::info("Saved type row $realType");
                     $assignedClassIds = \App\Models\WorkoutAssign::where([
                         'workout_id' => $workout->id,
                         'workout_type' => $realType,
@@ -469,6 +585,21 @@ class WorkoutManagerController extends Controller
         } catch (\Exception $e) {
             Log::error("Error fetching Unified Workout List: " . $e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function delete(Request $request, $id)
+    {
+        try {
+            $workout = WorkoutManager::find($id);
+            if ($workout) {
+                $workout->update(['status' => 'inactive']);
+                return response()->json(['status' => 'success', 'message' => 'Workout deleted successfully.']);
+            }
+            return response()->json(['status' => 'error', 'message' => 'Workout not found.'], 404);
+        } catch (\Exception $e) {
+            Log::error("Error deleting workout: " . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Failed to delete workout.'], 500);
         }
     }
 
