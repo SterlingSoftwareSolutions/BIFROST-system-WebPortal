@@ -1,5 +1,5 @@
 <!-- START FORM -->
-<form action="{{ route('workout.store') }}" method="POST">
+<form id="create_workout_form" action="{{ route('workout.store') }}" method="POST">
     @csrf
 
     <div class="flex-col w-full bg-gray-50 p-3  rounded-lg">
@@ -81,7 +81,7 @@
     
     <!-- Add Save Button at the bottom -->
     <div class="mt-6 flex justify-end">
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
+        <button type="submit" id="save_workout_btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-lg">
             Save Workout
         </button>
     </div>
@@ -822,7 +822,6 @@
                 const rowId = row.id;
                 const setIndex = rowId.replace('ss_row_', ''); // e.g. "1", "2"
                 data[setIndex] = {};
-ts
                 
                 // Check for single view inputs (legacy names)
                 const singleReps = document.getElementById(`ss_reps_${setIndex}`);
@@ -929,26 +928,7 @@ ts
              return `Exercise ${index}`;
         };
 
-        window.refreshStraightSetRows = function(dataOverride = null) {
-            const container = document.getElementById('straight_set_rows_container');
-            if (!container) return;
 
-            // 1. Collect Current Data
-            let currentData = dataOverride || window.collectStraightSetData();
-
-            // 2. Clear Container
-            container.innerHTML = '';
-
-            
-            const existingIds = Object.keys(currentData).sort((a,b) => a-b);
-            
-            existingIds.forEach(index => {
-                container.insertAdjacentHTML('beforeend', getStraightSetRowHtml(index, false));
-            });
-            
-            // 4. Restore Data
-            window.restoreStraightSetData(currentData);
-        };
 
         window.removeStraightSetRow = function(id) {
             const row = document.getElementById(id);
@@ -1225,6 +1205,7 @@ ts
                  const el = document.getElementById(`input_${id}`);
                  if (el && !el.closest('#straight_set_rows_container')) {
                       
+                      
                       window.refreshStraightSetRows();
                  }
              }
@@ -1330,21 +1311,19 @@ ts
                     <div class="flex items-center gap-0 py-1" id="ss_row_${index}">
                          <!-- Content Part -->
                          <div class="flex-1 flex items-center gap-4">
-                             <div class="w-8 text-center font-bold text-gray-600 text-sm">${index}</div>
+                             <div class="w-8 text-center font-bold text-gray-600 text-base">${index}</div>
                              
                              <!-- Reps Control -->
-                             <div class="flex items-center">
-                                  <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">-</button>
-                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 6}" class="border-y border-gray-300 h-10 w-12 text-center text-sm font-bold ">
-                                  <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-2 h-10 w-9 flex justify-center items-center font-bold text-lg">+</button>
+                             <div class="flex items-center gap-1">
+                                  <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
+                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 6}" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
+                                  <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
                              </div>
                              
-                             <div class="font-bold text-sm text-gray-700">REPS</div>
-                             
                              <!-- Load Display -->
-                             <div class="flex items-center">
+                             <div class="flex items-center gap-1">
                                  <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || 80}" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
-                                 <select name="ss_unit_${index}" class="ml-1 border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
+                                 <select name="ss_unit_${index}" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
                                      ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
                                  </select>
                              </div>
@@ -2054,5 +2033,253 @@ ts
             el.value = parseInt(el.value) - 1;
             el.dispatchEvent(new Event('input', { bubbles: true }));
         }
+    }
+
+    // --- Edit Mode Logic ---
+    window.editUnifiedWorkout = function(id) {
+        const workout = window.unifiedWorkoutsMap[id];
+        if(!workout) return;
+
+        console.log('Editing Workout:', workout);
+
+        // 1. Populate Common
+        const typeSelect = document.getElementById('common_type');
+        const nameInput = document.getElementById('common_name');
+        const formatSelect = document.getElementById('common_format');
+        const hiddenId = document.getElementById('common_workout_id');
+        
+        // Set Hidden ID
+        if(hiddenId) hiddenId.value = workout.id;
+
+        // Change Form Action to Update Mode
+        const form = document.getElementById('create_workout_form'); 
+        if(form) {
+            form.action = "{{ route('workout.update') }}"; // Make sure this route exists
+        }
+        
+        // Update Submit Button & Title
+        const submitBtn = document.getElementById('save_workout_btn');
+        if(submitBtn) {
+            submitBtn.innerText = "Update Workout";
+        }
+        
+        const title = document.querySelector('.text-2xl.font-bold');
+        if(title) title.innerText = "Edit Workout";
+
+        if(typeSelect && workout.type) {
+             typeSelect.value = workout.type.name; 
+        }
+        
+        if(nameInput) nameInput.value = workout.workout_name;
+        
+        if(formatSelect && workout.format) {
+            formatSelect.value = workout.format.name;
+            // Trigger Change to render UI
+            formatSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Wait for UI render
+        setTimeout(() => {
+            const fmt = workout.format.name;
+            
+            if (fmt === 'Straight Sets') {
+                 const straights = workout.straights || [];
+                 if(straights.length > 0) {
+                     const mainStraight = straights[0];
+                     const secStraight = straights.length > 1 ? straights[1] : null;
+                     
+                     // Populate Top Input (Main)
+                     window.selectOption('ss_exercise_1', mainStraight.workout_library.workout);
+                     const l1 = document.querySelector('[name="ss_load_1"]'); if(l1) l1.value = mainStraight.training_load;
+                     const u1 = document.querySelector('[name="ss_unit_1"]'); if(u1) u1.value = mainStraight.unit_type;
+                     const r1 = document.getElementById('ss_reps_main'); if(r1) r1.value = mainStraight.reps;
+                     
+                     // If Super Set
+                     if (secStraight) {
+                         window.addSuperSet(); 
+                         if(secStraight.workout_library) window.selectOption('ss_exercise_2', secStraight.workout_library.workout);
+                         const l2 = document.querySelector('[name="ss_load_2"]'); if(l2) l2.value = secStraight.training_load;
+                         const u2 = document.querySelector('[name="ss_unit_2"]'); if(u2) u2.value = secStraight.unit_type;
+                         const r2 = document.getElementById('ss_reps_2'); if(r2) r2.value = secStraight.reps;
+                     }
+                     
+                     // Child Sets
+                     const sets = mainStraight.sets || [];
+                     const numSets = sets.length; 
+                     
+                     if (numSets > 0) {
+                         const setInput = document.getElementById('num_sets');
+                         if(setInput) {
+                              // IMPORTANT: `renderStraightSetUI` initializes a listener on `num_sets`? No.
+                              // `updateStraightSetCount` updates the input and calls refresh.
+                              // So we should update input AND call refresh?
+                              // Actually `updateStraightSetCount` takes delta.
+                              // We can just set value and call `refreshStraightSetRows`.
+                              setInput.value = numSets; 
+                              window.refreshStraightSetRows();
+                         }
+                         
+                         const data = {};
+                         // Main Sets
+                         sets.forEach((set, idx) => {
+                             const setNum = idx + 1;
+                             if(!data[setNum]) data[setNum] = {};
+                             data[setNum][1] = { reps: set.res, load: set.trainload, unit: set.unittype };
+                         });
+                         // Super Sets
+                         if(secStraight && secStraight.sets) {
+                             secStraight.sets.forEach((set, idx) => {
+                                 const setNum = idx + 1;
+                                 if(!data[setNum]) data[setNum] = {};
+                                 data[setNum][2] = { reps: set.res, load: set.trainload, unit: set.unittype };
+                             });
+                         }
+                         window.restoreStraightSetData(data);
+                     }
+                 }
+                 
+            } else if (fmt === 'Rounds') {
+                const rounds = workout.rounds || [];
+                if (workout.number) document.getElementById('num_rounds').value = workout.number;
+                
+                rounds.forEach((row, i) => {
+                    const idx = i + 1;
+                    if (idx > 1) window.addNewRoundRow();
+                    
+                    window.selectOption(`round_exercise_${idx}`, row.workout_library.workout);
+                    const l = document.querySelector(`[name="round_load_${idx}"]`); if(l) l.value = row.training_load;
+                    const u = document.querySelector(`[name="round_unit_${idx}"]`); if(u) u.value = row.unit_type;
+                    const r = document.getElementById(`round_reps_${idx}`); if(r) r.value = row.reps;
+                });
+                
+            } else if (fmt === 'AMRAP') {
+                const amraps = workout.amraps || [];
+                if(workout.number) {
+                     let m = workout.number;
+                     document.getElementById('time_to_complete').value = (m < 10 ? '0'+m : m) + ':00';
+                }
+                amraps.forEach((row, i) => {
+                    const idx = i + 1;
+                    if (idx > 1) window.addNewUniversalRow('amrap');
+                    window.selectOption(`amrap_exercise_${idx}`, row.workout_library.workout);
+                    const l = document.querySelector(`[name="amrap_load_${idx}"]`); if(l) l.value = row.training_load;
+                    const u = document.querySelector(`[name="amrap_unit_${idx}"]`); if(u) u.value = row.unit_type;
+                    const r = document.getElementById(`amrap_reps_${idx}`); if(r) r.value = row.reps;
+                });
+
+            } else if (fmt === 'EMOM') {
+                const emoms = workout.emoms || [];
+                if(workout.number) document.getElementById('num_minutes').value = workout.number;
+                 emoms.forEach((row, i) => {
+                    const idx = i + 1;
+                    if (idx > 1) {
+                         if (typeof window.addNewUniversalRow === 'function') window.addNewUniversalRow('emom');
+                    }
+                    window.selectOption(`emom_exercise_${idx}`, row.workout_library.workout);
+                    const l = document.querySelector(`[name="emom_load_${idx}"]`); if(l) l.value = row.training_load;
+                    const u = document.querySelector(`[name="emom_unit_${idx}"]`); if(u) u.value = row.unit_type;
+                    const r = document.getElementById(`emom_reps_${idx}`); if(r) r.value = row.reps;
+                });
+
+            } else if (fmt === 'Pyramid') {
+                 const pyramids = workout.pyramids || [];
+                 if(workout.number) {
+                     document.getElementById('num_layers').value = workout.number;
+                     window.updatePyramidLayers(workout.number);
+                 }
+                 if(pyramids.length > 0) {
+                     window.selectOption('pyramid_exercise', pyramids[0].workout_library.workout);
+                 }
+                 pyramids.forEach((row, i) => {
+                     const idx = i + 1;
+                     const l = document.querySelector(`[name="pyramid_load_${idx}"]`); if(l) l.value = row.training_load;
+                     const u = document.querySelector(`[name="pyramid_unit_${idx}"]`); if(u) u.value = row.unit_type;
+                     const r = document.getElementById(`pyramid_reps_${idx}`); if(r) r.value = row.reps;
+                 });
+
+            } else if (fmt === 'Intervals') {
+                const intervals = workout.intervals || [];
+                if(workout.number) {
+                     document.getElementById('num_intervals').value = workout.number;
+                     window.updateIntervalBlocks(workout.number);
+                }
+                const groups = {};
+                intervals.forEach(inv => {
+                    const num = inv.stationumber;
+                    if(!groups[num]) groups[num] = [];
+                    groups[num].push(inv);
+                });
+                
+                Object.keys(groups).forEach(blockNum => {
+                    const rows = groups[blockNum];
+                    rows.forEach((row, i) => {
+                        const rowIdx = i + 1;
+                        if(rowIdx > 1) window.addIntervalRow(blockNum);
+                        
+                        setTimeout(() => {
+                            const container = document.getElementById(`interval_block_${blockNum}_rows`);
+                            if(container && container.children[i]) {
+                                const domRow = container.children[i];
+                                const parts = domRow.id.split('_');
+                                const finalIdx = parts[parts.length - 1];
+                                
+                                window.selectOption(`interval_${blockNum}_exercise_${finalIdx}`, row.workout_library.workout);
+                                const l = document.querySelector(`[name="interval_${blockNum}_load_${finalIdx}"]`); if(l) l.value = row.training_load;
+                                const u = document.querySelector(`[name="interval_${blockNum}_unit_${finalIdx}"]`); if(u) u.value = row.unit_type;
+                                
+                                const w = document.getElementById(`interval_${blockNum}_work_${finalIdx}`); if(w) w.value = row.work;
+                                const rest = document.getElementById(`interval_${blockNum}_rest_${finalIdx}`); if(rest) rest.value = row.rest;
+                            }
+                        }, 50); 
+                    });
+                });
+                
+            } else if (fmt === 'Circuit') {
+                 const circuits = workout.circuits || [];
+                 if(workout.number) {
+                     document.getElementById('num_stations').value = workout.number;
+                     window.updateCircuitStations(workout.number);
+                 }
+                 
+                 const groups = {};
+                 circuits.forEach(c => {
+                     const num = c.stationumber;
+                     if(!groups[num]) groups[num] = [];
+                     groups[num].push(c);
+                 });
+                 
+                 Object.keys(groups).forEach(stNum => {
+                     const rows = groups[stNum];
+                     rows.forEach((row, i) => {
+                          if(i > 0) window.addStationRow(stNum);
+                          
+                          setTimeout(() => {
+                              const container = document.getElementById(`station_${stNum}_rows`);
+                              if(container && container.children[i]) {
+                                  const domRow = container.children[i];
+                                  const parts = domRow.id.split('_');
+                                  const finalIdx = parts[parts.length - 1];
+                                  
+                                  window.selectOption(`station_${stNum}_exercise_${finalIdx}`, row.workout_library.workout);
+                                  const l = document.querySelector(`[name="station_${stNum}_load_${finalIdx}"]`); if(l) l.value = row.training_load;
+                                  const u = document.querySelector(`[name="station_${stNum}_unit_${finalIdx}"]`); if(u) u.value = row.unit_type;
+                                  const r = document.getElementById(`station_${stNum}_reps_${finalIdx}`); if(r) r.value = row.reps;
+                              }
+                          }, 50);
+                     });
+                 });
+            } else if (fmt === 'For Time') {
+                const fts = workout.for_times || [];
+                fts.forEach((row, i) => {
+                    const idx = i + 1;
+                    if (idx > 1) window.addNewUniversalRow('ft');
+                    window.selectOption(`ft_exercise_${idx}`, row.workout_library.workout);
+                    const l = document.querySelector(`[name="ft_load_${idx}"]`); if(l) l.value = row.training_load;
+                    const u = document.querySelector(`[name="ft_unit_${idx}"]`); if(u) u.value = row.unit_type;
+                    const r = document.getElementById(`ft_reps_${idx}`); if(r) r.value = row.reps;
+                });
+            }
+
+        }, 200);
     }
 </script>

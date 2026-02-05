@@ -147,8 +147,13 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/get-workout', [SessionController::class, 'getworkouts']);
     Route::post('/get-workout-filter', [SessionController::class, 'getworkout']);
 
+
+    //new routes for Workout Manager Controller
+
     Route::post('/workout/store', [WorkoutManagerController::class, 'store'])->name('workout.store');//new
+    Route::post('/workout/update', [WorkoutManagerController::class, 'update'])->name('workout.update');
     Route::get('/workout/get-manager-list', [WorkoutManagerController::class, 'getWorkouts']);
+    Route::post('/workout/delete/{id}', [WorkoutManagerController::class, 'delete'])->name('workout.delete');
 
     // store warmup
     Route::Post('/store-warmup', [SessionController::class, 'storewarmup']);
