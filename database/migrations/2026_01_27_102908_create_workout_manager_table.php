@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('workout_name');
             $table->foreignId('type_id')->constrained('type')->cascadeOnDelete();
             $table->foreignId('format_id')->constrained('format')->cascadeOnDelete();
+            $table->string('date')->nullable();;
             $table->integer('number')->nullable();
             $table->timestamps();
         });

@@ -8,7 +8,7 @@ use App\Models\Format;
 // Import Child Models
 use App\Models\Round;
 use App\Models\Interval;
-use App\Models\StraightSet; 
+use App\Models\StraightSet;
 use App\Models\Straight;
 use App\Models\Amrap;
 use App\Models\Emom;
@@ -21,11 +21,13 @@ class WorkoutManagerController extends Controller
 {
     public function store(Request $request)
     {
+        //dd($request);
         // 1. Validate
         $request->validate([
             'common_name' => 'required|string',
             'common_type' => 'required',
             'common_format' => 'required',
+            'common_date' => 'required',
         ]);
         $type = Type::where('name', $request->common_type)->first();
         if (!$type) {
@@ -43,7 +45,7 @@ class WorkoutManagerController extends Controller
                 $numberValue = $request->input('num_rounds');
                 break;
             case 'AMRAP':
-               // AMRAP usually sends time like "04:00" (MM:SS). 
+               // AMRAP usually sends time like "04:00" (MM:SS).
                // Parse to integer (minutes) for storage in 'number' column.
                 $timeStr = $request->input('time_to_complete');
                 $numberValue = 0;
@@ -77,7 +79,7 @@ class WorkoutManagerController extends Controller
         if ($request->filled('common_workout_id')) {
             // Error if trying to update via store
             return redirect()->back()->with('error', 'Use update route for existing workouts.');
-        } 
+        }
 
         // --- CREATE MODE ---
         $workout = WorkoutManager::create([
@@ -85,6 +87,7 @@ class WorkoutManagerController extends Controller
             'type_id' => $type->id,
             'format_id' => $format->id,
             'number' => $numberValue,
+            'date' => $request->common_date,
         ]);
         $message = 'Workout Created Successfully!';
 
@@ -121,7 +124,7 @@ class WorkoutManagerController extends Controller
 
     public function update(Request $request)
     {
-        
+
         $type = Type::where('name', $request->common_type)->first();
         if (!$type) return redirect()->back()->with('error', 'Invalid Type Selected');
 
@@ -132,10 +135,10 @@ class WorkoutManagerController extends Controller
         $numberValue = null;
         switch($request->common_format) {
             case 'Rounds':
-                $numberValue = $request->input('num_rounds'); 
+                $numberValue = $request->input('num_rounds');
                 break;
             case 'AMRAP':
-                $timeStr = $request->input('time_to_complete'); 
+                $timeStr = $request->input('time_to_complete');
                 if ($timeStr) {
                     $parts = explode(':', $timeStr);
                     if (count($parts) >= 1) $numberValue = (int)$parts[0];
@@ -172,9 +175,9 @@ class WorkoutManagerController extends Controller
         // Use relationship delete or explicit logic
         $workout->rounds()->delete();
         $workout->intervals()->delete();
-        
+
         // Explicitly delete children of straights if needed (if cascade not set in DB)
-        foreach($workout->straights as $s) { $s->sets()->delete(); $s->delete(); }  
+        foreach($workout->straights as $s) { $s->sets()->delete(); $s->delete(); }
         $workout->amraps()->delete();
         $workout->emoms()->delete();
         $workout->forTimes()->delete();
@@ -197,12 +200,12 @@ class WorkoutManagerController extends Controller
     }
     private function getWorkoutLibId($name) {
         $lib = WorkoutLibrary::where('workout', $name)->first();
-        return $lib ? $lib->id : null; 
-       
+        return $lib ? $lib->id : null;
+
     }
     private function saveRounds(Request $request, $managerId) {
-        $count = $request->input('num_rounds', 1); 
-        
+        $count = $request->input('num_rounds', 1);
+
         // Loop through all potential rows
         // Since IDs are dynamic (round_load_1, round_load_2...), we loop until we run out of inputs
         $i = 1;
@@ -227,11 +230,11 @@ class WorkoutManagerController extends Controller
             // Match pattern: interval_{intervalNum}_exercise_{rowId}
             if (preg_match('/^interval_(\d+)_exercise_([\w]+)$/', $key, $matches)) {
                 $intervalNum = $matches[1];
-                $rowId = $matches[2]; 
+                $rowId = $matches[2];
 
                 $exName = $request->input($key);
                 $wId = $this->getWorkoutLibId($exName);
-                
+
                 if ($wId) {
                     Interval::create([
                         'workout_manager_id' => $managerId,
@@ -246,9 +249,9 @@ class WorkoutManagerController extends Controller
             }
         }
     }
-    
+
     private function saveStraightSets(Request $request, $managerId) {
-       
+
 
         // 1. Identify all Exercise Indices present in request
         $allKeys = $request->keys();
@@ -270,15 +273,15 @@ class WorkoutManagerController extends Controller
         foreach($exerciseIndices as $k) {
             $exName = $request->input("ss_exercise_$k");
             // Skip if empty (though validation usually catches required)
-            if(!$exName) continue; 
+            if(!$exName) continue;
 
             $libId = $this->getWorkoutLibId($exName);
-            
+
             if($libId) {
                 // A. Create Parent 'Straight' Record
                 // Determine Header/Default inputs
                 $baseReps = ($k == 1) ? $request->input('ss_reps_main') : $request->input("ss_reps_$k");
-                $baseLoad = $request->input("ss_load_$k"); 
+                $baseLoad = $request->input("ss_load_$k");
                 $baseUnit = $request->input("ss_unit_$k");
 
                 $straight = \App\Models\Straight::create([
@@ -296,17 +299,17 @@ class WorkoutManagerController extends Controller
                     $repsKey = '';
                     $loadKey = '';
                     $unitKey = '';
-                    
+
                     // Determine keys based on Single vs Super Set view
                     if ($k == 1 && !$hasMultipleExercises) {
                         // Standard Single View
-                        $repsKey = "ss_reps_$i"; 
+                        $repsKey = "ss_reps_$i";
                         $loadKey = "ss_load_$i";
                         $unitKey = "ss_unit_$i";
-                        
+
                         // Fallback: If frontend sent super set format anyway (e.g. if logic changed)
                         if (!$request->has($repsKey) && $request->has("ss_reps_{$i}_1")) {
-                             $repsKey = "ss_reps_{$i}_1"; 
+                             $repsKey = "ss_reps_{$i}_1";
                              $loadKey = "ss_load_{$i}_1";
                              $unitKey = "ss_unit_{$i}_1";
                         }
@@ -320,7 +323,7 @@ class WorkoutManagerController extends Controller
 
                     // Check existence
                     if (!$request->has($repsKey)) {
-                        break; 
+                        break;
                     }
 
                     \App\Models\StraightSet::create([
@@ -336,7 +339,7 @@ class WorkoutManagerController extends Controller
             }
         }
     }
-    
+
     private function saveAmrap(Request $request, $managerId)
     {
         /* Log::info('saveAmrap started', [
@@ -347,14 +350,14 @@ class WorkoutManagerController extends Controller
         $data = $request->all();
 
         foreach ($data as $key => $value) {
-            // Check for amrap_exercise 
+            // Check for amrap_exercise
             if (strpos($key, 'amrap_exercise_') === 0) {
                 $i = str_replace('amrap_exercise_', '', $key);
-                
+
                 //  validation that $i is a numeric index
                 if (!is_numeric($i)) continue;
 
-                $exName = trim($value); 
+                $exName = trim($value);
                 $wId = $this->getWorkoutLibId($exName);
 
                 Log::info('AMRAP row processing', [
@@ -377,7 +380,7 @@ class WorkoutManagerController extends Controller
                         'unit_type' => ($unit !== '' && $unit !== null) ? $unit : 'N/A',
                         'reps' => ($reps !== '' && $reps !== null) ? $reps : null,
                     ]);
-                    
+
                     Log::info("Saved AMRAP row $i");
                 } else {
                     Log::warning("AMRAP skipped: Exercise '$exName' not found or ID is null.");
@@ -394,7 +397,7 @@ class WorkoutManagerController extends Controller
                 $i = $matches[1];
                 $exName = $request->input($key);
                 $wId = $this->getWorkoutLibId($exName);
-                
+
                 if($wId) {
                     Emom::create([
                         'workout_manager_id' => $managerId,
@@ -427,7 +430,7 @@ class WorkoutManagerController extends Controller
             }
         }
     }
-    
+
     private function savePyramid(Request $request, $managerId) {
         $mainExName = $request->input("pyramid_exercise");
         $wId = $this->getWorkoutLibId($mainExName);
@@ -448,19 +451,19 @@ class WorkoutManagerController extends Controller
     }
 
     private function saveCircuit(Request $request, $managerId) {
-        
+
 
         $allKeys = $request->keys();
-        
+
         foreach ($allKeys as $key) {
             // Match pattern: station_X_exercise_Y
             if (preg_match('/^station_(\d+)_exercise_([\w]+)$/', $key, $matches)) {
                 $stationNum = $matches[1];
-                $rowId = $matches[2]; 
+                $rowId = $matches[2];
 
                 $exName = $request->input($key);
                 $wId = $this->getWorkoutLibId($exName);
-                
+
                 // Get other fields using the same IDs
                 $load = $request->input("station_{$stationNum}_load_{$rowId}");
                 $unit = $request->input("station_{$stationNum}_unit_{$rowId}");
@@ -470,7 +473,7 @@ class WorkoutManagerController extends Controller
                     Circuit::create([
                         'workout_manager_id' => $managerId,
                         'workout_libraries_id' => $wId,
-                        'stationumber' => $stationNum, 
+                        'stationumber' => $stationNum,
                         'training_load' => $load,
                         'unit_type' => $unit,
                         'reps' => $reps,
@@ -514,10 +517,10 @@ class WorkoutManagerController extends Controller
                 $name = $request->name;
                 $query->where(function($q) use ($name) {
                     $q->where('workout_name', 'like', '%' . $name . '%');
-                    
+
                     // Search in child relationships
                     $relations = [
-                        'straights', 'rounds', 'intervals', 'amraps', 
+                        'straights', 'rounds', 'intervals', 'amraps',
                         'emoms', 'pyramids', 'circuits', 'forTimes'
                     ];
 
@@ -538,7 +541,7 @@ class WorkoutManagerController extends Controller
             if (($catId && $catId != '') || ($libId && $libId != '')) {
                 $query->where(function($q) use ($catId, $libId) {
                     $relations = [
-                        'straights', 'rounds', 'intervals', 'amraps', 
+                        'straights', 'rounds', 'intervals', 'amraps',
                         'emoms', 'pyramids', 'circuits', 'forTimes'
                     ];
 

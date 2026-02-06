@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('interval', function (Blueprint $table) {
             $table->id();
+            $table->integer('stationumber')->nullable();
             $table->foreignId('workout_manager_id')->constrained('workout_manager')->cascadeOnDelete();
             $table->foreignId('workout_libraries_id')->constrained('workout_libraries')->cascadeOnDelete();
             $table->integer('training_load')->nullable();

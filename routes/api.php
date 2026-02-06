@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MobileController;
 use App\Http\Controllers\UserMobileController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\WorkoutManagerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('getscore', [MobileController::class, 'getscore']);
 
     Route::post('getworkout', [MobileController::class, 'getworkout']);
+    Route::post('getworkoutlist', [UserMobileController::class, 'getWorkouts']);
     Route::post('updateweight', [MobileController::class, 'updateWeight']);
     Route::post('insertweight', [MobileController::class, 'insertWeight']);
 
