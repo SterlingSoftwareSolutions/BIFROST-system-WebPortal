@@ -15,6 +15,7 @@ class WorkoutManager extends Model
         'workout_name',
         'type_id',
         'format_id',
+        'date',
         'number',
         'status',
     ];

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Classes;
 use App\Models\Conditioning;
 use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
@@ -12,6 +13,7 @@ use App\Models\Newprofile;
 use App\Models\Strength;
 use App\Models\Weightlifting;
 use App\Models\WorkoutLibrary;
+use App\Models\WorkoutManager;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -168,7 +170,7 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
-     // profile image upload 
+     // profile image upload
     public function profileImageStore(Request $request)
             {
                 $request->validate([
@@ -294,7 +296,7 @@ class UserMobileController extends Controller
                         'strengths_count' => $strengths->count(),
                         'strength_ids' => $strengths->pluck('id')->take(20), // prevent huge log
                     ]);
-                
+
                 if (!$strengths->isEmpty()) {
                     $strengthIds = $strengths->pluck('id');
 
@@ -315,7 +317,7 @@ class UserMobileController extends Controller
             }
 
 
-            
+
 
             // ✅ Get all related weightlifting records for this workout
             if ($workout->type === 'weightlifting') {
@@ -673,6 +675,51 @@ class UserMobileController extends Controller
                 'status' => 'error',
                 'message' => 'Failed to update profile.',
                 'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getWorkouts(Request $request)
+    {
+        try {
+            $date = $request->input('date');
+
+            // Optional: validate date
+            $request->validate([
+                'date' => 'required|date',
+            ]);
+
+            // 2. Fetch Workouts filtered by date
+            $workouts = WorkoutManager::with([
+                'format',
+                'type',
+                'straights.workoutLibrary', 'straights.sets',
+                'rounds.workoutLibrary.categoryOption',
+                'intervals.workoutLibrary.categoryOption',
+                'amraps.workoutLibrary.categoryOption',
+                'emoms.workoutLibrary.categoryOption',
+                'pyramids.workoutLibrary.categoryOption',
+                'circuits.workoutLibrary.categoryOption',
+                'forTimes.workoutLibrary.categoryOption'
+            ])
+            ->whereDate('date', $date)
+            ->get();
+
+            // 3. Group workouts by type name
+            $groupedWorkouts = $workouts->groupBy(function ($workout) {
+                return $workout->type->name ?? 'Unknown';
+            });
+
+            return response()->json([
+                'status' => true,
+                'date' => $date,
+                'workouts' => $groupedWorkouts,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
