@@ -561,6 +561,11 @@ class WorkoutManagerController extends Controller
 
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
+            
+            // FILTER: Workout date
+            if ($date) {
+                $query->whereDate('date', $date);
+            }
 
             $workouts = $query->orderBy('created_at', 'desc')->get();
 
