@@ -230,7 +230,13 @@
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
-                </div>
+                  <!-- Conditioning -->
+                  <div class="p-1">
+                    <img src="/icon/kettlebellB.png"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500' : 'border-transparent'}"
+                      title="Accessory">
+                  </div>
+                  
               </td>
 
               <!-- Edit + Delete -->
@@ -321,47 +327,70 @@
   let isEditMode = false;
 
   function openEditClassModal(classId) {
+    if(!classId) {
+        alert("Error: Missing Class ID");
+        return;
+    }
+
     // Ensure hidden date is set from current view
-    const currentDayName = document.getElementById('selectdatecla').value;
-    document.getElementById('selectdatecla_modal').value = currentDayName;
+    const dateEl = document.getElementById('selectdatecla');
+    const currentDayName = dateEl ? dateEl.value : '';
+    const modalDateEl = document.getElementById('selectdatecla_modal');
+    if(modalDateEl) modalDateEl.value = currentDayName;
 
     fetch(`/classes/${classId}/edit`)
-        .then(res => res.json())
+        .then(res => {
+            if(!res.ok) throw new Error("Failed to fetch class details");
+            return res.json();
+        })
         .then(data => {
+            if(!data) throw new Error("No data received");
+
             // Populate Fields
             // Parse 24h time "HH:mm:ss" -> 12h format
             if(data.time) {
-                const [h, m] = data.time.split(':');
-                let hour = parseInt(h);
-                let period = 'AM';
-                if(hour >= 12) {
-                    period = 'PM';
-                    if(hour > 12) hour -= 12;
+                const parts = data.time.split(':');
+                if(parts.length >= 2) {
+                    const h = parseInt(parts[0]);
+                    const m = parts[1];
+                    let hour = h;
+                    let period = 'AM';
+                    if(hour >= 12) {
+                        period = 'PM';
+                        if(hour > 12) hour -= 12;
+                    }
+                    if(hour === 0) hour = 12;
+
+                    currentHour = hour.toString().padStart(2, '0');
+                    currentMinute = m;
+                    currentPeriod = period;
+
+                    updatePickerUI();
                 }
-                if(hour === 0) hour = 12;
-
-                currentHour = hour.toString().padStart(2, '0');
-                currentMinute = m;
-                currentPeriod = period;
-
-                updatePickerUI();
             }
 
-            // Disable Time Editing in Edit Mode (matching previous behavior)
+            // Disable Time Editing in Edit Mode
              const timeDisplay = document.getElementById('timeDisplay');
-             timeDisplay.classList.add('bg-gray-100', 'cursor-not-allowed');
-             timeDisplay.onclick = null; // Remove click handler
+             if(timeDisplay) {
+                 timeDisplay.classList.add('bg-gray-100', 'cursor-not-allowed');
+                 timeDisplay.onclick = null; // Remove click handler
+             }
 
-            document.querySelector('input[name="duration"]').value = data.duration;
-            document.querySelector('input[name="spots"]').value = data.spots;
+            const durationInput = document.querySelector('input[name="duration"]');
+            if(durationInput) durationInput.value = data.duration;
+            
+            const spotsInput = document.querySelector('input[name="spots"]');
+            if(spotsInput) spotsInput.value = data.spots;
 
             // Set Edit Mode
             isEditMode = true;
 
             // Update UI
-            document.querySelector('#addModal h2').innerText = "Edit Class";
+            const modalTitle = document.querySelector('#addModal h2');
+            if(modalTitle) modalTitle.innerText = "Edit Class";
+            
             const submitBtn = document.querySelector('#addModal button[type="submit"]');
-            submitBtn.innerText = "Update";
+            if(submitBtn) submitBtn.innerText = "Update";
 
             // Enable Repeat Section & Pre-select Current Day
             const repeatSection = document.querySelector('.mt-4.repeat-section');
@@ -377,15 +406,9 @@
                     const parts = data.date.split(' ');
                     if (parts.length >= 2) {
                         const dayFull = parts[1]; // "Monday"
-                        // Map to Short (Mon, Tue...) matches value="{{ $day }}"
                         const dayMap = {
-                            'Monday': 'Mon',
-                            'Tuesday': 'Tue',
-                            'Wednesday': 'Wed',
-                            'Thursday': 'Thu',
-                            'Friday': 'Fri',
-                            'Saturday': 'Sat',
-                            'Sunday': 'Sun'
+                            'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed',
+                            'Thursday': 'Thu', 'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun'
                         };
                         const shortDay = dayMap[dayFull];
                         if (shortDay) {
@@ -398,23 +421,29 @@
 
             // Update Form Action
             const form = document.querySelector('#addModal form');
-            form.action = `/classes/${classId}`;
+            if(form) {
+                form.action = `/classes/${classId}`;
 
-            // Add hidden Request Method Spoofing
-            let methodInput = form.querySelector('input[name="_method"]');
-            if (!methodInput) {
-                methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'PUT';
-                form.appendChild(methodInput);
-            } else {
-                methodInput.value = 'PUT';
+                // Add hidden Request Method Spoofing
+                let methodInput = form.querySelector('input[name="_method"]');
+                if (!methodInput) {
+                    methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'PUT';
+                    form.appendChild(methodInput);
+                } else {
+                    methodInput.value = 'PUT';
+                }
             }
 
-            document.getElementById('addModal').classList.remove('hidden');
+            const modal = document.getElementById('addModal');
+            if(modal) modal.classList.remove('hidden');
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+            console.error(err);
+            alert("Error loading class details: " + err.message);
+        });
   }
 
   function openAddModal() {

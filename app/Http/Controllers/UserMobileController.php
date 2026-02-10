@@ -680,17 +680,15 @@ class UserMobileController extends Controller
     }
 
     public function getWorkouts(Request $request)
-    {
-        try {
-            $date = $request->input('date');
+{
+    try {
+        $date = $request->input('date');
 
-            // Optional: validate date
-            $request->validate([
-                'date' => 'required|date',
-            ]);
+        $request->validate([
+            'date' => 'required|date',
+        ]);
 
-            // 2. Fetch Workouts filtered by date
-            $workouts = WorkoutManager::with([
+        $workouts = WorkoutManager::with([
                 'format',
                 'type',
                 'straights.workoutLibrary', 'straights.sets',
@@ -702,25 +700,26 @@ class UserMobileController extends Controller
                 'circuits.workoutLibrary.categoryOption',
                 'forTimes.workoutLibrary.categoryOption'
             ])
+            ->where('status', 'active')  
             ->whereDate('date', $date)
             ->get();
 
-            // 3. Group workouts by type name
-            $groupedWorkouts = $workouts->groupBy(function ($workout) {
-                return $workout->type->name ?? 'Unknown';
-            });
+        $groupedWorkouts = $workouts->groupBy(function ($workout) {
+            return $workout->type->name ?? 'Unknown';
+        });
 
-            return response()->json([
-                'status' => true,
-                'date' => $date,
-                'workouts' => $groupedWorkouts,
-            ], 200);
+        return response()->json([
+            'status' => true,
+            'date' => $date,
+            'workouts' => $groupedWorkouts,
+        ], 200);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => $e->getMessage(),
+        ], 500);
     }
+}
+
 }
