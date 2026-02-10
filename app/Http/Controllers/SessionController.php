@@ -1005,8 +1005,8 @@ class SessionController extends Controller
                 case 'conditioning':
                     $class->is_conditioning = $assigned;
                     break;
-                case 'test':
-                    $class->is_test = $assigned;
+                case 'accessory':
+                    $class->is_accessory = $assigned;
                     break;
             }
             $class->save();
@@ -1026,7 +1026,7 @@ class SessionController extends Controller
             case 'conditioning':
                 Conditioning::where('id', $workoutId)->update(['is_assigned' => $assigned]);
                 break;
-            case 'test':
+            case 'accessory':
                 Test::where('id', $workoutId)->update(['is_assigned' => $assigned]);
                 break;
         }
@@ -1073,14 +1073,14 @@ class SessionController extends Controller
                     'workout_type' => $storedType, // Use resolved type
                     'date' => $date,
                 ]);
-                
+                log::info('Workout assigned successfully.',$type );
                 // Update Class Flag based on type
                 switch ($type) {
                     case 'strength': $cls->is_strength = 1; break;
                     case 'weightlifting': $cls->is_weightlifting = 1; break;
                     case 'warmup': $cls->is_warmup = 1; break;
                     case 'conditioning': $cls->is_conditioning = 1; break;
-                    case 'test': $cls->is_test = 1; break;
+                    case 'accessory': $cls->is_accessory = 1; break;
                     case 'workout_manager':
                          // Resolve the actual type from WorkoutManager
                          $wm = \App\Models\WorkoutManager::find($workoutId);
@@ -1090,7 +1090,7 @@ class SessionController extends Controller
                              elseif ($wmType == 'conditioning') $cls->is_conditioning = 1;
                              elseif ($wmType == 'weightlifting') $cls->is_weightlifting = 1;
                              elseif ($wmType == 'warmup') $cls->is_warmup = 1;
-                             elseif ($wmType == 'test') $cls->is_test = 1;
+                             elseif ($wmType == 'accessory') $cls->is_accessory = 1;
                          }
                          break;
                 }
@@ -1185,7 +1185,7 @@ class SessionController extends Controller
                      case 'weightlifting': $class->is_weightlifting = $exists ? 1 : 0; break;
                      case 'warmup': $class->is_warmup = $exists ? 1 : 0; break;
                      case 'conditioning': $class->is_conditioning = $exists ? 1 : 0; break;
-                     case 'test': $class->is_test = $exists ? 1 : 0; break;
+                     case 'accessory': $class->is_accessory = $exists ? 1 : 0; break;
                  }
              }
              $class->save();
@@ -1212,7 +1212,7 @@ class SessionController extends Controller
                 case 'conditioning':
                     Conditioning::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
                     break;
-                case 'test':
+                case 'accessory':
                     Test::where('id', $workoutId)->update(['is_assigned' => $isAssignedAny ? 1 : 0]);
                     break;
             }
