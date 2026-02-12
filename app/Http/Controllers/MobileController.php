@@ -367,7 +367,7 @@ class MobileController extends Controller
     }
 
     //store daily warmup workout after clicking
-    public function storewarmupdaily(Request $request, $id = null)
+    public function storewarmupdaily(Request $request)
     {
         try {
             Log::info('storewarmupdaily function called.');
@@ -384,14 +384,14 @@ class MobileController extends Controller
 
             foreach ($warmupItems as $item) {
                 $validator = Validator::make($item, [
-                    'warmup_id' => 'required|integer|exists:warmups,id',
+                    'workout_manager_id' => 'required|integer',
                     'reps' => 'required|integer',
-                    'selected_day' => 'required|string',
+                    'date' => 'required|string',
                 ]);
 
                 if ($validator->fails()) {
                     $responses[] = [
-                        'warmup_id' => $item['warmup_id'] ?? null,
+                        'workout_manager_id' => $item['workout_manager_id'] ?? null,
                         'message' => 'Validation failed',
                         'errors' => $validator->errors(),
                     ];
@@ -399,13 +399,12 @@ class MobileController extends Controller
                 }
 
                 $validatedData = $validator->validated();
-                $storedDay = $validatedData['selected_day'];
+                $storedDay = $validatedData['date'];
 
                 $dailyWarmup = DailyWarmup::where('member_id', $memberId)
-                        ->where('warmup_id', $validatedData['warmup_id'])
+                        ->where('workout_manager_id', $validatedData['workout_manager_id'])
                         ->where('date', $storedDay)
                         ->first();
-
 
                 Log::info('Existing warmup record:', ['dailyWarmup' => $dailyWarmup?->toArray()]);
 
@@ -415,20 +414,20 @@ class MobileController extends Controller
                         'date' => $storedDay,
                     ]);
                     $message = 'Warm-up updated successfully';
-                    Log::info('Warm-up updated', ['warmup_id' => $validatedData['warmup_id']]);
+                    Log::info('Warm-up updated', ['workout_manager_id' => $validatedData['workout_manager_id']]);
                 } else {
                     $dailyWarmup = DailyWarmup::create([
                         'member_id' => $memberId,
-                        'warmup_id' => $validatedData['warmup_id'],
                         'reps' => $validatedData['reps'],
                         'date' => $storedDay,
+                        'workout_manager_id' => $validatedData['workout_manager_id'],
                     ]);
                     $message = 'Warm-up saved successfully';
-                    Log::info('New warm-up created', ['warmup_id' => $validatedData['warmup_id']]);
+                    Log::info('New warm-up created', ['workout_manager_id' => $validatedData['workout_manager_id']]);
                 }
 
                 $responses[] = [
-                    'warmup_id' => $validatedData['warmup_id'],
+                    'workout_manager_id' => $validatedData['workout_manager_id'],
                     'message' => $message,
                     'daily_warmup_id' => $dailyWarmup->id,
                 ];
