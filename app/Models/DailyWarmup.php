@@ -12,6 +12,7 @@ class DailyWarmup extends Model
     protected $fillable = [
         'member_id',
         'warmup_id',
+        'workout_manager_id',
         'reps',
         'date',
     ];
@@ -25,6 +26,12 @@ class DailyWarmup extends Model
     {
         return $this->belongsTo(Warmup::class, 'warmup_id');
     }
+
+    public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
+
     public static function getDailyWarmupData($memberId, $date)
     {
         $data = self::with(['member', 'warmup.category'])

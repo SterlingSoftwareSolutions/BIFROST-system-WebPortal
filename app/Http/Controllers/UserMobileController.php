@@ -20,6 +20,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Warmup;
 
 class UserMobileController extends Controller
 {
@@ -688,6 +689,9 @@ class UserMobileController extends Controller
                 'date' => 'required|date',
             ]);
 
+            $user = $request->user();
+            $member = Newprofile::where('user_id', $user->id)->first();
+
             $classId = $request->input('class_id');
             $date = $request->input('date');
 
@@ -725,6 +729,26 @@ class UserMobileController extends Controller
                 ->whereIn('id', $workoutIds)
                 ->where('status', 'active')
                 ->get();
+
+            // Check warmup completion status for each workout
+            $workouts->each(function ($workout) use ($member, $date) {
+                // Check if warmup is completed in DailyWarmup table using workout_manager_id
+                $completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('workout_manager_id', $workout->id)
+                    ->whereDate('date', $date)
+                    ->exists();
+
+                $workout->workout_completed = $completed ? 1 : 0;
+
+                // Check if warmup item has reps saved (item completed)
+                $item_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('workout_manager_id', $workout->id)
+                    ->where('reps', '>', 0)
+                    ->whereDate('date', $date)
+                    ->exists();
+
+                $workout->warmup_item_completed = $item_completed ? 1 : 0;
+            });
 
             // Group workouts by type
             $groupedWorkouts = $workouts->groupBy(function ($workout) {
