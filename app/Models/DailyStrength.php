@@ -17,6 +17,9 @@ class DailyStrength extends Model
         'type',
         'weight',
         'set_number',
+        'workout_manager_id',
+        'workout_format_type',
+        'workout_format_id',
     ];
 
     public function member()
@@ -27,6 +30,16 @@ class DailyStrength extends Model
     public function strenght()
     {
         return $this->belongsTo(Strength::class, 'strength_id');
+    }
+
+    public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
+
+    public function workoutFormat()
+    {
+        return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
     }
 
 }
