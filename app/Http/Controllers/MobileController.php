@@ -28,6 +28,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use App\Models\WorkoutAssign;
+use App\Models\WorkoutManager;
+use App\Models\Round;
+use App\Models\Amrap;
+use App\Models\ForTime;
+use App\Models\Interval;
+use App\Models\Emom;
+use App\Models\Straight;
+use App\Models\Circuit;
+use App\Models\Pyramid;
 
 class MobileController extends Controller
 {
@@ -385,6 +394,8 @@ class MobileController extends Controller
             foreach ($warmupItems as $item) {
                 $validator = Validator::make($item, [
                     'workout_manager_id' => 'required|integer',
+                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
+                    'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'date' => 'required|string',
                 ]);
@@ -392,6 +403,7 @@ class MobileController extends Controller
                 if ($validator->fails()) {
                     $responses[] = [
                         'workout_manager_id' => $item['workout_manager_id'] ?? null,
+                        'workout_format_id' => $item['workout_format_id'] ?? null,
                         'message' => 'Validation failed',
                         'errors' => $validator->errors(),
                     ];
@@ -400,9 +412,14 @@ class MobileController extends Controller
 
                 $validatedData = $validator->validated();
                 $storedDay = $validatedData['date'];
+                $workoutFormatType = $validatedData['workout_format_type'];
+                $workoutFormatId = $validatedData['workout_format_id'];
 
+                // Find existing record by workout_manager_id + format_type + format_id + date
                 $dailyWarmup = DailyWarmup::where('member_id', $memberId)
                         ->where('workout_manager_id', $validatedData['workout_manager_id'])
+                        ->where('workout_format_type', $workoutFormatType)
+                        ->where('workout_format_id', $workoutFormatId)
                         ->where('date', $storedDay)
                         ->first();
 
@@ -412,22 +429,36 @@ class MobileController extends Controller
                     $dailyWarmup->update([
                         'reps' => $validatedData['reps'],
                         'date' => $storedDay,
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
                     ]);
                     $message = 'Warm-up updated successfully';
-                    Log::info('Warm-up updated', ['workout_manager_id' => $validatedData['workout_manager_id']]);
+                    Log::info('Warm-up updated', [
+                        'workout_manager_id' => $validatedData['workout_manager_id'],
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
+                    ]);
                 } else {
                     $dailyWarmup = DailyWarmup::create([
                         'member_id' => $memberId,
                         'reps' => $validatedData['reps'],
                         'date' => $storedDay,
                         'workout_manager_id' => $validatedData['workout_manager_id'],
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
                     ]);
                     $message = 'Warm-up saved successfully';
-                    Log::info('New warm-up created', ['workout_manager_id' => $validatedData['workout_manager_id']]);
+                    Log::info('New warm-up created', [
+                        'workout_manager_id' => $validatedData['workout_manager_id'],
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
+                    ]);
                 }
 
                 $responses[] = [
                     'workout_manager_id' => $validatedData['workout_manager_id'],
+                    'workout_format_type' => $workoutFormatType,
+                    'workout_format_id' => $workoutFormatId,
                     'message' => $message,
                     'daily_warmup_id' => $dailyWarmup->id,
                 ];
