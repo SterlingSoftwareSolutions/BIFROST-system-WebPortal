@@ -230,11 +230,17 @@
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
-                  <!-- Conditioning -->
+                  <!-- Accessory -->
                   <div class="p-1">
                     <img src="/icon/kettlebellB.png"
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500' : 'border-transparent'}"
                       title="Accessory">
+                  </div>
+                  <!-- 1RM -->
+                  <div class="p-1">
+                    <img src="/icon/testBlack.png"
+                      class="w-9 h-8 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500' : 'border-transparent'}"
+                      title="1RM">
                   </div>
                   
               </td>

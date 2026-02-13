@@ -681,45 +681,27 @@ class UserMobileController extends Controller
         }
     }
 
-    public function getWorkouts(Request $request)
+   public function getWorkouts(Request $request)
     {
         try {
             $request->validate([
                 'class_id' => 'required|integer',
-                'date' => 'required|string',
+                'date' => 'required|date',
             ]);
 
-            $user = $request->user();
-            $member = Newprofile::where('user_id', $user->id)->first();
-
             $classId = $request->input('class_id');
-            $dateString = $request->input('date');
-            
-            // Parse the custom date format "13/02/26 Friday" to a Carbon instance
-            try {
-                $date = Carbon::createFromFormat('d/m/y l', $dateString);
-            } catch (\Exception $e) {
-                // Fallback: try other common formats
-                try {
-                    $date = Carbon::parse($dateString);
-                } catch (\Exception $e2) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Invalid date format. Expected format: "dd/mm/yy DayName" (e.g., "13/02/26 Friday")',
-                    ], 400);
-                }
-            }
+            $date = $request->input('date');
 
             // Get workout assignments filtered by class_id and date
             $workoutAssignments = WorkoutAssign::where('class_id', $classId)
-                ->where('date', 'LIKE', '%' . $date->format('d/m/y') . '%')
+                ->whereDate('date', $date)
                 ->get();
 
             if ($workoutAssignments->isEmpty()) {
                 return response()->json([
                     'status' => true,
                     'message' => 'No workouts found for this class and date',
-                    'date' => $dateString,
+                    'date' => $date,
                     'class_id' => $classId,
                     'workouts' => [],
                 ], 200);
@@ -732,7 +714,7 @@ class UserMobileController extends Controller
             $workouts = WorkoutManager::with([
                     'format',
                     'type',
-                    'straights.workoutLibrary.categoryOption', 'straights.sets',
+                    'straights.workoutLibrary', 'straights.sets',
                     'rounds.workoutLibrary.categoryOption',
                     'intervals.workoutLibrary.categoryOption',
                     'amraps.workoutLibrary.categoryOption',
@@ -745,79 +727,6 @@ class UserMobileController extends Controller
                 ->where('status', 'active')
                 ->get();
 
-            // Check warmup completion status for each workout using polymorphic format tracking
-            $workouts->each(function ($workout) use ($member, $dateString) {
-                // Map format relationships to their types
-                $formatMapping = [
-                    'rounds' => 'rounds',
-                    'amraps' => 'amrap',
-                    'forTimes' => 'for_time',
-                    'intervals' => 'intervals',
-                    'emoms' => 'emom',
-                    'straights' => 'straight_sets',
-                    'circuits' => 'circuits',
-                    'pyramids' => 'pyramid',
-                ];
-
-                $hasAnyCompletion = false;
-                $hasAnyItemCompletion = false;
-
-                // Check each format type for completion
-                foreach ($formatMapping as $relation => $formatType) {
-                    if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
-                        foreach ($workout->{$relation} as $formatItem) {
-                            // Check if this specific format item is completed
-                            $isCompleted = DailyWarmup::where('member_id', $member->id)
-                                ->where('workout_manager_id', $workout->id)
-                                ->where('workout_format_type', $formatType)
-                                ->where('workout_format_id', $formatItem->id)
-                                ->where('date', $dateString)
-                                ->exists();
-
-                            if ($isCompleted) {
-                                $hasAnyCompletion = true;
-                            }
-
-                            // Check if this specific format item has reps saved
-                            $hasReps = DailyWarmup::where('member_id', $member->id)
-                                ->where('workout_manager_id', $workout->id)
-                                ->where('workout_format_type', $formatType)
-                                ->where('workout_format_id', $formatItem->id)
-                                ->where('reps', '>', 0)
-                                ->where('date', $dateString)
-                                ->exists();
-
-                            if ($hasReps) {
-                                $hasAnyItemCompletion = true;
-                            }
-
-                            // Add completion status to each format item
-                            $formatItem->is_completed = $isCompleted ? 1 : 0;
-                            $formatItem->has_reps_saved = $hasReps ? 1 : 0;
-                        }
-                    }
-                }
-
-                // Fallback: Check by workout_manager_id only (for backward compatibility)
-                if (!$hasAnyCompletion) {
-                    $hasAnyCompletion = DailyWarmup::where('member_id', $member->id)
-                        ->where('workout_manager_id', $workout->id)
-                        ->where('date', $dateString)
-                        ->exists();
-                }
-
-                if (!$hasAnyItemCompletion) {
-                    $hasAnyItemCompletion = DailyWarmup::where('member_id', $member->id)
-                        ->where('workout_manager_id', $workout->id)
-                        ->where('reps', '>', 0)
-                        ->where('date', $dateString)
-                        ->exists();
-                }
-
-                $workout->workout_completed = $hasAnyCompletion ? 1 : 0;
-                $workout->warmup_item_completed = $hasAnyItemCompletion ? 1 : 0;
-            });
-
             // Group workouts by type
             $groupedWorkouts = $workouts->groupBy(function ($workout) {
                 return $workout->type->name ?? 'Unknown';
@@ -825,7 +734,7 @@ class UserMobileController extends Controller
 
             return response()->json([
                 'status' => true,
-                'date' => $dateString,
+                'date' => $date,
                 'class_id' => $classId,
                 'workouts' => $groupedWorkouts,
             ], 200);
@@ -837,5 +746,6 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
+
 
 }
