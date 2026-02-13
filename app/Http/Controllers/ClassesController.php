@@ -255,32 +255,12 @@ class ClassesController extends Controller
         $classes = Classes::where('date', $dayName)->get();
 
         foreach ($classes as $class) {
-             $checkActive = function($classId, $types) {
-                 if (!is_array($types)) $types = [$types];
-                 
-                 $assignments = \App\Models\WorkoutAssign::where('class_id', $classId)
-                                ->whereIn('workout_type', $types)
-                                ->get();
-                 
-                 foreach($assignments as $asn) {
-                     // Check if mapped to WorkoutManager
-                     $wm = \App\Models\WorkoutManager::find($asn->workout_id);
-                     if ($wm) {
-                         if ($wm->status === 'inactive') continue; // Skip inactive
-                         return true; // Found active WM
-                     }
-                     // If not found in WM, assume legacy active
-                     return true;
-                 }
-                 return false;
-             };
-
-             $class->is_warmup = $checkActive($class->id, 'warmup');
-             $class->is_strength = $checkActive($class->id, 'strength');
-             $class->is_weightlifting = $checkActive($class->id, 'weightlifting');
-             $class->is_conditioning = $checkActive($class->id, 'conditioning');
-             $class->is_accessory = $checkActive($class->id, 'accessory');
-             $class->is_1rm = $checkActive($class->id, ['1rm', 'test', "PR's", "pr's"]);
+             $class->is_warmup = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'warmup')->exists();
+             $class->is_strength = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'strength')->exists();
+             $class->is_weightlifting = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'weightlifting')->exists();
+             $class->is_conditioning = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'conditioning')->exists();
+             $class->is_accessory = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'accessory')->exists();
+             $class->is_1rm = WorkoutAssign::where('class_id', $class->id)->whereIn('workout_type', ['1rm', 'test', "PR's", "pr's"])->exists();
         }
 
         return response()->json($classes);
