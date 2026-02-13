@@ -1,0 +1,71 @@
+/* Access page  */
+
+.input-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 1rem; /* Add some spacing between each container */
+}
+
+.input-container input {
+    display: none; /* Hide the checkbox */
+}
+
+.input-container label {
+    padding: 0.5rem 1rem;
+    border: 1px solid #d1d5db; /* border-gray-300 */
+    border-radius: 0.25rem; /* rounded-md */
+    cursor: pointer;
+    color: #6b7280; /* text-gray-500 */
+    font-weight: normal; /* Non-bold by default */
+    transition: color 0.3s, font-weight 0.3s, border 0.3s;
+}
+
+.input-container input:checked + label {
+    color: #374151; /* text-gray-700 */
+    font-weight: bold; /* Bold when selected */
+    border-color: #002053; /* Darker border when selected */
+}
+
+
+/* Workout Library page */
+
+.popup {
+    display: none;
+}
+
+.popup-content {
+    animation-duration: 0.4s;
+}
+
+.popup-content.show {
+    animation-name: slideIn;
+}
+
+.popup-content.hide {
+    animation-name: slideOut;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-50%);
+        opacity: 0;
+    }
+}

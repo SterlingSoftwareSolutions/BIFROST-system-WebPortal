@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Exception;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+
+class AuthController extends Controller
+{
+    // login
+    public function login(Request $request)
+    {
+        // dd($request);
+        try {
+            // Validate the request
+            $request->validate([
+                'pin_1' => 'required|integer|min:0|max:9',
+                'pin_2' => 'required|integer|min:0|max:9',
+                'pin_3' => 'required|integer|min:0|max:9',
+                'pin_4' => 'required|integer|min:0|max:9',
+            ]);
+                 $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
+
+                $user = User::where('pin', $pin)->first();
+
+                if($request->portal != $user->user_type  && $user->pin == $pin){
+                        return redirect()->back()->with('error', 'Please enter a correct pin number.');
+                }
+                else if($request->portal == $user->user_type  && $user->pin != $pin){
+                    return redirect()->back()->with('error', 'Please enter a correct pin number.');
+                }
+
+            if ($user) {
+                // Log the user in
+                Auth::login($user);
+                if ($request->type == "mobile") {
+                    if ($user->user_type == "client") {
+                        if ($request->wantsJson()) {
+                            $token = $user->createToken('MyAppToken')->plainTextToken;
+
+                            return response()->json([
+                                'success' => true,
+                                'user' => $user,
+                                'token' => $token
+                            ], 200);
+                        }else {
+                            return redirect()->route('mobile.trainingday');
+                        }
+                    } else {
+                        return redirect()->back()->with('error', 'Please enter a correct pin number.');
+                    }
+                } elseif ($request->type == "web") {
+                    if ($user->user_type == "admin" || $user->user_type == "super admin") {
+                        return redirect()->route('admin.dashboard');
+                    } elseif ($user->user_type == "client") {
+                        return redirect()->route('user.dashboard');
+                    } else {
+                        return redirect()->back()->with('error', 'Please enter a correct pin number.');
+                    }
+                } else {
+                    return redirect()->back()->with('error', 'Something is wrong.');
+                }
+            }
+
+
+            // If no user is found, redirect back with an error message
+            return redirect()->back()->with('error', 'Please enter a correct pin number.');
+        } catch (Exception $e) {
+            // return redirect()->back();
+            return redirect()->back()->with('error', 'Please enter a correct pin number.');
+        }
+    }
+
+    public function showLoginForm()
+    {
+        return view('auth.login');
+    }
+    public function showUserLoginForm()
+    {
+        return view('auth.userlogin');
+    }
+    // log out
+    public function logout(Request $request)
+    {
+        Auth::logout();
+
+        // Clear all session data
+        session()->flush();
+
+        if ($request->type == "web") {
+            return redirect('/'); // Redirect to the homepage or any other page
+        } elseif ($request->type == "mobile") {
+            return redirect('/mobile/login');
+        }
+    }
+
+    public function mobilelogin(Request $request)
+    {
+        try {
+            $request->validate([
+                'pin_1' => 'required|integer|min:0|max:9',
+                'pin_2' => 'required|integer|min:0|max:9',
+                'pin_3' => 'required|integer|min:0|max:9',
+                'pin_4' => 'required|integer|min:0|max:9',
+            ]);
+
+            $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
+
+            $user = User::where(function ($query) use ($request) {
+                if ($request->portal === 'admin') {
+                    $query->whereIn('user_type', ['admin', 'super admin']);
+                } else {
+                    $query->whereIn('user_type', ['client', 'worker']);
+                }
+            })
+            ->where('pin', $pin)
+            ->first();
+
+            if ($user && $user->user_type == "client") {
+                // ✅ No CSRF, just return a token
+                $token = $user->createToken('MyAppToken')->plainTextToken;
+
+                return response()->json([
+                    'success' => true,
+                    'user' => $user,
+                    'token' => $token
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid PIN or unauthorized user type.'
+            ], 401);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function mobilelogout(Request $request)
+    {
+        // Logout the user
+        Auth::logout();
+
+        // Clear session data
+        session()->flush();
+
+        // Return JSON response
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout successful',
+        ], 200);
+    }
+
+}

@@ -1,0 +1,24 @@
+body {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+/* Customize scrollbar width */
+.scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+/* Customize scrollbar track */
+.scrollbar::-webkit-scrollbar-track {
+    background: #cae9ff;
+}
+
+/* Customize scrollbar thumb */
+.scrollbar::-webkit-scrollbar-thumb {
+    background: #5fa8d3;
+    border-radius: 4px;
+}
+
+/* Customize scrollbar thumb on hover */
+.scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #1b4965;
+}

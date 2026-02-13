@@ -1,0 +1,45 @@
+on:
+  push:
+    branches:
+      - staging
+name: Deploy Staging
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: Use production env
+      run: cp .env.staging .env
+
+    - name: Install vendor files
+      run: composer install --no-dev --optimize-autoloader
+
+    - name: Install node modules
+      run: npm install
+
+    - name: Build static assets
+      run: npm run build
+
+    - name: Generate storage link
+      run: php artisan storage:link
+
+    - name: Delete cache
+      run: rm -rf bootstrap/cache/*
+
+    - name: Sync files
+      uses: SamKirkland/FTP-Deploy-Action@4.3.3
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+
+    - name: Check website status
+      run: curl -I ${{ secrets.url }}

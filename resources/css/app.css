@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    section {
+        @apply py-[74px];
+    }
+}
+
+@layer components {
+    .container {
+        @apply max-w-full w-[1440px] px-2 mx-auto;
+    }
+    .font-boogaloo {
+        font-family: "Boogaloo", sans-serif;
+    }
+    .font-anton {
+        font-family: "Anton", sans-serif;
+    }
+}
+
+@media only screen and (min-width: 1000px) {
+    .conatiner {
+        @apply w-full;
+    }
+    section {
+        @apply py-[35px];
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .conatiner {
+        @apply w-full;
+    }
+    .heading {
+        @apply text-[26px] leading-[36px];
+    }
+}
+
+@import "~@fortawesome/fontawesome-free/css/all.min.css";
+
+
