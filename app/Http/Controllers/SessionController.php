@@ -1008,6 +1008,12 @@ class SessionController extends Controller
                 case 'accessory':
                     $class->is_accessory = $assigned;
                     break;
+                case 'accessory':
+                    $class->is_accessory = $assigned;
+                    break;
+                case '1rm':
+                    $class->is_1rm = $assigned;
+                    break;
             }
             $class->save();
         }
@@ -1081,6 +1087,9 @@ class SessionController extends Controller
                     case 'warmup': $cls->is_warmup = 1; break;
                     case 'conditioning': $cls->is_conditioning = 1; break;
                     case 'accessory': $cls->is_accessory = 1; break;
+                    case '1rm': $cls->is_1rm = 1; break;
+                    case "pr's": $cls->is_1rm = 1; break;
+                    case "PR's": $cls->is_1rm = 1; break;
                     case 'workout_manager':
                          // Resolve the actual type from WorkoutManager
                          $wm = \App\Models\WorkoutManager::find($workoutId);
@@ -1091,6 +1100,8 @@ class SessionController extends Controller
                              elseif ($wmType == 'weightlifting') $cls->is_weightlifting = 1;
                              elseif ($wmType == 'warmup') $cls->is_warmup = 1;
                              elseif ($wmType == 'accessory') $cls->is_accessory = 1;
+                             elseif ($wmType == 'accessory') $cls->is_accessory = 1;
+                             elseif ($wmType == '1rm' || $wmType == "pr's" || $wmType == "PR's") $cls->is_1rm = 1;
                          }
                          break;
                 }
@@ -1186,6 +1197,12 @@ class SessionController extends Controller
                      case 'warmup': $class->is_warmup = $exists ? 1 : 0; break;
                      case 'conditioning': $class->is_conditioning = $exists ? 1 : 0; break;
                      case 'accessory': $class->is_accessory = $exists ? 1 : 0; break;
+                     case 'accessory': $class->is_accessory = $exists ? 1 : 0; break;
+                     case '1rm': 
+                     case "pr's":
+                     case "PR's":
+                        $class->is_1rm = $exists ? 1 : 0; 
+                        break;
                  }
              }
              $class->save();

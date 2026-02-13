@@ -679,47 +679,71 @@ class UserMobileController extends Controller
         }
     }
 
-    public function getWorkouts(Request $request)
-{
-    try {
-        $date = $request->input('date');
+   public function getWorkouts(Request $request)
+    {
+        try {
+            $request->validate([
+                'class_id' => 'required|integer',
+                'date' => 'required|date',
+            ]);
 
-        $request->validate([
-            'date' => 'required|date',
-        ]);
+            $classId = $request->input('class_id');
+            $date = $request->input('date');
 
-        $workouts = WorkoutManager::with([
-                'format',
-                'type',
-                'straights.workoutLibrary', 'straights.sets',
-                'rounds.workoutLibrary.categoryOption',
-                'intervals.workoutLibrary.categoryOption',
-                'amraps.workoutLibrary.categoryOption',
-                'emoms.workoutLibrary.categoryOption',
-                'pyramids.workoutLibrary.categoryOption',
-                'circuits.workoutLibrary.categoryOption',
-                'forTimes.workoutLibrary.categoryOption'
-            ])
-            ->where('status', 'active')  
-            ->whereDate('date', $date)
-            ->get();
+            // Get workout assignments filtered by class_id and date
+            $workoutAssignments = WorkoutAssign::where('class_id', $classId)
+                ->whereDate('date', $date)
+                ->get();
 
-        $groupedWorkouts = $workouts->groupBy(function ($workout) {
-            return $workout->type->name ?? 'Unknown';
-        });
+            if ($workoutAssignments->isEmpty()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'No workouts found for this class and date',
+                    'date' => $date,
+                    'class_id' => $classId,
+                    'workouts' => [],
+                ], 200);
+            }
 
-        return response()->json([
-            'status' => true,
-            'date' => $date,
-            'workouts' => $groupedWorkouts,
-        ], 200);
+            // Get workout IDs from assignments
+            $workoutIds = $workoutAssignments->pluck('workout_id')->unique();
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => $e->getMessage(),
-        ], 500);
+            // Fetch workout details from workout_manager with relationships
+            $workouts = WorkoutManager::with([
+                    'format',
+                    'type',
+                    'straights.workoutLibrary', 'straights.sets',
+                    'rounds.workoutLibrary.categoryOption',
+                    'intervals.workoutLibrary.categoryOption',
+                    'amraps.workoutLibrary.categoryOption',
+                    'emoms.workoutLibrary.categoryOption',
+                    'pyramids.workoutLibrary.categoryOption',
+                    'circuits.workoutLibrary.categoryOption',
+                    'forTimes.workoutLibrary.categoryOption'
+                ])
+                ->whereIn('id', $workoutIds)
+                ->where('status', 'active')
+                ->get();
+
+            // Group workouts by type
+            $groupedWorkouts = $workouts->groupBy(function ($workout) {
+                return $workout->type->name ?? 'Unknown';
+            });
+
+            return response()->json([
+                'status' => true,
+                'date' => $date,
+                'class_id' => $classId,
+                'workouts' => $groupedWorkouts,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
-}
+
 
 }

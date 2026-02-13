@@ -107,7 +107,7 @@
                 </div>
                 <div class="w-full flex mx-4">
                     {{-- side week calender --}}
-                    <div class="w-[30%]">
+                    <div class="w-[36%]">
 
                         <div class="flex flex-col text-lg weekday pr-5">
                             <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>

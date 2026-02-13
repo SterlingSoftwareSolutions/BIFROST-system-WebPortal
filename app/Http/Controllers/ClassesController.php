@@ -254,6 +254,15 @@ class ClassesController extends Controller
 
         $classes = Classes::where('date', $dayName)->get();
 
+        foreach ($classes as $class) {
+             $class->is_warmup = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'warmup')->exists();
+             $class->is_strength = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'strength')->exists();
+             $class->is_weightlifting = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'weightlifting')->exists();
+             $class->is_conditioning = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'conditioning')->exists();
+             $class->is_accessory = WorkoutAssign::where('class_id', $class->id)->where('workout_type', 'accessory')->exists();
+             $class->is_1rm = WorkoutAssign::where('class_id', $class->id)->whereIn('workout_type', ['1rm', 'test', "PR's", "pr's"])->exists();
+        }
+
         return response()->json($classes);
     }
 
