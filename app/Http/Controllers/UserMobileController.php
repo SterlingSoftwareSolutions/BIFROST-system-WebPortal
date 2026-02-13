@@ -759,10 +759,7 @@ class UserMobileController extends Controller
                     'pyramids' => 'pyramid',
                 ];
 
-                $hasAnyCompletion = false;
-                $hasAnyItemCompletion = false;
-
-                // Check each format type for completion
+                // Check each format type for completion - only tracking is_completed for individual items
                 foreach ($formatMapping as $relation => $formatType) {
                     if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
                         foreach ($workout->{$relation} as $formatItem) {
@@ -774,10 +771,6 @@ class UserMobileController extends Controller
                                 ->where('date', $dateString)
                                 ->exists();
 
-                            if ($isCompleted) {
-                                $hasAnyCompletion = true;
-                            }
-
                             // Check if this specific format item has reps saved
                             $hasReps = DailyWarmup::where('member_id', $member->id)
                                 ->where('workout_manager_id', $workout->id)
@@ -787,10 +780,6 @@ class UserMobileController extends Controller
                                 ->where('date', $dateString)
                                 ->exists();
 
-                            if ($hasReps) {
-                                $hasAnyItemCompletion = true;
-                            }
-
                             // Add completion status to each format item
                             $formatItem->is_completed = $isCompleted ? 1 : 0;
                             $formatItem->has_reps_saved = $hasReps ? 1 : 0;
@@ -798,29 +787,51 @@ class UserMobileController extends Controller
                     }
                 }
 
-                // Fallback: Check by workout_manager_id only (for backward compatibility)
-                if (!$hasAnyCompletion) {
-                    $hasAnyCompletion = DailyWarmup::where('member_id', $member->id)
-                        ->where('workout_manager_id', $workout->id)
-                        ->where('date', $dateString)
-                        ->exists();
-                }
-
-                if (!$hasAnyItemCompletion) {
-                    $hasAnyItemCompletion = DailyWarmup::where('member_id', $member->id)
-                        ->where('workout_manager_id', $workout->id)
-                        ->where('reps', '>', 0)
-                        ->where('date', $dateString)
-                        ->exists();
-                }
-
-                $workout->workout_completed = $hasAnyCompletion ? 1 : 0;
-                $workout->warmup_item_completed = $hasAnyItemCompletion ? 1 : 0;
+                // Note: Only keeping type_completed and is_completed fields as requested
             });
 
             // Group workouts by type
             $groupedWorkouts = $workouts->groupBy(function ($workout) {
                 return $workout->type->name ?? 'Unknown';
+            });
+
+            // Add type-level completion status: type is completed only if ALL format items across ALL workouts in that type are completed
+            $groupedWorkouts = $groupedWorkouts->map(function ($typeWorkouts, $typeName) {
+                $totalFormatItems = 0;
+                $completedFormatItems = 0;
+                
+                // Count all format items and completed items across all workouts in this type
+                $typeWorkouts->each(function ($workout) use (&$totalFormatItems, &$completedFormatItems) {
+                    $formatMapping = [
+                        'rounds' => 'rounds',
+                        'amraps' => 'amrap',
+                        'forTimes' => 'for_time',
+                        'intervals' => 'intervals',
+                        'emoms' => 'emom',
+                        'straights' => 'straight_sets',
+                        'circuits' => 'circuits',
+                        'pyramids' => 'pyramid',
+                    ];
+                    
+                    foreach ($formatMapping as $relation => $formatType) {
+                        if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
+                            foreach ($workout->{$relation} as $formatItem) {
+                                $totalFormatItems++;
+                                if ($formatItem->is_completed == 1) {
+                                    $completedFormatItems++;
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Add type completion status to each workout in this type
+                $typeCompletionStatus = ($totalFormatItems > 0 && $completedFormatItems === $totalFormatItems) ? 1 : 0;
+                $typeWorkouts->each(function ($workout) use ($typeCompletionStatus) {
+                    $workout->type_completed = $typeCompletionStatus;
+                });
+                
+                return $typeWorkouts;
             });
 
             return response()->json([
