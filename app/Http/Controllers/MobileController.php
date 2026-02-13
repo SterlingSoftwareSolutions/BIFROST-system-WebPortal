@@ -513,11 +513,11 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    'reps' => 'required|integer',
-                    'weight' => 'nullable|numeric',
-                    'set_number' => 'required|integer',
+                    #'reps' => 'required|integer',
+                    #'weight' => 'nullable|numeric',
+                    #'set_number' => 'required|integer',
                     'date' => 'required|string',
-                    'strength_id' => 'required|integer', 
+                    #'strength_id' => 'required|integer', 
                 ]);
 
                 if ($validator->fails()) {
