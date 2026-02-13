@@ -15,6 +15,8 @@ class DailyWarmup extends Model
         'workout_manager_id',
         'reps',
         'date',
+        'workout_format_type',
+        'workout_format_id',
     ];
 
     public function member()
@@ -30,6 +32,15 @@ class DailyWarmup extends Model
     public function workoutManager()
     {
         return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
+
+    /**
+     * Get the workout format (polymorphic relation)
+     * Can be: Round, Amrap, ForTime, Interval, Emom, Straight, Circuit, Pyramid
+     */
+    public function workoutFormat()
+    {
+        return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
     }
 
     public static function getDailyWarmupData($memberId, $date)
