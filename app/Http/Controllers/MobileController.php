@@ -394,7 +394,7 @@ class MobileController extends Controller
             foreach ($warmupItems as $item) {
                 $validator = Validator::make($item, [
                     'workout_manager_id' => 'required|integer',
-                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
+                    'workout_format_type' => 'required|string|in:rounds,amrap,for-time,intervals,emom,straight-sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'date' => 'required|string',
