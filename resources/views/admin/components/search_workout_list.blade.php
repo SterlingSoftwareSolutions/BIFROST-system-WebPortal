@@ -19,11 +19,11 @@
                         <!-- Exercise Field (Searchable) -->
                         <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
                             <label for="workoutw_2" class="w-15 text-md pl-3">Exercise</label>
-                            
+
                             <!-- Custom Dropdown Structure -->
                             <div class="relative w-full custom-dropdown group" id="dropdown_workoutw_2">
                                 <input type="hidden" name="workoutw_2" id="input_workoutw_2" value="">
-                                
+
                                 <!-- TRIGGER -->
                                 <div onclick="toggleDropdownSearch('workoutw_2')"
                                      class="flex-1 px-1 py-1 border rounded text-sm flex items-center justify-between cursor-pointer bg-white"
@@ -33,22 +33,22 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg>
                                 </div>
-                                
+
                                 <!-- DROPDOWN CONTAINER -->
                                 <div id="list_workoutw_2" class="hidden absolute left-0 right-0 top-[100%] mt-1 bg-white border border-gray-300 rounded shadow-xl z-[9999] overflow-hidden min-w-[200px]">
                                     <!-- SEARCH BAR -->
                                     <div class="p-2 border-b border-gray-100 bg-white sticky top-0">
-                                        <input type="text" 
+                                        <input type="text"
                                                id="search_workoutw_2"
                                                class="w-full border border-gray-300 rounded p-1 text-sm font-normal focus:outline-none focus:border-blue-500"
                                                placeholder="Search..."
                                                oninput="filterDropdownSearch('workoutw_2')"
-                                               onclick="event.stopPropagation()" 
+                                               onclick="event.stopPropagation()"
                                                autocomplete="off">
                                     </div>
-                                   
+
                                     <div id="scroll_workoutw_2" class="max-h-60 overflow-y-auto">
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -61,7 +61,7 @@
                                 class="flex-1 px-1 py-1 border rounded text-sm w-[120px]">
                         </div>
 
-                         
+
 
                         <!-- Clear Button -->
                         <div class="flex items-center">
@@ -87,7 +87,7 @@ window.unifiedWorkoutsMap = {};
 // Main render function for the unified workout list
 window.renderUnifiedWorkoutList = function(workouts, classes = []) {
     const container = document.getElementById('unified_workout_list_container');
-    
+
     // Reset map
     window.unifiedWorkoutsMap = {};
 
@@ -108,8 +108,8 @@ window.renderUnifiedWorkoutList = function(workouts, classes = []) {
         const fmtName = workout.format ? workout.format.name : 'Unknown Format';
         const workoutName = workout.workout_name || 'Unnamed Workout';
         const number = workout.number || '';
-        
- 
+
+
         let statsHtml = '';
         if (fmtName === 'AMRAP') {
              statsHtml = `<span class="text-xs text-black font-bold">AMRAP ${number} min</span>`;
@@ -123,7 +123,7 @@ window.renderUnifiedWorkoutList = function(workouts, classes = []) {
              statsHtml = `<span class="text-xs text-black font-bold">Stations ${number}</span>`;
         }
 
-     
+
         let rowsHtml = generateWorkoutRowsHtml(fmtName, workout);
 
         // --- 3. Build Card HTML ---
@@ -142,19 +142,19 @@ window.renderUnifiedWorkoutList = function(workouts, classes = []) {
                      </button>
                  </div>
             </div>
-            
+
             <!-- Body -->
             <div class="px-3 py-2">
                  <div class="flex justify-between items-center mb-3">
                      <div class="font-bold text-xl text-gray-800 flex-1">${workoutName}</div>
-                     
+
                      <!-- Right Side Stats -->
                      <div class="text-right">
                         ${statsHtml}
                      </div>
                  </div>
 
-                 
+
                  <!-- Rows Container -->
                  <div class="space-y-1">
                      ${rowsHtml}
@@ -185,12 +185,12 @@ function generateWorkoutRowsHtml(fmt, workout) {
     else if (fmt === 'EMOM') rows = workout.emoms || [];
     else if (fmt === 'Circuit') rows = workout.circuits || [];
     else if (fmt === 'Pyramid') rows = workout.pyramids || [];
-    else if (fmt === 'For Time') rows = workout.for_times || []; 
+    else if (fmt === 'For Time') rows = workout.for_times || [];
 
     if (!rows || rows.length === 0) return '';
 
     return rows.map(row => {
-       
+
         const exName = (row.workout_library && row.workout_library.workout) ? row.workout_library.workout : 'Unknown Exercise';
         const load = row.training_load || '-';
         const unit = row.unit_type || '';
@@ -204,10 +204,10 @@ function generateWorkoutRowsHtml(fmt, workout) {
                 // If it's already in 00:00:00 format, just add min
                 return `${t} min`;
             };
-            
+
             const work = formatIntervalTime(row.work);
             const rest = formatIntervalTime(row.rest);
-            
+
             intervalColsHtml = `
                 <div class="w-32 text-center text-black text-[17px]">${work}</div>
                 <div class="w-32 text-center text-black text-[17px]">${rest}</div>
@@ -220,8 +220,8 @@ function generateWorkoutRowsHtml(fmt, workout) {
              <div class="flex items-center text-[17px] font-weight-500 py-0.5 gap-6">
                  <div class="flex-1 font-medium text-gray-800">${exName}</div>
                  <div class="w-32 text-center text-black">${load} ${unit}</div>
-                 ${fmt === 'Intervals' 
-                    ? intervalColsHtml 
+                 ${fmt === 'Intervals'
+                    ? intervalColsHtml
                     : `<div class="w-24 text-right text-black uppercase">${reps} ${isNumericReps ? 'REPS' : ''}</div>`
                  }
              </div>
@@ -254,19 +254,19 @@ window.fetchUnifiedWorkouts = function() {
     const categoryId = document.getElementById('categoryw_2').value;
     // Updated to use the hidden input ID for the custom dropdown
     const libraryId = document.getElementById('input_workoutw_2') ? document.getElementById('input_workoutw_2').value : '';
-    
+
     const activeDayBtn = document.querySelector('.day.bg-\\[\\#EEE8AA\\]');
     let date = activeDayBtn ? activeDayBtn.innerText.trim() : '';
+    document.getElementById('common_date').value = date;
 
-   
     if (!date) {
-        
+
         const firstDay = document.getElementById('1day');
-        if (firstDay && firstDay.innerText.trim() !== 'Day 1') { 
+        if (firstDay && firstDay.innerText.trim() !== 'Day 1') {
             date = firstDay.innerText.trim();
         }
     }
-    
+
     console.log("Fetching workouts for date:", date);
 
     const params = new URLSearchParams();
@@ -289,22 +289,22 @@ window.fetchUnifiedWorkouts = function() {
 
 function generateClassButtons(workout, classes) {
     if (!classes || classes.length === 0) return '<span class="text-gray-400 italic">No classes found</span>';
-    
+
     let html = '';
     const assignedIds = workout.assigned_class_ids || [];
-    
+
     // Check if ALL assigned
     const allAssigned = classes.length > 0 && classes.every(c => assignedIds.includes(c.id));
-     const allBtnClass = allAssigned 
-        ? 'bg-green-100 border-green-500 text-green-700' 
+     const allBtnClass = allAssigned
+        ? 'bg-green-100 border-green-500 text-green-700'
         : 'bg-white border-gray-300 text-gray-600';
-    
+
     // "All" Button
-    html += `<button onclick="assignUnifiedWorkout(${workout.id}, 'all', '${allAssigned ? 1 : 0}')" 
+    html += `<button onclick="assignUnifiedWorkout(${workout.id}, 'all', '${allAssigned ? 1 : 0}')"
              class="border font-bold px-3 py-1 rounded shadow-sm hover:bg-gray-100 whitespace-nowrap text-sm ${allBtnClass}">All</button>`;
-             
+
     classes.forEach(cls => {
-        // Format Time 
+        // Format Time
         let timeParts = cls.time.split(':');
         let dateObj = new Date();
         dateObj.setHours(timeParts[0]);
@@ -313,13 +313,13 @@ function generateClassButtons(workout, classes) {
 
         const isAssigned = assignedIds.includes(cls.id);
         const btnClass = isAssigned
-            ? 'bg-green-100 border-green-500 text-green-700' 
+            ? 'bg-green-100 border-green-500 text-green-700'
             : 'bg-white border-gray-300 text-gray-600';
 
-        html += `<button onclick="assignUnifiedWorkout(${workout.id}, ${cls.id}, '${isAssigned ? 1 : 0}')" 
+        html += `<button onclick="assignUnifiedWorkout(${workout.id}, ${cls.id}, '${isAssigned ? 1 : 0}')"
                  class="border font-bold px-3 py-1 rounded shadow-sm hover:bg-gray-100 whitespace-nowrap text-sm ${btnClass}">${timeString}</button>`;
     });
-    
+
     return html;
 }
 
@@ -335,7 +335,7 @@ window.assignUnifiedWorkout = function(workoutId, classId, isAssigned) {
 
     let action = '';
     if (classId === 'all') {
-        action = (isAssigned == 1) ? 'unassign' : 'assign_all'; 
+        action = (isAssigned == 1) ? 'unassign' : 'assign_all';
     } else {
         action = (isAssigned == 1) ? 'unassign' : 'assign';
     }
@@ -361,7 +361,7 @@ window.assignUnifiedWorkout = function(workoutId, classId, isAssigned) {
         if(data.status === 'success' || data.message) {
              // Refresh list to update UI state
              fetchUnifiedWorkouts();
-             
+
              // Refresh Day Planner Left Panel (Classes Table)
              if (typeof getdateName === 'function') {
                  getdateName(date);
@@ -426,18 +426,18 @@ window.toggleDropdownSearch = function(id) {
         if(list.classList.contains('hidden')) {
             // Show
             list.classList.remove('hidden');
-            
+
             // FIXED POSITIONING LOGIC
             // Calculate coordinates relative to viewport to avoid overflow clipping
             const rect = trigger.getBoundingClientRect();
-            
+
             list.style.position = 'fixed';
             list.style.top = rect.bottom + 'px';
             list.style.left = rect.left + 'px';
             // Match width to trigger or min-width
             list.style.minWidth = rect.width + 'px';
             list.style.width = 'auto';
-            list.style.maxWidth = '300px'; 
+            list.style.maxWidth = '300px';
             list.style.zIndex = '9999';
 
             setTimeout(() => { if(search) search.focus(); }, 50);
@@ -467,7 +467,7 @@ window.filterDropdownSearch = function(id) {
 
     const filter = input.value.toLowerCase();
     const divs = scrollContainer.children;
-    
+
     for (let i = 0; i < divs.length; i++) {
         const txt = divs[i].innerText;
         if (txt.toLowerCase().indexOf(filter) > -1) {
@@ -482,7 +482,7 @@ window.selectOptionSearch = function(id, value, text) {
     const input = document.getElementById(`input_${id}`);
     const display = document.getElementById(`display_${id}`);
     const list = document.getElementById(`list_${id}`);
-    
+
     if(input) {
         input.value = value;
         // Trigger fetch
@@ -546,7 +546,7 @@ window.getworkoutw_search = function(categoryId) {
     const display = document.getElementById('display_workoutw_2');
     const input = document.getElementById('input_workoutw_2');
     const searchInput = document.getElementById('search_workoutw_2');
-    
+
     // Reset selection UI
     if(display) {
         display.innerText = "-- All Exercises --";
@@ -557,31 +557,31 @@ window.getworkoutw_search = function(categoryId) {
     if(searchInput) searchInput.value = "";
 
     $.ajax({
-        url: "/get-workout-filter", 
+        url: "/get-workout-filter",
         type: "POST",
         data: {
-            tab: "all", 
-            id: categoryId, 
+            tab: "all",
+            id: categoryId,
             _token: $('meta[name="csrf-token"]').attr('content')
         },
         success: function(response) {
             const exercises = response.workouts || [];
             window.availableExercisesSearch = exercises; // Store for filtering if needed later
-            
+
             // Render Options
             let html = `<div class="p-2 hover:bg-gray-100 cursor-pointer text-sm font-bold text-gray-700 block" onclick="selectOptionSearch('workoutw_2', '', '-- All Exercises --')">-- All Exercises --</div>`;
-            
+
             exercises.forEach(ex => {
                 const txt = ex.workout;
                 const idVal = ex.id;
                 html += `<div class="p-2 hover:bg-gray-100 cursor-pointer text-sm font-bold text-gray-700 block" onclick="selectOptionSearch('workoutw_2', '${idVal}', '${txt.replace(/'/g, "\\'")}')">${txt}</div>`;
             });
-            
+
             if(scrollContainer) {
                 scrollContainer.innerHTML = html;
             }
 
-            fetchUnifiedWorkouts(); // Refresh list 
+            fetchUnifiedWorkouts(); // Refresh list
         },
         error: function(err) { console.error("Error fetching exercises:", err); }
     });
@@ -619,7 +619,7 @@ document.addEventListener('DOMContentLoaded', () => {
             getworkoutw_search('');
         };
     }
-    
+
     // Listen for Date Clicks from the Day Planner
     const dayButtons = document.querySelectorAll('.day');
     dayButtons.forEach(btn => {
