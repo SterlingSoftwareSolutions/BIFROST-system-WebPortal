@@ -751,11 +751,11 @@ class UserMobileController extends Controller
                 $formatMapping = [
                     'rounds' => 'rounds',
                     'amraps' => 'amrap',
-                    'forTimes' => 'for_time',
+                    'forTimes' => 'for-time',
                     'intervals' => 'intervals',
                     'emoms' => 'emom',
-                    'straights' => 'straight_sets',
-                    'circuits' => 'circuits',
+                    'straights' => 'straight-sets',
+                    'circuits' => 'circuit',
                     'pyramids' => 'pyramid',
                 ];
 
