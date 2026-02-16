@@ -5,37 +5,30 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DailyConditioning extends Model
+class DailyAccessory extends Model
 {
     use HasFactory;
+    protected $table = 'daily_accessory';
+
     protected $fillable = [
         'member_id',
-        'conditioning_id',
         'workout_manager_id',
-        'reps',
-        'date',
-        'weight',
         'workout_format_type',
         'workout_format_id',
+        'reps',
+        'weight',
+        'date',
     ];
 
-    public function member()
-    {
-        return $this->belongsTo(Newprofile::class, 'member_id');
-    }
 
-    public function conditioning()
-    {
-        return $this->belongsTo(Conditioning::class, 'conditioning_id');
-    }
-    public function workoutFormat()
+     public function workoutFormat()
     {
         return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
     }
 
-    public static function getDailyConditioningData($memberId, $date)
+    public static function getDailyaccessoryData($memberId, $date)
     {
-        $data = self::with(['member', 'conditioning.category'])
+        $data = self::with(['member', 'accessory.category'])
                     ->where('member_id', $memberId)
                     ->where('date', $date)
                     ->get();
