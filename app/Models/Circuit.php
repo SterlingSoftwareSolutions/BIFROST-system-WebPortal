@@ -18,6 +18,7 @@ class Circuit extends Model
         'training_load',
         'unit_type',
         'reps',
+        'gender',
     ];
     public function workoutManager()
     {

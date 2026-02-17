@@ -19,6 +19,7 @@ class Interval extends Model
         'unit_type',
         'work',
         'rest',
+        'gender',
     ];
     public function workoutManager()
     {

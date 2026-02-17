@@ -219,6 +219,7 @@ class WorkoutManagerController extends Controller
                     'training_load' => $request->input("round_load_$i"),
                     'unit_type' => $request->input("round_unit_$i"),
                     'reps' => $request->input("round_reps_$i"),
+                    'gender' => $request->input("round_gender_$i"),
                 ]);
             }
             $i++;
@@ -244,6 +245,7 @@ class WorkoutManagerController extends Controller
                         'unit_type' => $request->input("interval_{$intervalNum}_unit_{$rowId}"),
                         'work' => $request->input("interval_{$intervalNum}_work_{$rowId}"),
                         'rest' => $request->input("interval_{$intervalNum}_rest_{$rowId}"),
+                        'gender' => $request->input("interval_{$intervalNum}_gender_{$rowId}"),
                     ]);
                 }
             }
@@ -370,7 +372,9 @@ class WorkoutManagerController extends Controller
                 if ($wId) {
                     $load = $request->input("amrap_load_$i");
                     $reps = $request->input("amrap_reps_$i");
+                    $reps = $request->input("amrap_reps_$i");
                     $unit = $request->input("amrap_unit_$i");
+                    $gender = $request->input("amrap_gender_$i");
 
                     Amrap::create([
                         'workout_manager_id' => $managerId,
@@ -379,6 +383,7 @@ class WorkoutManagerController extends Controller
                         'training_load' => ($load !== '' && $load !== null) ? $load : null,
                         'unit_type' => ($unit !== '' && $unit !== null) ? $unit : 'N/A',
                         'reps' => ($reps !== '' && $reps !== null) ? $reps : null,
+                        'gender' => $gender,
                     ]);
 
                     Log::info("Saved AMRAP row $i");
@@ -405,6 +410,7 @@ class WorkoutManagerController extends Controller
                         'training_load' => $request->input("emom_load_$i"),
                         'unit_type' => $request->input("emom_unit_$i"),
                         'reps' => $request->input("emom_reps_$i"),
+                        'gender' => $request->input("emom_gender_$i"),
                     ]);
                 }
             }
@@ -425,6 +431,7 @@ class WorkoutManagerController extends Controller
                         'training_load' => $request->input("ft_load_$i"),
                         'unit_type' => $request->input("ft_unit_$i"),
                         'reps' => $request->input("ft_reps_$i"),
+                        'gender' => $request->input("ft_gender_$i"),
                     ]);
                 }
             }
@@ -442,8 +449,9 @@ class WorkoutManagerController extends Controller
                     'workout_manager_id' => $managerId,
                     'workout_libraries_id' => $wId,
                     'training_load' => $request->input("pyramid_load_$i"),
-                    'unit_type' => $request->input("pyramid_unit_$i"),
+                'unit_type' => $request->input("pyramid_unit_$i"),
                     'reps' => $request->input("pyramid_reps_$i"),
+                    'gender' => $request->input("pyramid_gender_$i"),
                 ]);
                 $i++;
             }
@@ -468,6 +476,7 @@ class WorkoutManagerController extends Controller
                 $load = $request->input("station_{$stationNum}_load_{$rowId}");
                 $unit = $request->input("station_{$stationNum}_unit_{$rowId}");
                 $reps = $request->input("station_{$stationNum}_reps_{$rowId}");
+                $gender = $request->input("station_{$stationNum}_gender_{$rowId}");
 
                 if ($wId) {
                     Circuit::create([
@@ -477,6 +486,7 @@ class WorkoutManagerController extends Controller
                         'training_load' => $load,
                         'unit_type' => $unit,
                         'reps' => $reps,
+                        'gender' => $gender,
                     ]);
                 }
             }
