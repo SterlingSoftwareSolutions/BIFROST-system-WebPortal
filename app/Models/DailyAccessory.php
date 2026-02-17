@@ -21,9 +21,14 @@ class DailyAccessory extends Model
     ];
 
 
-     public function workoutFormat()
+    public function workoutFormat()
     {
         return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
+    }
+
+    public function accessory()
+    {
+        return $this->belongsTo(Accessory::class, 'accessory_id');
     }
 
     public static function getDailyaccessoryData($memberId, $date)

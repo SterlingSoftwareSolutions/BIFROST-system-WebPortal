@@ -141,7 +141,7 @@
                     <div class="w-[70%] tabs">
                         <div class="flex flex-row gap-4 w-full items-start">
                             {{-- Unified Search List (Visible always) --}}
-                            <div class="w-[55%]">
+                            <div class="w-[52%]">
                                 @include('admin.components.search_workout_list')
                             </div>
                             
