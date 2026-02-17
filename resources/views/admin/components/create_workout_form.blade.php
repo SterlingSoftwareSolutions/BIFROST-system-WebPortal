@@ -344,7 +344,7 @@
         window.toggleGenderSelection = function(unitSelect, genderId) {
             const genderSelect = document.getElementById(genderId);
             if(genderSelect) {
-                if(unitSelect.value === 'Cal') {
+                if(unitSelect.value === 'Cal' || unitSelect.value === 'Kg') {
                     genderSelect.classList.remove('hidden');
                 } else {
                     genderSelect.classList.add('hidden');
@@ -592,13 +592,13 @@
                     <div class="w-40">
                         <div class="flex gap-1 justify-center">
                             <input type="text" name="${prefix}_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="${prefix}_unit_${index}" onchange="toggleGenderSelection(this, '${prefix}_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
                             <select id="${prefix}_gender_${index}" name="${prefix}_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="${prefix}_unit_${index}" onchange="toggleGenderSelection(this, '${prefix}_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                         </div>
                     </div>
@@ -845,13 +845,13 @@
                     <!-- Training Load Column -->
                     <div class="w-40 flex gap-1 justify-center">
                         <input type="text" name="pyramid_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                        <select name="pyramid_unit_${index}" onchange="toggleGenderSelection(this, 'pyramid_gender_${index}')" class="w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold">
-                            ${getUnitSelectOptionsHtml('%')}
-                        </select>
-                        <select id="pyramid_gender_${index}" name="pyramid_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                        <select id="pyramid_gender_${index}" name="pyramid_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold text-gray-400">
                             <option value="" disabled selected>M/F</option>
                             <option value="Male" class="text-black">M</option>
                             <option value="Female" class="text-black">F</option>
+                        </select>
+                        <select name="pyramid_unit_${index}" onchange="toggleGenderSelection(this, 'pyramid_gender_${index}')" class="w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold">
+                            ${getUnitSelectOptionsHtml('%')}
                         </select>
                     </div>
 
@@ -1171,13 +1171,13 @@
                     <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
                             <input type="text" name="ss_load_1" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select name="ss_unit_1" onchange="toggleGenderSelection(this, 'ss_gender_1')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
-                            <select id="ss_gender_1" name="ss_gender_1" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                            <select id="ss_gender_1" name="ss_gender_1" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="ss_unit_1" onchange="toggleGenderSelection(this, 'ss_gender_1')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                          </div>
                     </div>
@@ -1370,13 +1370,13 @@
                     <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
                             <input type="text" name="ss_load_${index}" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
-                                ${getUnitSelectOptionsHtml('kg')}
-                            </select>
-                             <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                            <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                                ${getUnitSelectOptionsHtml('kg')}
                             </select>
                          </div>
                     </div>
@@ -1464,13 +1464,13 @@
                              <!-- Load Display -->
                              <div class="flex items-center gap-1">
                                  <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
-                                 <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
-                                     ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
-                                 </select>
                                  <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white text-gray-400">
                                     <option value="" disabled selected>M/F</option>
                                     <option value="Male" class="text-black">M</option>
                                     <option value="Female" class="text-black">F</option>
+                                 </select>
+                                 <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
+                                     ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
                                  </select>
                              </div>
                          </div>
@@ -1531,16 +1531,16 @@
                                           <input type="text" name="ss_load_${index}${suffix}"  placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400">
                                       </div>
                                       <div class="relative">
-                                          <select name="ss_unit_${index}${suffix}" onchange="toggleGenderSelection(this, 'ss_gender_${index}${suffix}')" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
-                                              ${getUnitSelectOptionsHtml(defaultUnit)}
-                                          </select>
-                                      </div>
-                                      <div class="relative">
                                          <select id="ss_gender_${index}${suffix}" name="ss_gender_${index}${suffix}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-gray-400">
                                             <option value="" disabled selected>M/F</option>
                                             <option value="Male" class="text-black">M</option>
                                             <option value="Female" class="text-black">F</option>
                                          </select>
+                                      </div>
+                                      <div class="relative">
+                                          <select name="ss_unit_${index}${suffix}" onchange="toggleGenderSelection(this, 'ss_gender_${index}${suffix}')" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
+                                              ${getUnitSelectOptionsHtml(defaultUnit)}
+                                          </select>
                                       </div>
                                   </div>
                              </div>
@@ -1646,13 +1646,13 @@
                     <div class="w-40">
                         <div class="flex gap-1 justify-center">
                             <input type="text" name="emom_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="emom_unit_${index}" onchange="toggleGenderSelection(this, 'emom_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
                             <select id="emom_gender_${index}" name="emom_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="emom_unit_${index}" onchange="toggleGenderSelection(this, 'emom_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                         </div>
                     </div>
@@ -1795,13 +1795,13 @@
                     <div class="w-40">
                         <div class="flex gap-1 justify-center">
                             <input type="text" name="station_${stationIndex}_load_${rowIndex}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="station_${stationIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'station_${stationIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
                              <select id="station_${stationIndex}_gender_${rowIndex}" name="station_${stationIndex}_gender_${rowIndex}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="station_${stationIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'station_${stationIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                         </div>
                     </div>
@@ -1985,13 +1985,13 @@
                     <div class="w-40">
                         <div class="flex gap-1 justify-center">
                             <input type="text" name="interval_${intervalIndex}_load_${rowIndex}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm font-bold">
-                             <select name="interval_${intervalIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'interval_${intervalIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
                              <select id="interval_${intervalIndex}_gender_${rowIndex}" name="interval_${intervalIndex}_gender_${rowIndex}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                             <select name="interval_${intervalIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'interval_${intervalIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                         </div>
                     </div>
@@ -2066,19 +2066,13 @@
                     <div class="w-40">
                         <div class="flex gap-1 justify-center">
                             <input type="text" name="round_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="round_unit_${index}" onchange="toggleGenderSelection(this, 'round_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
                              <select id="round_gender_${index}" name="round_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
-
-
-
-
-
-
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
+                            </select>
+                            <select name="round_unit_${index}" onchange="toggleGenderSelection(this, 'round_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                ${getUnitSelectOptionsHtml('%')}
                             </select>
                         </div>
                     </div>
