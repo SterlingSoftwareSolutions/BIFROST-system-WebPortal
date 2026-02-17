@@ -761,9 +761,36 @@ class UserMobileController extends Controller
 
                 // Check each format type for completion - only tracking is_completed for individual items
                 foreach ($formatMapping as $relation => $formatType) {
-                    if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
-                        foreach ($workout->{$relation} as $formatItem) {
-                            // Check if this specific format item is completed
+
+                if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
+
+                    foreach ($workout->{$relation} as $formatItem) {
+
+                        // SPECIAL HANDLING FOR STRAIGHT-SETS
+                        if ($workout->format->slug === 'straight-sets') {
+
+                            if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
+
+                                foreach ($formatItem->sets as $set) {
+
+                                    $isCompleted = DailyWarmup::where('member_id', $member->id)
+                                        ->where('workout_manager_id', $workout->id)
+                                        ->where('workout_format_type', $formatType)
+                                        ->where('workout_format_id', $formatItem->id)
+                                        ->where('date', $dateString)
+                                        ->exists();
+
+                                    $set->is_completed = $isCompleted ? 1 : 0;
+                                }
+                            }
+
+                            // REMOVE straight-level completion
+                            unset($formatItem->is_completed);
+                            unset($formatItem->has_reps_saved);
+
+                        } else {
+
+                            // NORMAL FORMATS (rounds, emom, etc)
                             $isCompleted = DailyWarmup::where('member_id', $member->id)
                                 ->where('workout_manager_id', $workout->id)
                                 ->where('workout_format_type', $formatType)
@@ -771,7 +798,6 @@ class UserMobileController extends Controller
                                 ->where('date', $dateString)
                                 ->exists();
 
-                            // Check if this specific format item has reps saved
                             $hasReps = DailyWarmup::where('member_id', $member->id)
                                 ->where('workout_manager_id', $workout->id)
                                 ->where('workout_format_type', $formatType)
@@ -780,12 +806,12 @@ class UserMobileController extends Controller
                                 ->where('date', $dateString)
                                 ->exists();
 
-                            // Add completion status to each format item
                             $formatItem->is_completed = $isCompleted ? 1 : 0;
                             $formatItem->has_reps_saved = $hasReps ? 1 : 0;
                         }
                     }
                 }
+            }
 
                 // Note: Only keeping type_completed and is_completed fields as requested
             });
