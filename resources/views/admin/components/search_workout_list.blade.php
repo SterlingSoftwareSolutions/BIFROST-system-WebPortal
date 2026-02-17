@@ -8,25 +8,25 @@
                     <div class="flex items-center space-x-2 flex-nowrap">
 
                         <!-- Category Field -->
-                        <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                        <div class="flex items-center space-x-1">
                             <label for="categoryw_2" class="w-15 text-md">Category</label>
                             <select id="categoryw_2" name="categoryw_2" onchange="// getworkoutw(this)"
-                                class="flex-1 px-1 py-1 border rounded text-sm">
+                                class="px-1 py-1 border rounded text-sm w-[130px]">
                                 <option value="" selected>-- All Categories --</option>
                             </select>
                         </div>
 
                         <!-- Exercise Field (Searchable) -->
-                        <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
+                        <div class="flex items-center space-x-1">
                             <label for="workoutw_2" class="w-15 text-md pl-3">Exercise</label>
 
                             <!-- Custom Dropdown Structure -->
-                            <div class="relative w-full custom-dropdown group" id="dropdown_workoutw_2">
+                            <div class="relative custom-dropdown group" id="dropdown_workoutw_2">
                                 <input type="hidden" name="workoutw_2" id="input_workoutw_2" value="">
 
                                 <!-- TRIGGER -->
                                 <div onclick="toggleDropdownSearch('workoutw_2')"
-                                     class="flex-1 px-1 py-1 border rounded text-sm flex items-center justify-between cursor-pointer bg-white"
+                                     class="px-1 py-1 border rounded text-sm flex items-center justify-between cursor-pointer bg-white w-[120px]"
                                      tabindex="0">
                                     <span id="display_workoutw_2" class="text-gray-500 block truncate flex-1 min-w-0 text-left pr-2">-- All Exercises --</span>
                                     <svg class="w-3 h-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,7 +35,7 @@
                                 </div>
 
                                 <!-- DROPDOWN CONTAINER -->
-                                <div id="list_workoutw_2" class="hidden absolute left-0 right-0 top-[100%] mt-1 bg-white border border-gray-300 rounded shadow-xl z-[9999] overflow-hidden min-w-[200px]">
+                                <div id="list_workoutw_2" class="hidden absolute left-0 right-0 top-[100%] mt-1 bg-white border border-gray-300 rounded shadow-xl z-[9999] overflow-hidden min-w-[150px]">
                                     <!-- SEARCH BAR -->
                                     <div class="p-2 border-b border-gray-100 bg-white sticky top-0">
                                         <input type="text"
@@ -55,10 +55,10 @@
                         </div>
 
                         <!-- Name Field -->
-                        <div class="flex items-center space-x-1 flex-[1] min-w-[100px]">
-                            <label for="namew_2" class="w-15 text-md ">Name</label>
+                        <div class="flex items-center space-x-1">
+                            <label for="namew_2" class="w-15 text-md pl-3">Name</label>
                             <input type="text" id="namew_2" name="namew_2"
-                                class="flex-1 px-1 py-1 border rounded text-sm w-[120px]">
+                                class="px-1 py-1 border rounded text-sm w-[110px]">
                         </div>
 
 

@@ -160,9 +160,9 @@
 
                      <!-- TRIGGER (Display Only) -->
                     <div onclick="toggleDropdown('${id}')"
-                         class="w-full bg-gray-100 border border-gray-300 rounded p-2.5 h-11 text-sm font-bold flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500"
+                         class="w-full bg-white border border-gray-300 rounded px-3 py-2 h-11 text-sm font-bold flex items-center justify-between cursor-pointer focus:ring-2 focus:ring-blue-500"
                          tabindex="0">
-                        <span id="display_${id}" title="${displayText}" class="${val ? 'text-gray-900' : 'text-gray-500'} block truncate flex-1 min-w-0 text-left pr-2">${displayText}</span>
+                        <span id="display_${id}" title="${displayText}" class="${val ? 'text-[#001f3f]' : 'text-gray-500'} block truncate flex-1 min-w-0 text-left pr-2">${displayText}</span>
                         <!-- Chevron Icon -->
                         <svg class="w-4 h-4 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -341,6 +341,28 @@
         fetchWorkouts();
 
         // Universal Table Generator
+        window.toggleGenderSelection = function(unitSelect, genderId) {
+            const genderSelect = document.getElementById(genderId);
+            if(genderSelect) {
+                if(unitSelect.value === 'Cal') {
+                    genderSelect.classList.remove('hidden');
+                } else {
+                    genderSelect.classList.add('hidden');
+                    genderSelect.value = ''; // Reset
+                }
+            }
+        }
+
+        window.updateGenderColor = function(select) {
+            if(select.value) {
+                select.classList.remove('text-gray-400');
+                select.classList.add('text-black');
+            } else {
+                select.classList.add('text-gray-400');
+                select.classList.remove('text-black');
+            }
+        }
+
         function getUniversalTableHtml(prefix) {
             let headerText = 'Exercises'; // Default
             if(prefix === 'round') headerText = 'Round';
@@ -349,17 +371,25 @@
                 <!-- Header -->
                 <div class="mb-1 text-base font-medium">${headerText}</div>
 
-                <div class="flex gap-3 mb-2 px-2">
-                    <div class="w-6"></div> <!-- Number col -->
-                    <div class="flex-1 font-bold text-lg text-gray-800">Exercise <span class="text-red-500">*</span></div>
-                    <div class="w-36 font-bold text-lg text-center text-gray-800">Training Load <span class="text-red-500">*</span></div>
-                    <div class="w-28 font-bold text-lg text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
-                    <div class="min-w-[80px]"></div> <!-- Action col -->
+                <div class="flex gap-3 mb-2 px-2 items-center">
+                    <div class="w-10"></div> <!-- Number col -->
+                    <div class="flex-[3] font-bold text-lg text-gray-800 min-w-0">Exercise <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-800 min-w-[130px]">Training Load <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">REPS <span class="text-red-500">*</span></div>
+                    <div class="w-10"></div> <!-- Action col -->
                 </div>
 
                 <!-- Rows Container -->
                 <div id="${prefix}_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
-                    ${getUniversalRowHtml(1, true, prefix)}
+                    ${getUniversalRowHtml(1, prefix)}
+                </div>
+
+                <!-- Add Button -->
+                <div class="mt-4 flex gap-3 px-0">
+                    <div class="w-10"></div> <!-- Spacer for Row Number -->
+                    <button type="button" onclick="addNewUniversalRow('${prefix}')" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
+                        + Add
+                    </button>
                 </div>
             `;
         }
@@ -374,7 +404,7 @@
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
+                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-xl flex items-center justify-end w-full h-11">
                         &times;
                     </button>
                  `;
@@ -383,26 +413,31 @@
              return `
                 <div class="flex items-center gap-3 ${prefix}-row" id="${prefix}_row_${index}">
                     <!-- Row Number -->
-                    <div class="w-7 text-center font-bold text-gray-500 row-number text-sm">
+                    <div class="w-10 text-center font-bold text-gray-500 row-number text-sm">
                     </div>
 
                     <!-- Exercise -->
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-[3] min-w-0">
                         ${getSearchableDropdownHtml(`${prefix}_exercise_${index}`, '')}
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-32">
-                        <div class="flex gap-1">
-                            <input type="text" name="${prefix}_load_${index}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="${prefix}_unit_${index}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="${prefix}_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
+                            <select name="${prefix}_unit_${index}" onchange="toggleGenderSelection(this, '${prefix}_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                            <select id="${prefix}_gender_${index}" name="${prefix}_gender_${index}" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male">M</option>
+                                <option value="Female">F</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- REPS -->
-                    <div class="w-28">
+                    <div class="flex-1 min-w-[120px]">
                          <div class="flex items-center">
                             <button type="button" onclick="decrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
@@ -414,7 +449,7 @@
                     </div>
 
                     <!-- Action Button -->
-                    <div class="h-11 flex items-center min-w-[80px] justify-center action-col">
+                    <div class="h-11 flex items-center w-10 justify-end action-col">
                         ${btnHtml}
                     </div>
                 </div>
@@ -425,32 +460,19 @@
              const container = document.getElementById(`${prefix}_rows_container`);
              if(!container) return;
 
-             // Find last row to change button
+             // Find last row to get index
              // We can assume format ${prefix}_row_{index}
              const rows = container.querySelectorAll(`.${prefix}-row`);
+             let newIdx = 1;
              if(rows.length > 0) {
                  const lastRow = rows[rows.length - 1];
                  const lastRowId = lastRow.id;
                  const parts = lastRowId.split('_');
                  const lastIdx = parseInt(parts[parts.length - 1]);
-
-                 // Update last row button to Remove
-                 const actionCol = lastRow.querySelector('.action-col');
-                 if(actionCol) {
-                     actionCol.innerHTML = `
-                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-xl px-2 h-11 flex items-center justify-center min-w-[70px]">
-                            &times;
-                        </button>
-                     `;
-                 }
-
-                 // Add new row
-                 const newIdx = lastIdx + 1;
-                 container.insertAdjacentHTML('beforeend', getUniversalRowHtml(newIdx, true, prefix));
-             } else {
-                 // Should not happen if we always have 1 row, but just in case
-                 container.insertAdjacentHTML('beforeend', getUniversalRowHtml(1, true, prefix));
+                 newIdx = lastIdx + 1;
              }
+             
+             container.insertAdjacentHTML('beforeend', getUniversalRowHtml(newIdx, prefix));
 
              // Update row numbers if we implement that
              updateUniversalRowNumbers(prefix);
@@ -473,6 +495,29 @@
         }
 
 
+        // Info Popup Toggle
+        window.toggleInfoPopup = function(element, event) {
+            event.stopPropagation();
+            const popup = element.nextElementSibling;
+            const allPopups = document.querySelectorAll('.info-popup');
+            
+            // Close others
+            allPopups.forEach(p => {
+                if (p !== popup) p.classList.add('hidden');
+            });
+            
+            // Toggle current
+            popup.classList.toggle('hidden');
+        }
+
+        // Close Popups on Click Outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.info-popup')) {
+                const allPopups = document.querySelectorAll('.info-popup');
+                allPopups.forEach(p => p.classList.add('hidden'));
+            }
+        });
+
         // Universal Table Generator
         function getUniversalTableHtml(prefix) {
             let headerText = 'Exercises'; // Default
@@ -482,72 +527,96 @@
                 <!-- Header -->
                 <div class="mb-1 text-base font-medium">${headerText}</div>
 
-                <div class="flex gap-3 mb-2 px-2">
-                    <div class="w-6"></div> <!-- Number col -->
-                    <div class="flex-1 font-bold text-lg text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                    <div class="w-36 font-bold text-lg text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
-                    <div class="w-28 font-bold text-lg text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
-                    <div class="min-w-[80px]"></div> <!-- Action col -->
+                <div class="flex gap-3 mb-2 px-2 items-center">
+                    <div class="w-10"></div> <!-- Number col -->
+                    <div class="flex-[3] font-bold text-lg text-gray-800 min-w-0">Exercise <span class="text-red-500">*</span></div>
+                    <div class="w-40 font-bold text-lg text-center text-gray-800 flex items-center justify-center gap-1">
+                        Training Load <span class="text-red-500">*</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                        </svg>
+                        <div class="relative">
+                            <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                    <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                </svg>
+                            </span>
+                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p><b>N/A</b> – N/A</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">REPS <span class="text-red-500">*</span></div>
+                    <div class="w-10"></div> <!-- Action col -->
                 </div>
 
                 <!-- Rows Container -->
                 <div id="${prefix}_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
-                    ${getUniversalRowHtml(1, true, prefix)}
+                    ${getUniversalRowHtml(1, prefix)}
+                </div>
+
+                <!-- Add Button -->
+                <div class="mt-4 flex gap-3 px-0">
+                    <div class="w-10"></div> <!-- Spacer for Row Number -->
+                    <button type="button" onclick="addNewUniversalRow('${prefix}')" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
+                        + Add
+                    </button>
                 </div>
             `;
         }
 
-        window.getUniversalRowHtml = function(index, isLast, prefix) {
-             let btnHtml = '';
-             if (isLast) {
-                 btnHtml = `
-                    <button type="button" onclick="addNewUniversalRow('${prefix}')" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        + Add
-                    </button>
-                 `;
-             } else {
-                 btnHtml = `
-                    <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        Remove
-                    </button>
-                 `;
-             }
+        window.getUniversalRowHtml = function(index, prefix) {
+             let btnHtml = `
+                <button type="button" onclick="removeUniversalRow(${index}, '${prefix}')" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center w-8 h-8 border border-red-500 rounded bg-white">
+                    &times;
+                </button>
+             `;
 
              return `
                 <div class="flex items-center gap-3 ${prefix}-row" id="${prefix}_row_${index}">
                     <!-- Row Number -->
-                    <div class="w-7 text-center font-bold text-gray-500 row-number text-sm">
+                    <div class="w-10 text-center font-bold text-gray-500 row-number text-sm">
                     </div>
 
                     <!-- Exercise -->
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-[3] min-w-0">
                         ${getSearchableDropdownHtml(`${prefix}_exercise_${index}`, '')}
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-32">
-                        <div class="flex gap-1">
-                            <input type="text" name="${prefix}_load_${index}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="${prefix}_unit_${index}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="${prefix}_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
+                            <select name="${prefix}_unit_${index}" onchange="toggleGenderSelection(this, '${prefix}_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                            <select id="${prefix}_gender_${index}" name="${prefix}_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- REPS -->
-                    <div class="w-28">
-                         <div class="flex items-center">
+                    <div class="flex-1 min-w-[120px]">
+                         <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
                             <input type="text" id="${prefix}_reps_${index}" name="${prefix}_reps_${index}" value="0" readonly
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-full text-sm">
+                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
                         </div>
                     </div>
 
                     <!-- Action Button -->
-                    <div class="h-11 flex items-center min-w-[80px] justify-center action-col">
+                    <div class="h-11 flex items-center w-10 justify-end action-col">
                         ${btnHtml}
                     </div>
                 </div>
@@ -561,30 +630,17 @@
              // Find last row to change button
              // We can assume format ${prefix}_row_{index}
              const rows = container.querySelectorAll(`.${prefix}-row`);
+             let newIdx = 1;
              if(rows.length > 0) {
                  const lastRow = rows[rows.length - 1];
                  const lastRowId = lastRow.id;
                  const parts = lastRowId.split('_');
                  const lastIdx = parseInt(parts[parts.length - 1]);
-
-                 // Update last row button to Remove
-                 const actionCol = lastRow.querySelector('.action-col');
-                 if(actionCol) {
-                     actionCol.innerHTML = `
-                        <button type="button" onclick="removeUniversalRow(${lastIdx}, '${prefix}')" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                            Remove
-                        </button>
-                     `;
-                 }
-
-                 // Add new row
-                 const newIdx = lastIdx + 1;
-                 const html = getUniversalRowHtml(newIdx, true, prefix);
-                 container.insertAdjacentHTML('beforeend', html);
-
-             } else {
-                 container.insertAdjacentHTML('beforeend', getUniversalRowHtml(1, true, prefix));
+                 newIdx = lastIdx + 1;
              }
+             
+             const html = getUniversalRowHtml(newIdx, prefix);
+             container.insertAdjacentHTML('beforeend', html);
 
              updateUniversalRowNumbers(prefix);
         }
@@ -679,7 +735,7 @@
                         </div>
                     </div>
 
-                    <div id="interval_blocks_container" class="space-y-6 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                    <div id="interval_blocks_container" class="space-y-6">
                         ${getIntervalBlockHtml(1)}
                     </div>
                 </div>
@@ -705,8 +761,28 @@
 
                     <!-- Headers -->
                     <div class="flex gap-4 mb-2">
-                        <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                        <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
+                        <div class="w-[12rem] font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
+                         <div class="w-40 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
+                             Training Load <span class="text-red-500">*</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                        </svg>
+                        <div class="relative">
+                            <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                    <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                </svg>
+                            </span>
+                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p><b>N/A</b> – N/A</p>
+                            </div>
+                        </div>
+                         </div>
                         <div class="w-32 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     </div>
 
@@ -762,22 +838,27 @@
             return `
                 <div class="pyramid-row flex gap-4 items-center" id="pyramid_row_${index}">
                     <!-- Exercise Column -->
-                    <div class="flex-1">
+                    <div class="w-[12rem]">
                         ${exerciseHtml}
                     </div>
 
                     <!-- Training Load Column -->
-                    <div class="w-32 flex gap-1 justify-center">
-                        <input type="text" name="pyramid_load_${index}" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                        <select name="pyramid_unit_${index}" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-14">
+                    <div class="w-40 flex gap-1 justify-center">
+                        <input type="text" name="pyramid_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
+                        <select name="pyramid_unit_${index}" onchange="toggleGenderSelection(this, 'pyramid_gender_${index}')" class="w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold">
                             ${getUnitSelectOptionsHtml('%')}
+                        </select>
+                        <select id="pyramid_gender_${index}" name="pyramid_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                            <option value="" disabled selected>M/F</option>
+                            <option value="Male" class="text-black">M</option>
+                            <option value="Female" class="text-black">F</option>
                         </select>
                     </div>
 
                     <!-- REPS Column -->
                     <div class="w-32 flex items-center justify-center">
                         <button type="button" onclick="decrementValue('pyramid_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                        <input type="text" id="pyramid_reps_${index}" name="pyramid_reps_${index}" value="10" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                        <input type="text" id="pyramid_reps_${index}" name="pyramid_reps_${index}" value="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                         <button type="button" onclick="incrementValue('pyramid_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                     </div>
                 </div>
@@ -804,7 +885,27 @@
                     <div class="flex gap-3 mb-2 px-2">
                         <div class="w-6"></div> <!-- Number col -->
                         <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                        <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
+                        <div class="w-40 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
+                            Training Load <span class="text-red-500">*</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                            </svg>
+                            <div class="relative">
+                                <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                    <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                        <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                    </svg>
+                                </span>
+                                <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                    <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                    <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                    <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                    <p class="mb-1"><b>Kg</b> – Weight</p>
+                                    <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                    <p><b>N/A</b> – N/A</p>
+                                </div>
+                            </div>
+                        </div>
                         <div class="w-28 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     </div>
 
@@ -982,23 +1083,21 @@
             // Find the specific exercise div within the SET row
             const suffix = `_${exerciseId}`;
 
-            // Find the exercise container div (the one with border-b or no border)
-            // It contains the reps input with id ss_reps_{setIndex}_{exerciseId}
+            // Find the reps input with id ss_reps_{setIndex}_{exerciseId}
             const repsInput = document.getElementById(`ss_reps_${setIndex}${suffix}`);
             if (!repsInput) return;
 
             // Find the main container that holds this exercise's row
-            // It should be the div with class containing "flex items-center gap-2 py-2 px-3"
             let exerciseContainer = repsInput.closest('.flex.items-center.gap-2');
-
 
             const actionColumn = row.querySelector('.w-\\[140px\\].flex.flex-col');
             if (actionColumn && exerciseContainer) {
                 // Get all exercise containers and all remove buttons
                 const contentColumn = row.querySelector('.flex-1.flex.flex-col');
                 if (contentColumn) {
-                    const allExerciseContainers = Array.from(contentColumn.querySelectorAll('.flex.items-center.gap-2'));
-                    const allRemoveButtons = Array.from(actionColumn.querySelectorAll('.flex.items-center'));
+                    // Use .children to get direct rows only, avoiding index mismatches from nested elements
+                    const allExerciseContainers = Array.from(contentColumn.children);
+                    const allRemoveButtons = Array.from(actionColumn.children);
 
                     // Find the index of this exercise container
                     const exerciseIndex = allExerciseContainers.indexOf(exerciseContainer);
@@ -1010,9 +1109,8 @@
                         exerciseContainer.remove();
                         removeButtonContainer.remove();
 
-                        const remainingExercises = contentColumn.querySelectorAll('.flex.items-center.gap-2');
+                        const remainingExercises = contentColumn.children;
                         if (remainingExercises.length === 0) {
-
                              window.removeStraightSetRow(`ss_row_${setIndex}`);
                         }
                     }
@@ -1036,39 +1134,61 @@
 
             // Header HTML
             const headersHtml = `
-                <div class="flex gap-2 mb-1 pl-2 pr-6 items-end">
-                    <div class="w-[14rem] lg:w-[13rem] font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                    <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
-                    <div class="w-32 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+                <div class="flex gap-2 mb-1 pl-0 pr-2 items-end">
+                    <div class="w-[170px] flex-shrink-0 font-bold text-sm text-black">Exercise <span class="text-red-500">*</span></div>
+                    <div class="w-[175px] flex-shrink-0 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
+                        Training Load <span class="text-red-500">*</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                        </svg>
+                        <div class="relative">
+                            <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                    <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                </svg>
+                            </span>
+                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p><b>N/A</b> – N/A</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-[120px] flex-shrink-0 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     <div class="w-[140px] pr-0 ml-auto"></div>
                 </div>
             `;
 
             // Main Exercise Row (Static First Row)
             const mainRowHtml = `
-                <div class="flex gap-2 mb-3 pl-2 pr-6 items-center">
-                    <div class="w-[14rem] lg:w-[19rem]">
+                <div class="flex gap-2 mb-3 pl-0 pr-2 items-center">
+                    <div class="w-[170px] flex-shrink-0">
                          ${getSearchableDropdownHtml('ss_exercise_1', '')}
                     </div>
-                    <div class="w-32 text-center">
+                    <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
                             <input type="text" name="ss_load_1" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select name="ss_unit_1" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                            <select name="ss_unit_1" onchange="toggleGenderSelection(this, 'ss_gender_1')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                            <select id="ss_gender_1" name="ss_gender_1" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                          </div>
                     </div>
                     <div class="w-32 text-center">
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('ss_reps_main')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                            <input type="text" id="ss_reps_main" name="ss_reps_main" placeholder="6" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                            <input type="text" id="ss_reps_main" name="ss_reps_main" placeholder="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                             <button type="button" onclick="incrementValue('ss_reps_main')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
                     <div class="w-[140px] flex justify-end pb-0 pr-0 ml-auto">
-                          <button type="button" onclick="addSuperSet()" class="border border-black bg-white hover:bg-gray-50 text-black rounded px-2 flex items-center justify-center h-11 text-sm shadow-sm transition-all whitespace-nowrap w-[100px]">
-                               <span class="font-bold">+ Add</span>&nbsp;Super Set
-                          </button>
                     </div>
                 </div>
             `;
@@ -1080,6 +1200,13 @@
                         ${headersHtml}
                         ${mainRowHtml}
                         <div id="ss_supersets_container"></div>
+                        
+                        <!-- Add Button -->
+                        <div class="mt-4 flex gap-0 pl-0">
+                             <button type="button" onclick="addSuperSet()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
+                                  <span class="font-bold">+ Add Super Set</span>
+                             </button>
+                        </div>
                     </div>
 
                      <div class="flex">
@@ -1236,27 +1363,34 @@
             const container = document.getElementById('ss_supersets_container');
 
             const rowHtml = `
-                <div class="flex gap-2 mb-3 pl-2 pr-6 items-center bg-gray-50 p-2 rounded relative" id="ss_superset_row_${index}">
-                    <div class="w-[12rem] lg:w-[12rem]">
+                <div class="flex gap-2 mb-3 pl-0 pr-2 items-center bg-gray-50 py-2 rounded relative" id="ss_superset_row_${index}">
+                    <div class="w-[170px] flex-shrink-0">
                          ${getSearchableDropdownHtml(`ss_exercise_${index}`, '')}
                     </div>
-                    <div class="w-32 text-center">
+                    <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
-                            <input type="text" name="ss_load_${index}" placeholder="60" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select name="ss_unit_${index}" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                            <input type="text" name="ss_load_${index}" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
+                            <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
                                 ${getUnitSelectOptionsHtml('kg')}
+                            </select>
+                             <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                          </div>
                     </div>
                     <div class="w-32 text-center">
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                            <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="6" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                            <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                             <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
                     <div class="w-[140px] flex justify-end pb-0 pr-0 ml-auto">
-                         <button type="button" onclick="removeSuperSet(${index})" class="text-red-500 hover:text-red-700 font-bold text-sm px-2 h-11 flex items-center justify-center w-[100px]">Remove</button>
+                         <button type="button" onclick="removeSuperSet(${index})" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center w-8 h-8 border border-red-500 rounded bg-white">
+                               &times;
+                         </button>
                     </div>
                 </div>
             `;
@@ -1323,15 +1457,20 @@
                              <!-- Reps Control -->
                              <div class="flex items-center gap-1">
                                   <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
-                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 6}" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
+                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
                                   <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
                              </div>
 
                              <!-- Load Display -->
                              <div class="flex items-center gap-1">
-                                 <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || 80}" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
-                                 <select name="ss_unit_${index}" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
+                                 <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
+                                 <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
                                      ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
+                                 </select>
+                                 <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white text-gray-400">
+                                    <option value="" disabled selected>M/F</option>
+                                    <option value="Male" class="text-black">M</option>
+                                    <option value="Female" class="text-black">F</option>
                                  </select>
                              </div>
                          </div>
@@ -1350,7 +1489,7 @@
                      const isLastLine = arrayIndex === exerciseIds.length - 1;
 
                      // Get Defaults from Top
-                     let defaultReps = '6';
+                     let defaultReps = '0';
                      let defaultLoad = '80';
                      let defaultUnit = '%';
 
@@ -1380,7 +1519,7 @@
                                   <!-- Reps -->
                                   <div class="flex items-center">
                                       <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
-                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="6" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
+                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
                                       <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
                                   </div>
 
@@ -1389,12 +1528,19 @@
                                   <!-- Load -->
                                   <div class="flex items-center gap-1">
                                       <div class="relative">
-                                          <input type="text" name="ss_load_${index}${suffix}" value="${defaultLoad}" placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400">
+                                          <input type="text" name="ss_load_${index}${suffix}"  placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400">
                                       </div>
                                       <div class="relative">
-                                          <select name="ss_unit_${index}${suffix}" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
+                                          <select name="ss_unit_${index}${suffix}" onchange="toggleGenderSelection(this, 'ss_gender_${index}${suffix}')" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
                                               ${getUnitSelectOptionsHtml(defaultUnit)}
                                           </select>
+                                      </div>
+                                      <div class="relative">
+                                         <select id="ss_gender_${index}${suffix}" name="ss_gender_${index}${suffix}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-gray-400">
+                                            <option value="" disabled selected>M/F</option>
+                                            <option value="Male" class="text-black">M</option>
+                                            <option value="Female" class="text-black">F</option>
+                                         </select>
                                       </div>
                                   </div>
                              </div>
@@ -1404,17 +1550,17 @@
                      // Button Logic
                      if (index == 1 && arrayIndex === 0) {
                          actionButtonsHtml += `
-                             <div class="flex items-center h-[50px]">
+                             <div class="flex items-center justify-end h-[50px] pr-6">
                              </div>
                          `;
                      } else {
-                         actionButtonsHtml += `
-                             <div class="flex items-center h-[50px]">
-                                 <button type="button" onclick="removeExerciseFromSet(${index}, ${exId})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-4 h-10 text-sm w-[100px]">
-                                      Remove
-                                 </button>
-                             </div>
-                         `;
+                          actionButtonsHtml += `
+                              <div class="flex items-center justify-end h-[50px] pr-6">
+                                  <button type="button" onclick="removeExerciseFromSet(${index}, ${exId})" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center lg:px-0 h-8 w-8 border border-red-500 rounded bg-white">
+                                       &times;
+                                  </button>
+                              </div>
+                          `;
                      }
                  });
 
@@ -1430,7 +1576,7 @@
                  return `
                     <div class="flex items-start" id="ss_row_${index}">
                         <!-- Table Part (Index + Content) -->
-                        <div class="ss-table-part flex-1 flex ${borderClass} bg-white mr-2">
+                        <div class="ss-table-part flex-1 flex ${borderClass} bg-white mr-0">
                             <!-- Index Column -->
                             <div class="w-8 flex items-center justify-center border-r border-gray-400 font-bold text-gray-700 bg-gray-50 text-base">
                                 ${index}
@@ -1497,22 +1643,27 @@
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-32">
-                        <div class="flex gap-1">
-                            <input type="text" name="emom_load_${index}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="emom_unit_${index}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="emom_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
+                            <select name="emom_unit_${index}" onchange="toggleGenderSelection(this, 'emom_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                            <select id="emom_gender_${index}" name="emom_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- REPS -->
                     <div class="w-28">
-                         <div class="flex items-center">
+                         <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('emom_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
                             <input type="text" id="emom_reps_${index}" name="emom_reps_${index}" value="0" readonly
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-full text-sm">
+                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('emom_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
                         </div>
@@ -1537,7 +1688,7 @@
                         </div>
                     </div>
 
-                    <div id="circuit_stations_container" class="space-y-6 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                    <div id="circuit_stations_container" class="space-y-6">
                         ${getCircuitStationHtml(1)}
                     </div>
                 </div>
@@ -1584,63 +1735,86 @@
                 <div class="station-block" id="station_${index}_block">
                     <div class="font-bold text-sm mb-2 text-gray-800">Station ${index}</div>
 
-                    <!-- Headers -->
-                    <div class="flex gap-3 mb-2 px-2">
-                         <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                         <div class="w-32 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
-                         <div class="w-28 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+                     <!-- Headers -->
+                     <div class="flex gap-2 mb-2 px-2">
+                         <div class="flex-1 font-bold text-sm text-gray-700 min-w-[100px]">Exercise <span class="text-red-500">*</span></div>
+                         <div class="w-40 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
+                             Training Load <span class="text-red-500">*</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                        </svg>
+                        <div class="relative">
+                            <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                    <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                </svg>
+                            </span>
+                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p><b>N/A</b> – N/A</p>
+                            </div>
+                        </div>
+                         </div>
+                         <div class="w-24 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                          <div class="min-w-[80px]"></div>
-                    </div>
+                     </div>
 
-                    <div id="station_${index}_rows" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
-                         ${getCircuitRowHtml(index, 1, true)}
-                    </div>
+                     <div id="station_${index}_rows" class="space-y-3 max-h-96 overflow-y-auto px-2 custom-scroll">
+                          ${getCircuitRowHtml(index, 1)}
+                     </div>
+                     
+                     <!-- Add Button -->
+                     <div class="mt-4 flex gap-0 px-2">
+                        <button type="button" onclick="addStationRow(${index})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
+                            + Add
+                        </button>
+                     </div>
                 </div>
             `;
         }
 
-        window.getCircuitRowHtml = function(stationIndex, rowIndex, isLast) {
-             let btnHtml = '';
-             if (isLast) {
-                 btnHtml = `
-                    <button type="button" onclick="addStationRow(${stationIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        + Add
+        window.getCircuitRowHtml = function(stationIndex, rowIndex) {
+             let btnHtml = `
+                    <button type="button" onclick="removeStationRow(${stationIndex}, ${rowIndex})" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center w-8 h-8 border border-red-500 rounded bg-white">
+                         &times;
                     </button>
-                 `;
-             } else {
-                 btnHtml = `
-                    <button type="button" onclick="removeStationRow(${stationIndex}, ${rowIndex})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        Remove
-                    </button>
-                 `;
-             }
+             `;
 
              return `
-                <div class="flex items-center gap-3" id="station_${stationIndex}_row_${rowIndex}">
+                <div class="flex items-center gap-2" id="station_${stationIndex}_row_${rowIndex}">
                     <!-- Exercise -->
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-[100px]">
                         ${getSearchableDropdownHtml(`station_${stationIndex}_exercise_${rowIndex}`, '')}
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-32">
-                        <div class="flex gap-1">
-                            <input type="text" name="station_${stationIndex}_load_${rowIndex}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="station_${stationIndex}_unit_${rowIndex}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="station_${stationIndex}_load_${rowIndex}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
+                            <select name="station_${stationIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'station_${stationIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                             <select id="station_${stationIndex}_gender_${rowIndex}" name="station_${stationIndex}_gender_${rowIndex}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- REPS -->
-                    <div class="w-28">
-                            <div class="flex items-center">
+                    <div class="w-24">
+                            <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('station_${stationIndex}_reps_${rowIndex}')"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="station_${stationIndex}_reps_${rowIndex}" name="station_${stationIndex}_reps_${rowIndex}" value="10" readonly
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-full text-sm">
+                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex justify-center items-center">-</button>
+                            <input type="text" id="station_${stationIndex}_reps_${rowIndex}" name="station_${stationIndex}_reps_${rowIndex}" value="0" readonly
+                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('station_${stationIndex}_reps_${rowIndex}')"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
+                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex justify-center items-center">+</button>
                         </div>
                     </div>
 
@@ -1656,38 +1830,8 @@
             const container = document.getElementById(`station_${stationIndex}_rows`);
             if (!container) return;
 
-            // Generate a simple unique ID based on current timestamp or random to avoid collision if removing/adding logic is simple
-             // Or better, just count children.
-             // But we need unique rowIndex for names.
-             // Let's use Date.now() or just incrementing logic if we had global state.
-             // Simpler: get max index from existing children ids?
-             // Let's just use timestamp for rowIndex to avoid collision.
             const rowIndex = Date.now();
-
-            // Find current last row to change button
-            const rows = container.children;
-            if (rows.length > 0) {
-                const lastRow = rows[rows.length - 1];
-                // Extract previous index
-                const lastRowId = lastRow.id; // station_X_row_Y
-                const parts = lastRowId.split('_');
-                const lastIdx = parts[parts.length - 1]; // Y
-
-                // Replace last row with "Remove" version
-                // Or just replace the button div?
-                // Replacing entire HTML is easiest but loses input state.
-                // Better: find the button container and replace innerHTML.
-                const btnContainer = lastRow.querySelector('.min-w-\\[80px\\]') || lastRow.lastElementChild;
-                if(btnContainer) {
-                    btnContainer.innerHTML = `
-                    <button type="button" onclick="removeStationRow(${stationIndex}, ${lastIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        Remove
-                    </button>
-                    `;
-                }
-            }
-
-            container.insertAdjacentHTML('beforeend', getCircuitRowHtml(stationIndex, rowIndex, true));
+            container.insertAdjacentHTML('beforeend', getCircuitRowHtml(stationIndex, rowIndex));
         }
 
         window.removeStationRow = function(stationIndex, rowIndex) {
@@ -1779,50 +1923,75 @@
                     <div class="font-bold text-sm mb-2 text-gray-800">Interval ${index}</div>
 
                     <!-- Headers -->
-                    <div class="flex gap-3 mb-2 px-2 items-center">
-                         <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                         <div class="w-24 font-bold text-sm text-center text-gray-700">Training Load <span class="text-red-500">*</span></div>
-                         <div class="w-28 font-bold text-sm text-center text-gray-700">Work</div>
-                         <div class="w-28 font-bold text-sm text-center text-gray-700">Rest</div>
-                         <div class="min-w-[80px]"></div>
+                    <div class="flex gap-2 mb-2 px-2 ml-4 items-center">
+                         <div class="flex-1 font-bold text-sm text-gray-700 min-w-[100px]">Exercise <span class="text-red-500">*</span></div>
+                         <div class="w-40 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
+                             Training Load <span class="text-red-500">*</span>
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
+                             </svg>
+                             <div class="relative">
+                                 <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
+                                     <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                         <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                         <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
+                                     </svg>
+                                 </span>
+                                 <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                     <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                     <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                     <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                     <p class="mb-1"><b>Kg</b> – Weight</p>
+                                     <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                     <p><b>N/A</b> – N/A</p>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="flex gap-2">
+                             <div class="w-24 font-bold text-sm text-center text-gray-700">Work</div>
+                             <div class="w-24 font-bold text-sm text-center text-gray-700">Rest</div>
+                         </div>
+                         <div class="w-10"></div>
                     </div>
 
-                    <div id="interval_block_${index}_rows" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
-                         ${getIntervalRowHtml(index, 1, true)}
-                    </div>
+                     <div id="interval_block_${index}_rows" class="space-y-3 pr-2 ml-4">
+                          ${getIntervalRowHtml(index, 1)}
+                     </div>
+
+                     <!-- Add Button -->
+                     <div class="mt-4 flex gap-0 px-0 ml-4">
+                        <button type="button" onclick="addIntervalRow(${index})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
+                            + Add
+                        </button>
+                     </div>
                 </div>
             `;
         }
 
-        window.getIntervalRowHtml = function(intervalIndex, rowIndex, isLast) {
-             let btnHtml = '';
-             if (isLast) {
-                 btnHtml = `
-                    <button type="button" onclick="addIntervalRow(${intervalIndex})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        + Add
-                    </button>
-                 `;
-             } else {
-                 btnHtml = `
-                    <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${rowIndex})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                        Remove
-                    </button>
-                 `;
-             }
+             window.getIntervalRowHtml = function(intervalIndex, rowIndex) {
+              let btnHtml = `
+                     <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${rowIndex})" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center w-8 h-8 border border-red-500 rounded bg-white">
+                         &times;
+                     </button>
+              `;
 
              return `
-                <div class="flex items-center gap-3" id="interval_${intervalIndex}_row_${rowIndex}">
+                <div class="flex items-center gap-2" id="interval_${intervalIndex}_row_${rowIndex}">
                     <!-- Exercise -->
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-[100px]">
                         ${getSearchableDropdownHtml(`interval_${intervalIndex}_exercise_${rowIndex}`, '')}
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-24">
-                        <div class="flex gap-1">
-                            <input type="text" name="interval_${intervalIndex}_load_${rowIndex}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="interval_${intervalIndex}_unit_${rowIndex}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="interval_${intervalIndex}_load_${rowIndex}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm font-bold">
+                             <select name="interval_${intervalIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'interval_${intervalIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                             <select id="interval_${intervalIndex}_gender_${rowIndex}" name="interval_${intervalIndex}_gender_${rowIndex}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                         </div>
                     </div>
@@ -1830,21 +1999,21 @@
                     <!-- Work/Rest -->
                     <div class="flex gap-2">
                          <!-- Work -->
-                         <div class="flex items-center justify-center w-28">
+                         <div class="flex items-center justify-center w-24">
                               <button type="button" onclick="decrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
-                         <div class="flex items-center justify-center w-28">
+                         <div class="flex items-center justify-center w-24">
                               <button type="button" onclick="decrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
 
                     <!-- Action Button -->
-                    <div class="h-11 flex items-center min-w-[80px] justify-center">
+                    <div class="h-11 flex items-center w-10 justify-center">
                         ${btnHtml}
                     </div>
                 </div>
@@ -1857,34 +2026,7 @@
 
             const rowIndex = Date.now();
 
-            // Change last row button to Remove
-            const rows = container.children;
-            if (rows.length > 0) {
-                 const lastRow = rows[rows.length - 1];
-                 const lastRowId = lastRow.id; // interval_{idx}_row_{rowIndex}
-                 const idParts = lastRowId.split('_');
-                 const lastRowIdx = idParts[idParts.length - 1];
-
-                 const btnCol = lastRow.querySelector('.min-w-\\[80px\\]');
-                 if (!btnCol) {
-                     // Try another selector if min-w didn't work (h-11 flex items-center min-w-[80px] justify-center)
-                     const cols = lastRow.querySelectorAll('div');
-                     const lastCol = cols[cols.length - 1];
-                     lastCol.innerHTML = `
-                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                            Remove
-                        </button>
-                     `;
-                 } else {
-                     btnCol.innerHTML = `
-                        <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${lastRowIdx})" class="border border-red-500 bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[80px] text-sm">
-                            Remove
-                        </button>
-                     `;
-                 }
-            }
-
-            container.insertAdjacentHTML('beforeend', getIntervalRowHtml(intervalIndex, rowIndex, true));
+            container.insertAdjacentHTML('beforeend', getIntervalRowHtml(intervalIndex, rowIndex));
         }
 
         window.removeIntervalRow = function(intervalIndex, rowIndex) {
@@ -1902,8 +2044,8 @@
                  `;
              } else {
                  btnHtml = `
-                    <button type="button" onclick="removeRoundRow(${index})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 h-11 text-xs w-[50px] flex items-center justify-center">
-                        Remove
+                    <button type="button" onclick="removeRoundRow(${index})" class="text-red-500 hover:text-red-700 font-bold text-xl flex items-center justify-center h-11 w-[50px]">
+                         X
                     </button>
                  `;
              }
@@ -1921,22 +2063,33 @@
                     </div>
 
                     <!-- Training Load -->
-                    <div class="w-32">
-                        <div class="flex gap-1">
-                            <input type="text" name="round_load_${index}" placeholder="80" class="w-2/3 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                            <select name="round_unit_${index}" class="w-1/3 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
+                    <div class="w-40">
+                        <div class="flex gap-1 justify-center">
+                            <input type="text" name="round_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
+                            <select name="round_unit_${index}" onchange="toggleGenderSelection(this, 'round_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
+                            </select>
+                             <select id="round_gender_${index}" name="round_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
+
+
+
+
+
+
+                                <option value="" disabled selected>M/F</option>
+                                <option value="Male" class="text-black">M</option>
+                                <option value="Female" class="text-black">F</option>
                             </select>
                         </div>
                     </div>
 
                     <!-- REPS -->
                     <div class="w-28">
-                         <div class="flex items-center">
+                         <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('round_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
                             <input type="text" id="round_reps_${index}" name="round_reps_${index}" value="0" readonly
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-full text-sm">
+                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('round_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
                         </div>
@@ -1963,8 +2116,8 @@
             const lastIdx = lastRow.id.replace('round_row_', '');
             const actionCol = lastRow.querySelector('.action-col');
             actionCol.innerHTML = `
-                <button type="button" onclick="removeRoundRow(${lastIdx})" class="bg-red-500 hover:bg-red-600 text-white font-bold rounded px-0 h-11 text-xs w-[50px] flex items-center justify-center">
-                    Remove
+                <button type="button" onclick="removeRoundRow(${lastIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl flex items-center justify-center h-11 w-[50px]">
+                    X
                 </button>
             `;
         }
@@ -1991,7 +2144,7 @@
              const actionCol = lastRow.querySelector('.action-col');
              if (!actionCol.innerText.includes('Add')) {
                  actionCol.innerHTML = `
-                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-4 py-2 flex items-center justify-center h-11 min-w-[70px] text-sm">
+                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
                         + Add
 *                      </button>
                  `;

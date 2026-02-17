@@ -513,11 +513,11 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    'reps' => 'required|integer',
-                    'weight' => 'nullable|numeric',
-                    'set_number' => 'required|integer',
+                    #'reps' => 'required|integer',
+                    #'weight' => 'nullable|numeric',
+                    #'set_number' => 'required|integer',
                     'date' => 'required|string',
-                    'strength_id' => 'required|integer', 
+                    #'strength_id' => 'required|integer', 
                 ]);
 
                 if ($validator->fails()) {
@@ -624,7 +624,7 @@ class MobileController extends Controller
                 ], 401);
             }
 
-            // ✅ Get weightlifting array directly
+            // Get weightlifting array directly
             $weightliftingItems = $request->all();
             Log::info('Received weightlifting payload:', ['weightliftingItems' => $weightliftingItems]);
 
@@ -639,17 +639,19 @@ class MobileController extends Controller
 
             foreach ($weightliftingItems as $item) {
                 $validator = Validator::make($item, [
-                    'weightlifting_id' => 'required|integer|exists:weightliftings,id',
-                    'reps' => 'required|integer',
+                    'workout_manager_id' => 'required|integer',
+                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
+                    'workout_format_id' => 'required|integer',
+                    #'reps' => 'required|integer',
                     'weight' => 'nullable|numeric',
-                    'set_number' => 'required|integer|min:1',
-                    'selected_day' => 'required|string',
+                    #'set_number' => 'required|integer',
+                    'date' => 'required|string',
+                    #'weightlifting_id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
                     $responses[] = [
-                        'weightlifting_id' => $item['weightlifting_id'] ?? null,
-                        'set_number' => $item['set_number'] ?? null,
+                        'workout_manager_id' => $item['workout_manager_id'] ?? null,
                         'message' => 'Validation failed',
                         'errors' => $validator->errors(),
                     ];
@@ -657,36 +659,47 @@ class MobileController extends Controller
                 }
 
                 $validatedData = $validator->validated();
-                $storedDay = $validatedData['selected_day'];
+                $storedDay = $validatedData['date'];
                 $weight = $validatedData['weight'] ?? null;
                 $setNumber = $validatedData['set_number'];
+                $workoutFormatType = $validatedData['workout_format_type'];
+                $workoutFormatId = $validatedData['workout_format_id'];
+                $workoutManagerId = $validatedData['workout_manager_id'];
+                $weightliftingId = $validatedData['weightlifting_id'];
 
-                // ✅ Check if record exists for this member + weightlifting_id + date + set_number
-                $dailyWeightlifting = DailyWeightlifting::where('member_id', $memberId)
-                    ->where('weightlifting_id', $validatedData['weightlifting_id'])
+                // Check if record exists for this member + workout_manager_id + format checks + set_number
+                $query = DailyWeightlifting::where('member_id', $memberId)
+                    ->where('workout_manager_id', $workoutManagerId)
+                    ->where('workout_format_type', $workoutFormatType)
+                    ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
-                    ->where('set_number', $setNumber)
-                    ->first();
+                    ->where('set_number', $setNumber);
+
+                $dailyWeightlifting = $query->first();
 
                 Log::info('Existing weightlifting record:', ['dailyWeightlifting' => $dailyWeightlifting?->toArray()]);
 
                 if ($dailyWeightlifting) {
-                    // ✅ Update existing record
+                    // Update existing record
                     $dailyWeightlifting->update([
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'date' => $storedDay,
+                        'weightlifting_id' => $weightliftingId,
                     ]);
                     $message = 'Weightlifting updated successfully';
                     Log::info('Weightlifting updated', [
-                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'workout_manager_id' => $workoutManagerId,
                         'set_number' => $setNumber
                     ]);
                 } else {
-                    // ✅ Create new record
+                    // Create new record
                     $dailyWeightlifting = DailyWeightlifting::create([
                         'member_id' => $memberId,
-                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'workout_manager_id' => $workoutManagerId,
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
+                        'weightlifting_id' => $weightliftingId,
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
@@ -694,13 +707,13 @@ class MobileController extends Controller
                     ]);
                     $message = 'Weightlifting saved successfully';
                     Log::info('New weightlifting record created', [
-                        'weightlifting_id' => $validatedData['weightlifting_id'],
+                        'workout_manager_id' => $workoutManagerId,
                         'set_number' => $setNumber
                     ]);
                 }
 
                 $responses[] = [
-                    'weightlifting_id' => $validatedData['weightlifting_id'],
+                    'workout_manager_id' => $workoutManagerId,
                     'set_number' => $setNumber,
                     'message' => $message,
                     'daily_weightlifting_id' => $dailyWeightlifting->id,
@@ -739,7 +752,7 @@ class MobileController extends Controller
                 ], 401);
             }
 
-            // ✅ Get conditioning array directly
+            // Get conditioning array directly
             $conditioningItems = $request->all();
             Log::info('Received conditioning payload:', ['conditioningItems' => $conditioningItems]);
 
@@ -754,15 +767,18 @@ class MobileController extends Controller
 
             foreach ($conditioningItems as $item) {
                 $validator = Validator::make($item, [
-                    'conditioning_id' => 'required|integer|exists:conditionings,id',
-                    'reps' => 'required|integer',
-                    'weight' => 'nullable|numeric',
-                    'selected_day' => 'required|string',
+                    'workout_manager_id' => 'required|integer',
+                    'workout_format_type' => 'required|string',
+                    'workout_format_id' => 'required|integer',
+                   # 'conditioning_id' => 'required|integer|exists:conditionings,id',
+                   ## 'reps' => 'nullable|integer',
+                   # 'weight' => 'nullable|numeric',
+                    'date' => 'required|string',
                 ]);
 
                 if ($validator->fails()) {
                     $responses[] = [
-                        'conditioning_id' => $item['conditioning_id'] ?? null,
+                        'workout_manager_id' => $item['workout_manager_id'] ?? null,
                         'message' => 'Validation failed',
                         'errors' => $validator->errors(),
                     ];
@@ -770,41 +786,53 @@ class MobileController extends Controller
                 }
 
                 $validatedData = $validator->validated();
-                $storedDay = $validatedData['selected_day'];
+                $storedDay = $validatedData['date'];
                 $weight = $validatedData['weight'] ?? null;
+                $reps = $validatedData['reps'];
+                $workoutFormatType = $validatedData['workout_format_type'];
+                $workoutFormatId = $validatedData['workout_format_id'];
+                $workoutManagerId = $validatedData['workout_manager_id'];
+                $conditioningId = $validatedData['conditioning_id'];
 
-                // ✅ Check if record exists for this member + conditioning + date
-                $dailyConditioning = DailyConditioning::where('member_id', $memberId)
-                    ->where('conditioning_id', $validatedData['conditioning_id'])
-                    ->where('date', $storedDay)
-                    ->first();
+                //Check if record exists for this member + workout_manager_id + format checks + date
+                $query = DailyConditioning::where('member_id', $memberId)
+                    ->where('workout_manager_id', $workoutManagerId)
+                    ->where('workout_format_type', $workoutFormatType)
+                    ->where('workout_format_id', $workoutFormatId)
+                    ->where('date', $storedDay);
+
+                $dailyConditioning = $query->first();
 
                 Log::info('Existing conditioning record:', ['dailyConditioning' => $dailyConditioning?->toArray()]);
 
                 if ($dailyConditioning) {
-                    // ✅ Update existing record
+                    // Update existing record
                     $dailyConditioning->update([
-                        'reps' => $validatedData['reps'],
+                        'reps' => $reps,
                         'weight' => $weight,
                         'date' => $storedDay,
+                        'conditioning_id' => $conditioningId,
                     ]);
                     $message = 'Conditioning updated successfully';
-                    Log::info('Conditioning updated', ['conditioning_id' => $validatedData['conditioning_id']]);
+                    Log::info('Conditioning updated', ['workout_manager_id' => $workoutManagerId]);
                 } else {
-                    // ✅ Create new record
+                    // Create new record
                     $dailyConditioning = DailyConditioning::create([
                         'member_id' => $memberId,
-                        'conditioning_id' => $validatedData['conditioning_id'],
-                        'reps' => $validatedData['reps'],
+                        'workout_manager_id' => $workoutManagerId,
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
+                        'conditioning_id' => $conditioningId,
+                        'reps' => $reps,
                         'weight' => $weight,
                         'date' => $storedDay,
                     ]);
                     $message = 'Conditioning saved successfully';
-                    Log::info('New conditioning record created', ['conditioning_id' => $validatedData['conditioning_id']]);
+                    Log::info('New conditioning record created', ['workout_manager_id' => $workoutManagerId]);
                 }
 
                 $responses[] = [
-                    'conditioning_id' => $validatedData['conditioning_id'],
+                    'workout_manager_id' => $workoutManagerId,
                     'message' => $message,
                     'daily_conditioning_id' => $dailyConditioning->id,
                 ];
@@ -821,6 +849,118 @@ class MobileController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => 'An error occurred while saving the conditioning workouts',
+                'details' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeaccessorydaily(Request $request)
+    {
+        try {
+
+            $userId = Auth::id();
+            $memberId = Newprofile::where('user_id', $userId)->value('id');
+            Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
+
+            if (!$memberId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated.',
+                ], 401);
+            }
+
+            $accessoryItems = $request->all();
+            Log::info('Received accessory payload:', ['accessoryItems' => $accessoryItems]);
+
+            if (!is_array($accessoryItems) || count($accessoryItems) === 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No accessory data received.',
+                ]);
+            }
+
+            $responses = [];
+
+            foreach ($accessoryItems as $item) {
+                $validator = Validator::make($item, [
+                    'workout_manager_id' => 'required|integer',
+                    'workout_format_type' => 'required|string',
+                    'workout_format_id' => 'required|integer',
+                    'reps' => 'nullable|integer',
+                    'weight' => 'nullable|numeric',
+                    'date' => 'required|string',
+                ]);
+
+                if ($validator->fails()) {
+                    $responses[] = [
+                        'workout_manager_id' => $item['workout_manager_id'] ?? null,
+                        'message' => 'Validation failed',
+                        'errors' => $validator->errors(),
+                    ];
+                    continue;
+                }
+
+                $validatedData = $validator->validated();
+                $storedDay = $validatedData['date'];
+                $weight = $validatedData['weight'] ?? null;
+                $reps = $validatedData['reps'] ?? 0;
+                $workoutFormatType = $validatedData['workout_format_type'];
+                $workoutFormatId = $validatedData['workout_format_id'];
+                $workoutManagerId = $validatedData['workout_manager_id'];
+
+                // Check if record exists
+                $query = \App\Models\DailyAccessory::where('member_id', $memberId)
+                    ->where('workout_manager_id', $workoutManagerId)
+                    ->where('workout_format_type', $workoutFormatType)
+                    ->where('workout_format_id', $workoutFormatId)
+                    ->where('date', $storedDay);
+
+                $dailyAccessory = $query->first();
+
+                Log::info('Existing accessory record:', ['dailyAccessory' => $dailyAccessory?->toArray()]);
+
+                if ($dailyAccessory) {
+                    // Update existing record
+                    $dailyAccessory->update([
+                        'reps' => $reps,
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Accessory updated successfully';
+                    Log::info('Accessory updated', ['workout_manager_id' => $workoutManagerId]);
+                } else {
+                    // Create new record
+                    $dailyAccessory = \App\Models\DailyAccessory::create([
+                        'member_id' => $memberId,
+                        'workout_manager_id' => $workoutManagerId,
+                        'workout_format_type' => $workoutFormatType,
+                        'workout_format_id' => $workoutFormatId,
+                        'reps' => $reps,
+                        'weight' => $weight,
+                        'date' => $storedDay,
+                    ]);
+                    $message = 'Accessory saved successfully';
+                    Log::info('New accessory record created', ['workout_manager_id' => $workoutManagerId]);
+                }
+
+                $responses[] = [
+                    'workout_manager_id' => $workoutManagerId,
+                    'message' => $message,
+                    'daily_accessory_id' => $dailyAccessory->id,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Accessory workouts processed successfully',
+                'results' => $responses,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error saving accessory workout: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'An error occurred while saving the accessory workouts',
                 'details' => $e->getMessage(),
             ], 500);
         }

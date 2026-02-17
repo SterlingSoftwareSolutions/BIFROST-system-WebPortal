@@ -12,10 +12,13 @@ class DailyWeightlifting extends Model
     protected $fillable = [
         'member_id',
         'weightlifting_id',
+        'workout_manager_id',
         'reps',
         'date',
         'weight',
         'set_number',
+        'workout_format_type',
+        'workout_format_id',
     ];
 
     public function member()
@@ -27,4 +30,25 @@ class DailyWeightlifting extends Model
     {
         return $this->belongsTo(Weightlifting::class, 'weightlifting_id');
     }
+
+     public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
+
+    public function workoutFormat()
+    {
+        return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
+    }
+
+    public static function getDailyweightliftingData($memberId, $date)
+    {
+        $data = self::with(['member', 'weightlifting.category'])
+                    ->where('member_id', $memberId)
+                    ->where('date', $date)
+                    ->get();
+        
+        return $data;
+    }
+    
 }
