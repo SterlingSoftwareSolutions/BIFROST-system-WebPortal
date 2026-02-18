@@ -9,7 +9,6 @@ use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
 use App\Models\DailyWarmup;
 use App\Models\DailyWeightlifting;
-use App\Models\DailyAccessory;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
 use App\Models\Strength;
@@ -1121,7 +1120,7 @@ class UserMobileController extends Controller
 
                         /*
                         |--------------------------------------------------------------------------
-                        | STRENGTH + WEIGHTLIFTING 
+                        | STRENGTH + WEIGHTLIFTING
                         |--------------------------------------------------------------------------
                         */
                         if (in_array($typeName, ['strength', 'weightlifting', 'accessory'])
@@ -1153,7 +1152,7 @@ class UserMobileController extends Controller
 
                         /*
                         |--------------------------------------------------------------------------
-                        | WARMUP + OTHERS 
+                        | WARMUP + OTHERS
                         |--------------------------------------------------------------------------
                         */
                         else {
