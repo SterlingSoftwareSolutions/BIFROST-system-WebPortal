@@ -638,11 +638,10 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    #'reps' => 'required|integer',
+                    'reps' => 'required|integer',
                     'weight' => 'nullable|numeric',
-                    #'set_number' => 'required|integer',
+                    'set_number' => 'required|integer',
                     'date' => 'required|string',
-                    #'weightlifting_id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -661,7 +660,6 @@ class MobileController extends Controller
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
-                $weightliftingId = $validatedData['weightlifting_id'];
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
                 $query = DailyWeightlifting::where('member_id', $memberId)
@@ -680,8 +678,7 @@ class MobileController extends Controller
                     $dailyWeightlifting->update([
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
-                        'date' => $storedDay,
-                        'weightlifting_id' => $weightliftingId,
+                        'date' => $storedDay
                     ]);
                     $message = 'Weightlifting updated successfully';
                     Log::info('Weightlifting updated', [
@@ -695,7 +692,6 @@ class MobileController extends Controller
                         'workout_manager_id' => $workoutManagerId,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
-                        'weightlifting_id' => $weightliftingId,
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
