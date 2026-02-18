@@ -8,6 +8,7 @@ use App\Models\DailyConditioning;
 use App\Models\DailyStrength;
 use App\Models\DailyWarmup;
 use App\Models\DailyWeightlifting;
+use App\Models\DailyAccessory;
 use App\Models\MonthlyImage;
 use App\Models\Newprofile;
 use App\Models\Strength;
@@ -747,6 +748,27 @@ class UserMobileController extends Controller
 
             // Check warmup completion status for each workout using polymorphic format tracking
             $workouts->each(function ($workout) use ($member, $dateString) {
+
+            // Decide workout type ONCE per workout
+                $typeName = strtolower($workout->type->name ?? '');
+
+                switch ($typeName) {
+                    case 'strength':
+                        $dailyModel = DailyStrength::class;
+                        break;
+
+                    case 'weightlifting':
+                        $dailyModel = DailyWeightlifting::class;
+                        break;
+
+                    case 'accessory':
+                        $dailyModel = DailyAccessory::class;
+                        break;
+
+                    default:
+                        $dailyModel = DailyWarmup::class;
+                        break;
+                }
                 // Map format relationships to their types
                 $formatMapping = [
                     'rounds' => 'rounds',
@@ -789,25 +811,62 @@ class UserMobileController extends Controller
                             unset($formatItem->has_reps_saved);
 
                         } else {
+                            // Base query
+                            $baseQuery = $dailyModel::where('member_id', $member->id)
+                            ->where('workout_manager_id', $workout->id)
+                            ->where('workout_format_type', $formatType)
+                            ->where('workout_format_id', $formatItem->id)
+                            ->where('date', $dateString);
 
-                            // NORMAL FORMATS (rounds, emom, etc)
-                            $isCompleted = DailyWarmup::where('member_id', $member->id)
-                                ->where('workout_manager_id', $workout->id)
-                                ->where('workout_format_type', $formatType)
-                                ->where('workout_format_id', $formatItem->id)
-                                ->where('date', $dateString)
-                                ->exists();
+                        /*
+                        |--------------------------------------------------------------------------
+                        | STRENGTH + WEIGHTLIFTING 
+                        |--------------------------------------------------------------------------
+                        */
+                        if (in_array($typeName, ['strength', 'weightlifting', 'accessory'])
+                            && $formatItem->sets
+                            && $formatItem->sets->isNotEmpty()) {
 
-                            $hasReps = DailyWarmup::where('member_id', $member->id)
-                                ->where('workout_manager_id', $workout->id)
-                                ->where('workout_format_type', $formatType)
-                                ->where('workout_format_id', $formatItem->id)
+                            $totalSets = $formatItem->sets->count();
+                            $completedSets = 0;
+
+                            foreach ($formatItem->sets as $set) {
+
+                                $setCompleted = (clone $baseQuery)
+                                    ->where('set_number', $set->set_number)
+                                    ->exists();
+
+                                if ($setCompleted) {
+                                    $completedSets++;
+                                }
+
+                                $set->is_completed = $setCompleted ? 1 : 0;
+                            }
+
+                            // Format completed only if ALL sets completed
+                            $formatItem->is_completed =
+                                ($completedSets === $totalSets) ? 1 : 0;
+
+                            unset($formatItem->has_reps_saved);
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | WARMUP + OTHERS 
+                        |--------------------------------------------------------------------------
+                        */
+                        else {
+
+                            $isCompleted = $baseQuery->exists();
+
+                            $hasReps = (clone $baseQuery)
                                 ->where('reps', '>', 0)
-                                ->where('date', $dateString)
                                 ->exists();
 
                             $formatItem->is_completed = $isCompleted ? 1 : 0;
                             $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                        }
+
                         }
                     }
                 }
