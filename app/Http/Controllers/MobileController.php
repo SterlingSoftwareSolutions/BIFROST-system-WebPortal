@@ -543,7 +543,7 @@ class MobileController extends Controller
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
                     ->where('set_number', $setNumber);
-                
+
                 $dailyStrength = $query->first();
 
                 Log::info('Existing strength record:', ['dailyStrength' => $dailyStrength?->toArray()]);
@@ -1125,13 +1125,14 @@ class MobileController extends Controller
             'stress_input' => 'required|string',
             'soreness_input' => 'required|string',
             'score' => 'required|integer',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         // Find an existing score for the same user and date, or create a new one
         $score = $user->scores()->updateOrCreate(
-            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'],'class_id' => $validatedData['class_id']],
             $validatedData
         );
 
@@ -1146,12 +1147,14 @@ class MobileController extends Controller
     {
         $request->validate([
             'selected_day' => 'required|string',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         $score = $user->scores()
             ->where('selected_day', $request->selected_day)
+            ->where('class_id', $request->class_id)
             ->first();
 
         if ($score) {
@@ -1305,7 +1308,7 @@ class MobileController extends Controller
 
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
-                ->where('member_id', $member->id)
+                ->where('member_id', operator: $member->id)
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
@@ -1447,7 +1450,7 @@ class MobileController extends Controller
                     ->where('workout_id', $request->workout_id)
 
 
-                    
+
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1478,7 +1481,7 @@ class MobileController extends Controller
         'weight' => 'required|numeric',
         'selected_day' => 'required|string',
     ]);
-    
+
     try {
         $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
         $dayWithDate = $date->format('d/m/y l');
@@ -1488,7 +1491,7 @@ class MobileController extends Controller
             'member_id'   => $request->member_id,
             'weight'      => $request->weight,
             'workoutname' => $request->workoutname,
-            'date'        => $dayWithDate, 
+            'date'        => $dayWithDate,
             'category_id' => $request->category_id ?? null,
         ]);
 

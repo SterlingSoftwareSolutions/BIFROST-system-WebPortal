@@ -16,6 +16,7 @@ class UserScore extends Model
         'stress_input',
         'soreness_input',
         'score',
+        'class_id',
     ];
 
     public function user()
@@ -23,5 +24,5 @@ class UserScore extends Model
         return $this->belongsTo(User::class);
     }
     use HasFactory;
-    
+
 }
