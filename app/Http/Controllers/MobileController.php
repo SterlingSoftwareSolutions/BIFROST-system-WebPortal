@@ -513,11 +513,10 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    #'reps' => 'required|integer',
-                    #'weight' => 'nullable|numeric',
-                    #'set_number' => 'required|integer',
-                    'date' => 'required|string',
-                    #'strength_id' => 'required|integer', 
+                    'reps' => 'required|integer',
+                    'set_number' => 'required|integer',
+                    'weight' => 'nullable|numeric',
+                    'date' => 'required|string'
                 ]);
 
                 if ($validator->fails()) {
@@ -536,7 +535,6 @@ class MobileController extends Controller
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
-                $strengthId = $validatedData['strength_id'];
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
                 $query = DailyStrength::where('member_id', $memberId)
@@ -556,7 +554,6 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'date' => $storedDay,
-                        'strength_id' => $strengthId, // Ensure legacy ID is sync'd
                     ]);
                     $message = 'Strength updated successfully';
                     Log::info('Strength updated', [
@@ -570,7 +567,6 @@ class MobileController extends Controller
                         'workout_manager_id' => $workoutManagerId,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
-                        'strength_id' => $strengthId,
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
