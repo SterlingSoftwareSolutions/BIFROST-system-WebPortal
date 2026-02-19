@@ -921,14 +921,7 @@ class UserMobileController extends Controller
                 return $item;
             });
 
-            // Scores
-            // The score logic in MobileController uses 'selected_day' from request or session. 
-            // We'll use the date we parsed.
-            // MobileController stores simple string in DB? 'selected_day' column in scores
-            // It seems it uses the raw string input usually. Let's try to match 
-            /* $score = $user->scores()
-                ->where('selected_day', $rawDateString) // Use raw input as it seems to be the key
-                ->first(); */
+          
             
             // Category Options
              $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
@@ -946,39 +939,8 @@ class UserMobileController extends Controller
                      ];
                  });
 
-            // --- END Logic from MobileController::getworkout ---
-
-
-            // --- EXISTING Logic for WorkoutManager (UserMobileController) ---
-
             log::info('Fetching workouts for class_id: ' . $classId . ' on date: ' . $rawDateString);
-            
-            // Re-using the assignedRaw we already fetched which is more robust than the original single whereDate
-            // Original:
-            // $workoutAssignments = WorkoutAssign::where('class_id', $classId)
-            //    ->whereDate('date', "19/02/26 Thursday") // This looked hardcoded in the file I read!
-            //    ->get();
-            
-            // We will use $assignedRaw IDs for fetching WorkoutManager items
-            // However, the original code used `WorkoutAssign` to get `workout_id`.
-            // IMPORTANT: In `WorkoutAssign` table, `workout_id` can point to `WorkoutManager`, OR `Warmup`, `Strength` etc depending on `workout_type`.
-            // The original UserMobileController logic assumed ALL assignments were for WorkoutManager?
-            // "getWorkouts" in UserMobileController lines 714: $workoutIds = $workoutAssignments->pluck('workout_id');
-            // Then lines 718: WorkoutManager::whereIn('id', $workoutIds)
-            
-            // If the `WorkoutAssign` table mixes types, we must only pick those where workout_type implies WorkoutManager?
-            // Or does UserMobileController only care about the new WorkoutManager types?
-            
-            // Based on typical system evolution, `WorkoutManager` is the new system.
-            // Let's filter `$assignedRaw` for items that might be WorkoutManager.
-            // If `workout_type` is NOT warmup/strength/etc, it might be a format?
-            // Or maybe existing logic was just grabbing everything and assuming it is WorkoutManager.
-            
-            // To be safe and "without affecting current functions", we should try to replicate the exact IDs it would have found.
-            // The original used `whereDate('date', "19/02/26 Thursday")` which was weirdly specific. 
-            // I assume that was a debug artifact and it SHOULD have used `$date`.
-            
-            // Let's use the IDs from our robust search, but try to fetch WorkoutManager objects for them.
+    
             $allAssignedIds = $assignedRaw->pluck('workout_id')->unique();
             
             $workouts = WorkoutManager::with([
