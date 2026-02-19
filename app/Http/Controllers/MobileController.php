@@ -1261,6 +1261,8 @@ class MobileController extends Controller
 
             $classId = $request->class_id;
 
+            log::info('classId', ['classId' => $request->class_id]);
+
             // Search for any assignment containing the date in any reasonable format
             $assignedRaw = WorkoutAssign::where('class_id', $classId)
                 ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
@@ -1274,6 +1276,8 @@ class MobileController extends Controller
                 ->get();
 
             $assigned = $assignedRaw->groupBy('workout_type');
+
+            log::info('assigned', ['assigned' => $assigned]);
 
             Log::info('Assigned workouts', [
                 'class_id' => $classId,
@@ -1292,6 +1296,8 @@ class MobileController extends Controller
             $getIds = fn ($type) => isset($assigned[$type])
                 ? $assigned[$type]->pluck('workout_id')->toArray()
                 : [];
+
+            log::info('getIds', ['getIds' => $getIds]);
 
             // Warmup
             $detailswarmup = Warmup::whereIn('id', $getIds('warmup'))
@@ -1320,10 +1326,71 @@ class MobileController extends Controller
 
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
-                ->where('member_id', operator: $member->id)
+                ->where('member_id', $member->id)
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
+
+             // if no test is assigned via class, check for individual test assignments for this member and date
+            if ($detailstest->isEmpty()) {
+                 $detailstest = Test::where('member_id', $member->id)
+                     ->where(function ($q) use ($dayWithDate, $dayWithDateNew) {
+                         $q->where('date', $dayWithDate)
+                           ->orWhere('date', $dayWithDateNew);
+                     })
+                     ->with('workout.categoryOption')
+                     ->with('member')
+                     ->get();
+            }
+
+                log::info('detailstest before processing', ['detailstest' => $detailstest]);
+
+                // Map through each test detail to append type_id from Type table
+                $detailstest->map(function ($test) use ($dayWithDate) {
+                    log::info('dayWithDate', ['dayWithDate' => $dayWithDate]);
+                    if ($test->workout) {
+                        $typeValue = $test->workout->type; // Get type from WorkoutLibrary relation
+                        // Find Type record
+                        $typeRecord = \App\Models\Type::where('name', $typeValue)->first();
+                        
+                        // Append to test object
+                        $test->type_id = $typeRecord ? $typeRecord->id : null;
+                        $test->type_name = $typeValue;
+
+                        Log::info('Processing Test ID: ' . $test->id, [
+                            'workout_library_id' => $test->workout_id,
+                            'library_type' => $typeValue,
+                            'found_type_id' => $test->type_id
+                        ]);
+
+                        if ($test->type_id) {
+                            $workoutManagers = \App\Models\WorkoutManager::where('type_id', $test->type_id)
+                                ->where('date', $dayWithDate)
+                                ->get(); // Get all matching workout managers
+
+                            $test->workout_managers = $workoutManagers;
+
+                            if ($workoutManagers->isNotEmpty()) {
+                                Log::info('WorkoutManagers found for Test ID: ' . $test->id, [
+                                    'test_id' => $test->id,
+                                    'count' => $workoutManagers->count(),
+                                    'first_id' => $workoutManagers->first()->id,
+                                    'first_workout_name' => $workoutManagers->first()->workout_name,
+                                    'first_format_id' => $workoutManagers->first()->format_id,
+                                    'first_status' => $workoutManagers->first()->status,
+                                    'first_number' => $workoutManagers->first()->number
+                                ]);
+                            } else {
+                                Log::info('No WorkoutManagers found for Test ID: ' . $test->id . ' with Type ID: ' . $test->type_id . ' and Date: ' . $dayWithDate);
+                            }
+                        }
+                    }
+                    return $test;
+                });
+
+                log::info('detailstest after processing', ['detailstest' => $detailstest]);
+
+                
 
             if ($assigned->isEmpty()) {
                 return response()->json([
@@ -1339,6 +1406,9 @@ class MobileController extends Controller
                 $key = $test->workout->workout . '_' . $test->workout->category_options_id;
                 return [$key => $test->weight];
             });
+
+
+            log::info('Test weights mapping', ['testWeights' => $testWeights]);
 
             $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
                 $completed = DailyWarmup::where('member_id', $member->id)

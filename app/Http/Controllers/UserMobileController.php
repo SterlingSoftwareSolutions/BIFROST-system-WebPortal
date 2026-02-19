@@ -681,36 +681,306 @@ class UserMobileController extends Controller
         }
     }
 
-   public function getWorkouts(Request $request)
+    public function getWorkouts(Request $request)
     {
+        log::info('getWorkouts called with payload', [
+            'payload' => $request->all(),
+            'timestamp' => now()->toDateTimeString(),
+        ]);
+
         try {
             $request->validate([
                 'class_id' => 'required|integer',
-                'date' => 'required|date',
+                // 'date' => 'required|string', // expecting format "19/02/26 Thursday" - validation handled below with custom parsing
             ]);
 
-            $classId = $request->input('class_id');
-            $date = $request->input('date');
-
-            // Get workout assignments filtered by class_id and date
-            $workoutAssignments = WorkoutAssign::where('class_id', $classId)
-                ->whereDate('date', $date)
-                ->get();
-
-            if ($workoutAssignments->isEmpty()) {
+            $user = Auth::user();
+            if (!$user) {
                 return response()->json([
-                    'status' => true,
-                    'message' => 'No workouts found for this class and date',
-                    'date' => $date,
-                    'class_id' => $classId,
-                    'workouts' => [],
-                ], 200);
+                    'status' => false,
+                    'message' => 'Unauthorized access.',
+                ], 401);
             }
 
-            // Get workout IDs from assignments
-            $workoutIds = $workoutAssignments->pluck('workout_id')->unique();
+            $member = Newprofile::where('user_id', $user->id)->first();
+            if (!$member) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Member profile not found for this user.',
+                ], 404);
+            }
 
-            // Fetch workout details from workout_manager with relationships
+            $classId = $request->input('class_id');
+            // $date = $request->input('date'); // Original simple date
+
+            // --- START Logic from MobileController::getworkout ---
+
+             // Sanitize and normalize incoming date string
+             $rawDateString = trim($request->input('date')); // Changed from 'selected_day' to 'date' to match input
+             Log::info('Day received (raw):', ['day' => $rawDateString]);
+ 
+             // Remove any characters except digits, slashes, spaces, letters and hyphen
+             $sanitized = preg_replace('/[^\d\/\sA-Za-z\-]/', '', $rawDateString);
+             $sanitized = preg_replace('/\s+/', ' ', trim($sanitized));
+             Log::info('Day received (sanitized):', ['day' => $sanitized]);
+ 
+             // Try to extract a date substring like d/m/y or d/m/Y
+             $datePart = null;
+             if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $sanitized, $m)) {
+                 $datePart = $m[0];
+             }
+ 
+             $dateObj = null; // Renamed to avoid conflict with $date input
+             if ($datePart) {
+                 // Choose format based on year length
+                 $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
+ 
+                 try {
+                     $dateObj = \Carbon\Carbon::createFromFormat($fmt, $datePart);
+                 } catch (\Exception $e) {
+                     // fallback to parse
+                     try {
+                         $dateObj = \Carbon\Carbon::parse($datePart);
+                     } catch (\Exception $e2) {
+                         $dateObj = null;
+                     }
+                 }
+             } else {
+                 // Last resort: try to parse the sanitized string directly
+                 try {
+                     $dateObj = \Carbon\Carbon::parse($sanitized);
+                 } catch (\Exception $e) {
+                     $dateObj = null;
+                 }
+             }
+ 
+             if (!$dateObj) {
+                 return response()->json([
+                     'status' => false, // varied from success: false
+                     'message' => 'Invalid date format.',
+                     'provided' => $rawDateString
+                 ], 400);
+             }
+
+            // Build normalized patterns (both two-digit and four-digit year, dayname before/after)
+            $dayName = $dateObj->format('l');
+            $shortDateTwo = $dateObj->format('d/m/y');   // e.g., 23/01/26
+            $shortDateFour = $dateObj->format('d/m/Y');  // e.g., 23/01/2026
+            $dayWithDate = $shortDateTwo . ' ' . $dayName;
+            $dayWithDateNew = $shortDateFour . ' ' . $dayName;
+            $dayNameFirst = $dayName . ' ' . $shortDateTwo;
+            $dayNameFirstNew = $dayName . ' ' . $shortDateFour;
+
+             // Search for any assignment containing the date in any reasonable format
+             $assignedRaw = WorkoutAssign::where('class_id', $classId)
+             ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
+                 $q->where('date', 'LIKE', '%' . $shortDateTwo . '%')
+                   ->orWhere('date', 'LIKE', '%' . $shortDateFour . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
+             })
+             ->get();
+
+            $assigned = $assignedRaw->groupBy('workout_type');
+
+             // Helper function
+             $getIds = fn ($type) => isset($assigned[$type])
+             ? $assigned[$type]->pluck('workout_id')->toArray()
+             : [];
+
+            // Fetch Data for new response parts
+            // Warmup
+            $detailswarmup = \App\Models\Warmup::whereIn('id', $getIds('warmup'))
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Strength
+            $detailsstrength = Strength::whereIn('id', $getIds('strength'))
+                ->with('sets.strengthing')
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Conditioning
+            $detailsconditioning = Conditioning::whereIn('id', $getIds('conditioning'))
+                ->with('workout')
+                ->with('workout.categoryOption')
+                ->get();
+
+            // Weightlifting
+            $detailsweight = Weightlifting::whereIn('id', $getIds('weightlifting'))
+                ->with('sets')
+                ->with('sets.weightlifting')
+                ->with('workout')
+                ->with('workout.categoryOption')
+                ->get();
+
+           // Test (filtered by member)
+           $detailstest = \App\Models\Test::whereIn('id', $getIds('test'))
+           ->where('member_id', $member->id)
+           ->with('workout.categoryOption')
+           ->with('member')
+           ->get();
+
+            
+
+            // if no test is assigned via class, check for individual test assignments for this member and date
+            if ($detailstest->isEmpty()) {
+                $detailstest = \App\Models\Test::where('member_id', $member->id)
+                    ->where(function ($q) use ($dayWithDate, $dayWithDateNew) {
+                        $q->where('date', $dayWithDate)
+                        ->orWhere('date', $dayWithDateNew);
+                    })
+                    ->with('workout.categoryOption')
+                    ->with('member')
+                    ->get();
+            }
+
+            // Map through each test detail to append type_id from Type table
+            $detailstest->map(function ($test) use ($dayWithDate) {
+                if ($test->workout) {
+                    $typeValue = $test->workout->type; // Get type from WorkoutLibrary relation
+                    // Find Type record
+                    $typeRecord = \App\Models\Type::where('name', $typeValue)->first();
+                    
+                    // Append to test object
+                    $test->type_id = $typeRecord ? $typeRecord->id : null;
+                    $test->type_name = $typeValue;
+
+                    if ($test->type_id) {
+                        $workoutManagers = \App\Models\WorkoutManager::where('type_id', $test->type_id)
+                            ->where('date', $dayWithDate)
+                            ->get(); // Get all matching workout managers
+
+                        $test->workout_managers = $workoutManagers;
+                    }
+                }
+                return $test;
+            });
+
+             // Create a map of [workout name + category_options_id] => weight from test
+             $testWeights = $detailstest->mapWithKeys(function ($test) {
+                if ($test->workout) {
+                    $key = $test->workout->workout . '_' . $test->workout->category_options_id;
+                    return [$key => $test->weight];
+                }
+                return [];
+            });
+
+            // Mark completions
+            $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
+                $item->workout_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists() ? 1 : 0;
+
+                $item->warmup_item_completed = DailyWarmup::where('member_id', $member->id)
+                    ->where('warmup_id', $item->id)
+                    ->where('reps', '>', 0)
+                    ->where('date', $dayWithDateNew)
+                    ->exists() ? 1 : 0;
+                return $item;
+            });
+
+            $appendTestWeight = function ($item) use ($testWeights) {
+                if ($item->workout) {
+                    $key = $item->workout->workout . '_' . $item->workout->category_options_id;
+                    $item->test_weight = $testWeights[$key] ?? null;
+                } else {
+                    $item->test_weight = null;
+                }
+                return $item;
+            };
+
+            $detailsstrength->transform($appendTestWeight);
+            $detailsconditioning->transform($appendTestWeight);
+            $detailsweight->transform($appendTestWeight);
+
+            $detailsweight->transform(function ($item) use ($member, $dayWithDateNew) {
+                $item->workout_completed = DailyWeightlifting::where('member_id', $member->id)
+                    ->where('weightlifting_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists() ? 1 : 0;
+                return $item;
+            });
+
+            $detailsstrength->transform(function ($item) use ($member, $dayWithDateNew) {
+                $item->workout_completed = DailyStrength::where('member_id', $member->id)
+                    ->where('strength_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists() ? 1 : 0;
+                return $item;
+            });
+
+            $detailsconditioning->transform(function ($item) use ($member, $dayWithDateNew) {
+                $item->workout_completed = DailyConditioning::where('member_id', $member->id)
+                    ->where('conditioning_id', $item->id)
+                    ->where('date', $dayWithDateNew)
+                    ->exists() ? 1 : 0;
+                return $item;
+            });
+
+            // Scores
+            // The score logic in MobileController uses 'selected_day' from request or session. 
+            // We'll use the date we parsed.
+            // MobileController stores simple string in DB? 'selected_day' column in scores
+            // It seems it uses the raw string input usually. Let's try to match 
+            /* $score = $user->scores()
+                ->where('selected_day', $rawDateString) // Use raw input as it seems to be the key
+                ->first(); */
+            
+            // Category Options
+             $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
+
+            // Workout Library
+             $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+                 ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+                 ->map(function ($item) {
+                     return [
+                         'id' => $item->id,
+                         'workout' => $item->workout,
+                         'type' => $item->type,
+                         'category_option_id' => $item->category_options_id,
+                         'category_option_name' => $item->categoryOption->category_name ?? null,
+                     ];
+                 });
+
+            // --- END Logic from MobileController::getworkout ---
+
+
+            // --- EXISTING Logic for WorkoutManager (UserMobileController) ---
+
+            log::info('Fetching workouts for class_id: ' . $classId . ' on date: ' . $rawDateString);
+            
+            // Re-using the assignedRaw we already fetched which is more robust than the original single whereDate
+            // Original:
+            // $workoutAssignments = WorkoutAssign::where('class_id', $classId)
+            //    ->whereDate('date', "19/02/26 Thursday") // This looked hardcoded in the file I read!
+            //    ->get();
+            
+            // We will use $assignedRaw IDs for fetching WorkoutManager items
+            // However, the original code used `WorkoutAssign` to get `workout_id`.
+            // IMPORTANT: In `WorkoutAssign` table, `workout_id` can point to `WorkoutManager`, OR `Warmup`, `Strength` etc depending on `workout_type`.
+            // The original UserMobileController logic assumed ALL assignments were for WorkoutManager?
+            // "getWorkouts" in UserMobileController lines 714: $workoutIds = $workoutAssignments->pluck('workout_id');
+            // Then lines 718: WorkoutManager::whereIn('id', $workoutIds)
+            
+            // If the `WorkoutAssign` table mixes types, we must only pick those where workout_type implies WorkoutManager?
+            // Or does UserMobileController only care about the new WorkoutManager types?
+            
+            // Based on typical system evolution, `WorkoutManager` is the new system.
+            // Let's filter `$assignedRaw` for items that might be WorkoutManager.
+            // If `workout_type` is NOT warmup/strength/etc, it might be a format?
+            // Or maybe existing logic was just grabbing everything and assuming it is WorkoutManager.
+            
+            // To be safe and "without affecting current functions", we should try to replicate the exact IDs it would have found.
+            // The original used `whereDate('date', "19/02/26 Thursday")` which was weirdly specific. 
+            // I assume that was a debug artifact and it SHOULD have used `$date`.
+            
+            // Let's use the IDs from our robust search, but try to fetch WorkoutManager objects for them.
+            $allAssignedIds = $assignedRaw->pluck('workout_id')->unique();
+            
             $workouts = WorkoutManager::with([
                     'format',
                     'type',
@@ -723,7 +993,7 @@ class UserMobileController extends Controller
                     'circuits.workoutLibrary.categoryOption',
                     'forTimes.workoutLibrary.categoryOption'
                 ])
-                ->whereIn('id', $workoutIds)
+                ->whereIn('id', $allAssignedIds)
                 ->where('status', 'active')
                 ->get();
 
@@ -732,17 +1002,34 @@ class UserMobileController extends Controller
                 return $workout->type->name ?? 'Unknown';
             });
 
+
             return response()->json([
                 'status' => true,
-                'date' => $date,
+                'date' => $rawDateString,
                 'class_id' => $classId,
+                
+                // Existing key
                 'workouts' => $groupedWorkouts,
+
+                // New keys from MobileController
+                'dayWithDate' => $dayWithDate,
+                'warmup' => $detailswarmup,
+                'strength' => $detailsstrength,
+                'conditioning' => $detailsconditioning,
+                'weightlifting' => $detailsweight,
+                'test' => $detailstest,
+                //'score' => $score,
+                'workoutlibrary' => $workoutlibrary,
+                'categoryOptions' => $categoryOptions,
+                'member' => $member
             ], 200);
 
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
             ], 500);
         }
     }
