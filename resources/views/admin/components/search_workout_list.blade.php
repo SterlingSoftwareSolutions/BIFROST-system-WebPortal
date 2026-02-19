@@ -231,7 +231,7 @@ function generateWorkoutRowsHtml(fmt, workout) {
         let nestedSetsHtml = '';
         if (fmt === 'Straight Sets' && row.sets && row.sets.length > 0) {
             nestedSetsHtml = row.sets.map(set => {
-                const setLoad = set.trainload || '';
+                const setLoad = set.training_load || '';
                 const setUnit = set.unittype || '';
                 const setReps = set.res || '';
                 return `

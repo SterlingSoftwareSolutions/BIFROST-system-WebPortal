@@ -332,7 +332,7 @@ class WorkoutManagerController extends Controller
                         'straight_id' => $straight->id,
                         'workout_libraries_id' => $libId,
                         'res' => $request->input($repsKey),
-                        'trainload' => $request->input($loadKey),
+                        'training_load' => $request->input($loadKey),
                         'unittype' => $request->input($unitKey),
                     ]);
 
@@ -571,7 +571,7 @@ class WorkoutManagerController extends Controller
 
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
-            
+
             // FILTER: Workout date
             if ($date) {
                 $query->whereDate('date', $date);

@@ -217,7 +217,7 @@ class UserMobileController extends Controller
     {
         try {
             // Fetch all workouts where type = 'strength' or 'weightlifting'
-            $workouts = WorkoutLibrary::whereIn('type', ['strength', 'weightlifting'])
+            $workouts = WorkoutLibrary::whereIn('type', ['strength', 'weightlifting', 'warmup', 'conditioning'])
                     ->orderBy('workout', 'asc')
                     ->get();
 
@@ -449,7 +449,8 @@ class UserMobileController extends Controller
             foreach ($dailyModels as $model) {
 
                 $records = $model::where('member_id', $member->id)
-                    ->with('workoutFormat') // eager load the correct relation
+                    ->with('workoutFormat',
+                    'workoutManager.type') // eager load the correct relation
                     ->get()
                     ->filter(function ($item) use ($workoutId) {
                         $format = $item->workout_format; // use snake_case
@@ -459,11 +460,18 @@ class UserMobileController extends Controller
                 foreach ($records as $item) {
                     $format = $item->workout_format;
                     $libraryId = $format ? $format->workout_libraries_id : null;
+                    if ($item instanceof DailyWarmup) {
+                        $weight = optional($item->workout_format)->training_load ?? 0;
+                    } else {
+                        $weight = $item->weight ?? 0;
+                    }
                     Log::info('Debug record', [
                         'daily_id' => $item->id,
                         'format_type' => $item->workout_format_type,
                         'format_id' => $item->workout_format_id,
                         'library_id' => $libraryId,
+                        'type' => optional($item->workoutManager->type)->name ?? null,
+                        'weight' => $weight,
                     ]);
                 }
 
@@ -486,11 +494,17 @@ class UserMobileController extends Controller
                 } catch (\Exception $e) {
                     $date = $item->date;
                 }
+                // ✅ If DailyWarmup → get weight from workoutFormat->trainingload
+                if ($item instanceof DailyWarmup) {
+                    $weight = optional($item->workout_format)->training_load ?? 0;
+                } else {
+                    $weight = $item->weight ?? 0;
+                }
 
                 return [
                     'date' => $date,
                     'reps' => (int) ($item->reps ?? 0),
-                    'weight' => (float) ($item->weight ?? 0),
+                    'weight' => (float) $weight,
                 ];
             })->sortBy('date')->values();
 
@@ -508,11 +522,27 @@ class UserMobileController extends Controller
                     ],
                     'summary' => [
                         'total_reps' => $allData->sum('reps'),
-                        'total_weight' => $allData->sum('weight'),
+                        'total_weight' => $allData->sum(function ($item) {
+                            if ($item instanceof DailyWarmup) {
+                                return optional($item->workout_format)->training_load ?? 0;
+                            }
+                            return $item->weight ?? 0;
+                        }),
                         'total_sets' => $allData->count(),
-                        'one_rep_max' => round($allData->max(function ($item) {
-                            return ($item->weight ?? 0) * (1 + (($item->reps ?? 0)/30));
-                        }), 2)
+                        'one_rep_max' => round(
+                            $allData->max(function ($item) {
+
+                                if ($item instanceof DailyWarmup) {
+                                    $weight = optional($item->workout_format)->training_load ?? 0;
+                                } else {
+                                    $weight = $item->weight ?? 0;
+                                }
+
+                                $reps = $item->reps ?? 0;
+
+                                return $weight * (1 + ($reps / 30));
+                            }),
+                        2)
                     ]
                 ]
             ]);
@@ -568,7 +598,7 @@ class UserMobileController extends Controller
                     'workoutManager.pyramids.workoutLibrary.categoryOption',
                     'workoutManager.forTimes.workoutLibrary.categoryOption',
                 ])
-                ->orderBy('date', 'asc')
+                ->orderBy('date', 'desc')
                 ->get();
 
             // Get Weightlifting records
@@ -583,7 +613,7 @@ class UserMobileController extends Controller
                     'workoutManager.pyramids.workoutLibrary.categoryOption',
                     'workoutManager.forTimes.workoutLibrary.categoryOption',
                 ])
-                ->orderBy('date', 'asc')
+                ->orderBy('date', 'desc')
                 ->get();
 
             // Get Conditioning records
@@ -613,7 +643,7 @@ class UserMobileController extends Controller
                     'workoutManager.pyramids.workoutLibrary.categoryOption',
                     'workoutManager.forTimes.workoutLibrary.categoryOption',
                 ])
-                ->orderBy('date', 'asc')
+                ->orderBy('date', 'desc')
                 ->get();
 
             // Format all datasets
@@ -806,7 +836,7 @@ class UserMobileController extends Controller
                 ->merge($weightliftingData->toBase())
                 ->merge($conditioningData->toBase())
                 ->merge($accessoryData->toBase())
-                ->sortBy('date')
+                ->sortByDesc('date')
                 ->values();
 
 
