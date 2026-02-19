@@ -1217,43 +1217,64 @@ class UserMobileController extends Controller
             // Note: Only keeping type_completed and is_completed fields as requested
             });
 
-            // Group workouts by type
             $groupedWorkouts = $workouts->groupBy(function ($workout) {
                 return $workout->type->name ?? 'Unknown';
             });
 
-            // Add type-level completion status: type is completed only if ALL format items across ALL workouts in that type are completed
             $groupedWorkouts = $groupedWorkouts->map(function ($typeWorkouts, $typeName) {
                 $totalFormatItems = 0;
                 $completedFormatItems = 0;
 
-                // Count all format items and completed items across all workouts in this type
                 $typeWorkouts->each(function ($workout) use (&$totalFormatItems, &$completedFormatItems) {
+
                     $formatMapping = [
-                        'rounds' => 'rounds',
-                        'amraps' => 'amrap',
-                        'forTimes' => 'for-time',
-                        'intervals' => 'intervals',
-                        'emoms' => 'emom',
-                        'straights' => 'straight-sets',
-                        'circuits' => 'circuit',
-                        'pyramids' => 'pyramid',
+                        'rounds',
+                        'amraps',
+                        'forTimes',
+                        'intervals',
+                        'emoms',
+                        'straights',
+                        'circuits',
+                        'pyramids',
                     ];
 
-                    foreach ($formatMapping as $relation => $formatType) {
+                    foreach ($formatMapping as $relation) {
+
                         if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
+
                             foreach ($workout->{$relation} as $formatItem) {
-                                $totalFormatItems++;
-                                if ($formatItem->is_completed == 1) {
-                                    $completedFormatItems++;;
+
+                                // Special handling for Straight Sets
+                                if ($relation === 'straights') {
+
+                                    if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
+
+                                        foreach ($formatItem->sets as $set) {
+                                            $totalFormatItems++;
+
+                                            if ($set->is_completed == 1) {
+                                                $completedFormatItems++;
+                                            }
+                                        }
+
+                                    }
+
+                                } else {
+
+                                    $totalFormatItems++;
+
+                                    if ($formatItem->is_completed == 1) {
+                                        $completedFormatItems++;
+                                    }
+
                                 }
                             }
                         }
                     }
                 });
 
-                // Add type completion status to each workout in this type
                 $typeCompletionStatus = ($totalFormatItems > 0 && $completedFormatItems === $totalFormatItems) ? 1 : 0;
+
                 $typeWorkouts->each(function ($workout) use ($typeCompletionStatus) {
                     $workout->type_completed = $typeCompletionStatus;
                 });
