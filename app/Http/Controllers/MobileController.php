@@ -394,7 +394,7 @@ class MobileController extends Controller
             foreach ($warmupItems as $item) {
                 $validator = Validator::make($item, [
                     'workout_manager_id' => 'required|integer',
-                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
+                    'workout_format_type' => 'required|string|in:rounds,amrap,for-time,intervals,emom,straight-sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'date' => 'required|string',
@@ -513,11 +513,10 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    #'reps' => 'required|integer',
-                    #'weight' => 'nullable|numeric',
-                    #'set_number' => 'required|integer',
-                    'date' => 'required|string',
-                    #'strength_id' => 'required|integer', 
+                    'reps' => 'required|integer',
+                    'set_number' => 'required|integer',
+                    'weight' => 'nullable|numeric',
+                    'date' => 'required|string'
                 ]);
 
                 if ($validator->fails()) {
@@ -536,7 +535,6 @@ class MobileController extends Controller
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
-                $strengthId = $validatedData['strength_id'];
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
                 $query = DailyStrength::where('member_id', $memberId)
@@ -545,7 +543,7 @@ class MobileController extends Controller
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
                     ->where('set_number', $setNumber);
-                
+
                 $dailyStrength = $query->first();
 
                 Log::info('Existing strength record:', ['dailyStrength' => $dailyStrength?->toArray()]);
@@ -556,7 +554,6 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'date' => $storedDay,
-                        'strength_id' => $strengthId, // Ensure legacy ID is sync'd
                     ]);
                     $message = 'Strength updated successfully';
                     Log::info('Strength updated', [
@@ -570,7 +567,6 @@ class MobileController extends Controller
                         'workout_manager_id' => $workoutManagerId,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
-                        'strength_id' => $strengthId,
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
@@ -642,11 +638,10 @@ class MobileController extends Controller
                     'workout_manager_id' => 'required|integer',
                     'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
                     'workout_format_id' => 'required|integer',
-                    #'reps' => 'required|integer',
+                    'reps' => 'required|integer',
                     'weight' => 'nullable|numeric',
-                    #'set_number' => 'required|integer',
+                    'set_number' => 'required|integer',
                     'date' => 'required|string',
-                    #'weightlifting_id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -665,7 +660,6 @@ class MobileController extends Controller
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
-                $weightliftingId = $validatedData['weightlifting_id'];
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
                 $query = DailyWeightlifting::where('member_id', $memberId)
@@ -684,8 +678,7 @@ class MobileController extends Controller
                     $dailyWeightlifting->update([
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
-                        'date' => $storedDay,
-                        'weightlifting_id' => $weightliftingId,
+                        'date' => $storedDay
                     ]);
                     $message = 'Weightlifting updated successfully';
                     Log::info('Weightlifting updated', [
@@ -699,7 +692,6 @@ class MobileController extends Controller
                         'workout_manager_id' => $workoutManagerId,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
-                        'weightlifting_id' => $weightliftingId,
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
@@ -1133,13 +1125,14 @@ class MobileController extends Controller
             'stress_input' => 'required|string',
             'soreness_input' => 'required|string',
             'score' => 'required|integer',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         // Find an existing score for the same user and date, or create a new one
         $score = $user->scores()->updateOrCreate(
-            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'],'class_id' => $validatedData['class_id']],
             $validatedData
         );
 
@@ -1161,12 +1154,14 @@ class MobileController extends Controller
     {
         $request->validate([
             'selected_day' => 'required|string',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         $score = $user->scores()
             ->where('selected_day', $request->selected_day)
+            ->where('class_id', $request->class_id)
             ->first();
 
         if ($score) {
@@ -1462,6 +1457,9 @@ class MobileController extends Controller
 
         $test = Test::where('id', $request->id)
                     ->where('workout_id', $request->workout_id)
+
+
+
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1493,7 +1491,7 @@ class MobileController extends Controller
         'weight' => 'required|numeric',
         'selected_day' => 'required|string',
     ]);
-    
+
     try {
         $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
         $dayWithDate = $date->format('d/m/y l');
@@ -1512,7 +1510,7 @@ class MobileController extends Controller
             'member_id'   => $request->member_id,
             'weight'      => $request->weight,
             'workoutname' => $request->workoutname,
-            'date'        => $dayWithDate, 
+            'date'        => $dayWithDate,
             'category_id' => $request->category_id ?? null,
             'workout_manager_id' => $workoutManager->id,
             'workout_libraries_id' => $request->workout_id, 
