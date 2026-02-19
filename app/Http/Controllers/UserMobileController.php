@@ -1282,11 +1282,115 @@ class UserMobileController extends Controller
                 return $typeWorkouts;
             });
 
+
+
+            //search bar filtering by workout name or category
+            // Sanitize and normalize incoming date string
+             $rawDateString = trim($request->input('date')); // Changed from 'selected_day' to 'date' to match input
+             Log::info('Day received (raw):', ['day' => $rawDateString]);
+ 
+             // Remove any characters except digits, slashes, spaces, letters and hyphen
+             $sanitized = preg_replace('/[^\d\/\sA-Za-z\-]/', '', $rawDateString);
+             $sanitized = preg_replace('/\s+/', ' ', trim($sanitized));
+             Log::info('Day received (sanitized):', ['day' => $sanitized]);
+ 
+             // Try to extract a date substring like d/m/y or d/m/Y
+             $datePart = null;
+             if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $sanitized, $m)) {
+                 $datePart = $m[0];
+             }
+
+             $dateObj = null; // Renamed to avoid conflict with $date input
+             if ($datePart) {
+                 // Choose format based on year length
+                 $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
+ 
+                 try {
+                     $dateObj = \Carbon\Carbon::createFromFormat($fmt, $datePart);
+                 } catch (\Exception $e) {
+                     // fallback to parse
+                     try {
+                         $dateObj = \Carbon\Carbon::parse($datePart);
+                     } catch (\Exception $e2) {
+                         $dateObj = null;
+                     }
+                 }
+             } else {
+                 // Last resort: try to parse the sanitized string directly
+                 try {
+                     $dateObj = \Carbon\Carbon::parse($sanitized);
+                 } catch (\Exception $e) {
+                     $dateObj = null;
+                 }
+             }
+
+            if (!$dateObj) {
+                 return response()->json([
+                     'status' => false, // varied from success: false
+                     'message' => 'Invalid date format.',
+                     'provided' => $rawDateString
+                 ], 400);
+             }
+            // Build normalized patterns (both two-digit and four-digit year, dayname before/after)
+            $dayName = $dateObj->format('l');
+            $shortDateTwo = $dateObj->format('d/m/y');   // e.g., 23/01/26
+            $shortDateFour = $dateObj->format('d/m/Y');  // e.g., 23/01/2026
+            $dayWithDate = $shortDateTwo . ' ' . $dayName;
+            $dayWithDateNew = $shortDateFour . ' ' . $dayName;
+            $dayNameFirst = $dayName . ' ' . $shortDateTwo;
+            $dayNameFirstNew = $dayName . ' ' . $shortDateFour;
+            // Search for any assignment containing the date in any reasonable format
+             $assignedRaw = WorkoutAssign::where('class_id', $classId)
+             ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
+                 $q->where('date', 'LIKE', '%' . $shortDateTwo . '%')
+                   ->orWhere('date', 'LIKE', '%' . $shortDateFour . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
+                   ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
+             })
+             ->get();
+
+            $assigned = $assignedRaw->groupBy('workout_type');
+            // Helper function
+             $getIds = fn ($type) => isset($assigned[$type])
+             ? $assigned[$type]->pluck('workout_id')->toArray()
+             : [];
+            // Test (filtered by member)
+           $detailstest = \App\Models\Test::whereIn('id', $getIds('test'))
+           ->where('member_id', $member->id)
+           ->with('workout.categoryOption')
+           ->with('member')
+           ->get();
+
+           // Category Options
+             $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
+
+            // Workout Library
+             $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+                 ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+                 ->map(function ($item) {
+                     return [
+                         'id' => $item->id,
+                         'workout' => $item->workout,
+                         'type' => $item->type,
+                         'category_option_id' => $item->category_options_id,
+                         'category_option_name' => $item->categoryOption->category_name ?? null,
+                     ];
+                 });
+
+
+
             return response()->json([
                 'status' => true,
                 'date' => $dateString,
                 'class_id' => $classId,
                 'workouts' => $groupedWorkouts,
+                'dayWithDate' => $dayWithDate,
+                'test' => $detailstest,
+                 'workoutlibrary' => $workoutlibrary,
+                'categoryOptions' => $categoryOptions,
+                'member' => $member
             ], 200);
 
         } catch (\Exception $e) {
