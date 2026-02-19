@@ -471,7 +471,7 @@
                  const lastIdx = parseInt(parts[parts.length - 1]);
                  newIdx = lastIdx + 1;
              }
-             
+
              container.insertAdjacentHTML('beforeend', getUniversalRowHtml(newIdx, prefix));
 
              // Update row numbers if we implement that
@@ -500,12 +500,12 @@
             event.stopPropagation();
             const popup = element.nextElementSibling;
             const allPopups = document.querySelectorAll('.info-popup');
-            
+
             // Close others
             allPopups.forEach(p => {
                 if (p !== popup) p.classList.add('hidden');
             });
-            
+
             // Toggle current
             popup.classList.toggle('hidden');
         }
@@ -638,7 +638,7 @@
                  const lastIdx = parseInt(parts[parts.length - 1]);
                  newIdx = lastIdx + 1;
              }
-             
+
              const html = getUniversalRowHtml(newIdx, prefix);
              container.insertAdjacentHTML('beforeend', html);
 
@@ -1200,7 +1200,7 @@
                         ${headersHtml}
                         ${mainRowHtml}
                         <div id="ss_supersets_container"></div>
-                        
+
                         <!-- Add Button -->
                         <div class="mt-4 flex gap-0 pl-0">
                              <button type="button" onclick="addSuperSet()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
@@ -1766,7 +1766,7 @@
                      <div id="station_${index}_rows" class="space-y-3 max-h-96 overflow-y-auto px-2 custom-scroll">
                           ${getCircuitRowHtml(index, 1)}
                      </div>
-                     
+
                      <!-- Add Button -->
                      <div class="mt-4 flex gap-0 px-2">
                         <button type="button" onclick="addStationRow(${index})" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
@@ -2278,14 +2278,14 @@
                          sets.forEach((set, idx) => {
                              const setNum = idx + 1;
                              if(!data[setNum]) data[setNum] = {};
-                             data[setNum][1] = { reps: set.res, load: set.trainload, unit: set.unittype };
+                             data[setNum][1] = { reps: set.res, load: set.training_load, unit: set.unittype };
                          });
                          // Super Sets
                          if(secStraight && secStraight.sets) {
                              secStraight.sets.forEach((set, idx) => {
                                  const setNum = idx + 1;
                                  if(!data[setNum]) data[setNum] = {};
-                                 data[setNum][2] = { reps: set.res, load: set.trainload, unit: set.unittype };
+                                 data[setNum][2] = { reps: set.res, load: set.training_load, unit: set.unittype };
                              });
                          }
                          window.restoreStraightSetData(data);
