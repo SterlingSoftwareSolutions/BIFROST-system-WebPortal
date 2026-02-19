@@ -793,15 +793,14 @@ class UserMobileController extends Controller
 
                             if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
 
+                                $isCompleted = $dailyModel::where('member_id', $member->id)
+                                    ->where('workout_manager_id', $workout->id)
+                                    ->where('workout_format_type', $formatType)
+                                    ->where('workout_format_id', $formatItem->id)
+                                    ->where('date', $dateString)
+                                    ->exists();
+
                                 foreach ($formatItem->sets as $set) {
-
-                                    $isCompleted = DailyWarmup::where('member_id', $member->id)
-                                        ->where('workout_manager_id', $workout->id)
-                                        ->where('workout_format_type', $formatType)
-                                        ->where('workout_format_id', $formatItem->id)
-                                        ->where('date', $dateString)
-                                        ->exists();
-
                                     $set->is_completed = $isCompleted ? 1 : 0;
                                 }
                             }
@@ -827,34 +826,17 @@ class UserMobileController extends Controller
                             && $formatItem->sets
                             && $formatItem->sets->isNotEmpty()) {
 
-                            $totalSets = $formatItem->sets->count();
-                            $completedSets = 0;
+                            $isCompleted = $baseQuery->exists();
 
                             foreach ($formatItem->sets as $set) {
-
-                                $setCompleted = (clone $baseQuery)
-                                    ->where('set_number', $set->set_number)
-                                    ->exists();
-
-                                if ($setCompleted) {
-                                    $completedSets++;
-                                }
-
-                                $set->is_completed = $setCompleted ? 1 : 0;
+                                $set->is_completed = $isCompleted ? 1 : 0;
                             }
 
-                            // Format completed only if ALL sets completed
-                            $formatItem->is_completed =
-                                ($completedSets === $totalSets) ? 1 : 0;
+                            // Format completed based on exists check
+                            $formatItem->is_completed = $isCompleted ? 1 : 0;
 
                             unset($formatItem->has_reps_saved);
                         }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | WARMUP + OTHERS 
-                        |--------------------------------------------------------------------------
-                        */
                         else {
 
                             $isCompleted = $baseQuery->exists();
@@ -890,11 +872,11 @@ class UserMobileController extends Controller
                     $formatMapping = [
                         'rounds' => 'rounds',
                         'amraps' => 'amrap',
-                        'forTimes' => 'for_time',
+                        'forTimes' => 'for-time',
                         'intervals' => 'intervals',
                         'emoms' => 'emom',
-                        'straights' => 'straight_sets',
-                        'circuits' => 'circuits',
+                        'straights' => 'straight-sets',
+                        'circuits' => 'circuit',
                         'pyramids' => 'pyramid',
                     ];
                     
@@ -903,7 +885,7 @@ class UserMobileController extends Controller
                             foreach ($workout->{$relation} as $formatItem) {
                                 $totalFormatItems++;
                                 if ($formatItem->is_completed == 1) {
-                                    $completedFormatItems++;
+                                    $completedFormatItems++;;
                                 }
                             }
                         }
