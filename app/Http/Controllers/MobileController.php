@@ -543,7 +543,7 @@ class MobileController extends Controller
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
                     ->where('set_number', $setNumber);
-                
+
                 $dailyStrength = $query->first();
 
                 Log::info('Existing strength record:', ['dailyStrength' => $dailyStrength?->toArray()]);
@@ -1130,13 +1130,14 @@ class MobileController extends Controller
             'stress_input' => 'required|string',
             'soreness_input' => 'required|string',
             'score' => 'required|integer',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         // Find an existing score for the same user and date, or create a new one
         $score = $user->scores()->updateOrCreate(
-            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'],'class_id' => $validatedData['class_id']],
             $validatedData
         );
 
@@ -1147,16 +1148,25 @@ class MobileController extends Controller
         ], 200);
     }
 
+
+    public function getexcerise(Request $request){
+
+    }
+
+     
+
     public function getscore(Request $request)
     {
         $request->validate([
             'selected_day' => 'required|string',
+            'class_id' => 'required|integer',
         ]);
 
         $user = $request->user();
 
         $score = $user->scores()
             ->where('selected_day', $request->selected_day)
+            ->where('class_id', $request->class_id)
             ->first();
 
         if ($score) {
@@ -1310,7 +1320,7 @@ class MobileController extends Controller
 
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
-                ->where('member_id', $member->id)
+                ->where('member_id', operator: $member->id)
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
@@ -1439,6 +1449,8 @@ class MobileController extends Controller
         }
     }
 
+    
+
     public function updateWeight(Request $request)
     {
         $request->validate([
@@ -1452,7 +1464,7 @@ class MobileController extends Controller
                     ->where('workout_id', $request->workout_id)
 
 
-                    
+
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1466,6 +1478,7 @@ class MobileController extends Controller
         $test->update([
             'weight' => $request->weight,
             'date' => $request->date ?? $test->date,
+            'unit_type' => 'kg', // Force unit type to kg on update as per request
         ]);
 
         return response()->json([
@@ -1483,18 +1496,30 @@ class MobileController extends Controller
         'weight' => 'required|numeric',
         'selected_day' => 'required|string',
     ]);
-    
+
     try {
         $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
         $dayWithDate = $date->format('d/m/y l');
+
+
+        $workoutManager = WorkoutManager::create([
+            'workout_name' => $request->workoutname,
+            'type_id' => 7, // Default type ID for tests/measurements
+            'format_id' => 0,//no specific format type for this 
+            'date' => $dayWithDate,
+            // 'number' can be left null or set if needed. 
+        ]);
 
         $test = Test::create([
             'workout_id'  => $request->workout_id,
             'member_id'   => $request->member_id,
             'weight'      => $request->weight,
             'workoutname' => $request->workoutname,
-            'date'        => $dayWithDate, 
+            'date'        => $dayWithDate,
             'category_id' => $request->category_id ?? null,
+            'workout_manager_id' => $workoutManager->id,
+            'workout_libraries_id' => $request->workout_id, 
+            'unit_type' => 'kg',
         ]);
 
         return response()->json([
@@ -1506,6 +1531,7 @@ class MobileController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'Failed to insert weight. Please try again.',
+            'error' => $e->getMessage() 
         ], 500);
     }
 }
