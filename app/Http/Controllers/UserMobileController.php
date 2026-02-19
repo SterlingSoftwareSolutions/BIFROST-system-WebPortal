@@ -1073,10 +1073,10 @@ class UserMobileController extends Controller
                 $formatMapping = [
                     'rounds' => 'rounds',
                     'amraps' => 'amrap',
-                    'forTimes' => 'for-time',
+                    'forTimes' => 'for_time',
                     'intervals' => 'intervals',
                     'emoms' => 'emom',
-                    'straights' => 'straight-sets',
+                    'straights' => 'straight_sets',
                     'circuits' => 'circuit',
                     'pyramids' => 'pyramid',
                 ];
@@ -1088,91 +1088,103 @@ class UserMobileController extends Controller
 
                     foreach ($workout->{$relation} as $formatItem) {
 
-                        // SPECIAL HANDLING FOR STRAIGHT-SETS
+                        Log::info('Format Item Data', [
+                            'format_item' => $formatItem->toArray()
+                        ]);
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | STRAIGHT-SETS HANDLING (PER SET CHECK)
+                        |--------------------------------------------------------------------------
+                        */
                         if ($workout->format->slug === 'straight-sets') {
 
                             if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
 
                                 foreach ($formatItem->sets as $set) {
 
-                                    $isCompleted = DailyWarmup::where('member_id', $member->id)
+                                    Log::info('Checking straight-set completion', [
+                                        'member_id' => $member->id,
+                                        'workout_manager_id' => $workout->id,
+                                        'workout_format_type' => $formatType,
+                                        'workout_format_id' => $set->id, 
+                                        'date' => $dateString,
+                                    ]);
+
+                                    $query = $dailyModel::where('member_id', $member->id)
                                         ->where('workout_manager_id', $workout->id)
                                         ->where('workout_format_type', $formatType)
-                                        ->where('workout_format_id', $formatItem->id)
-                                        ->where('date', $dateString)
-                                        ->exists();
+                                        ->where('workout_format_id', $set->id) 
+                                        ->where('date', $dateString);
+
+                                    Log::info('Straight-set SQL', [
+                                        'sql' => $query->toSql(),
+                                        'bindings' => $query->getBindings(),
+                                    ]);
+
+                                    $isCompleted = $query->exists();
+
+                                    Log::info('Straight-set result', [
+                                        'set_id' => $set->id,
+                                        'is_completed' => $isCompleted,
+                                    ]);
 
                                     $set->is_completed = $isCompleted ? 1 : 0;
                                 }
                             }
 
-                            // REMOVE straight-level completion
+                            // Remove straight-level flags
                             unset($formatItem->is_completed);
-                            unset($formatItem->has_reps_saved);
-
-                        } else {
-                            // Base query
-                            $baseQuery = $dailyModel::where('member_id', $member->id)
-                            ->where('workout_manager_id', $workout->id)
-                            ->where('workout_format_type', $formatType)
-                            ->where('workout_format_id', $formatItem->id)
-                            ->where('date', $dateString);
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | STRENGTH + WEIGHTLIFTING
-                        |--------------------------------------------------------------------------
-                        */
-                        if (in_array($typeName, ['strength', 'weightlifting', 'accessory'])
-                            && $formatItem->sets
-                            && $formatItem->sets->isNotEmpty()) {
-
-                            $totalSets = $formatItem->sets->count();
-                            $completedSets = 0;
-
-                            foreach ($formatItem->sets as $set) {
-
-                                $setCompleted = (clone $baseQuery)
-                                    ->where('set_number', $set->set_number)
-                                    ->exists();
-
-                                if ($setCompleted) {
-                                    $completedSets++;
-                                }
-
-                                $set->is_completed = $setCompleted ? 1 : 0;
-                            }
-
-                            // Format completed only if ALL sets completed
-                            $formatItem->is_completed =
-                                ($completedSets === $totalSets) ? 1 : 0;
-
                             unset($formatItem->has_reps_saved);
                         }
 
                         /*
                         |--------------------------------------------------------------------------
-                        | WARMUP + OTHERS
+                        | OTHER FORMATS (STRENGTH / WEIGHTLIFTING / ACCESSORY)
                         |--------------------------------------------------------------------------
                         */
                         else {
 
-                            $isCompleted = $baseQuery->exists();
+                            $baseQuery = $dailyModel::where('member_id', $member->id)
+                                ->where('workout_manager_id', $workout->id)
+                                ->where('workout_format_type', $formatType)
+                                ->where('workout_format_id', $formatItem->id)
+                                ->where('date', $dateString);
 
-                            $hasReps = (clone $baseQuery)
-                                ->where('reps', '>', 0)
-                                ->exists();
+                            if (
+                                in_array($typeName, ['strength', 'weightlifting', 'accessory'])
+                                && $formatItem->sets
+                                && $formatItem->sets->isNotEmpty()
+                            ) {
 
-                            $formatItem->is_completed = $isCompleted ? 1 : 0;
-                            $formatItem->has_reps_saved = $hasReps ? 1 : 0;
-                        }
+                                $isCompleted = $baseQuery->exists();
 
+                                foreach ($formatItem->sets as $set) {
+                                    $set->is_completed = $isCompleted ? 1 : 0;
+                                }
+
+                                $formatItem->is_completed = $isCompleted ? 1 : 0;
+
+                                unset($formatItem->has_reps_saved);
+                            }
+                            else {
+
+                                $isCompleted = $baseQuery->exists();
+
+                                $hasReps = (clone $baseQuery)
+                                    ->where('reps', '>', 0)
+                                    ->exists();
+
+                                $formatItem->is_completed = $isCompleted ? 1 : 0;
+                                $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                            }
                         }
                     }
                 }
+
             }
 
-                // Note: Only keeping type_completed and is_completed fields as requested
+            // Note: Only keeping type_completed and is_completed fields as requested
             });
 
             // Group workouts by type
@@ -1190,11 +1202,11 @@ class UserMobileController extends Controller
                     $formatMapping = [
                         'rounds' => 'rounds',
                         'amraps' => 'amrap',
-                        'forTimes' => 'for_time',
+                        'forTimes' => 'for-time',
                         'intervals' => 'intervals',
                         'emoms' => 'emom',
-                        'straights' => 'straight_sets',
-                        'circuits' => 'circuits',
+                        'straights' => 'straight-sets',
+                        'circuits' => 'circuit',
                         'pyramids' => 'pyramid',
                     ];
 
@@ -1203,7 +1215,7 @@ class UserMobileController extends Controller
                             foreach ($workout->{$relation} as $formatItem) {
                                 $totalFormatItems++;
                                 if ($formatItem->is_completed == 1) {
-                                    $completedFormatItems++;
+                                    $completedFormatItems++;;
                                 }
                             }
                         }

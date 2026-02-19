@@ -511,7 +511,7 @@ class MobileController extends Controller
             foreach ($strengthItems as $item) {
                 $validator = Validator::make($item, [
                     'workout_manager_id' => 'required|integer',
-                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuits,pyramid',
+                    'workout_format_type' => 'required|string|in:rounds,amrap,for_time,intervals,emom,straight_sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'set_number' => 'required|integer',
@@ -880,6 +880,7 @@ class MobileController extends Controller
                     'workout_format_id' => 'required|integer',
                     'reps' => 'nullable|integer',
                     'weight' => 'nullable|numeric',
+                    'set_number' => 'required|integer',
                     'date' => 'required|string',
                 ]);
 
@@ -896,6 +897,7 @@ class MobileController extends Controller
                 $storedDay = $validatedData['date'];
                 $weight = $validatedData['weight'] ?? null;
                 $reps = $validatedData['reps'] ?? 0;
+                $setNumber = $validatedData['set_number'];
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
@@ -905,7 +907,8 @@ class MobileController extends Controller
                     ->where('workout_manager_id', $workoutManagerId)
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
-                    ->where('date', $storedDay);
+                    ->where('date', $storedDay)
+                    ->where('set_number', $setNumber);
 
                 $dailyAccessory = $query->first();
 
@@ -919,7 +922,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                     ]);
                     $message = 'Accessory updated successfully';
-                    Log::info('Accessory updated', ['workout_manager_id' => $workoutManagerId]);
+                    Log::info('Accessory updated', ['workout_manager_id' => $workoutManagerId,'set_number' => $setNumber]);
                 } else {
                     // Create new record
                     $dailyAccessory = \App\Models\DailyAccessory::create([
@@ -929,14 +932,16 @@ class MobileController extends Controller
                         'workout_format_id' => $workoutFormatId,
                         'reps' => $reps,
                         'weight' => $weight,
+                        'set_number' => $setNumber,
                         'date' => $storedDay,
                     ]);
                     $message = 'Accessory saved successfully';
-                    Log::info('New accessory record created', ['workout_manager_id' => $workoutManagerId]);
+                    Log::info('New accessory record created', ['workout_manager_id' => $workoutManagerId, 'set_number' => $setNumber]);
                 }
 
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,
+                    'set_number' => $setNumber,
                     'message' => $message,
                     'daily_accessory_id' => $dailyAccessory->id,
                 ];
