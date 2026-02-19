@@ -1150,6 +1150,13 @@ class MobileController extends Controller
         ], 200);
     }
 
+
+    public function getexcerise(Request $request){
+
+    }
+
+     
+
     public function getscore(Request $request)
     {
         $request->validate([
@@ -1313,7 +1320,7 @@ class MobileController extends Controller
 
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
-                ->where('member_id', $member->id)
+                ->where('member_id', operator: $member->id)
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
@@ -1442,6 +1449,8 @@ class MobileController extends Controller
         }
     }
 
+    
+
     public function updateWeight(Request $request)
     {
         $request->validate([
@@ -1453,9 +1462,6 @@ class MobileController extends Controller
 
         $test = Test::where('id', $request->id)
                     ->where('workout_id', $request->workout_id)
-
-
-                    
                     ->where('member_id', $request->member_id)
                     ->first();
 
@@ -1469,6 +1475,7 @@ class MobileController extends Controller
         $test->update([
             'weight' => $request->weight,
             'date' => $request->date ?? $test->date,
+            'unit_type' => 'kg', // Force unit type to kg on update as per request
         ]);
 
         return response()->json([
@@ -1491,6 +1498,15 @@ class MobileController extends Controller
         $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
         $dayWithDate = $date->format('d/m/y l');
 
+
+        $workoutManager = WorkoutManager::create([
+            'workout_name' => $request->workoutname,
+            'type_id' => 7, // Default type ID for tests/measurements
+            'format_id' => 0,//no specific format type for this 
+            'date' => $dayWithDate,
+            // 'number' can be left null or set if needed. 
+        ]);
+
         $test = Test::create([
             'workout_id'  => $request->workout_id,
             'member_id'   => $request->member_id,
@@ -1498,6 +1514,9 @@ class MobileController extends Controller
             'workoutname' => $request->workoutname,
             'date'        => $dayWithDate, 
             'category_id' => $request->category_id ?? null,
+            'workout_manager_id' => $workoutManager->id,
+            'workout_libraries_id' => $request->workout_id, 
+            'unit_type' => 'kg',
         ]);
 
         return response()->json([
@@ -1509,6 +1528,7 @@ class MobileController extends Controller
         return response()->json([
             'success' => false,
             'message' => 'Failed to insert weight. Please try again.',
+            'error' => $e->getMessage() 
         ], 500);
     }
 }
