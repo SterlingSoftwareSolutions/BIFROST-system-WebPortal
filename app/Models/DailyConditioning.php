@@ -11,9 +11,12 @@ class DailyConditioning extends Model
     protected $fillable = [
         'member_id',
         'conditioning_id',
+        'workout_manager_id',
         'reps',
         'date',
         'weight',
+        'workout_format_type',
+        'workout_format_id',
     ];
 
     public function member()
@@ -24,5 +27,19 @@ class DailyConditioning extends Model
     public function conditioning()
     {
         return $this->belongsTo(Conditioning::class, 'conditioning_id');
+    }
+    public function workoutFormat()
+    {
+        return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
+    }
+
+    public static function getDailyConditioningData($memberId, $date)
+    {
+        $data = self::with(['member', 'conditioning.category'])
+                    ->where('member_id', $memberId)
+                    ->where('date', $date)
+                    ->get();
+        
+        return $data;
     }
 }

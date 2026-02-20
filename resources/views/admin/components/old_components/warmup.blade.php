@@ -246,19 +246,19 @@
 
                                 <!-- Info icon stays aligned right -->
                                 <div class="relative ml-auto mr-10 mb-2">
-                                    <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
+                                    <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
                                         <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
-                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
+                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                         </svg>
                                     </span>
 
-                                    <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
-                                        <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
-                                        <p><b>%</b> – Percentage of effort</p>
-                                        <p><b>Cal</b> – Number of calories</p>
-                                        <p><b>Kg</b> – Weight</p>
-                                        <p><b>BW</b> – Body Weight</p>
+                                    <div class="hidden absolute left-[-100px] top-5 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                        <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
+                                        <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                        <p class="mb-1"><b>Cal</b> – Number of calories</p>
+                                        <p class="mb-1"><b>Kg</b> – Weight</p>
+                                        <p class="mb-1"><b>BW</b> – Body Weight</p>
                                         <p><b>N/A</b> – N/A</p>
                                     </div>
                                 </div>

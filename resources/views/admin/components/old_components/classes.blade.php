@@ -6,6 +6,7 @@
 <div class="max-w-4xl mx-auto bg-white rounded-2xl pr-5">
   <h1 class="text-2xl font-bold mb-4 text-center">Classes</h1>
 
+  <!-- NOTE: removed overflow-hidden here so icon rings/outlines won't get clipped -->
   <div class="border rounded-2xl">
     <div class="overflow-x-auto rounded-2xl">
       <table class="min-w-full table-fixed text-left border-collapse">
@@ -171,6 +172,7 @@
       .then(classes => {
         const tbody = document.getElementById('classesTableBody');
 
+        // rebuild hidden inputs (so tbody clearing doesn't remove them permanently)
         tbody.innerHTML = `
           <input type="text" name="selectdatecla" id="selectdatecla" hidden value="${dayName}">
           <input type="text" id="selected_class_id" hidden value="${selectedStoredClassId || ''}">
@@ -190,6 +192,7 @@
             .replace(' ', '&nbsp;');
 
           const isSelected = selectedStoredClassId && selectedStoredClassId == cls.id;
+          // const outlineStyle = isSelected ? 'outline:2px solid #22c55e; outline-offset:-2px;' : '';
 
           const row = `
             <tr class="border-t class-row cursor-pointer"
@@ -230,19 +233,7 @@
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
-                  <!-- Accessory -->
-                  <div class="p-1">
-                    <img src="/icon/kettlebellB.png"
-                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500' : 'border-transparent'}"
-                      title="Accessory">
-                  </div>
-                  <!-- 1RM -->
-                  <div class="p-1">
-                    <img src="/icon/testBlack.png"
-                      class="w-9 h-8 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500' : 'border-transparent'}"
-                      title="1RM">
-                  </div>
-                  
+                </div>
               </td>
 
               <!-- Edit + Delete -->
@@ -273,6 +264,7 @@
           tbody.insertAdjacentHTML('beforeend', row);
         });
 
+        // Restore selection references
         const selectedRow = document.querySelector(`tr[data-id="${selectedStoredClassId}"]`);
         if (selectedRow) {
           selectedClassRow = selectedRow;
@@ -296,6 +288,13 @@
       selectedClassId = null;
       return;
     }
+
+    // clear old
+    // if (selectedClassRow) selectedClassRow.style.outline = 'none';
+
+    // set new
+    // rowElement.style.outline = '2px solid #22c55e';
+    // rowElement.style.outlineOffset = '-2px';
 
     selectedClassRow = rowElement;
     selectedClassId = clickedClassId;
@@ -333,123 +332,75 @@
   let isEditMode = false;
 
   function openEditClassModal(classId) {
-    if(!classId) {
-        alert("Error: Missing Class ID");
-        return;
-    }
-
     // Ensure hidden date is set from current view
-    const dateEl = document.getElementById('selectdatecla');
-    const currentDayName = dateEl ? dateEl.value : '';
-    const modalDateEl = document.getElementById('selectdatecla_modal');
-    if(modalDateEl) modalDateEl.value = currentDayName;
+    const currentDayName = document.getElementById('selectdatecla').value;
+    document.getElementById('selectdatecla_modal').value = currentDayName;
 
     fetch(`/classes/${classId}/edit`)
-        .then(res => {
-            if(!res.ok) throw new Error("Failed to fetch class details");
-            return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
-            if(!data) throw new Error("No data received");
-
             // Populate Fields
             // Parse 24h time "HH:mm:ss" -> 12h format
             if(data.time) {
-                const parts = data.time.split(':');
-                if(parts.length >= 2) {
-                    const h = parseInt(parts[0]);
-                    const m = parts[1];
-                    let hour = h;
-                    let period = 'AM';
-                    if(hour >= 12) {
-                        period = 'PM';
-                        if(hour > 12) hour -= 12;
-                    }
-                    if(hour === 0) hour = 12;
-
-                    currentHour = hour.toString().padStart(2, '0');
-                    currentMinute = m;
-                    currentPeriod = period;
-
-                    updatePickerUI();
+                const [h, m] = data.time.split(':');
+                let hour = parseInt(h);
+                let period = 'AM';
+                if(hour >= 12) {
+                    period = 'PM';
+                    if(hour > 12) hour -= 12;
                 }
+                if(hour === 0) hour = 12;
+
+                currentHour = hour.toString().padStart(2, '0');
+                currentMinute = m;
+                currentPeriod = period;
+
+                updatePickerUI();
             }
 
-            // Disable Time Editing in Edit Mode
+            // Disable Time Editing in Edit Mode (matching previous behavior)
              const timeDisplay = document.getElementById('timeDisplay');
-             if(timeDisplay) {
-                 timeDisplay.classList.add('bg-gray-100', 'cursor-not-allowed');
-                 timeDisplay.onclick = null; // Remove click handler
-             }
+             timeDisplay.classList.add('bg-gray-100', 'cursor-not-allowed');
+             timeDisplay.onclick = null; // Remove click handler
 
-            const durationInput = document.querySelector('input[name="duration"]');
-            if(durationInput) durationInput.value = data.duration;
-            
-            const spotsInput = document.querySelector('input[name="spots"]');
-            if(spotsInput) spotsInput.value = data.spots;
+            document.querySelector('input[name="duration"]').value = data.duration;
+            document.querySelector('input[name="spots"]').value = data.spots;
 
             // Set Edit Mode
             isEditMode = true;
 
             // Update UI
-            const modalTitle = document.querySelector('#addModal h2');
-            if(modalTitle) modalTitle.innerText = "Edit Class";
-            
+            document.querySelector('#addModal h2').innerText = "Edit Class";
             const submitBtn = document.querySelector('#addModal button[type="submit"]');
-            if(submitBtn) submitBtn.innerText = "Update";
+            submitBtn.innerText = "Update";
 
-            // Enable Repeat Section & Pre-select Current Day
-            const repeatSection = document.querySelector('.mt-4.repeat-section');
+            // Disable Repeat Section
+            const repeatSection = document.querySelector('.mt-4.repeat-section'); // Will add this class to div
             if(repeatSection) {
-                repeatSection.style.pointerEvents = 'auto';
-                repeatSection.style.opacity = '1';
-                
-                // Reset checks first
+                repeatSection.style.pointerEvents = 'none';
+                repeatSection.style.opacity = '0.5';
                 repeatSection.querySelectorAll('input').forEach(el => el.checked = false);
-
-                // Parse Date to get Day (e.g. "20/05/26 Monday")
-                if (data.date) {
-                    const parts = data.date.split(' ');
-                    if (parts.length >= 2) {
-                        const dayFull = parts[1]; // "Monday"
-                        const dayMap = {
-                            'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed',
-                            'Thursday': 'Thu', 'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun'
-                        };
-                        const shortDay = dayMap[dayFull];
-                        if (shortDay) {
-                            const checkbox = repeatSection.querySelector(`input[value="${shortDay}"]`);
-                            if (checkbox) checkbox.checked = true;
-                        }
-                    }
-                }
             }
 
             // Update Form Action
             const form = document.querySelector('#addModal form');
-            if(form) {
-                form.action = `/classes/${classId}`;
+            form.action = `/classes/${classId}`;
 
-                // Add hidden Request Method Spoofing
-                let methodInput = form.querySelector('input[name="_method"]');
-                if (!methodInput) {
-                    methodInput = document.createElement('input');
-                    methodInput.type = 'hidden';
-                    methodInput.name = '_method';
-                    methodInput.value = 'PUT';
-                    form.appendChild(methodInput);
-                } else {
-                    methodInput.value = 'PUT';
-                }
+            // Add hidden Request Method Spoofing
+            let methodInput = form.querySelector('input[name="_method"]');
+            if (!methodInput) {
+                methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PUT';
+                form.appendChild(methodInput);
+            } else {
+                methodInput.value = 'PUT';
             }
 
-            const modal = document.getElementById('addModal');
-            if(modal) modal.classList.remove('hidden');
+            document.getElementById('addModal').classList.remove('hidden');
         })
-        .catch(err => {
-            console.error(err);
-            alert("Error loading class details: " + err.message);
-        });
+        .catch(err => console.error(err));
   }
 
   function openAddModal() {

@@ -14,11 +14,15 @@ class Test extends Model
     protected $fillable = [
         'category_id',
         'workout_id',
+        'workout_manager_id',
+        'workout_libraries_id',
         'member_id',
         'workoutname',
         'is_assigned',
         'date',
-        'weight'
+        'weight',
+        'unit_type',
+        
     ];
 
     public function category()
@@ -37,6 +41,16 @@ class Test extends Model
     public function member()
     {
         return $this->belongsTo(Newprofile::class, 'member_id');
+    }
+
+    public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
+
+    public function workoutLibrary()
+    {
+        return $this->belongsTo(WorkoutLibrary::class, 'workout_libraries_id');
     }
 
     public static function store($data)

@@ -56,9 +56,8 @@ class ClassesController extends Controller
              return redirect()->back()->with('success', 'Class added successfully.');
         }
 
-        // Recurring Logic
         $selectedDays = $request->days; // e.g., ['Mon', 'Wed']
-        Log::info('Creating recurring classes for days: ' . implode(', ', $selectedDays));
+        //Log::info('Creating recurring classes for days: ' . implode(', ', $selectedDays));
 
         $currentDate = Carbon::parse($startDate);
         $endOfYear = Carbon::now()->endOfYear();
@@ -75,11 +74,11 @@ class ClassesController extends Controller
             // Check if current day short name (e.g., 'Mon') is in selected days
             if (in_array($currentDate->format('D'), $selectedDays)) {
                 
-                // Format date back to your system's format
+               
                 // Ensure this matches your DB format e.g. "19/01/26 Sunday"
                 $formattedDate = $currentDate->format('d/m/y l');
-                // Check for Overlap (Simple check: same date and time)
-                $exists = Classes::where('date', $formattedDate)
+               
+                $exists = Classes::where('date', $formattedDate)//overlap check
                                 ->where('time', $request->time)
                                 ->exists();
                 if (!$exists) {
@@ -110,7 +109,7 @@ class ClassesController extends Controller
             'date' => $date,
         ]);
         
-        Log::info("Class created in DB with ID: " . $class->id);
+        Log::info("Class created: " . $class->id);
     }
     
     public function edit($id)
@@ -121,18 +120,73 @@ class ClassesController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('Update Class Request:', $request->all());
         $request->validate([
             'time' => 'required',
             'duration' => 'required|integer',
             'spots' => 'required|integer',
+            'days' => 'nullable|array', // "Repeat On" days
         ]);
-
         $class = Classes::findOrFail($id);
+        // 1. Standard Update (Fields other than date)
         $class->update([
-            'time' => $request->time,
+            'time' => $request->time, 
             'duration' => $request->duration,
             'spots' => $request->spots,
         ]);
+
+        // Date Updating 
+        if ($request->has('days') && !empty($request->days)) {
+            $newDayShort = $request->days[0]; // 'Mon', 'Tue'.
+            // Get Current Class Day
+            try {
+                // Current Date Format: "d/m/y l" (e.g. 26/01/26 Sunday)
+                $currentDate = Carbon::createFromFormat('d/m/y l', $class->date);
+                $currentDayShort = $currentDate->format('D');
+
+                if ($newDayShort !== $currentDayShort) {
+                    $cDay = Carbon::parse($currentDayShort);
+                    $nDay = Carbon::parse($newDayShort);
+                    $oldIndex = $currentDate->dayOfWeekIso; 
+                    $map = ['Mon'=>1, 'Tue'=>2, 'Wed'=>3, 'Thu'=>4, 'Fri'=>5, 'Sat'=>6, 'Sun'=>7];
+                    $newIndex = $map[$newDayShort] ?? $oldIndex;
+                    
+                    $diff = $newIndex - $oldIndex;
+                    
+                    // Apply this diff to ALL upfront classes of this series
+                    Log::info("Day Shift: $diff days");
+                    $allClasses = Classes::where('time', $class->time)->get(); // Filter by time first
+                    
+                    $updatedCount = 0;
+                    
+                    foreach ($allClasses as $c) {
+                        try {
+                            $cDate = Carbon::createFromFormat('d/m/y l', $c->date);
+                        } catch (\Exception $e) { continue; }
+
+                        // Check if it's "Future or Present" AND "Is Old Day"
+                        if ($cDate->gte($currentDate) && $cDate->format('D') === $currentDayShort) {
+                            
+                            // Apply Shift
+                            $newDate = $cDate->copy()->addDays($diff);
+                            
+                            // Format: "d/m/y l"
+                            $newDateStr = $newDate->format('d/m/y l');
+                            $c->date = $newDateStr;
+                            $c->save();
+                            $updatedCount++;
+                        }
+                    }
+                    
+                    //Log::info("repeatedly updated $updatedCount classes.");
+                    return redirect()->back()->with('success', "Class updated. Moved $updatedCount classes from $currentDayShort to $newDayShort.");
+                }
+
+            } catch (\Exception $e) {
+                //Log::error("Error in recursive update: " . $e->getMessage());
+                return redirect()->back()->with('error', 'Class updated but failed to process recurrence: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->back()->with('success', 'Class updated successfully.');
     }
@@ -199,6 +253,35 @@ class ClassesController extends Controller
         Log::info('Day received:', ['day' => $dayName]);
 
         $classes = Classes::where('date', $dayName)->get();
+
+        foreach ($classes as $class) {
+             $checkActive = function($classId, $types) {
+                 if (!is_array($types)) $types = [$types];
+                 
+                 $assignments = \App\Models\WorkoutAssign::where('class_id', $classId)
+                                ->whereIn('workout_type', $types)
+                                ->get();
+                 
+                 foreach($assignments as $asn) {
+                     // Check if mapped to WorkoutManager
+                     $wm = \App\Models\WorkoutManager::find($asn->workout_id);
+                     if ($wm) {
+                         if ($wm->status === 'inactive') continue; // Skip inactive
+                         return true; // Found active WM
+                     }
+                     // If not found in WM, assume legacy active
+                     return true;
+                 }
+                 return false;
+             };
+
+             $class->is_warmup = $checkActive($class->id, 'warmup');
+             $class->is_strength = $checkActive($class->id, 'strength');
+             $class->is_weightlifting = $checkActive($class->id, 'weightlifting');
+             $class->is_conditioning = $checkActive($class->id, 'conditioning');
+             $class->is_accessory = $checkActive($class->id, 'accessory');
+             $class->is_1rm = $checkActive($class->id, ['1rm', 'test', "PR's", "pr's"]);
+        }
 
         return response()->json($classes);
     }
