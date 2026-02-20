@@ -1039,6 +1039,20 @@ public function getWorkouts(Request $request)
             'date_string' => $dateString,
         ]);
 
+        try {
+            // Convert "20/02/26 Friday" -> proper YYYY-MM-DD
+            $dateObj = Carbon::createFromFormat('d/m/y l', $request->date);
+            $formattedDate = $dateObj->format('Y-m-d');
+
+            // Query the scores table using the correct column (e.g., created_at)
+            $score = $user->scores()
+                ->whereDate('created_at', $formattedDate)  // <- replace 'created_at' if your column name differs
+                ->first();
+
+        } catch (\Exception $e) {
+            $score = null; // if the date parsing fails, just set score as null
+        }
+
         /*
         |--------------------------------------------------------------------------
         | Parse date string -> Carbon
@@ -1703,6 +1717,8 @@ public function getWorkouts(Request $request)
             'workoutlibrary' => $workoutlibrary,
             'categoryOptions' => $categoryOptions,
             'member' => $member,
+
+            'score' => $score,
 
             'test_data' => [
                 'strength'      => $testStrength,
