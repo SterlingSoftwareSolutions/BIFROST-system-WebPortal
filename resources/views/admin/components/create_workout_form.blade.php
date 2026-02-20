@@ -20,7 +20,7 @@
     <div class="flex justify-center text-center items-center font-bold mb-5 text-2xl">Create</div>
 
     <input type="hidden" id="common_workout_id" name="common_workout_id" value="">
-    <input type="" id="common_date" name="common_date" value="">
+    <input type="hidden" id="common_date" name="common_date" value="">
 
     <!-- Type -->
     <div class="flex items-center border-b mt-2">

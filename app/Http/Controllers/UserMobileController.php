@@ -1249,7 +1249,7 @@ public function getWorkouts(Request $request)
             'per_relation' => [],
         ];
 
-        $workouts->each(function ($wm) use ($formatRelations, $testMap, &$attachStats) {
+        $workouts->each(function ($wm) use ($formatRelations, $testMap, &$attachStats, $testsForDay) {
 
             foreach ($formatRelations as $rel) {
 
