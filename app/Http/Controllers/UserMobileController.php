@@ -1011,394 +1011,718 @@ class UserMobileController extends Controller
             ], 500);
         }
     }
+public function getWorkouts(Request $request)
+{
+    try {
+        $request->validate([
+            'class_id' => 'required|integer',
+            'date'     => 'required|string', // e.g. "13/02/26 Friday"
+        ]);
 
-    public function getWorkouts(Request $request)
-    {
+        $user = $request->user();
+        $member = Newprofile::where('user_id', $user->id)->first();
+
+        if (!$member) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Member profile not found for this user.'
+            ], 404);
+        }
+
+        $classId    = (int) $request->input('class_id');
+        $dateString = trim($request->input('date'));
+
+        log::info('[getWorkouts] Request received', [
+            'user_id' => $user->id,
+            'member_id' => $member->id,
+            'class_id' => $classId,
+            'date_string' => $dateString,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Parse date string -> Carbon
+        |--------------------------------------------------------------------------
+        */
         try {
-            $request->validate([
-                'class_id' => 'required|integer',
-                'date' => 'required|string',
+            $dateObj = Carbon::createFromFormat('d/m/y l', $dateString);
+
+            log::info('[getWorkouts] Date parsed successfully', [
+                'date_string' => $dateString,
+                'date_obj' => $dateObj->toDateString(),
             ]);
 
-            $user = $request->user();
-            $member = Newprofile::where('user_id', $user->id)->first();
-
-            $classId = $request->input('class_id');
-            $dateString = $request->input('date');
-
-            // Parse the custom date format "13/02/26 Friday" to a Carbon instance
+        } catch (\Exception $e) {
             try {
-                $date = Carbon::createFromFormat('d/m/y l', $dateString);
-            } catch (\Exception $e) {
-                // Fallback: try other common formats
-                try {
-                    $date = Carbon::parse($dateString);
-                } catch (\Exception $e2) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => 'Invalid date format. Expected format: "dd/mm/yy DayName" (e.g., "13/02/26 Friday")',
-                    ], 400);
-                }
-            }
-
-            // Get workout assignments filtered by class_id and date
-            $workoutAssignments = WorkoutAssign::where('class_id', $classId)
-                ->where('date', 'LIKE', '%' . $date->format('d/m/y') . '%')
-                ->get();
-
-            if ($workoutAssignments->isEmpty()) {
+                $dateObj = Carbon::parse($dateString);
+            } catch (\Exception $e2) {
                 return response()->json([
-                    'status' => true,
-                    'message' => 'No workouts found for this class and date',
-                    'date' => $dateString,
-                    'class_id' => $classId,
-                    'workouts' => [],
-                ], 200);
+                    'status'   => false,
+                    'message'  => 'Invalid date format. Expected format: "dd/mm/yy DayName" (e.g., "13/02/26 Friday")',
+                    'provided' => $dateString,
+                ], 400);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Build date patterns for varchar "date" columns (tests, assignments, etc.)
+        |--------------------------------------------------------------------------
+        */
+        $dayName       = $dateObj->format('l');
+        $shortDateTwo  = $dateObj->format('d/m/y');
+        $shortDateFour = $dateObj->format('d/m/Y');
+
+        $patterns = [
+            $dateString,
+            $shortDateTwo,
+            $shortDateFour,
+            $shortDateTwo . ' ' . $dayName,
+            $shortDateFour . ' ' . $dayName,
+            $dayName . ' ' . $shortDateTwo,
+            $dayName . ' ' . $shortDateFour,
+        ];
+
+        Log::info('[getWorkouts] START', [
+            'user_id' => $user->id,
+            'member_id' => $member->id,
+            'class_id' => $classId,
+            'date_string' => $dateString,
+            'patterns' => $patterns,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | PART A (ADDED): Fetch test rows for that day + member, build map by library
+        |--------------------------------------------------------------------------
+        */
+        Log::info('[getWorkouts][PART A] Fetching testsForDay...', [
+            'member_id' => $member->id,
+            'class_id' => $classId,
+            'date_string' => $dateString,
+        ]);
+
+        $testsForDay = \App\Models\Test::where('member_id', $member->id)
+            ->where(function ($q) use ($patterns) {
+                foreach ($patterns as $p) {
+                    $q->orWhere('date', 'LIKE', '%' . $p . '%');
+                }
+            })
+            ->whereNotNull('workout_libraries_id')
+            ->get();
+
+        Log::info('[getWorkouts][PART A] testsForDay retrieved', [
+            'count' => $testsForDay->count(),
+            'library_ids' => $testsForDay->pluck('workout_libraries_id')->unique()->values()->toArray(),
+            'test_ids' => $testsForDay->pluck('id')->values()->toArray(),
+        ]);
+
+        // workout_libraries_id => latest test details (latest wins)
+        $testMap = [];
+
+        $testsSorted = $testsForDay->sortBy(function ($t) {
+            return $t->created_at ? $t->created_at->timestamp : $t->id;
+        });
+
+        foreach ($testsSorted as $t) {
+            $testMap[$t->workout_libraries_id] = [
+                'test_id'         => $t->id,
+                'weight'          => $t->weight,
+                'unit_type'       => $t->unit_type,
+                'date'            => $t->date,
+                'test_created_at' => $t->created_at,
+            ];
+        }
+            //include data of workout library and test all in the map
+        Log::info('[getWorkouts][PART A] testMap built (latest per workout_libraries_id)', [
+            'testMap_keys' => array_keys($testMap),
+            'testMap_sample' => array_slice($testMap, 0, 5, true), // first 5 only
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get workout assignments filtered by class_id and date (more flexible)
+        |--------------------------------------------------------------------------
+        */
+        Log::info('[getWorkouts] Fetching workoutAssignments...', [
+            'class_id' => $classId,
+            'date_string' => $dateString,
+        ]);
+
+        $workoutAssignments = WorkoutAssign::where('class_id', $classId)
+            ->where(function ($q) use ($patterns) {
+                foreach ($patterns as $p) {
+                    $q->orWhere('date', 'LIKE', '%' . $p . '%');
+                }
+            })
+            ->get();
+
+        Log::info('[getWorkouts] workoutAssignments retrieved', [
+            'count' => $workoutAssignments->count(),
+            'workout_ids' => $workoutAssignments->pluck('workout_id')->unique()->values()->toArray(),
+            'types' => $workoutAssignments->pluck('workout_type')->unique()->values()->toArray(),
+        ]);
+
+        if ($workoutAssignments->isEmpty()) {
+            Log::warning('[getWorkouts] No workout assignments found', [
+                'class_id' => $classId,
+                'date_string' => $dateString,
+            ]);
+
+            return response()->json([
+                'status'   => true,
+                'message'  => 'No workouts found for this class and date',
+                'date'     => $dateString,
+                'class_id' => $classId,
+                'workouts' => [],
+                'test_data'=> [
+                    'strength'      => [],
+                    'weightlifting' => [],
+                    'conditioning'  => [],
+                ],
+                'raw_tests_for_day' => $testsForDay,
+            ], 200);
+        }
+
+        $workoutIds = $workoutAssignments->pluck('workout_id')->unique();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Fetch workout details from workout_manager with relationships
+        |--------------------------------------------------------------------------
+        */
+        Log::info('[getWorkouts] Fetching WorkoutManager...', [
+            'workout_ids' => $workoutIds->values()->toArray(),
+        ]);
+
+        $workouts = WorkoutManager::with([
+                'format',
+                'type',
+                'straights.workoutLibrary.categoryOption', 'straights.sets',
+                'rounds.workoutLibrary.categoryOption',
+                'intervals.workoutLibrary.categoryOption',
+                'amraps.workoutLibrary.categoryOption',
+                'emoms.workoutLibrary.categoryOption',
+                'pyramids.workoutLibrary.categoryOption',
+                'circuits.workoutLibrary.categoryOption',
+                'forTimes.workoutLibrary.categoryOption'
+            ])
+            ->whereIn('id', $workoutIds)
+            ->where('status', 'active')
+            ->get();
+
+        Log::info('[getWorkouts] WorkoutManager retrieved', [
+            'count' => $workouts->count(),
+            'ids' => $workouts->pluck('id')->values()->toArray(),
+            'types' => $workouts->pluck('type.name')->unique()->values()->toArray(),
+            'formats' => $workouts->pluck('format.slug')->unique()->values()->toArray(),
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | PART B (UPDATED): Attach test weight/unit/id to matching format rows
+        |--------------------------------------------------------------------------
+        */
+        $formatRelations = [
+            'rounds',
+            'amraps',
+            'forTimes',
+            'for_times', // safe for serialization differences
+            'intervals',
+            'emoms',
+            'straights',
+            'circuits',
+            'pyramids',
+        ];
+
+        Log::info('[getWorkouts][PART B] Attaching test data to workout format items...', [
+            'format_relations' => $formatRelations,
+            'testMap_keys' => array_keys($testMap),
+        ]);
+
+        $attachStats = [
+            'total_rows_seen' => 0,
+            'rows_with_lib_id' => 0,
+            'rows_matched' => 0,
+            'rows_not_matched' => 0,
+            'missing_lib_id' => 0,
+            'per_relation' => [],
+        ];
+
+        $workouts->each(function ($wm) use ($formatRelations, $testMap, &$attachStats) {
+
+            foreach ($formatRelations as $rel) {
+
+                if (!isset($attachStats['per_relation'][$rel])) {
+                    $attachStats['per_relation'][$rel] = [
+                        'seen' => 0,
+                        'matched' => 0,
+                        'not_matched' => 0,
+                        'empty' => 0,
+                    ];
+                }
+
+                if (!isset($wm->$rel) || !$wm->$rel || $wm->$rel->isEmpty()) {
+                    $attachStats['per_relation'][$rel]['empty']++;
+                    continue;
+                }
+
+                foreach ($wm->$rel as $row) {
+
+                    $attachStats['total_rows_seen']++;
+                    $attachStats['per_relation'][$rel]['seen']++;
+
+                    $libId = $row->workout_libraries_id ?? null;
+
+                    // keep stable keys for frontend
+                    $row->test_weight = null;
+                    $row->test_unit_type = null;
+                    $row->test_id = null;
+                    $row->test_created_at = null;
+
+                    if (!$libId) {
+                        $attachStats['missing_lib_id']++;
+
+                        Log::warning('[getWorkouts][PART B] Format row missing workout_libraries_id', [
+                            'workout_manager_id' => $wm->id,
+                            'relation' => $rel,
+                            'row_id' => $row->id ?? null,
+                        ]);
+
+                        continue;
+                    }
+
+                    $attachStats['rows_with_lib_id']++;
+
+                    if (isset($testMap[$libId])) {
+
+                        // Attach test values using correct setAttribute for serialization
+                        $row->setAttribute('test_weight',     $testMap[$libId]['weight'] ?? null);
+                        $row->setAttribute('test_unit_type',  $testMap[$libId]['unit_type'] ?? null);
+                        $row->setAttribute('test_id',         $testMap[$libId]['test_id'] ?? null);
+                        $row->setAttribute('test_created_at', $testMap[$libId]['test_created_at'] ?? null);
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | NEW: Attach universal format row identity (works for ALL formats)
+                        |--------------------------------------------------------------------------
+                        */
+                        $row->setAttribute('format_row_id',   $row->id ?? null);   // always the row id
+                        $row->setAttribute('format_relation', $rel);              // rounds/amraps/emoms/etc.
+                        $row->setAttribute('format_table',    $rel);              // alias (frontend friendly)
+
+                        $attachStats['rows_matched']++;
+                        $attachStats['per_relation'][$rel]['matched']++;
+
+                        Log::info('[getWorkouts][PART B] MATCH: attached test to format row', [
+                            'workout_manager_id'    => $wm->id,
+                            'relation'             => $rel,
+                            'format_row_id'         => $row->id ?? null,
+                            'workout_libraries_id' => $libId,
+
+                            'attached_test_id'     => $row->getAttribute('test_id'),
+                            'attached_test_weight' => $row->getAttribute('test_weight'),
+                            'attached_unit_type'   => $row->getAttribute('test_unit_type'),
+                            'row_data'             => $row->toArray(),
+                        ]);
+
+                        // UPDATE: Also attach this row info to the actual Test object in $testsForDay
+                        // so it appears in "test_data" in the JSON response
+                        $matchedTestId = $testMap[$libId]['test_id'] ?? null;
+                        if ($matchedTestId) {
+                            $testObj = $testsForDay->firstWhere('id', $matchedTestId);
+                            if ($testObj) {
+                                $testObj->setAttribute('format_row_id', $row->id ?? null);
+                                $testObj->setAttribute('format_relation', $rel);
+                                $testObj->setAttribute('row_data', $row->toArray());
+                            }
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Straight Sets: Attach also inside each set row
+                        |--------------------------------------------------------------------------
+                        */
+                        if (isset($row->sets) && $row->sets && $row->sets->isNotEmpty()) {
+
+                            foreach ($row->sets as $set) {
+
+                                $set->setAttribute('test_weight',     $row->getAttribute('test_weight'));
+                                $set->setAttribute('test_unit_type',  $row->getAttribute('test_unit_type'));
+                                $set->setAttribute('test_id',         $row->getAttribute('test_id'));
+                                $set->setAttribute('test_created_at', $row->getAttribute('test_created_at'));
+
+                                // NEW universal identity for each set also
+                                $set->setAttribute('format_row_id',   $row->getAttribute('format_row_id'));
+                                $set->setAttribute('format_relation', $rel);
+                            }
+                        }
+
+                    } else {
+
+                    $attachStats['rows_not_matched']++;
+                    $attachStats['per_relation'][$rel]['not_matched']++;
+
+                    Log::info('[getWorkouts][PART B] NO MATCH: no test found for format row', [
+                        'workout_manager_id' => $wm->id,
+                        'relation'           => $rel,
+                        'format_row_id'      => $row->id ?? null,
+                        'workout_libraries_id' => $libId,
+                        'available_test_library_ids' => array_keys($testMap),
+                    ]);
+                }
+                }
+            }
+        });
+
+        Log::info('[getWorkouts][PART B] Attach summary', $attachStats);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Warmup / completion status (your existing logic)
+        |--------------------------------------------------------------------------
+        */
+        $workouts->each(function ($workout) use ($member, $dateString) {
+
+            $typeName = strtolower($workout->type->name ?? '');
+
+            switch ($typeName) {
+                case 'strength':
+                    $dailyModel = \App\Models\DailyStrength::class;
+                    break;
+                case 'weightlifting':
+                    $dailyModel = \App\Models\DailyWeightlifting::class;
+                    break;
+                case 'accessory':
+                    $dailyModel = \App\Models\DailyAccessory::class;
+                    break;
+                default:
+                    $dailyModel = \App\Models\DailyWarmup::class;
+                    break;
             }
 
-            // Get workout IDs from assignments
-            $workoutIds = $workoutAssignments->pluck('workout_id')->unique();
+            $formatMapping = [
+                'rounds'     => 'rounds',
+                'amraps'     => 'amrap',
+                'forTimes'   => 'for-time',
+                'intervals'  => 'intervals',
+                'emoms'      => 'emom',
+                'straights'  => 'straight-sets',
+                'circuits'   => 'circuit',
+                'pyramids'   => 'pyramid',
+            ];
 
-            // Fetch workout details from workout_manager with relationships
-            $workouts = WorkoutManager::with([
-                    'format',
-                    'type',
-                    'straights.workoutLibrary.categoryOption', 'straights.sets',
-                    'rounds.workoutLibrary.categoryOption',
-                    'intervals.workoutLibrary.categoryOption',
-                    'amraps.workoutLibrary.categoryOption',
-                    'emoms.workoutLibrary.categoryOption',
-                    'pyramids.workoutLibrary.categoryOption',
-                    'circuits.workoutLibrary.categoryOption',
-                    'forTimes.workoutLibrary.categoryOption'
-                ])
-                ->whereIn('id', $workoutIds)
-                ->where('status', 'active')
-                ->get();
+            foreach ($formatMapping as $relation => $formatType) {
 
-            // Check warmup completion status for each workout using polymorphic format tracking
-            $workouts->each(function ($workout) use ($member, $dateString) {
-
-            // Decide workout type ONCE per workout
-                $typeName = strtolower($workout->type->name ?? '');
-
-                switch ($typeName) {
-                    case 'strength':
-                        $dailyModel = DailyStrength::class;
-                        break;
-
-                    case 'weightlifting':
-                        $dailyModel = DailyWeightlifting::class;
-                        break;
-
-                    case 'accessory':
-                        $dailyModel = DailyAccessory::class;
-                        break;
-
-                    default:
-                        $dailyModel = DailyWarmup::class;
-                        break;
+                if (!$workout->{$relation} || $workout->{$relation}->isEmpty()) {
+                    continue;
                 }
-                // Map format relationships to their types
-                $formatMapping = [
-                    'rounds' => 'rounds',
-                    'amraps' => 'amrap',
-                    'forTimes' => 'for-time',
-                    'intervals' => 'intervals',
-                    'emoms' => 'emom',
-                    'straights' => 'straight-sets',
-                    'circuits' => 'circuit',
-                    'pyramids' => 'pyramid',
+
+                foreach ($workout->{$relation} as $formatItem) {
+
+                    if (($workout->format->slug ?? '') === 'straight-sets') {
+
+                        if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
+                            foreach ($formatItem->sets as $set) {
+
+                                $query = $dailyModel::where('member_id', $member->id)
+                                    ->where('workout_manager_id', $workout->id)
+                                    ->where('workout_format_type', $formatType)
+                                    ->where('workout_format_id', $set->id)
+                                    ->where('date', $dateString);
+
+                                $isCompleted = $query->exists();
+                                $set->is_completed = $isCompleted ? 1 : 0;
+                            }
+                        }
+
+                        unset($formatItem->is_completed);
+                        unset($formatItem->has_reps_saved);
+
+                    } else {
+
+                        $baseQuery = $dailyModel::where('member_id', $member->id)
+                            ->where('workout_manager_id', $workout->id)
+                            ->where('workout_format_type', $formatType)
+                            ->where('workout_format_id', $formatItem->id)
+                            ->where('date', $dateString);
+
+                        if (
+                            in_array($typeName, ['strength', 'weightlifting', 'accessory'])
+                            && isset($formatItem->sets)
+                            && $formatItem->sets
+                            && $formatItem->sets->isNotEmpty()
+                        ) {
+
+                            $isCompleted = $baseQuery->exists();
+
+                            foreach ($formatItem->sets as $set) {
+                                $set->is_completed = $isCompleted ? 1 : 0;
+                            }
+
+                            $formatItem->is_completed = $isCompleted ? 1 : 0;
+                            unset($formatItem->has_reps_saved);
+
+                        } else {
+
+                            $isCompleted = $baseQuery->exists();
+
+                            $hasReps = (clone $baseQuery)
+                                ->where('reps', '>', 0)
+                                ->exists();
+
+                            $formatItem->is_completed   = $isCompleted ? 1 : 0;
+                            $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                        }
+                    }
+                }
+            }
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group workouts by type + calculate type_completed
+        |--------------------------------------------------------------------------
+        */
+        $groupedWorkouts = $workouts->groupBy(function ($workout) {
+            return $workout->type->name ?? 'Unknown';
+        });
+
+        $groupedWorkouts = $groupedWorkouts->map(function ($typeWorkouts) {
+
+            $totalFormatItems = 0;
+            $completedFormatItems = 0;
+
+            $typeWorkouts->each(function ($workout) use (&$totalFormatItems, &$completedFormatItems) {
+
+                $formatRelations = [
+                    'rounds',
+                    'amraps',
+                    'forTimes',
+                    'intervals',
+                    'emoms',
+                    'straights',
+                    'circuits',
+                    'pyramids',
                 ];
 
-                // Check each format type for completion - only tracking is_completed for individual items
-                foreach ($formatMapping as $relation => $formatType) {
+                foreach ($formatRelations as $relation) {
 
-                if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
+                    if (!$workout->{$relation} || $workout->{$relation}->isEmpty()) {
+                        continue;
+                    }
 
                     foreach ($workout->{$relation} as $formatItem) {
 
-                        Log::info('Format Item Data', [
-                            'format_item' => $formatItem->toArray()
-                        ]);
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | STRAIGHT-SETS HANDLING (PER SET CHECK)
-                        |--------------------------------------------------------------------------
-                        */
-                        if ($workout->format->slug === 'straight-sets') {
-
+                        if ($relation === 'straights') {
                             if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
-
                                 foreach ($formatItem->sets as $set) {
-
-                                    Log::info('Checking straight-set completion', [
-                                        'member_id' => $member->id,
-                                        'workout_manager_id' => $workout->id,
-                                        'workout_format_type' => $formatType,
-                                        'workout_format_id' => $set->id, 
-                                        'date' => $dateString,
-                                    ]);
-
-                                    $query = $dailyModel::where('member_id', $member->id)
-                                        ->where('workout_manager_id', $workout->id)
-                                        ->where('workout_format_type', $formatType)
-                                        ->where('workout_format_id', $set->id) 
-                                        ->where('date', $dateString);
-
-                                    Log::info('Straight-set SQL', [
-                                        'sql' => $query->toSql(),
-                                        'bindings' => $query->getBindings(),
-                                    ]);
-
-                                    $isCompleted = $query->exists();
-
-                                    Log::info('Straight-set result', [
-                                        'set_id' => $set->id,
-                                        'is_completed' => $isCompleted,
-                                    ]);
-
-                                    $set->is_completed = $isCompleted ? 1 : 0;
+                                    $totalFormatItems++;
+                                    if (($set->is_completed ?? 0) == 1) {
+                                        $completedFormatItems++;
+                                    }
                                 }
                             }
-
-                            // Remove straight-level flags
-                            unset($formatItem->is_completed);
-                            unset($formatItem->has_reps_saved);
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | OTHER FORMATS (STRENGTH / WEIGHTLIFTING / ACCESSORY)
-                        |--------------------------------------------------------------------------
-                        */
-                        else {
-
-                            $baseQuery = $dailyModel::where('member_id', $member->id)
-                                ->where('workout_manager_id', $workout->id)
-                                ->where('workout_format_type', $formatType)
-                                ->where('workout_format_id', $formatItem->id)
-                                ->where('date', $dateString);
-
-                            if (
-                                in_array($typeName, ['strength', 'weightlifting', 'accessory'])
-                                && $formatItem->sets
-                                && $formatItem->sets->isNotEmpty()
-                            ) {
-
-                                $isCompleted = $baseQuery->exists();
-
-                                foreach ($formatItem->sets as $set) {
-                                    $set->is_completed = $isCompleted ? 1 : 0;
-                                }
-
-                                $formatItem->is_completed = $isCompleted ? 1 : 0;
-
-                                unset($formatItem->has_reps_saved);
-                            }
-                            else {
-
-                                $isCompleted = $baseQuery->exists();
-
-                                $hasReps = (clone $baseQuery)
-                                    ->where('reps', '>', 0)
-                                    ->exists();
-
-                                $formatItem->is_completed = $isCompleted ? 1 : 0;
-                                $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                        } else {
+                            $totalFormatItems++;
+                            if (($formatItem->is_completed ?? 0) == 1) {
+                                $completedFormatItems++;
                             }
                         }
                     }
                 }
+            });
 
+            $typeCompletionStatus = ($totalFormatItems > 0 && $completedFormatItems === $totalFormatItems) ? 1 : 0;
+
+            $typeWorkouts->each(function ($workout) use ($typeCompletionStatus) {
+                $workout->type_completed = $typeCompletionStatus;
+            });
+
+            return $typeWorkouts;
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Your existing "search bar filtering / date normalization" block (unchanged)
+        |--------------------------------------------------------------------------
+        */
+        $rawDateString = trim($request->input('date'));
+        Log::info('Day received (raw):', ['day' => $rawDateString]);
+
+        $sanitized = preg_replace('/[^\d\/\sA-Za-z\-]/', '', $rawDateString);
+        $sanitized = preg_replace('/\s+/', ' ', trim($sanitized));
+        Log::info('Day received (sanitized):', ['day' => $sanitized]);
+
+        $datePart = null;
+        if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $sanitized, $m)) {
+            $datePart = $m[0];
+        }
+
+        $dateObj2 = null;
+        if ($datePart) {
+            $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
+            try {
+                $dateObj2 = Carbon::createFromFormat($fmt, $datePart);
+            } catch (\Exception $e) {
+                try {
+                    $dateObj2 = Carbon::parse($datePart);
+                } catch (\Exception $e2) {
+                    $dateObj2 = null;
+                }
+            }
+        } else {
+            try {
+                $dateObj2 = Carbon::parse($sanitized);
+            } catch (\Exception $e) {
+                $dateObj2 = null;
+            }
+        }
+
+        if (!$dateObj2) {
+            return response()->json([
+                'status'   => false,
+                'message'  => 'Invalid date format.',
+                'provided' => $rawDateString
+            ], 400);
+        }
+
+        $dayName2       = $dateObj2->format('l');
+        $shortDateTwo2  = $dateObj2->format('d/m/y');
+        $shortDateFour2 = $dateObj2->format('d/m/Y');
+
+        $dayWithDate     = $shortDateTwo2 . ' ' . $dayName2;
+        $dayWithDateNew  = $shortDateFour2 . ' ' . $dayName2;
+        $dayNameFirst    = $dayName2 . ' ' . $shortDateTwo2;
+        $dayNameFirstNew = $dayName2 . ' ' . $shortDateFour2;
+
+        $assignedRaw = WorkoutAssign::where('class_id', $classId)
+            ->where(function ($q) use ($shortDateTwo2, $shortDateFour2, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
+                $q->where('date', 'LIKE', '%' . $shortDateTwo2 . '%')
+                    ->orWhere('date', 'LIKE', '%' . $shortDateFour2 . '%')
+                    ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
+                    ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
+                    ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
+                    ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
+            })
+            ->get();
+
+        $assigned = $assignedRaw->groupBy('workout_type');
+        $getIds = fn ($type) => isset($assigned[$type]) ? $assigned[$type]->pluck('workout_id')->toArray() : [];
+
+        $detailstest = \App\Models\Test::whereIn('id', $getIds('test'))
+            ->where('member_id', $member->id)
+            ->with('workout.categoryOption')
+            ->with('member')
+            ->get();
+
+        if ($detailstest->isEmpty()) {
+            $detailstest = \App\Models\Test::where('member_id', $member->id)
+                ->where(function ($q) use ($dayWithDate, $dayWithDateNew) {
+                    $q->where('date', $dayWithDate)
+                      ->orWhere('date', $dayWithDateNew);
+                })
+                ->with('workout.categoryOption')
+                ->with('member')
+                ->get();
+        }
+
+        Log::info('Tests retrieved', [
+            'count' => $detailstest->count(),
+            'tests' => $detailstest->toArray()
+        ]);
+
+        $detailstest->map(function ($test) use ($dayWithDate) {
+            if ($test->workout) {
+                $typeValue = $test->workout->type;
+                $typeRecord = \App\Models\Type::where('name', $typeValue)->first();
+
+                $test->type_id = $typeRecord ? $typeRecord->id : null;
+                $test->type_name = $typeValue;
+
+                if ($test->type_id) {
+                    $workoutManagers = \App\Models\WorkoutManager::where('type_id', $test->type_id)
+                        ->where('date', $dayWithDate)
+                        ->with('format')
+                        ->get();
+
+                    $test->workout_managers = $workoutManagers;
+                }
+            }
+            return $test;
+        });
+
+        $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
+
+        $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+            ->map(function ($item) {
+                return [
+                    'id'                   => $item->id,
+                    'workout'              => $item->workout,
+                    'type'                 => $item->type,
+                    'category_option_id'   => $item->category_options_id,
+                    'category_option_name' => $item->categoryOption->category_name ?? null,
+                ];
+            });
+
+        /*
+        |--------------------------------------------------------------------------
+        | (Optional) Return tests grouped by workout type (from testsForDay)
+        |--------------------------------------------------------------------------
+        */
+        $testStrength = [];
+        $testWeightlifting = [];
+        $testConditioning = [];
+
+        if ($testsForDay->isNotEmpty()) {
+            $libIds = $testsForDay->pluck('workout_libraries_id')->unique()->values();
+            $libs = WorkoutLibrary::whereIn('id', $libIds)->get(['id', 'type']);
+
+            $libTypeMap = [];
+            foreach ($libs as $l) {
+                $libTypeMap[$l->id] = strtolower(trim($l->type ?? ''));
             }
 
-            // Note: Only keeping type_completed and is_completed fields as requested
-            });
-
-            $groupedWorkouts = $workouts->groupBy(function ($workout) {
-                return $workout->type->name ?? 'Unknown';
-            });
-
-            $groupedWorkouts = $groupedWorkouts->map(function ($typeWorkouts, $typeName) {
-                $totalFormatItems = 0;
-                $completedFormatItems = 0;
-
-                $typeWorkouts->each(function ($workout) use (&$totalFormatItems, &$completedFormatItems) {
-
-                    $formatMapping = [
-                        'rounds',
-                        'amraps',
-                        'forTimes',
-                        'intervals',
-                        'emoms',
-                        'straights',
-                        'circuits',
-                        'pyramids',
-                    ];
-
-                    foreach ($formatMapping as $relation) {
-
-                        if ($workout->{$relation} && $workout->{$relation}->isNotEmpty()) {
-
-                            foreach ($workout->{$relation} as $formatItem) {
-
-                                // Special handling for Straight Sets
-                                if ($relation === 'straights') {
-
-                                    if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
-
-                                        foreach ($formatItem->sets as $set) {
-                                            $totalFormatItems++;
-
-                                            if ($set->is_completed == 1) {
-                                                $completedFormatItems++;
-                                            }
-                                        }
-
-                                    }
-
-                                } else {
-
-                                    $totalFormatItems++;
-
-                                    if ($formatItem->is_completed == 1) {
-                                        $completedFormatItems++;
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                });
-
-                $typeCompletionStatus = ($totalFormatItems > 0 && $completedFormatItems === $totalFormatItems) ? 1 : 0;
-
-                $typeWorkouts->each(function ($workout) use ($typeCompletionStatus) {
-                    $workout->type_completed = $typeCompletionStatus;
-                });
-
-                return $typeWorkouts;
-            });
-
-
-
-            //search bar filtering by workout name or category
-            // Sanitize and normalize incoming date string
-             $rawDateString = trim($request->input('date')); // Changed from 'selected_day' to 'date' to match input
-             Log::info('Day received (raw):', ['day' => $rawDateString]);
- 
-             // Remove any characters except digits, slashes, spaces, letters and hyphen
-             $sanitized = preg_replace('/[^\d\/\sA-Za-z\-]/', '', $rawDateString);
-             $sanitized = preg_replace('/\s+/', ' ', trim($sanitized));
-             Log::info('Day received (sanitized):', ['day' => $sanitized]);
- 
-             // Try to extract a date substring like d/m/y or d/m/Y
-             $datePart = null;
-             if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $sanitized, $m)) {
-                 $datePart = $m[0];
-             }
-
-             $dateObj = null; // Renamed to avoid conflict with $date input
-             if ($datePart) {
-                 // Choose format based on year length
-                 $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
- 
-                 try {
-                     $dateObj = \Carbon\Carbon::createFromFormat($fmt, $datePart);
-                 } catch (\Exception $e) {
-                     // fallback to parse
-                     try {
-                         $dateObj = \Carbon\Carbon::parse($datePart);
-                     } catch (\Exception $e2) {
-                         $dateObj = null;
-                     }
-                 }
-             } else {
-                 // Last resort: try to parse the sanitized string directly
-                 try {
-                     $dateObj = \Carbon\Carbon::parse($sanitized);
-                 } catch (\Exception $e) {
-                     $dateObj = null;
-                 }
-             }
-
-            if (!$dateObj) {
-                 return response()->json([
-                     'status' => false, // varied from success: false
-                     'message' => 'Invalid date format.',
-                     'provided' => $rawDateString
-                 ], 400);
-             }
-            // Build normalized patterns (both two-digit and four-digit year, dayname before/after)
-            $dayName = $dateObj->format('l');
-            $shortDateTwo = $dateObj->format('d/m/y');   // e.g., 23/01/26
-            $shortDateFour = $dateObj->format('d/m/Y');  // e.g., 23/01/2026
-            $dayWithDate = $shortDateTwo . ' ' . $dayName;
-            $dayWithDateNew = $shortDateFour . ' ' . $dayName;
-            $dayNameFirst = $dayName . ' ' . $shortDateTwo;
-            $dayNameFirstNew = $dayName . ' ' . $shortDateFour;
-            // Search for any assignment containing the date in any reasonable format
-             $assignedRaw = WorkoutAssign::where('class_id', $classId)
-             ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
-                 $q->where('date', 'LIKE', '%' . $shortDateTwo . '%')
-                   ->orWhere('date', 'LIKE', '%' . $shortDateFour . '%')
-                   ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
-                   ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
-                   ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
-                   ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
-             })
-             ->get();
-
-            $assigned = $assignedRaw->groupBy('workout_type');
-            // Helper function
-             $getIds = fn ($type) => isset($assigned[$type])
-             ? $assigned[$type]->pluck('workout_id')->toArray()
-             : [];
-            // Test (filtered by member)
-           $detailstest = \App\Models\Test::whereIn('id', $getIds('test'))
-           ->where('member_id', $member->id)
-           ->with('workout.categoryOption')
-           ->with('member')
-           ->get();
-
-           // Category Options
-             $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
-
-            // Workout Library
-             $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
-                 ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
-                 ->map(function ($item) {
-                     return [
-                         'id' => $item->id,
-                         'workout' => $item->workout,
-                         'type' => $item->type,
-                         'category_option_id' => $item->category_options_id,
-                         'category_option_name' => $item->categoryOption->category_name ?? null,
-                     ];
-                 });
-
-
-
-            return response()->json([
-                'status' => true,
-                'date' => $dateString,
-                'class_id' => $classId,
-                'workouts' => $groupedWorkouts,
-                'dayWithDate' => $dayWithDate,
-                'test' => $detailstest,
-                 'workoutlibrary' => $workoutlibrary,
-                'categoryOptions' => $categoryOptions,
-                'member' => $member
-            ], 200);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            foreach ($testsForDay as $t) {
+                $tt = $libTypeMap[$t->workout_libraries_id] ?? '';
+                if ($tt === 'strength') $testStrength[] = $t;
+                elseif ($tt === 'weightlifting') $testWeightlifting[] = $t;
+                elseif ($tt === 'conditioning') $testConditioning[] = $t;
+            }
         }
+
+        return response()->json([
+            'status'     => true,
+            'date'       => $dateString,
+            'class_id'   => $classId,
+            'workouts'   => $groupedWorkouts,
+            'dayWithDate' => $dayWithDate,
+
+            'test' => $detailstest,
+            'workoutlibrary' => $workoutlibrary,
+            'categoryOptions' => $categoryOptions,
+            'member' => $member,
+
+            'test_data' => [
+                'strength'      => $testStrength,
+                'weightlifting' => $testWeightlifting,
+                'conditioning'  => $testConditioning,
+            ],
+            'raw_tests_for_day' => $testsForDay,
+        ], 200);
+
+    } catch (\Exception $e) {
+        Log::error('getWorkouts error', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return response()->json([
+            'status'  => false,
+            'message' => $e->getMessage(),
+        ], 500);
     }
+}
 
 }
