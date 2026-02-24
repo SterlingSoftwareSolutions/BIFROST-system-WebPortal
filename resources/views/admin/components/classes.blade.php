@@ -200,7 +200,7 @@
               <td class="px-4 py-2 w-[10%]">${cls.spots}</td>
 
               <!-- Icons (single row, scroll X, allow Y so rings won't clip) -->
-              <td class="m-[-10px] py-2 w-[50%] pr-4">
+              <td class="py-2 w-[50%] pr-4">
                 <div class="flex flex-nowrap items-center gap-2 overflow-x-auto overflow-y-visible whitespace-nowrap no-scrollbar py-1">
                   
                   <!-- Warmup -->
@@ -230,19 +230,22 @@
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
+
                   <!-- Accessory -->
                   <div class="p-1">
                     <img src="/icon/kettlebellB.png"
                       class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500' : 'border-transparent'}"
                       title="Accessory">
                   </div>
+
                   <!-- 1RM -->
                   <div class="p-1">
                     <img src="/icon/testBlack.png"
-                      class="w-9 h-8 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500' : 'border-transparent'}"
+                      class="w-8 h-8 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500' : 'border-transparent'}"
                       title="1RM">
                   </div>
-                  
+
+                </div>
               </td>
 
               <!-- Edit + Delete -->

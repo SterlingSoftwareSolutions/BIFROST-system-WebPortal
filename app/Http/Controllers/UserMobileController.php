@@ -1682,7 +1682,7 @@ public function getWorkouts(Request $request)
 
         /*
         |--------------------------------------------------------------------------
-        | (Optional) Return tests grouped by workout type (from testsForDay)
+        | Return tests grouped by workout type (from testsForDay)
         |--------------------------------------------------------------------------
         */
         $testStrength = [];

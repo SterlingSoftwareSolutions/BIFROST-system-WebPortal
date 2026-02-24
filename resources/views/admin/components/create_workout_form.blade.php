@@ -2,7 +2,7 @@
 <form id="create_workout_form" action="{{ route('workout.store') }}" method="POST">
     @csrf
 
-    <div class="flex-col w-full bg-gray-50 p-3  rounded-lg">
+    <div class="flex-col w-full bg-white p-8 rounded-lg">
 
     <!-- Script for JS Alert -->
     @if(session('success'))
@@ -17,7 +17,10 @@
         </script>
     @endif
 
-    <div class="flex justify-center text-center items-center font-bold mb-5 text-2xl">Create</div>
+    <div class="relative flex items-center justify-center font-bold mb-5 text-2xl">
+        <div class="text-2xl font-bold">Create</div>
+        <button type="button" onclick="closeWorkoutModal()" class="absolute right-0 text-gray-400 hover:text-gray-700 text-3xl leading-none font-bold">&times;</button>
+    </div>
 
     <input type="hidden" id="common_workout_id" name="common_workout_id" value="">
     <input type="hidden" id="common_date" name="common_date" value="">
@@ -107,6 +110,7 @@
         if(formatSelect) {
             formatSelect.addEventListener('change', function() {
                 const format = this.value;
+                this.blur(); // Close the native dropdown immediately after selection
                 container.innerHTML = ''; // Clear existing
 
                 if (format === 'Rounds') {
@@ -132,7 +136,7 @@
         window.superSetCount = 0;
 
         window.getUnitSelectOptionsHtml = function(selected) {
-             const units = ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A'];
+             const units = ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A','m'];
              return units.map(u => `<option value="${u}" ${u === selected ? 'selected' : ''}>${u}</option>`).join('');
         }
 
@@ -380,7 +384,7 @@
                 </div>
 
                 <!-- Rows Container -->
-                <div id="${prefix}_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                <div id="${prefix}_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll">
                     ${getUniversalRowHtml(1, prefix)}
                 </div>
 
@@ -507,7 +511,17 @@
             });
 
             // Toggle current
-            popup.classList.toggle('hidden');
+            if (popup.classList.contains('hidden')) {
+                popup.classList.remove('hidden');
+                // Position using fixed coords so overflow containers don't clip it
+                const rect = element.getBoundingClientRect();
+                popup.style.position = 'fixed';
+                popup.style.top = (rect.bottom + 4) + 'px';
+                popup.style.right = (window.innerWidth - rect.right) + 'px';
+                popup.style.left = 'auto';
+            } else {
+                popup.classList.add('hidden');
+            }
         }
 
         // Close Popups on Click Outside
@@ -541,12 +555,13 @@
                                     <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                 </svg>
                             </span>
-                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                            <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
                             </div>
                         </div>
@@ -556,7 +571,7 @@
                 </div>
 
                 <!-- Rows Container -->
-                <div id="${prefix}_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                <div id="${prefix}_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll">
                     ${getUniversalRowHtml(1, prefix)}
                 </div>
 
@@ -735,7 +750,7 @@
                         </div>
                     </div>
 
-                    <div id="interval_blocks_container" class="space-y-6">
+                    <div id="interval_blocks_container" class="space-y-6 overflow-y-auto pr-1">
                         ${getIntervalBlockHtml(1)}
                     </div>
                 </div>
@@ -773,12 +788,13 @@
                                     <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                 </svg>
                             </span>
-                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                            <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
                             </div>
                         </div>
@@ -786,7 +802,7 @@
                         <div class="w-32 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     </div>
 
-                    <div id="pyramid_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                    <div id="pyramid_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll">
                         ${getPyramidRowHtml(1)}
                     </div>
                 </div>
@@ -896,12 +912,13 @@
                                         <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                     </svg>
                                 </span>
-                                <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                     <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                     <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                     <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                     <p class="mb-1"><b>Kg</b> – Weight</p>
                                     <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                    <p class="mb-1"><b>m</b> – Meter</p>
                                     <p><b>N/A</b> – N/A</p>
                                 </div>
                             </div>
@@ -909,7 +926,7 @@
                         <div class="w-28 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
                     </div>
 
-                    <div id="emom_rows_container" class="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scroll">
+                    <div id="emom_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll">
                         ${getEmomRowHtml(1)}
                     </div>
                 </div>
@@ -1147,12 +1164,13 @@
                                     <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                 </svg>
                             </span>
-                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                            <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
                             </div>
                         </div>
@@ -1215,7 +1233,7 @@
 
                           <!-- Right List -->
                           <div class="flex-1">
-                              <div id="straight_set_rows_container" class="overflow-y-auto max-h-96 pt-1 custom-scroll pb-1">
+                              <div id="straight_set_rows_container" class="overflow-y-auto max-h-[168px] pt-1 custom-scroll pb-1">
                                  <!-- Rows generated by refreshStraightSetRows -->
                               </div>
                           </div>
@@ -1688,7 +1706,7 @@
                         </div>
                     </div>
 
-                    <div id="circuit_stations_container" class="space-y-6">
+                    <div id="circuit_stations_container" class="space-y-6 overflow-y-auto pr-1">
                         ${getCircuitStationHtml(1)}
                     </div>
                 </div>
@@ -1728,6 +1746,18 @@
                      if(container.lastElementChild) container.lastElementChild.remove();
                  }
              }
+
+             // Cap visible area to 2 stations; scroll for 3+
+             requestAnimationFrame(() => {
+                 const children = Array.from(container.children);
+                 if (children.length >= 2) {
+                     const gap = 24; // space-y-6 = 24px
+                     const twoHeight = children[0].offsetHeight + gap + children[1].offsetHeight;
+                     container.style.maxHeight = twoHeight + 'px';
+                 } else {
+                     container.style.maxHeight = '';
+                 }
+             });
         }
 
         window.getCircuitStationHtml = function(index) {
@@ -1749,12 +1779,13 @@
                                     <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                 </svg>
                             </span>
-                            <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                            <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
                             </div>
                         </div>
@@ -1763,7 +1794,7 @@
                          <div class="min-w-[80px]"></div>
                      </div>
 
-                     <div id="station_${index}_rows" class="space-y-3 max-h-96 overflow-y-auto px-2 custom-scroll">
+                     <div id="station_${index}_rows" class="space-y-3 max-h-[168px] overflow-y-auto px-2 custom-scroll">
                           ${getCircuitRowHtml(index, 1)}
                      </div>
 
@@ -1915,6 +1946,18 @@
                      if(container.lastElementChild) container.lastElementChild.remove();
                  }
              }
+
+             // Cap visible area to 2 intervals; scroll for 3+
+             requestAnimationFrame(() => {
+                 const children = Array.from(container.children);
+                 if (children.length >= 2) {
+                     const gap = 24; // space-y-6 = 24px
+                     const twoHeight = children[0].offsetHeight + gap + children[1].offsetHeight;
+                     container.style.maxHeight = twoHeight + 'px';
+                 } else {
+                     container.style.maxHeight = '';
+                 }
+             });
         }
 
         window.getIntervalBlockHtml = function(index) {
@@ -1936,19 +1979,20 @@
                                          <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
                                      </svg>
                                  </span>
-                                 <div class="hidden absolute left-1/2 -translate-x-1/2 top-6 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
+                                 <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                      <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                      <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                      <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                      <p class="mb-1"><b>Kg</b> – Weight</p>
                                      <p class="mb-1"><b>BW</b> – Body Weight</p>
+                                     <p class="mb-1"><b>m</b> – Meter</p>
                                      <p><b>N/A</b> – N/A</p>
                                  </div>
                              </div>
                          </div>
-                         <div class="flex gap-2">
-                             <div class="w-24 font-bold text-sm text-center text-gray-700">Work</div>
-                             <div class="w-24 font-bold text-sm text-center text-gray-700">Rest</div>
+                         <div class="flex gap-6">
+                             <div class="w-28 font-bold text-sm text-center text-gray-700">Work</div>
+                             <div class="w-28 font-bold text-sm text-center text-gray-700">Rest</div>
                          </div>
                          <div class="w-10"></div>
                     </div>
@@ -1996,18 +2040,18 @@
                         </div>
                     </div>
 
-                    <!-- Work/Rest -->
-                    <div class="flex gap-2">
+                     <!-- Work/Rest -->
+                    <div class="flex gap-6">
                          <!-- Work -->
-                         <div class="flex items-center justify-center w-24">
+                         <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
-                         <div class="flex items-center justify-center w-24">
+                         <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
@@ -2436,4 +2480,49 @@
 
         }, 200);
     }
+
+    window.openWorkoutModal = function() {
+        const modal = document.getElementById('workout_modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    };
+
+    window.closeWorkoutModal = function() {
+        const modal = document.getElementById('workout_modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    };
+
+    window.resetWorkoutForm = function() {
+        // Reset hidden workout ID
+        const hiddenId = document.getElementById('common_workout_id');
+        if (hiddenId) hiddenId.value = '';
+
+        // Reset form action to store route
+        const form = document.getElementById('create_workout_form');
+        if (form) form.action = "{{ route('workout.store') }}";
+
+        // Reset dropdowns & input
+        const typeSelect = document.getElementById('common_type');
+        if (typeSelect) typeSelect.value = '';
+        const nameInput = document.getElementById('common_name');
+        if (nameInput) nameInput.value = '';
+        const formatSelect = document.getElementById('common_format');
+        if (formatSelect) formatSelect.value = '';
+
+        // Clear dynamic fields
+        const container = document.getElementById('specific_fields_container');
+        if (container) container.innerHTML = '';
+
+        // Reset button & title
+        const btn = document.getElementById('save_workout_btn');
+        if (btn) btn.innerText = 'Save Workout';
+
+        const title = document.querySelector('.text-2xl.font-bold');
+        if (title) title.innerText = 'Create';
+    };
 </script>
