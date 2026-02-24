@@ -5,7 +5,7 @@
             <div class="flex-col w-full">
                 <div class="bg-gray-50 p-2 pt-0">
                     <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
-                    <div class="flex items-center space-x-2 flex-nowrap">
+                    <div class="flex justify-center items-center space-x-2 flex-nowrap">
 
                         <!-- Category Field -->
                         <div class="flex items-center space-x-1">
@@ -133,7 +133,7 @@ window.renderUnifiedWorkoutList = function(workouts, classes = []) {
             <div class="flex justify-between items-center bg-white border-b border-gray-200 px-3 py-2">
                  <div class="font-bold text-base text-gray-800">${fmtName} <span class="text-gray-500 font-normal ml-1 text-sm">${workout.type ? '- ' + workout.type.name : ''}</span></div>
                  <div class="flex gap-3">
-                     <button onclick="editUnifiedWorkout(${workout.id}); scrollToTop()" class="text-gray-700 hover:text-black">
+                     <button onclick="editUnifiedWorkout(${workout.id}); openWorkoutModal()" class="text-gray-700 hover:text-black">
                         <svg class="feather feather-edit" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 
                      </button>

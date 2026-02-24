@@ -53,6 +53,9 @@
                             <h2 id="weekRangeDisplay"></h2>
                         </div>
                     </div>
+                    <div class="ml-auto mt-2">
+                        <button onclick="resetWorkoutForm(); openWorkoutModal();" class="bg-black hover:bg-gray-800 text-white font-bold px-5 py-2 rounded text-base">Create</button>
+                    </div>
                 </div>
 
             </div>
@@ -138,16 +141,11 @@
                             @include('admin.components.classes', ['classes' => $classes])
                         </div>
                     </div>
-                    <div class="w-[70%] tabs">
+                    <div class="w-[45%] tabs ml-32">
                         <div class="flex flex-row gap-4 w-full items-start">
                             {{-- Unified Search List (Visible always) --}}
-                            <div class="w-[52%]">
+                            <div class="w-full">
                                 @include('admin.components.search_workout_list')
-                            </div>
-                            
-                            {{-- Common Create Form --}}
-                            <div class="w-[42%]">
-                                @include('admin.components.create_workout_form')
                             </div>
                         </div>
 
@@ -242,6 +240,14 @@
             </div>
 
         </div>
+
+        {{-- Workout Create/Edit Modal --}}
+        <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-center justify-center overflow-y-auto py-8">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
+                @include('admin.components.create_workout_form')
+            </div>
+        </div>
+
     @endsection
 
     {{-- Date Script --}}
