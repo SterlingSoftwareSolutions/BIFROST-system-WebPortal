@@ -254,7 +254,7 @@ class WorkoutManagerController extends Controller
 
     private function saveStraightSets(Request $request, $managerId) {
 
-
+       // dd($request);
         // 1. Identify all Exercise Indices present in request
         $allKeys = $request->keys();
         $exerciseIndices = [];
@@ -330,6 +330,9 @@ class WorkoutManagerController extends Controller
 
                     \App\Models\StraightSet::create([
                         'straight_id' => $straight->id,
+                        'restred' => $request->restred ?? '00:00:00',
+                        'restyellow' => $request->restyellow ?? '00:00:00',
+                        'restgreen' => $request->restgreen ?? '00:00:00',
                         'workout_libraries_id' => $libId,
                         'res' => $request->input($repsKey),
                         'training_load' => $request->input($loadKey),

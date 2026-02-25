@@ -1227,7 +1227,7 @@
                         </div>
                     </div>
 
-                     <div class="flex">
+                     <div class="flex border-b">
                           <!-- Left Label -->
                           <div class="w-16 flex justify-center items-start pt-3 font-bold text-gray-800 text-base mr-4">SET <span class="text-red-500">*</span></div>
 
@@ -1238,6 +1238,89 @@
                               </div>
                           </div>
                      </div>
+
+                     <div class="flex items-center border-b mt-2 pl-0 pr-2">
+                            <label for="restred" class="w-40 block mb-1">Rest <span class="text-red-500">*</span></label>
+                    <div class="mb-6">
+
+                            <!-- Titles Row -->
+                            <div class="flex justify-between mb-2">
+                                <div class="text-red-500 font-bold w-1/3 text-center">
+                                    RSet
+                                </div>
+                                <div class="text-yellow-500 font-bold w-1/3 text-center">
+                                    RSet
+                                </div>
+                                <div class="text-green-500 font-bold w-1/3 text-center">
+                                    RSet
+                                </div>
+                            </div>
+
+                            <!-- Timers Row -->
+                            <div class="flex justify-between gap-4">
+
+                                <!-- RED -->
+                                <div class="flex items-center w-1/3">
+                                    <button type="button"
+                                        onclick="decrementRest('restreds_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">
+                                        -
+                                    </button>
+
+                                    <input type="text" id="restreds_1" name="restred"
+                                        value="00:04:00"
+                                        class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
+                                        readonly required>
+
+                                    <button type="button"
+                                        onclick="incrementRest('restreds_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">
+                                        +
+                                    </button>
+                                </div>
+
+                                <!-- YELLOW -->
+                                <div class="flex items-center w-1/3">
+                                    <button type="button"
+                                        onclick="decrementRest('restyellows_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">
+                                        -
+                                    </button>
+
+                                    <input type="text" id="restyellows_1" name="restyellow"
+                                        value="00:04:00"
+                                        class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
+                                        readonly required>
+
+                                    <button type="button"
+                                        onclick="incrementRest('restyellows_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">
+                                        +
+                                    </button>
+                                </div>
+
+                                <!-- GREEN -->
+                                <div class="flex items-center w-1/3">
+                                    <button type="button"
+                                        onclick="decrementRest('restgreens_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">
+                                        -
+                                    </button>
+
+                                    <input type="text" id="restgreens_1" name="restgreen"
+                                        value="00:04:00"
+                                        class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
+                                        readonly required>
+
+                                    <button type="button"
+                                        onclick="incrementRest('restgreens_1')"
+                                        class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">
+                                        +
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
                  </div>
             `;
             container.innerHTML = html;
@@ -2292,6 +2375,10 @@
                      const u1 = document.querySelector('[name="ss_unit_1"]'); if(u1) u1.value = mainStraight.unit_type;
                      const r1 = document.getElementById('ss_reps_main'); if(r1) r1.value = mainStraight.reps;
 
+                     document.getElementById('restreds_1').value = mainStraight.sets[0].restred;
+                     document.getElementById('restyellows_1').value = mainStraight.sets[0].restyellow;
+                     document.getElementById('restgreens_1').value = mainStraight.sets[0].restgreen;
+
                      // If Super Set
                      if (secStraight) {
                          window.addSuperSet();
@@ -2525,4 +2612,39 @@
         const title = document.querySelector('.text-2xl.font-bold');
         if (title) title.innerText = 'Create';
     };
+
+    function decrementRest(id) {
+        let input = document.getElementById(id);
+        let [hours, minutes, seconds] = input.value.split(':').map(Number);
+
+        if (isNaN(hours)) hours = 0;
+        if (isNaN(minutes)) minutes = 0;
+        if (isNaN(seconds)) seconds = 0;
+
+        let totalSeconds = (hours * 3600) + (minutes * 60) + seconds - 15;
+        totalSeconds = Math.max(0, totalSeconds); // Prevent negative time
+
+        hours = Math.floor(totalSeconds / 3600);
+        minutes = Math.floor((totalSeconds % 3600) / 60);
+        seconds = totalSeconds % 60;
+
+        input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function incrementRest(id) {
+        let input = document.getElementById(id);
+        let [hours, minutes, seconds] = input.value.split(':').map(Number);
+
+        if (isNaN(hours)) hours = 0;
+        if (isNaN(minutes)) minutes = 0;
+        if (isNaN(seconds)) seconds = 0;
+
+        let totalSeconds = (hours * 3600) + (minutes * 60) + seconds + 15;
+
+        hours = Math.floor(totalSeconds / 3600);
+        minutes = Math.floor((totalSeconds % 3600) / 60);
+        seconds = totalSeconds % 60;
+
+        input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 </script>
