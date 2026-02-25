@@ -224,7 +224,7 @@
                                         <option value="Kg">Kg</option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="relative ml-4 flex items-center">
                                     <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
                                         <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -1056,7 +1056,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            
+
                                         </div>
 
             <button type="button" class="remove-set bg-red-500 text-white p-2 rounded ml-1 w-15">
@@ -1703,15 +1703,15 @@
             }
 
             const assignedClassIds = item.assigned_class_ids || [];
-            
+
             // Generate Class Buttons
             let classButtonsHTML = '';
-            
+
             if (availableClasses && availableClasses.length > 0) {
                  availableClasses.forEach(cls => {
                      // Check if assigned
                      const isAssigned = assignedClassIds.includes(cls.id);
-                     
+
                      // Format time (e.g. 09:00:00 -> 9:00am)
                      let timeParts = cls.time.split(':');
                      let dateObj = new Date();
@@ -1736,11 +1736,11 @@
             } else {
                 classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
             }
-            
+
             // "All" Button Logic
             const availableClassIds = availableClasses.map(c => c.id);
             const allAssigned = availableClassIds.length > 0 && availableClassIds.every(id => assignedClassIds.includes(id));
-            const allButtonClass = allAssigned 
+            const allButtonClass = allAssigned
                 ? 'border-green-600 bg-green-50 text-green-700 font-bold'
                 : 'border-gray-300 text-gray-600';
 
@@ -2021,7 +2021,7 @@
                      if (response.status === 'success') {
                         // Refresh to show updated button states
                         filterWeightlifting(date);
-                        
+
                         // Also refresh classes list to show green icon if the function exists
                         if (typeof getdateName === 'function') {
                              getdateName(date);
