@@ -217,8 +217,7 @@ class UserMobileController extends Controller
     {
         try {
             // Fetch all workouts where type = 'strength' or 'weightlifting'
-            $workouts = WorkoutLibrary::whereIn('type', ['strength', 'weightlifting', 'warmup', 'conditioning'])
-                    ->orderBy('workout', 'asc')
+            $workouts = WorkoutLibrary::orderBy('workout', 'asc')
                     ->get();
 
             if ($workouts->isEmpty()) {
