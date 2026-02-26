@@ -271,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // edit function
-function edit(id, categoryName, type, workout, link) {
+function edit(id, categoryName, workout, link) {
     document.getElementById("workoutId").value = id;
     document.getElementById("workout").value = workout;
     document.getElementById("link").value = link;
@@ -281,15 +281,6 @@ function edit(id, categoryName, type, workout, link) {
     for (var i = 0; i < categorySelect.options.length; i++) {
         if (categorySelect.options[i].text === categoryName) {
             categorySelect.selectedIndex = i;
-            break;
-        }
-    }
-
-    // Set the correct type option
-    var typeSelect = document.getElementById("type");
-    for (var i = 0; i < typeSelect.options.length; i++) {
-        if (typeSelect.options[i].value === type) {
-            typeSelect.selectedIndex = i;
             break;
         }
     }

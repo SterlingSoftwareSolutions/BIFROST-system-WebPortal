@@ -49,19 +49,6 @@
 
 
                                     <div class="flex items-center space-x-4">
-                                        <label for="type" class="w-32 font-semibold">Type <span
-                                                class="text-red-500">*</span></label>
-                                        <select id="type" name="type"
-                                            class="p-2 border border-gray-300 rounded flex-1">
-                                            <option value="Select" selected>--Select--</option>
-                                            <option value="Warmup">Warmup</option>
-                                            <option value="Strength">Strength</option>
-                                            <option value="Conditioning">Conditioning</option>
-                                            <option value="Weightlifting">Weightlifting</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="flex items-center space-x-4">
                                         <label for="category" class="w-32 font-semibold">Category <span
                                                 class="text-red-500">*</span></label>
                                         <select id="category" name="category"
@@ -133,16 +120,6 @@
                                 <form class="flex flex-col md:flex-row gap-3 px-4 w-1/2" method="GET"
                                     action="{{ route('viewworkoutlibrary') }}">
                                     <td class="pr-2">
-                                        <select id="type" name="type"
-                                            class="w-full mb-5 h-10 border-2 border-black focus:outline-none focus:border-border-black text-black rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
-                                            <option value="" selected>--Select Type--</option>
-                                            <option value="warmup">Warmup</option>
-                                            <option value="strength">Strength</option>
-                                            <option value="conditioning">Conditioning</option>
-                                            <option value="weightlifting">Weightlifting</option>
-                                        </select>
-                                    </td>
-                                    <td class="pr-2">
                                         <select id="categoryOption" name="categoryOption"
                                             class="w-full mb-5 h-10 border-2 border-black focus:outline-none focus:border-border-black text-black rounded px-2 md:px-3 py-0 md:py-1 tracking-wider">
                                             <option value="" selected>--Select Category--</option>
@@ -158,8 +135,7 @@
                                 </form>
                             </tr>
                             <tr>
-                                <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left">Type</th>
-                                <th class="p-3 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
+                                <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
                                     Category</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Exercise</th>
                                 <th class="p-3 border-y-2 border-gray-300 bg-white text-left">Link</th>
@@ -170,10 +146,7 @@
                         <tbody>
                             @foreach ($workoutLibraries as $index => $workoutLibrary)
                                 <tr class="{{ $index % 2 == 0 ? 'bg-gray-100' : 'bg-white' }}">
-                                    <td class="p-3 border-s-2 border-y-2 border-gray-300 text-left">
-                                        {{ ucfirst($workoutLibrary->type) }}
-                                    </td>
-                                    <td dir="ltr" class="p-3 border-y-2 border-gray-300 text-left">
+                                    <td dir="ltr" class="p-3 border-s-2 border-y-2 border-gray-300 text-left">
                                         {{ $workoutLibrary->categoryOption->category_name }}
                                     </td>
                                     <td class="p-3 border-y-2 border-gray-300 text-left">
@@ -192,7 +165,7 @@
 
                                                 @if ($accessType == 'write')
                                                     <a href="#"
-                                                        onclick="edit({{ $workoutLibrary->id }}, '{{ $workoutLibrary->categoryOption->category_name }}', '{{ $workoutLibrary->type }}', '{{ $workoutLibrary->workout }}', '{{ $workoutLibrary->link }}')"
+                                                        onclick="edit({{ $workoutLibrary->id }}, '{{ $workoutLibrary->categoryOption->category_name }}', '{{ $workoutLibrary->workout }}', '{{ $workoutLibrary->link }}')"
                                                         class="mr-8">
                                                         <i class="text-[#fd8300] bi bi-pencil"></i>
                                                         <span class="text-black">Edit</span>
