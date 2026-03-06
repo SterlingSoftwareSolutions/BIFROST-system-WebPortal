@@ -18,6 +18,7 @@ class Emom extends Model
         'unit_type',
         'reps',
         'gender',
+        'exercise_time',
     ];
     public function workoutManager()
     {
