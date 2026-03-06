@@ -217,10 +217,15 @@ class UserMobileController extends Controller
     {
         try {
             // Fetch all workouts where type = 'strength' or 'weightlifting'
-            $workouts = WorkoutLibrary::orderBy('workout', 'asc')
-                    ->get();
+            /* $workouts = WorkoutLibrary::whereIn('type', ['strength', 'weightlifting', 'warmup', 'conditioning'])
+                    ->orderBy('workout', 'asc')
+                    ->get(); */
 
-            if ($workouts->isEmpty()) {
+            $workouts = WorkoutLibrary::orderBy('workout', 'asc')->get();//get all
+
+            log::info('Fetched workouts', ['count' => $workouts, 'types' => $workouts->pluck('type')->unique()]);
+
+            if ($workouts->isEmpty()) { 
                 return response()->json([
                     'status' => 'success',
                     'message' => 'No strength or weightlifting workouts found.',

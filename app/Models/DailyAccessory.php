@@ -19,6 +19,7 @@ class DailyAccessory extends Model
         'reps',
         'weight',
         'date',
+        'exercise_time',
     ];
 
 

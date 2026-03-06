@@ -17,6 +17,7 @@ class DailyWarmup extends Model
         'date',
         'workout_format_type',
         'workout_format_id',
+        'exercise_time',
     ];
 
     public function member()

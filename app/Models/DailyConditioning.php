@@ -17,6 +17,7 @@ class DailyConditioning extends Model
         'weight',
         'workout_format_type',
         'workout_format_id',
+        'exercise_time',
     ];
 
     public function member()

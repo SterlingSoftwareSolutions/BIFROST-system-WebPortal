@@ -17,6 +17,7 @@ class DailyStrength extends Model
         'type',
         'weight',
         'set_number',
+        'exercise_time',
         'workout_manager_id',
         'workout_format_type',
         'workout_format_id',
