@@ -1414,6 +1414,9 @@ public function getWorkouts(Request $request)
                 case 'accessory':
                     $dailyModel = \App\Models\DailyAccessory::class;
                     break;
+                case 'conditioning':
+                    $dailyModel = \App\Models\DailyConditioning::class;
+                    break;
                 default:
                     $dailyModel = \App\Models\DailyWarmup::class;
                     break;
