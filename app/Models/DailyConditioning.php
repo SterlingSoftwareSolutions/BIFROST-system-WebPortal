@@ -15,6 +15,7 @@ class DailyConditioning extends Model
         'reps',
         'date',
         'weight',
+        'round_number',
         'workout_format_type',
         'workout_format_id',
         'exercise_time',

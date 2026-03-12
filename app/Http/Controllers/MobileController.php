@@ -397,6 +397,7 @@ class MobileController extends Controller
                     'workout_format_type' => 'required|string|in:rounds,amrap,for-time,intervals,emom,straight-sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
+                    'round_number' => 'nullable|integer',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -414,6 +415,7 @@ class MobileController extends Controller
                 $validatedData = $validator->validated();
                 $storedDay = $validatedData['date'];
                 $exerciseTime = $validatedData['exercise_time'] ?? null;
+                $roundNumber = $validatedData['round_number'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
 
@@ -433,6 +435,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Warm-up updated successfully';
@@ -449,6 +452,7 @@ class MobileController extends Controller
                         'workout_manager_id' => $validatedData['workout_manager_id'],
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Warm-up saved successfully';
@@ -463,6 +467,7 @@ class MobileController extends Controller
                     'workout_manager_id' => $validatedData['workout_manager_id'],
                     'workout_format_type' => $workoutFormatType,
                     'workout_format_id' => $workoutFormatId,
+                    'round_number' => $roundNumber,
                     'message' => $message,
                     'daily_warmup_id' => $dailyWarmup->id,
                 ];
@@ -519,6 +524,7 @@ class MobileController extends Controller
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'set_number' => 'nullable|integer',
+                    'round_number' => 'nullable|integer',
                     'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
                     'date' => 'required|string'
@@ -538,6 +544,7 @@ class MobileController extends Controller
                 $excerciseTime = $validatedData['exercise_time'] ?? null;
                 $weight = $validatedData['weight'] ?? null;
                 $setNumber = $validatedData['set_number'] ?? null;
+                $roundNumber = $validatedData['round_number'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
@@ -560,6 +567,7 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'date' => $storedDay,
+                        'round_number' => $roundNumber,
                     ]);
                     $message = 'Strength updated successfully';
                     Log::info('Strength updated', [
@@ -576,6 +584,7 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $excerciseTime,
                         'date' => $storedDay,
                     ]);
@@ -589,6 +598,7 @@ class MobileController extends Controller
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,
                     'set_number' => $setNumber,
+                    'round_number' => $roundNumber,
                     'message' => $message,
                     'daily_strength_id' => $dailyStrength->id,
                 ];
@@ -648,6 +658,7 @@ class MobileController extends Controller
                     'reps' => 'required|integer',
                     'weight' => 'nullable|numeric',
                     'set_number' => 'nullable|integer',
+                    'round_number' => 'nullable|integer',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -665,6 +676,7 @@ class MobileController extends Controller
                 $storedDay = $validatedData['date'];
                 $weight = $validatedData['weight'] ?? null;
                 $setNumber = $validatedData['set_number']??null;
+                $roundNumber = $validatedData['round_number'] ?? null;
                 $exerciseTime = $validatedData['exercise_time'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
@@ -688,6 +700,7 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'date' => $storedDay,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Weightlifting updated successfully';
@@ -705,6 +718,7 @@ class MobileController extends Controller
                         'reps' => $validatedData['reps'],
                         'weight' => $weight,
                         'set_number' => $setNumber,
+                        'round_number' => $roundNumber,
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                     ]);
@@ -718,6 +732,7 @@ class MobileController extends Controller
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,
                     'set_number' => $setNumber,
+                    'round_number' => $roundNumber,
                     'message' => $message,
                     'daily_weightlifting_id' => $dailyWeightlifting->id,
                 ];
@@ -775,6 +790,7 @@ class MobileController extends Controller
                     'workout_format_id' => 'required|integer',
                    # 'conditioning_id' => 'required|integer|exists:conditionings,id',
                     'reps' => 'nullable|integer',
+                    'round_number' => 'nullable|integer',
                    # 'weight' => 'nullable|numeric',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
@@ -793,6 +809,7 @@ class MobileController extends Controller
                 $storedDay = $validatedData['date'];
                 $weight = $validatedData['weight'] ?? null;
                 $reps = $validatedData['reps'];
+                $roundNumber = $validatedData['round_number'] ?? null;
                 $exerciseTime = $validatedData['exercise_time'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
@@ -817,6 +834,7 @@ class MobileController extends Controller
                         'weight' => $weight,
                         'date' => $storedDay,
                         'conditioning_id' => $conditioningId,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Conditioning updated successfully';
@@ -831,6 +849,7 @@ class MobileController extends Controller
                         'conditioning_id' => $conditioningId,
                         'reps' => $reps,
                         'weight' => $weight,
+                        'round_number' => $roundNumber,
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                     ]);
@@ -840,6 +859,7 @@ class MobileController extends Controller
 
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,
+                    'round_number' => $roundNumber,
                     'message' => $message,
                     'daily_conditioning_id' => $dailyConditioning->id,
                 ];
@@ -896,6 +916,7 @@ class MobileController extends Controller
                     'reps' => 'nullable|integer',
                     'weight' => 'nullable|numeric',
                     'set_number' => 'nullable|integer',
+                    'round_number' => 'nullable|integer',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -914,6 +935,7 @@ class MobileController extends Controller
                 $weight = $validatedData['weight'] ?? null;
                 $reps = $validatedData['reps'] ?? 0;
                 $setNumber = $validatedData['set_number'] ?? null;
+                $roundNumber = $validatedData['round_number'] ?? null;
                 $exerciseTime = $validatedData['exercise_time'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
@@ -937,6 +959,7 @@ class MobileController extends Controller
                         'reps' => $reps,
                         'weight' => $weight,
                         'date' => $storedDay,
+                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Accessory updated successfully';
@@ -951,6 +974,7 @@ class MobileController extends Controller
                         'reps' => $reps,
                         'weight' => $weight,
                         'set_number' => $setNumber,
+                        'round_number' => $roundNumber,
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                     ]);
@@ -961,6 +985,7 @@ class MobileController extends Controller
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,
                     'set_number' => $setNumber,
+                    'round_number' => $roundNumber,
                     'message' => $message,
                     'daily_accessory_id' => $dailyAccessory->id,
                 ];

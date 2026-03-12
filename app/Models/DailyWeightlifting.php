@@ -17,6 +17,7 @@ class DailyWeightlifting extends Model
         'date',
         'weight',
         'set_number',
+        'round_number',
         'workout_format_type',
         'workout_format_id',
         'exercise_time',
