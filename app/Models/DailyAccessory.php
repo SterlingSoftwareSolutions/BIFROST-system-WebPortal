@@ -16,6 +16,7 @@ class DailyAccessory extends Model
         'workout_format_type',
         'workout_format_id',
         'set_number',
+        'round_number',
         'reps',
         'weight',
         'date',
