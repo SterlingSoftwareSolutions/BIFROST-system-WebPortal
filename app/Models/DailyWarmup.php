@@ -14,10 +14,12 @@ class DailyWarmup extends Model
         'warmup_id',
         'workout_manager_id',
         'reps',
+        'round_number',
         'date',
         'workout_format_type',
         'workout_format_id',
         'round_number',
+        'exercise_time',
     ];
 
     public function member()
@@ -56,4 +58,5 @@ class DailyWarmup extends Model
         return $data;
     }
 
+    
 }
