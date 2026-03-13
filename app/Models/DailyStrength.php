@@ -20,6 +20,7 @@ class DailyStrength extends Model
         'workout_manager_id',
         'workout_format_type',
         'workout_format_id',
+        'round_number',
     ];
 
     public function member()

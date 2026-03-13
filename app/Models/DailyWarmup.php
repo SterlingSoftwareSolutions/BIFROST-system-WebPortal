@@ -17,6 +17,7 @@ class DailyWarmup extends Model
         'date',
         'workout_format_type',
         'workout_format_id',
+        'round_number',
     ];
 
     public function member()
@@ -49,10 +50,10 @@ class DailyWarmup extends Model
                     ->where('member_id', $memberId)
                     ->where('date', $date)
                     ->get();
-        
+
         // Dump the data to see its structure
-        
+
         return $data;
     }
-    
+
 }

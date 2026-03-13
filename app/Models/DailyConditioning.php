@@ -17,8 +17,12 @@ class DailyConditioning extends Model
         'weight',
         'workout_format_type',
         'workout_format_id',
+        'round_number',
     ];
-
+    public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
+    }
     public function member()
     {
         return $this->belongsTo(Newprofile::class, 'member_id');
@@ -39,7 +43,7 @@ class DailyConditioning extends Model
                     ->where('member_id', $memberId)
                     ->where('date', $date)
                     ->get();
-        
+
         return $data;
     }
 }

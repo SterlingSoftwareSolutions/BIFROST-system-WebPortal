@@ -19,6 +19,7 @@ class DailyAccessory extends Model
         'reps',
         'weight',
         'date',
+        'round_number',
     ];
 
 
@@ -30,7 +31,7 @@ class DailyAccessory extends Model
     {
         return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
     }
-    
+
     public function accessory()
     {
         return $this->belongsTo(Accessory::class, 'accessory_id');
