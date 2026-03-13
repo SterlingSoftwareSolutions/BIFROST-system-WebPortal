@@ -20,6 +20,7 @@ class DailyWeightlifting extends Model
         'round_number',
         'workout_format_type',
         'workout_format_id',
+        'round_number',
         'exercise_time',
     ];
 
@@ -49,8 +50,8 @@ class DailyWeightlifting extends Model
                     ->where('member_id', $memberId)
                     ->where('date', $date)
                     ->get();
-        
+
         return $data;
     }
-    
+
 }

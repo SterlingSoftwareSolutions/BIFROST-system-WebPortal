@@ -1404,23 +1404,23 @@ public function getWorkouts(Request $request)
 
             $typeName = strtolower($workout->type->name ?? '');
 
-            switch ($typeName) {
-                case 'strength':
-                    $dailyModel = \App\Models\DailyStrength::class;
-                    break;
-                case 'weightlifting':
-                    $dailyModel = \App\Models\DailyWeightlifting::class;
-                    break;
-                case 'accessory':
-                    $dailyModel = \App\Models\DailyAccessory::class;
-                    break;
-                case 'conditioning':
-                    $dailyModel = \App\Models\DailyConditioning::class;
-                    break;
-                default:
-                    $dailyModel = \App\Models\DailyWarmup::class;
-                    break;
-            }
+                switch ($typeName) {
+                    case 'strength':
+                        $dailyModel = \App\Models\DailyStrength::class;
+                        break;
+                    case 'weightlifting':
+                        $dailyModel = \App\Models\DailyWeightlifting::class;
+                        break;
+                    case 'accessory':
+                        $dailyModel = \App\Models\DailyAccessory::class;
+                        break;
+                    case 'conditioning':
+                        $dailyModel = \App\Models\DailyConditioning::class;
+                        break;
+                    default:
+                        $dailyModel = \App\Models\DailyWarmup::class;
+                        break;
+                }
 
             $formatMapping = [
                 'rounds'     => 'rounds',
@@ -1440,8 +1440,63 @@ public function getWorkouts(Request $request)
                 }
 
                 foreach ($workout->{$relation} as $formatItem) {
+                    // --- AMRAP Special Handling ---
+                    if (($workout->format->slug ?? '') === 'amrap') {
+                        Log::info('[getWorkouts][Completion Check][AMRAP] Processing format item');
 
-                    if (($workout->format->slug ?? '') === 'straight-sets') {
+                        $roundEntries = $dailyModel::where('member_id', $member->id)
+                            ->where('workout_manager_id', $workout->id)
+                            ->where('workout_format_type', $formatType)
+                            ->where('workout_format_id', $formatItem->id)
+                            ->where('date', $dateString)
+                            ->pluck('round_number');
+
+                            Log::info('Retrieved round entries', [
+                                'member_id' => $member->id,
+                                'workout_manager_id' => $workout->id,
+                                'workout_format_type' => $formatType,
+                                'workout_format_id' => $formatItem->id,
+                                'round_entries' => $roundEntries->toArray(),
+                            ]);
+
+                        $roundsDone = 0;
+                            $roundsTotal = 0;
+
+                            foreach ($roundEntries as $round) {
+
+                                if (!$round) {
+                                    continue;
+                                }
+
+                                if (str_contains($round, '/')) {
+
+                                    [$done, $total] = explode('/', $round);
+
+                                    Log::info('Parsed round progress', [
+                                        'round' => $round,
+                                        'done' => $done,
+                                        'total' => $total,
+                                    ]);
+
+                                    $roundsDone = max($roundsDone, (int)$done);
+                                    $roundsTotal = (int)$total;
+                                }
+                            }
+
+                            Log::info('Updated rounds done/total', [
+                                'rounds_done' => $roundsDone,
+                                'rounds_total' => $roundsTotal,
+                            ]);
+
+                        $completionPercent = $roundsTotal > 0
+                            ? round(($roundsDone / $roundsTotal) * 100)
+                            : 0;
+
+                        $formatItem->rounds_done = $roundsDone;
+                        $formatItem->rounds_total = $roundsTotal;
+                        $formatItem->completion_percent = $completionPercent;
+                    }
+                    elseif (($workout->format->slug ?? '') === 'straight-sets') {
 
                         if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
                             foreach ($formatItem->sets as $set) {
@@ -1534,6 +1589,8 @@ public function getWorkouts(Request $request)
                     }
 
                     foreach ($workout->{$relation} as $formatItem) {
+                      Log::info('[getWorkouts][Completion Check] Processing format item', [
+                            $formatItem->toArray(),  ]);
 
                         if ($relation === 'straights') {
                             if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
@@ -1544,7 +1601,7 @@ public function getWorkouts(Request $request)
                                     }
                                 }
                             }
-                        } else {
+                        }  else {
                             $totalFormatItems++;
                             if (($formatItem->is_completed ?? 0) == 1) {
                                 $completedFormatItems++;
