@@ -397,7 +397,7 @@ class MobileController extends Controller
                     'workout_format_type' => 'required|string|in:rounds,amrap,for-time,intervals,emom,straight-sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
-                    'round_number' => 'nullable|integer',
+                    'round_number' => 'nullable|string',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -533,7 +533,7 @@ class MobileController extends Controller
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
                     'set_number' => 'nullable|integer',
-                    'round_number' => 'nullable|integer',
+                    'round_number' => 'nullable|string',
                     'weight' => 'nullable|numeric',
                     'date' => 'required|string',
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
@@ -552,7 +552,7 @@ class MobileController extends Controller
                 $validatedData = $validator->validated();
                 $storedDay = $validatedData['date'];
                 $excerciseTime = $validatedData['exercise_time'] ?? null;
-                $weight = $validatedData['weight'] ?? null;
+                $weight = $validatedData['weight'] ?? $validatedData['training_load'] ?? null;
                 $setNumber = $validatedData['set_number'] ?? null;
                 $roundNumber = $validatedData['round_number'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
@@ -677,7 +677,7 @@ class MobileController extends Controller
                     'reps' => 'required|integer',
                     'weight' => 'nullable|numeric',
                     'set_number' => 'nullable|integer',
-                    'round_number' => 'nullable|integer',
+                    'round_number' => 'nullable|string',
                     'date' => 'required|string',
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                   'exercise_time' => 'nullable|string',
@@ -822,6 +822,7 @@ class MobileController extends Controller
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                    # 'conditioning_id' => 'required|integer|exists:conditionings,id',
                     'reps' => 'nullable|integer',
+                    'round_number' => 'nullable|string',
                    # 'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -953,7 +954,7 @@ class MobileController extends Controller
                     'reps' => 'nullable|integer',
                     'weight' => 'nullable|numeric',
                     'set_number' => 'nullable|integer',
-                    'round_number' => 'nullable|integer',
+                    'round_number' => 'nullable|string',
                     'date' => 'required|string',
                     'round_number' => 'nullable|string',
                     'exercise_time' => 'nullable|string',
