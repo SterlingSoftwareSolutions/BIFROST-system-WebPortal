@@ -17,6 +17,9 @@ class StraightSet extends Model
         'res',        // reps
         'training_load',  // load
         'unittype',   // unit
+        'restred',
+        'restyellow',
+        'restgreen',
     ];
 
     public function parent()

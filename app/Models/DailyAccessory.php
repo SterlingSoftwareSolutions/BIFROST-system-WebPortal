@@ -16,9 +16,12 @@ class DailyAccessory extends Model
         'workout_format_type',
         'workout_format_id',
         'set_number',
+        'round_number',
         'reps',
         'weight',
         'date',
+        'round_number',
+        'exercise_time',
     ];
 
 
@@ -30,7 +33,7 @@ class DailyAccessory extends Model
     {
         return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
     }
-    
+
     public function accessory()
     {
         return $this->belongsTo(Accessory::class, 'accessory_id');

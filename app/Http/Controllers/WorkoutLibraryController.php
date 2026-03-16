@@ -51,7 +51,6 @@ class WorkoutLibraryController extends Controller
         // Validate the request data
         $request->validate([
             'category' => 'required|exists:category_options,id',
-            'type' => 'required|string',
             'workout' => 'required|string',
             'link' => 'nullable|url',
         ]);
@@ -66,7 +65,6 @@ class WorkoutLibraryController extends Controller
                 // Update the workout library entry
                 $workoutLibrary->update([
                     'category_options_id' => $request->input('category'),
-                    'type' => $request->input('type'),
                     'workout' => $request->input('workout'),
                     'link' => $request->input('link'),
                 ]);
@@ -81,7 +79,6 @@ class WorkoutLibraryController extends Controller
             // Create a new workout library entry
             WorkoutLibrary::create([
                 'category_options_id' => $request->input('category'),
-                'type' => $request->input('type'),
                 'workout' => $request->input('workout'),
                 'link' => $request->input('link'),
             ]);

@@ -18,6 +18,9 @@ return new class extends Migration
             $table->integer('res')->nullable();          // reps / result
             $table->integer('training_load')->nullable();    // training load value
             $table->enum('unittype', ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A'])->default('N/A');
+            $table->time('restred');
+            $table->time('restyellow');
+            $table->time('restgreen');
             $table->timestamps();
         });
     }
