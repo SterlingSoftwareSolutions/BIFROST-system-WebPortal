@@ -19,9 +19,9 @@ return new class extends Migration
             $table->text('exercise_time')->nullable();
         });
 
-        /* Schema::table('daily_strengths', function (Blueprint $table) {
+        Schema::table('daily_strengths', function (Blueprint $table) {
             $table->text('exercise_time')->nullable();
-        }); */
+        });
 
         Schema::table('daily_warmups', function (Blueprint $table) {
             $table->text('exercise_time')->nullable();
