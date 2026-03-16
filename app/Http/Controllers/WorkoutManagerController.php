@@ -508,7 +508,9 @@ class WorkoutManagerController extends Controller
             $classes = [];
             if ($date) {
                 // Assuming 'Classes' model exists and has a 'date' column
-                $classes = \App\Models\Classes::where('date', $date)->get();
+                $classes = \App\Models\Classes::where('date', $date)
+                ->orderBy('time', 'asc')
+                ->get();
             }
 
             // 2. Fetch Workouts
@@ -579,6 +581,9 @@ class WorkoutManagerController extends Controller
             if ($date) {
                 $query->whereDate('date', $date);
             }
+
+            // EXCLUDE workout types 6 and 7
+            $query->whereNotIn('type_id', [6, 7]);
 
             $workouts = $query->orderBy('created_at', 'desc')->get();
 
