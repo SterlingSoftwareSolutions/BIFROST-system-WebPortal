@@ -34,7 +34,7 @@ class ClassesController extends Controller
             'selectdatecla' => 'required',
             'days' => 'array|nullable',
         ]);
-        
+
         try {
             $startDate = Carbon::createFromFormat('d/m/y l', $request->selectdatecla)->format('Y-m-d');
         } catch (\Exception $e) {
@@ -42,16 +42,16 @@ class ClassesController extends Controller
              return redirect()->back()->with('error', 'Invalid date format provided.');
         }
 
-        
+
         // If no recurring days selected, just create one
         if (!$request->has('days') || empty($request->days)) {
              Log::info('Creating single class. Date input: ' . $request->selectdatecla);
-             
+
              // Log the start date calculated
              Log::info('Parsed start date: ' . $startDate);
 
              $this->createClass($request, $request->selectdatecla);
-             
+
              Log::info('Single class creation called successfully.');
              return redirect()->back()->with('success', 'Class added successfully.');
         }
@@ -63,9 +63,9 @@ class ClassesController extends Controller
         $endOfYear = Carbon::now()->endOfYear();
         $createdCount = 0;
         $conflicts = [];
-        
+
         // Safety Break: avoid infinite loops if something goes wrong with dates
-        $maxIterations = 366; 
+        $maxIterations = 366;
         $iterations = 0;
 
         while ($currentDate->lte($endOfYear) && $iterations < $maxIterations) {
@@ -73,11 +73,11 @@ class ClassesController extends Controller
 
             // Check if current day short name (e.g., 'Mon') is in selected days
             if (in_array($currentDate->format('D'), $selectedDays)) {
-                
-               
+
+
                 // Ensure this matches your DB format e.g. "19/01/26 Sunday"
                 $formattedDate = $currentDate->format('d/m/y l');
-               
+
                 $exists = Classes::where('date', $formattedDate)//overlap check
                                 ->where('time', $request->time)
                                 ->exists();
@@ -99,7 +99,7 @@ class ClassesController extends Controller
     // Helper function to keep code clean
     private function createClass($request, $date) {
         Log::info("createClass helper called. Date: $date, Time: {$request->time}, Spots: {$request->spots}");
-        
+
         $class = Classes::create([
             'time' => $request->time,
             'duration' => $request->duration,
@@ -108,10 +108,10 @@ class ClassesController extends Controller
             'workout_assigned' => $request->has('workout_assigned'),
             'date' => $date,
         ]);
-        
+
         Log::info("Class created: " . $class->id);
     }
-    
+
     public function edit($id)
     {
         $class = Classes::findOrFail($id);
@@ -130,12 +130,12 @@ class ClassesController extends Controller
         $class = Classes::findOrFail($id);
         // 1. Standard Update (Fields other than date)
         $class->update([
-            'time' => $request->time, 
+            'time' => $request->time,
             'duration' => $request->duration,
             'spots' => $request->spots,
         ]);
 
-        // Date Updating 
+        // Date Updating
         if ($request->has('days') && !empty($request->days)) {
             $newDayShort = $request->days[0]; // 'Mon', 'Tue'.
             // Get Current Class Day
@@ -147,18 +147,18 @@ class ClassesController extends Controller
                 if ($newDayShort !== $currentDayShort) {
                     $cDay = Carbon::parse($currentDayShort);
                     $nDay = Carbon::parse($newDayShort);
-                    $oldIndex = $currentDate->dayOfWeekIso; 
+                    $oldIndex = $currentDate->dayOfWeekIso;
                     $map = ['Mon'=>1, 'Tue'=>2, 'Wed'=>3, 'Thu'=>4, 'Fri'=>5, 'Sat'=>6, 'Sun'=>7];
                     $newIndex = $map[$newDayShort] ?? $oldIndex;
-                    
+
                     $diff = $newIndex - $oldIndex;
-                    
+
                     // Apply this diff to ALL upfront classes of this series
                     Log::info("Day Shift: $diff days");
                     $allClasses = Classes::where('time', $class->time)->get(); // Filter by time first
-                    
+
                     $updatedCount = 0;
-                    
+
                     foreach ($allClasses as $c) {
                         try {
                             $cDate = Carbon::createFromFormat('d/m/y l', $c->date);
@@ -166,10 +166,10 @@ class ClassesController extends Controller
 
                         // Check if it's "Future or Present" AND "Is Old Day"
                         if ($cDate->gte($currentDate) && $cDate->format('D') === $currentDayShort) {
-                            
+
                             // Apply Shift
                             $newDate = $cDate->copy()->addDays($diff);
-                            
+
                             // Format: "d/m/y l"
                             $newDateStr = $newDate->format('d/m/y l');
                             $c->date = $newDateStr;
@@ -177,7 +177,7 @@ class ClassesController extends Controller
                             $updatedCount++;
                         }
                     }
-                    
+
                     //Log::info("repeatedly updated $updatedCount classes.");
                     return redirect()->back()->with('success', "Class updated. Moved $updatedCount classes from $currentDayShort to $newDayShort.");
                 }
@@ -252,16 +252,18 @@ class ClassesController extends Controller
         $dayName = $request->query('day');
         Log::info('Day received:', ['day' => $dayName]);
 
-        $classes = Classes::where('date', $dayName)->get();
+        $classes = Classes::where('date', $dayName)
+                ->orderBy('time', 'asc')
+                ->get();
 
         foreach ($classes as $class) {
              $checkActive = function($classId, $types) {
                  if (!is_array($types)) $types = [$types];
-                 
+
                  $assignments = \App\Models\WorkoutAssign::where('class_id', $classId)
                                 ->whereIn('workout_type', $types)
                                 ->get();
-                 
+
                  foreach($assignments as $asn) {
                      // Check if mapped to WorkoutManager
                      $wm = \App\Models\WorkoutManager::find($asn->workout_id);

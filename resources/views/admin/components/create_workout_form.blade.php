@@ -707,7 +707,7 @@
                         <div class="flex items-center">
                             <button type="button" onclick="decrementTime('time_to_complete')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex items-center justify-center">-</button>
-                            <input type="text" id="time_to_complete" name="time_to_complete" value="04:00" readonly
+                            <input type="text" id="time_to_complete" name="time_to_complete" value="12:00" readonly
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-20 text-sm font-medium">
                             <button type="button" onclick="incrementTime('time_to_complete')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex items-center justify-center">+</button>

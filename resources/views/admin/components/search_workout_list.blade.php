@@ -306,10 +306,14 @@ function generateClassButtons(workout, classes) {
     classes.forEach(cls => {
         // Format Time
         let timeParts = cls.time.split(':');
-        let dateObj = new Date();
-        dateObj.setHours(timeParts[0]);
-        dateObj.setMinutes(timeParts[1]);
-        let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+
+    let dateObj = new Date();
+    dateObj.setHours(parseInt(timeParts[0], 10));
+    dateObj.setMinutes(parseInt(timeParts[1], 10));
+
+    let timeString = dateObj
+        .toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
+        .toLowerCase();
 
         const isAssigned = assignedIds.includes(cls.id);
         const btnClass = isAssigned
