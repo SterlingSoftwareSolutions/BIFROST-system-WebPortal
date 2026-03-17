@@ -1400,7 +1400,7 @@ public function getWorkouts(Request $request)
         | Warmup / completion status (your existing logic)
         |--------------------------------------------------------------------------
         */
-        $workouts->each(function ($workout) use ($member, $dateString) {
+        $workouts->each(function ($workout) use ($member, $dateString, $dateObj) {
 
             $typeName = strtolower($workout->type->name ?? '');
 
@@ -1507,8 +1507,23 @@ public function getWorkouts(Request $request)
                                     ->where('workout_format_id', $set->id)
                                     ->where('date', $dateString);
 
-                                $isCompleted = $query->exists();
-                                $set->is_completed = $isCompleted ? 1 : 0;
+                                $dailyQuery = (clone $query);
+                                $existsInDaily = $dailyQuery->exists();
+
+                                if ($existsInDaily) {
+                                    $dailyRepsSum = $dailyQuery->sum('reps');
+                                    $targetReps = $set->res ?? 0;
+
+                                    $isCompleted = ($dailyRepsSum >= $targetReps);
+
+                                    $set->is_completed = $isCompleted ? 1 : 0;
+                                    $set->daily_reps = $dailyRepsSum;
+                                    $set->target_reps = $targetReps;
+                                } else {
+                                    $set->is_completed = 0;
+                                    $set->daily_reps = 0;
+                                    $set->target_reps = $set->res ?? 0;
+                                }
                             }
                         }
 
@@ -1541,14 +1556,38 @@ public function getWorkouts(Request $request)
 
                         } else {
 
-                            $isCompleted = $baseQuery->exists();
+                            $formatId = $formatItem->id;
+                            $dailyQuery = (clone $baseQuery);
+                            
+                            // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
+                            if ($dailyQuery->exists()) {
+                                $dailyRepsSum = $dailyQuery->sum('reps');
+                                $targetReps = $formatItem->reps ?? 0;
 
-                            $hasReps = (clone $baseQuery)
-                                ->where('reps', '>', 0)
-                                ->exists();
+                                $isCompleted = ($dailyRepsSum >= $targetReps);
 
-                            $formatItem->is_completed   = $isCompleted ? 1 : 0;
-                            $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                                Log::info('Workout completion check:', [
+                                    'table_name'               => (new $dailyModel)->getTable(),
+                                    'workout_format_id_target' => $formatId,
+                                    'date_string'              => $dateString,
+                                    'dailyReps'                => $dailyRepsSum,
+                                    'targetReps'               => $targetReps,
+                                    'isCompleted'              => $isCompleted
+                                ]);
+
+                                $hasReps = $dailyQuery->where('reps', '>', 0)->exists();
+
+                                $formatItem->is_completed   = $isCompleted ? 1 : 0;
+                                $formatItem->has_reps_saved = $hasReps ? 1 : 0;
+                                $formatItem->daily_reps      = $dailyRepsSum;
+                                $formatItem->target_reps     = $targetReps;
+                            } else {
+                                // If no record exists in the daily table, it's definitely not completed
+                                $formatItem->is_completed   = 0;
+                                $formatItem->has_reps_saved = 0;
+                                $formatItem->daily_reps      = 0;
+                                $formatItem->target_reps     = $formatItem->reps ?? 0;
+                            }
                         }
                     }
                 }
@@ -1769,28 +1808,26 @@ public function getWorkouts(Request $request)
                 elseif ($tt === 'conditioning') $testConditioning[] = $t;
             }
         }
-
+        
         return response()->json([
-            'status'     => true,
-            'date'       => $dateString,
-            'class_id'   => $classId,
-            'workouts'   => $groupedWorkouts,
-            'dayWithDate' => $dayWithDate,
-
-            'test' => $detailstest,
-            'workoutlibrary' => $workoutlibrary,
-            'categoryOptions' => $categoryOptions,
-            'member' => $member,
-
-            'score' => $score,
-
-            'test_data' => [
-                'strength'      => $testStrength,
-                'weightlifting' => $testWeightlifting,
-                'conditioning'  => $testConditioning,
+            'status'            => true,
+            'date'              => $dateString,
+            'class_id'          => $classId,
+            'workouts'          => $groupedWorkouts,
+            'dayWithDate'       => $dayWithDate,
+            'test'              => $detailstest,
+            'workoutlibrary'    => $workoutlibrary,
+            'categoryOptions'   => $categoryOptions,
+            'member'            => $member,
+            'score'             => $score,
+            'test_data'         => [
+                'strength'      => $testStrength, 
+                'weightlifting' => $testWeightlifting, 
+                'conditioning'  => $testConditioning
             ],
             'raw_tests_for_day' => $testsForDay,
         ], 200);
+
 
     } catch (\Exception $e) {
         Log::error('getWorkouts error', [
