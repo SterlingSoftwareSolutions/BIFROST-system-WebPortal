@@ -225,7 +225,7 @@ class UserMobileController extends Controller
 
             log::info('Fetched workouts', ['count' => $workouts, 'types' => $workouts->pluck('type')->unique()]);
 
-            if ($workouts->isEmpty()) { 
+            if ($workouts->isEmpty()) {
                 return response()->json([
                     'status' => 'success',
                     'message' => 'No strength or weightlifting workouts found.',
@@ -1400,7 +1400,7 @@ public function getWorkouts(Request $request)
         | Warmup / completion status (your existing logic)
         |--------------------------------------------------------------------------
         */
-        $workouts->each(function ($workout) use ($member, $dateString, $dateObj) {
+        $workouts->each(function ($workout) use ($classId, $member, $dateString, $dateObj) {
 
             $typeName = strtolower($workout->type->name ?? '');
 
@@ -1449,6 +1449,7 @@ public function getWorkouts(Request $request)
                             ->where('workout_format_type', $formatType)
                             ->where('workout_format_id', $formatItem->id)
                             ->where('date', $dateString)
+                            ->where('class_id', $classId)
                             ->pluck('round_number');
 
                             Log::info('Retrieved round entries', [
@@ -1456,6 +1457,7 @@ public function getWorkouts(Request $request)
                                 'workout_manager_id' => $workout->id,
                                 'workout_format_type' => $formatType,
                                 'workout_format_id' => $formatItem->id,
+                                'class_id' => $classId,
                                 'round_entries' => $roundEntries->toArray(),
                             ]);
 
@@ -1505,6 +1507,7 @@ public function getWorkouts(Request $request)
                                     ->where('workout_manager_id', $workout->id)
                                     ->where('workout_format_type', $formatType)
                                     ->where('workout_format_id', $set->id)
+                                    ->where('class_id', $classId)
                                     ->where('date', $dateString);
 
                                 $dailyQuery = (clone $query);
@@ -1536,6 +1539,7 @@ public function getWorkouts(Request $request)
                             ->where('workout_manager_id', $workout->id)
                             ->where('workout_format_type', $formatType)
                             ->where('workout_format_id', $formatItem->id)
+                            ->where('class_id', $classId)
                             ->where('date', $dateString);
 
                         if (
@@ -1558,7 +1562,7 @@ public function getWorkouts(Request $request)
 
                             $formatId = $formatItem->id;
                             $dailyQuery = (clone $baseQuery);
-                            
+
                             // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
                             if ($dailyQuery->exists()) {
                                 $dailyRepsSum = $dailyQuery->sum('reps');
@@ -1808,7 +1812,7 @@ public function getWorkouts(Request $request)
                 elseif ($tt === 'conditioning') $testConditioning[] = $t;
             }
         }
-        
+
         return response()->json([
             'status'            => true,
             'date'              => $dateString,
@@ -1821,8 +1825,8 @@ public function getWorkouts(Request $request)
             'member'            => $member,
             'score'             => $score,
             'test_data'         => [
-                'strength'      => $testStrength, 
-                'weightlifting' => $testWeightlifting, 
+                'strength'      => $testStrength,
+                'weightlifting' => $testWeightlifting,
                 'conditioning'  => $testConditioning
             ],
             'raw_tests_for_day' => $testsForDay,
