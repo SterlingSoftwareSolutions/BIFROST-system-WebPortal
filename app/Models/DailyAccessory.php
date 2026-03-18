@@ -22,6 +22,7 @@ class DailyAccessory extends Model
         'date',
         'round_number',
         'exercise_time',
+        'class_id',
     ];
 
 
