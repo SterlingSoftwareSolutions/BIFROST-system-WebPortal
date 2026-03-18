@@ -400,6 +400,7 @@ class MobileController extends Controller
                     'round_number' => 'nullable|string',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
+                    'class_Id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -418,14 +419,16 @@ class MobileController extends Controller
                 $roundNumber = $validatedData['round_number'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
+                $classId = $validatedData['class_Id'];
 
-            $roundNumber = $item['round_number'] ?? null; // only get if exists
+                $roundNumber = $item['round_number'] ?? null; // only get if exists
 
                 // Find existing record
                 $query = DailyWarmup::where('member_id', $memberId)
                     ->where('workout_manager_id', $validatedData['workout_manager_id'])
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
+                    ->where('class_id', $classId)
                     ->where('date', $storedDay);
 
                 if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
@@ -444,6 +447,7 @@ class MobileController extends Controller
                     'workout_format_id' => $workoutFormatId,
                     'round_number' => $roundNumber, // save only if exists
                     'exercise_time' => $exerciseTime,
+                    'class_id' => $classId,
                 ]);
                 $message = 'Warm-up updated successfully';
                 Log::info('Warm-up updated', [
@@ -461,7 +465,8 @@ class MobileController extends Controller
                     'workout_format_type' => $workoutFormatType,
                     'workout_format_id' => $workoutFormatId,
                     'round_number' => $roundNumber, // save only if exists
-                  'exercise_time' => $exerciseTime,
+                    'exercise_time' => $exerciseTime,
+                    'class_id' => $classId,
                 ]);
                 $message = 'Warm-up saved successfully';
                 Log::info('New warm-up created', [
@@ -535,9 +540,9 @@ class MobileController extends Controller
                     'set_number' => 'nullable|integer',
                     'round_number' => 'nullable|string',
                     'weight' => 'nullable|numeric',
-                    'date' => 'required|string',
-                    'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
-                  'exercise_time' => 'nullable|string',
+                    'date' => 'required|string', // only required for AMRAP, but we will check conditionally in code
+                    'exercise_time' => 'nullable|string',
+                    'class_Id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -559,6 +564,7 @@ class MobileController extends Controller
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
                 $roundNumber = $validatedData['round_number'] ?? null;
+                $classId = $validatedData['class_Id'];
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
                 $query = DailyStrength::where('member_id', $memberId)
@@ -566,6 +572,7 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
+                    ->where('class_id', $classId)
                     ->where('set_number', $setNumber);
 
                     /**
@@ -586,6 +593,7 @@ class MobileController extends Controller
                         'weight' => $weight,
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Strength updated successfully';
                     Log::info('Strength updated', [
@@ -605,7 +613,7 @@ class MobileController extends Controller
                         'round_number' => $roundNumber,
                         'exercise_time' => $excerciseTime,
                         'date' => $storedDay,
-                        'round_number' => $roundNumber,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Strength saved successfully';
                     Log::info('New strength record created', [
@@ -681,6 +689,7 @@ class MobileController extends Controller
                     'date' => 'required|string',
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                   'exercise_time' => 'nullable|string',
+                  'class_Id' => 'required|integer',
                 ]);
 
                 if ($validator->fails()) {
@@ -702,6 +711,7 @@ class MobileController extends Controller
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
                 $roundNumber = $validatedData['round_number'] ?? null;
+                $classId = $validatedData['class_Id'] ?? null;
 
 
                 // Check if record exists for this member + workout_manager_id + format checks + set_number
@@ -710,6 +720,7 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
+                    ->where('class_id', $classId)
                     ->where('set_number', $setNumber);
 
                     /**
@@ -731,6 +742,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Weightlifting updated successfully';
                     Log::info('Weightlifting updated', [
@@ -749,8 +761,8 @@ class MobileController extends Controller
                         'set_number' => $setNumber,
                         'round_number' => $roundNumber,
                         'date' => $storedDay,
-                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Weightlifting saved successfully';
                     Log::info('New weightlifting record created', [
@@ -822,7 +834,7 @@ class MobileController extends Controller
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                    # 'conditioning_id' => 'required|integer|exists:conditionings,id',
                     'reps' => 'nullable|integer',
-                    'round_number' => 'nullable|string',
+                    'class_Id' => 'required|integer',
                    # 'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
                 ]);
@@ -845,13 +857,14 @@ class MobileController extends Controller
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
-                //$conditioningId = $validatedData['conditioning_id'];
+                $classId = $validatedData['class_Id'];
 
                 //Check if record exists for this member + workout_manager_id + format checks + date
                 $query = DailyConditioning::where('member_id', $memberId)
                     ->where('workout_manager_id', $workoutManagerId)
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
+                    ->where('class_id', $classId)
                     ->where('date', $storedDay);
 
                 /**
@@ -873,6 +886,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
                         //'conditioning_id' => $conditioningId,
+                        'class_id' => $classId,
                       'exercise_time' => $exerciseTime,
                     ]);
                     $message = 'Conditioning updated successfully';
@@ -890,6 +904,7 @@ class MobileController extends Controller
                         'round_number' => $roundNumber,
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Conditioning saved successfully';
                     Log::info('New conditioning record created', ['workout_manager_id' => $workoutManagerId]);
@@ -956,7 +971,7 @@ class MobileController extends Controller
                     'set_number' => 'nullable|integer',
                     'round_number' => 'nullable|string',
                     'date' => 'required|string',
-                    'round_number' => 'nullable|string',
+                    'class_Id' => 'required|integer',
                     'exercise_time' => 'nullable|string',
                 ]);
 
@@ -980,6 +995,7 @@ class MobileController extends Controller
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $workoutManagerId = $validatedData['workout_manager_id'];
                 $roundNumber = $validatedData['round_number'] ?? null;
+                $classId = $validatedData['class_Id'] ?? null;
 
                 // Check if record exists
                 $query = \App\Models\DailyAccessory::where('member_id', $memberId)
@@ -987,6 +1003,7 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
+                    ->where('class_id', $classId)
                     ->where('set_number', $setNumber);
                     /**
                  * If AMRAP format → also check round_number
@@ -1007,6 +1024,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Accessory updated successfully';
                     Log::info('Accessory updated', ['workout_manager_id' => $workoutManagerId,'set_number' => $setNumber]);
@@ -1022,8 +1040,8 @@ class MobileController extends Controller
                         'set_number' => $setNumber,
                         'round_number' => $roundNumber,
                         'date' => $storedDay,
-                        'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
+                        'class_id' => $classId,
                     ]);
                     $message = 'Accessory saved successfully';
                     Log::info('New accessory record created', ['workout_manager_id' => $workoutManagerId, 'set_number' => $setNumber]);

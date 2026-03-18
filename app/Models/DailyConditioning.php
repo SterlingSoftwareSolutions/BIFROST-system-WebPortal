@@ -20,6 +20,7 @@ class DailyConditioning extends Model
         'workout_format_id',
         'round_number',
         'exercise_time',
+        'class_id'
     ];
     public function workoutManager()
     {
