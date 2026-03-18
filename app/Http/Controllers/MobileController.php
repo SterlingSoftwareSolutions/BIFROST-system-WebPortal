@@ -834,7 +834,7 @@ class MobileController extends Controller
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                    # 'conditioning_id' => 'required|integer|exists:conditionings,id',
                     'reps' => 'nullable|integer',
-                    'class_Id' => 'required|integer',
+                    'class_Id' => 'nullable|integer',
                    # 'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
                 ]);
