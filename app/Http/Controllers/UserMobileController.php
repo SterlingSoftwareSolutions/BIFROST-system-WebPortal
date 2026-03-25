@@ -458,6 +458,15 @@ class UserMobileController extends Controller
                     ->get()
                     ->filter(function ($item) use ($workoutId) {
                         $format = $item->workout_format; // use snake_case
+                        if (!$format) {
+                            Log::warning('Workout format missing for item', [
+                                'daily_id' => $item->id,
+                                'model' => get_class($item),
+                                'workout_format_id' => $item->workout_format_id ?? null,
+                                'workout_format_type' => $item->workout_format_type ?? null,
+                            ]);
+                            return false; // skip this item
+                        }
                         return $format->workout_libraries_id == $workoutId;
                     });
 
