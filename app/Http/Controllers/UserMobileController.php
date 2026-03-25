@@ -1190,6 +1190,20 @@ public function getWorkouts(Request $request)
             'types' => $workoutAssignments->pluck('workout_type')->unique()->values()->toArray(),
         ]);
 
+        $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
+
+        $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+            ->map(function ($item) {
+                return [
+                    'id'                   => $item->id,
+                    'workout'              => $item->workout,
+                    'type'                 => $item->type,
+                    'category_option_id'   => $item->category_options_id,
+                    'category_option_name' => $item->categoryOption->category_name ?? null,
+                ];
+            });
+
         if ($workoutAssignments->isEmpty()) {
             Log::warning('[getWorkouts] No workout assignments found', [
                 'class_id' => $classId,
@@ -1208,6 +1222,8 @@ public function getWorkouts(Request $request)
                     'conditioning'  => [],
                 ],
                 'raw_tests_for_day' => $testsForDay,
+                'categoryOptions'   => $categoryOptions,
+                'workoutlibrary'    => $workoutlibrary,
             ], 200);
         }
 
@@ -1781,20 +1797,6 @@ public function getWorkouts(Request $request)
             }
             return $test;
         });
-
-        $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
-
-        $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
-            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
-            ->map(function ($item) {
-                return [
-                    'id'                   => $item->id,
-                    'workout'              => $item->workout,
-                    'type'                 => $item->type,
-                    'category_option_id'   => $item->category_options_id,
-                    'category_option_name' => $item->categoryOption->category_name ?? null,
-                ];
-            });
 
         /*
         |--------------------------------------------------------------------------
