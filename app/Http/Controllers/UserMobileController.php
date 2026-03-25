@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Warmup;
 use Illuminate\Support\Str;
+use App\Models\Test;
 
 
 class UserMobileController extends Controller
@@ -1221,9 +1222,11 @@ public function getWorkouts(Request $request)
                     'weightlifting' => [],
                     'conditioning'  => [],
                 ],
-                'raw_tests_for_day' => $testsForDay,
-                'categoryOptions'   => $categoryOptions,
                 'workoutlibrary'    => $workoutlibrary,
+                'categoryOptions'   => $categoryOptions,
+                'raw_tests_for_day' => $testsForDay,
+                'member'            => $member,
+                
             ], 200);
         }
 
@@ -1853,6 +1856,53 @@ public function getWorkouts(Request $request)
         return response()->json([
             'status'  => false,
             'message' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+
+public function deleteTest(Request $request)
+{
+    $request->validate([
+        'test_id' => 'required|integer',
+    ]);
+
+    $user = $request->user();
+
+    $test = Test::where('id', $request->test_id)
+                ->where('member_id', $user->id)
+                ->first();
+
+    if (!$test) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Test not found or not authorized.'
+        ], 404);
+    }
+
+    try {
+        $test->delete();
+
+        Log::info('[deleteTest] Test deleted', [
+            'user_id' => $user->id,
+            'test_id' => $request->test_id,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Test deleted successfully.'
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('[deleteTest] Error deleting test', [
+            'error' => $e->getMessage(),
+            'test_id' => $request->test_id,
+        ]);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to delete test.'
         ], 500);
     }
 }
