@@ -458,6 +458,15 @@ class UserMobileController extends Controller
                     ->get()
                     ->filter(function ($item) use ($workoutId) {
                         $format = $item->workout_format; // use snake_case
+                        if (!$format) {
+                            Log::warning('Workout format missing for item', [
+                                'daily_id' => $item->id,
+                                'model' => get_class($item),
+                                'workout_format_id' => $item->workout_format_id ?? null,
+                                'workout_format_type' => $item->workout_format_type ?? null,
+                            ]);
+                            return false; // skip this item
+                        }
                         return $format->workout_libraries_id == $workoutId;
                     });
 
@@ -1181,6 +1190,20 @@ public function getWorkouts(Request $request)
             'types' => $workoutAssignments->pluck('workout_type')->unique()->values()->toArray(),
         ]);
 
+        $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
+
+        $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
+            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
+            ->map(function ($item) {
+                return [
+                    'id'                   => $item->id,
+                    'workout'              => $item->workout,
+                    'type'                 => $item->type,
+                    'category_option_id'   => $item->category_options_id,
+                    'category_option_name' => $item->categoryOption->category_name ?? null,
+                ];
+            });
+
         if ($workoutAssignments->isEmpty()) {
             Log::warning('[getWorkouts] No workout assignments found', [
                 'class_id' => $classId,
@@ -1199,6 +1222,8 @@ public function getWorkouts(Request $request)
                     'conditioning'  => [],
                 ],
                 'raw_tests_for_day' => $testsForDay,
+                'categoryOptions'   => $categoryOptions,
+                'workoutlibrary'    => $workoutlibrary,
             ], 200);
         }
 
@@ -1772,20 +1797,6 @@ public function getWorkouts(Request $request)
             }
             return $test;
         });
-
-        $categoryOptions = \App\Models\CategoryOption::select('id', 'category_name')->get();
-
-        $workoutlibrary = WorkoutLibrary::with('categoryOption:id,category_name')
-            ->get(['id', 'category_options_id', 'type', 'workout', 'link'])
-            ->map(function ($item) {
-                return [
-                    'id'                   => $item->id,
-                    'workout'              => $item->workout,
-                    'type'                 => $item->type,
-                    'category_option_id'   => $item->category_options_id,
-                    'category_option_name' => $item->categoryOption->category_name ?? null,
-                ];
-            });
 
         /*
         |--------------------------------------------------------------------------
