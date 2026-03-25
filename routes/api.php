@@ -58,4 +58,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('getexercises', [UserMobileController::class, 'getStrengthWorkouts'])->name('getexercise');
     Route::post('getacheivementgraph', [UserMobileController::class, 'getStrengthProgress'])->name('get.strength.details');
     Route::get('getworkouthistory', [UserMobileController::class, 'getMemberWorkoutDetails'])->name('getworkouthistory');
+
+    Route::delete('/test/delete', [UserMobileController::class, 'deleteTest'])->name('test.delete');
 });
