@@ -11,24 +11,77 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <title>Workout Manager</title>
     <style>
-        .w-1\/3 {
-            width: 50% !important;
+        #customTimePicker .w-1\/3 {
+            width: 33.333333% !important;
         }
+
+        .workout-manager-shell {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: clip;
+        }
+
+        .workout-manager-shell img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .workout-manager-content {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.5rem;
+            padding: 0 0.75rem 1.5rem;
+        }
+
+        .workout-manager-column {
+            min-width: 0;
+        }
+
+        @media (min-width: 1024px) {
+            .workout-manager-content {
+                grid-template-columns: minmax(18rem, 34%) minmax(0, 1fr);
+                gap: 1.5rem;
+                padding: 0 1rem 1.75rem;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .workout-manager-content {
+                grid-template-columns: minmax(20rem, 36%) minmax(0, 1fr);
+                gap: 2rem;
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .workout-manager-content {
+                grid-template-columns: minmax(22rem, 38%) minmax(0, 1fr);
+                gap: 2.25rem;
+                padding: 0 1.25rem 2rem;
+            }
+        }
+
         /* Custom Thin Scrollbar */
         .thin-scrollbar::-webkit-scrollbar {
-            height: 6px; /* Horizontal scrollbar height */
-            width: 6px;  /* Vertical scrollbar width */
+            height: 6px;
+            /* Horizontal scrollbar height */
+            width: 6px;
+            /* Vertical scrollbar width */
         }
+
         .thin-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1; 
+            background: #f1f1f1;
             border-radius: 4px;
         }
+
         .thin-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1; /* gray-300 */
+            background: #cbd5e1;
+            /* gray-300 */
             border-radius: 4px;
         }
+
         .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; /* gray-400 */
+            background: #94a3b8;
+            /* gray-400 */
         }
     </style>
 </head>
@@ -36,68 +89,68 @@
 <body>
     @extends('layout.layout')
     @section('content')
-        <!-- Main content (Dashboard) -->
-        <div class="container transition-width mt-24 flex-grow mx-4" id="container">
-            <div class="breadcrumb text-sm mb-4">
-                <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Manager
-                        </strong></span></div>
-                <div class="flex items-start w-full relative">
-                    <div class="wo text-3xl mt-3">Workout Manager</div>
-                    <div class="dt flex flex-col items-center gap-2 mb-6 absolute left-1/2 transform -translate-x-1/2">
-                        <div class="flex justify-center text-2xl font-semibold items-center gap-4">
-                            <p class="cursor-pointer" id="prevWeek">&larr;</p>
-                            <h2 id="weekDisplay"></h2>
-                            <p class="cursor-pointer" id="nextWeek">&rarr;</p>
-                        </div>
-                        <div class="text-lg">
-                            <h2 id="weekRangeDisplay"></h2>
-                        </div>
+    <!-- Main content (Dashboard) -->
+    <div class="workout-manager-shell transition-width mt-24 flex-grow mx-auto px-2 sm:px-4 lg:px-6" id="container">
+        <div class="breadcrumb text-sm mb-4">
+            <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Workout Manager
+                    </strong></span></div>
+            <div class="flex flex-col gap-3 xl:grid xl:grid-cols-[1fr_auto_1fr] xl:items-start w-full">
+                <div class="wo text-3xl mt-3 xl:justify-self-start">Workout Manager</div>
+                <div class="dt flex flex-col items-center gap-2 mb-2 xl:mb-0 xl:justify-self-center">
+                    <div class="flex justify-center text-2xl font-semibold items-center gap-4">
+                        <p class="cursor-pointer" id="prevWeek">&larr;</p>
+                        <h2 id="weekDisplay"></h2>
+                        <p class="cursor-pointer" id="nextWeek">&rarr;</p>
                     </div>
-                    <div class="ml-auto mt-2">
-                        <button onclick="resetWorkoutForm(); openWorkoutModal();" class="bg-black hover:bg-gray-800 text-white font-bold px-5 py-2 rounded text-base">Create</button>
+                    <div class="text-lg">
+                        <h2 id="weekRangeDisplay"></h2>
                     </div>
                 </div>
-
+                <div class="mt-1 xl:mt-2 xl:justify-self-end">
+                    <button onclick="resetWorkoutForm(); openWorkoutModal();" class="bg-black hover:bg-gray-800 text-white font-bold px-5 py-2 rounded text-base">Create</button>
+                </div>
             </div>
-            <div class="border rounded-b-lg bg-white shadow-md mt-6 text-sm">
-                <div>
-                    {{-- Tab Names --}}
-                    <div class="rounded w-12/12 mx-auto mt-3 mb-2 px-5">
-                        <!-- Tabs -->
-                        {{-- <ul id="tabs" class="flex justify-center  px-1 w-full gap-5">
+
+        </div>
+        <div class="border rounded-b-lg bg-white shadow-md mt-6 text-sm">
+            <div>
+                {{-- Tab Names --}}
+                <div class="rounded w-12/12 mx-auto mt-3 mb-2 px-5">
+                    <!-- Tabs -->
+                    {{-- <ul id="tabs" class="flex justify-center  px-1 w-full gap-5">
 
                             <li class="tab-item text-black">
                                 <a href="warmup" id="warmupTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
                                     <img src="{{ asset('icon/warmup.png') }}" alt="Warmup Icon" class="w-7 h-7 mr-2" />
-                                    <span>Warmup</span>
-                                </a>
-                            </li>
+                    <span>Warmup</span>
+                    </a>
+                    </li>
 
-                            <li class="tab-item text-black" id="default-tab">
-                                <a href="strength" id="strenghtTab" class="inline-flex items-center p-4 rounded text-black bg-white border-2 border-yellow-400 px-6">
-                                    <img src="{{ asset('icon/strength.png') }}" alt="Strength Icon" class="w-6 h-6 mr-2" />
-                                    <span>Strength</span>
-                                </a>
-                            </li>
-                            <li class="tab-item text-black">
-                                <a href="weightlifting" id="weightliftingTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
-                                    <img src="{{ asset('icon/weightliftingnew.png') }}" alt="Weightlifting Icon" class="w-6 h-6 mr-2" />
-                                    <span>Weightlifting</span>
-                                </a>
-                            </li>
-                            <li class="tab-item text-black">
-                                <a href="conditioning" id="conditioningTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
-                                    <img src="{{ asset('icon/conditioning.png') }}" alt="Conditioning Icon" class="w-6 h-6 mr-2" />
-                                    <span>Conditioning</span>
-                                </a>
-                            </li>
-                        </ul> --}}
-                    </div>
-                    {{-- Separator Line with Gap --}}
-                    <!-- <div class="w-full border-b-[3px] border-gray-500 mb-3"></div> -->
+                    <li class="tab-item text-black" id="default-tab">
+                        <a href="strength" id="strenghtTab" class="inline-flex items-center p-4 rounded text-black bg-white border-2 border-yellow-400 px-6">
+                            <img src="{{ asset('icon/strength.png') }}" alt="Strength Icon" class="w-6 h-6 mr-2" />
+                            <span>Strength</span>
+                        </a>
+                    </li>
+                    <li class="tab-item text-black">
+                        <a href="weightlifting" id="weightliftingTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
+                            <img src="{{ asset('icon/weightliftingnew.png') }}" alt="Weightlifting Icon" class="w-6 h-6 mr-2" />
+                            <span>Weightlifting</span>
+                        </a>
+                    </li>
+                    <li class="tab-item text-black">
+                        <a href="conditioning" id="conditioningTab" class="inline-flex items-center p-4 rounded text-black bg-gray-200 border-2 border-transparent hover:bg-gray-300">
+                            <img src="{{ asset('icon/conditioning.png') }}" alt="Conditioning Icon" class="w-6 h-6 mr-2" />
+                            <span>Conditioning</span>
+                        </a>
+                    </li>
+                    </ul> --}}
+                </div>
+                {{-- Separator Line with Gap --}}
+                <!-- <div class="w-full border-b-[3px] border-gray-500 mb-3"></div> -->
 
-                    {{-- Top Week and year display --}}
-                    {{-- <div class="flex flex-col items-center  gap-2 mb-6">
+                {{-- Top Week and year display --}}
+                {{-- <div class="flex flex-col items-center  gap-2 mb-6">
                         <div class="flex justify-center text-2xl font-semibold items-center gap-4">
                             <p class="cursor-pointer" id="prevWeek">&larr;</p>
                             <h2 id="weekDisplay"></h2>
@@ -107,49 +160,49 @@
                             <h2 id="weekRangeDisplay"></h2>
                         </div>
                     </div> --}}
-                </div>
-                <div class="w-full flex mx-4">
-                    {{-- side week calender --}}
-                    <div class="w-[36%]">
+            </div>
+            <div class="workout-manager-content">
+                {{-- side week calender --}}
+                <div class="workout-manager-column">
 
-                        <div class="flex flex-col text-lg weekday pr-5">
-                            <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>
-                            <button
-                                class="border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
-                                id="1day">Day 1</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
-                                id="2day">Day 2</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
-                                id="3day">Day 3</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
-                                id="4day">Day 4</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
-                                id="5day">Day 5</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
-                                id="6day">Day 6</button>
-                            <button
-                                class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
-                                id="7day">Day 7</button>
-                        </div>
-                        {{-- Classess --}}
-                        <div class="mt-5 mb-5">
-                            @include('admin.components.classes', ['classes' => $classes])
+                    <div class="flex flex-col text-lg weekday pr-5">
+                        <h1 class="text-2xl font-bold mb-4 text-center">Day Planner</h1>
+                        <button
+                            class="border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-t-md text-start hover:bg-black hover:text-white day"
+                            id="1day">Day 1</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
+                            id="2day">Day 2</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
+                            id="3day">Day 3</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            id="4day">Day 4</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            id="5day">Day 5</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            id="6day">Day 6</button>
+                        <button
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
+                            id="7day">Day 7</button>
+                    </div>
+                    {{-- Classess --}}
+                    <div class="mt-5 mb-5">
+                        @include('admin.components.classes', ['classes' => $classes])
+                    </div>
+                </div>
+                <div class="workout-manager-column tabs">
+                    <div class="flex flex-row gap-4 w-full items-start">
+                        {{-- Unified Search List (Visible always) --}}
+                        <div class="w-full">
+                            @include('admin.components.search_workout_list')
                         </div>
                     </div>
-                    <div class="w-[45%] tabs ml-32">
-                        <div class="flex flex-row gap-4 w-full items-start">
-                            {{-- Unified Search List (Visible always) --}}
-                            <div class="w-full">
-                                @include('admin.components.search_workout_list')
-                            </div>
-                        </div>
 
-                        {{-- Hidden Components for Create/Edit Modal Logic if needed or just kept for reference 
+                    {{-- Hidden Components for Create/Edit Modal Logic if needed or just kept for reference 
                         <div hidden>
                             @include('admin.components.warmup')
                             @include('admin.components.strength')
@@ -158,95 +211,95 @@
                             @include('admin.components.test')
                         </div>
                         --}}
-                    </div>
-
-                    <script>
-                        // Function to update input names and ids
-                        function updateInputNamesAndIds(element, index) {
-                            element.querySelectorAll("input").forEach(function(input) {
-                                var baseName = input.name.split('_')[0];
-                                var baseId = input.id.split('_')[0];
-                                input.name = baseName + '_' + index;
-                                input.id = baseId + '_' + index;
-                            });
-                            element.querySelectorAll("select").forEach(function(input) {
-                                var baseName = input.name.split('_')[0];
-                                var baseId = input.id.split('_')[0];
-                                input.name = baseName + '_' + index;
-                                input.id = baseId + '_' + index;
-                            });
-                            element.querySelectorAll("button").forEach(function(input) {
-                                var baseName = input.name.split('_')[0];
-                                var baseId = input.id.split('_')[0];
-                                input.name = baseName + '_' + index;
-                                input.id = baseId + '_' + index;
-                            });
-                        }
-
-                        // Function to add a Remove button
-                        function addRemoveButton(element) {
-                            var removeButton = document.createElement("button");
-                            removeButton.innerText = "Remove";
-                            removeButton.classList.add('removeBtn', 'bg-[#FB1018]', 'text-white', 'py-2', 'px-4', 'rounded', 'mb-2',
-                                'remove-btn', 'w-24',
-                                'flex-shrink-0');
-                            removeButton.addEventListener("click", function() {
-                                element.remove();
-                            });
-                            element.appendChild(removeButton);
-                        }
-
-                        // Function to duplicate the UI
-                        function duplicateUI(event) {
-                            var duplicateButton = event.target;
-                            var duplicateUi = duplicateButton.previousElementSibling;
-
-                            // Check if dataset.index is null or undefined, and set it to 1 if true
-                            var index = parseInt(duplicateUi.dataset.index) || 1;
-
-                            // Increment the index
-                            index += 1;
-
-                            // Update the dataset.index
-                            duplicateUi.dataset.index = index;
-
-                            var clone = duplicateUi.cloneNode(true);
-
-                            // Reset the values of the inputs in the cloned element
-                            clone.querySelectorAll("input").forEach(function(input) {
-                                input.value = '';
-                            });
-
-                            // Update names and ids in the cloned inputs
-                            updateInputNamesAndIds(clone, index);
-
-                            // Remove old buttons and add new Remove button
-                            clone.querySelectorAll(".duplicateBtn, .removeBtn").forEach(function(button) {
-                                button.remove();
-                            });
-                            addRemoveButton(clone);
-
-                            // Insert the cloned element before the duplicate button
-                            duplicateUi.parentElement.insertBefore(clone, duplicateButton);
-                        }
-
-                        // Add event listeners to all duplicate buttons
-                        document.querySelectorAll(".duplicateBtn").forEach(function(button) {
-                            button.addEventListener("click", duplicateUI);
-                        });
-                    </script>
-
                 </div>
-            </div>
 
+                <script>
+                    // Function to update input names and ids
+                    function updateInputNamesAndIds(element, index) {
+                        element.querySelectorAll("input").forEach(function(input) {
+                            var baseName = input.name.split('_')[0];
+                            var baseId = input.id.split('_')[0];
+                            input.name = baseName + '_' + index;
+                            input.id = baseId + '_' + index;
+                        });
+                        element.querySelectorAll("select").forEach(function(input) {
+                            var baseName = input.name.split('_')[0];
+                            var baseId = input.id.split('_')[0];
+                            input.name = baseName + '_' + index;
+                            input.id = baseId + '_' + index;
+                        });
+                        element.querySelectorAll("button").forEach(function(input) {
+                            var baseName = input.name.split('_')[0];
+                            var baseId = input.id.split('_')[0];
+                            input.name = baseName + '_' + index;
+                            input.id = baseId + '_' + index;
+                        });
+                    }
+
+                    // Function to add a Remove button
+                    function addRemoveButton(element) {
+                        var removeButton = document.createElement("button");
+                        removeButton.innerText = "Remove";
+                        removeButton.classList.add('removeBtn', 'bg-[#FB1018]', 'text-white', 'py-2', 'px-4', 'rounded', 'mb-2',
+                            'remove-btn', 'w-24',
+                            'flex-shrink-0');
+                        removeButton.addEventListener("click", function() {
+                            element.remove();
+                        });
+                        element.appendChild(removeButton);
+                    }
+
+                    // Function to duplicate the UI
+                    function duplicateUI(event) {
+                        var duplicateButton = event.target;
+                        var duplicateUi = duplicateButton.previousElementSibling;
+
+                        // Check if dataset.index is null or undefined, and set it to 1 if true
+                        var index = parseInt(duplicateUi.dataset.index) || 1;
+
+                        // Increment the index
+                        index += 1;
+
+                        // Update the dataset.index
+                        duplicateUi.dataset.index = index;
+
+                        var clone = duplicateUi.cloneNode(true);
+
+                        // Reset the values of the inputs in the cloned element
+                        clone.querySelectorAll("input").forEach(function(input) {
+                            input.value = '';
+                        });
+
+                        // Update names and ids in the cloned inputs
+                        updateInputNamesAndIds(clone, index);
+
+                        // Remove old buttons and add new Remove button
+                        clone.querySelectorAll(".duplicateBtn, .removeBtn").forEach(function(button) {
+                            button.remove();
+                        });
+                        addRemoveButton(clone);
+
+                        // Insert the cloned element before the duplicate button
+                        duplicateUi.parentElement.insertBefore(clone, duplicateButton);
+                    }
+
+                    // Add event listeners to all duplicate buttons
+                    document.querySelectorAll(".duplicateBtn").forEach(function(button) {
+                        button.addEventListener("click", duplicateUI);
+                    });
+                </script>
+
+            </div>
         </div>
 
-        {{-- Workout Create/Edit Modal --}}
-        <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-center justify-center overflow-y-auto py-8">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
-                @include('admin.components.create_workout_form')
-            </div>
+    </div>
+
+    {{-- Workout Create/Edit Modal --}}
+    <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-center justify-center overflow-y-auto py-8">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
+            @include('admin.components.create_workout_form')
         </div>
+    </div>
 
     @endsection
 
@@ -418,9 +471,9 @@
             // set hiden fields to value
             // setHiddenData(tabName,selectedDate);
             let tabTogglers = document.querySelectorAll("#tabs a");
-            
+
             if (tabTogglers.length > 0) {
-                 // Remove active styles from all tabs
+                // Remove active styles from all tabs
                 // Remove active styles from all tabs
                 tabTogglers.forEach(function(toggler) {
                     // Remove active classes
@@ -433,12 +486,12 @@
                 if (tabName) {
                     let toggler = document.querySelector(`#tabs a[href="${tabName}"]`);
                     if (toggler) {
-                         toggler.classList.remove("bg-gray-200", "border-transparent", "hover:bg-gray-300");
-                         toggler.classList.add("bg-white", "border-yellow-400");
+                        toggler.classList.remove("bg-gray-200", "border-transparent", "hover:bg-gray-300");
+                        toggler.classList.add("bg-white", "border-yellow-400");
                     }
                 }
             }
-           
+
 
             // Remove active styles from all date links
             let dateLinks = document.querySelectorAll(".day");
@@ -472,7 +525,7 @@
             // Show the selected tab
             var tab = document.getElementById(tabName);
             if (tab) {
-                 tab.removeAttribute("hidden");
+                tab.removeAttribute("hidden");
             }
         }
 
@@ -530,7 +583,7 @@
             categorySelectW.add(option);
         }
     </script>
-<!-- {{-- <li
+    <!-- {{-- <li
                                 class="tab-item text-black rounded-t hover:border-t hover:border-l hover:border-r hover:border-black w-100">
                                 <a href="test" id="testTab" class="inline-flex items-center p-4 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500 px-10">
                                     <img src="{{ asset('icon/test.png') }}" alt="Test Icon" class="w-5 h-5 mr-2" />
