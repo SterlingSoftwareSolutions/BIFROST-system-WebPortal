@@ -18,6 +18,9 @@ class Pyramid extends Model
         'unit_type',
         'reps',
         'gender',
+        'restred',
+        'restyellow',
+        'restgreen',
     ];
     public function workoutManager()
     {
