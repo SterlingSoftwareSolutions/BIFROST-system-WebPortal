@@ -309,7 +309,7 @@
 
     const selected = selectElement.value;
 
-    if (selected === 'Cal' || selected === 'Kg') {
+    if (selected === 'Cal') {
         genderDiv.classList.remove('hidden');
         defaultInput.classList.add('hidden');
         defaultInput.removeAttribute('required');

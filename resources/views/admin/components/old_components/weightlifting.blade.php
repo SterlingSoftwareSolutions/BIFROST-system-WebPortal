@@ -10,7 +10,8 @@
             @csrf
             @method('DELETE')
             <input type="text" name="selectdateweDelete" id="selectdateweDelete" hidden>
-            {{-- <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button> --}}
+            {{-- <button type="submit" class="bg-black text-white py-2 px-4 rounded mb-2 mt-2 text-base">Clear</button>
+            --}}
         </form>
         <script>
             //delete selected weightlifting data
@@ -44,9 +45,9 @@
                 });
             });
 
-            $(document).ready(function() {
+            $(document).ready(function () {
                 const date = document.getElementById('selectdateweDelete').value;
-                $('#deleteFormWe').on('submit', function(event) {
+                $('#deleteFormWe').on('submit', function (event) {
                     event.preventDefault(); // Prevent the default form submission
 
                     $.ajax({
@@ -57,13 +58,13 @@
                             _method: 'DELETE',
                             selectdateweDelete: $('#selectdateweDelete').val()
                         },
-                        success: function(response) {
+                        success: function (response) {
                             // Handle the response
                             alert(response.message);
                             getWeightlifting(date);
                             // Optionally, update the UI to reflect the changes
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             // Handle error
                             console.error(xhr.responseText);
                         }
@@ -71,10 +72,10 @@
                 });
             });
 
-            $(document).ready(function() {
+            $(document).ready(function () {
                 const tab = document.getElementById('weightliftingTab');
 
-                $('#storeFromWe').on('submit', function(event) {
+                $('#storeFromWe').on('submit', function (event) {
                     event.preventDefault(); // Prevent the default form submission
                     const formDataArray = $(this).serializeArray();
                     console.log('Form data as object:', formDataArray);
@@ -85,7 +86,7 @@
                         url: url,
                         type: 'POST',
                         data: $(this).serialize(), // Serialize form data
-                        success: function(response) {
+                        success: function (response) {
                             // Handle the response
                             // Clear input fields
                             $('#storeFromWe')[0].reset();
@@ -120,7 +121,7 @@
                                 tab.click();
                             }
                         },
-                        error: function(xhr) {
+                        error: function (xhr) {
                             // Handle error
                             console.error(xhr.responseText);
                         }
@@ -129,7 +130,7 @@
             });
         </script>
     </div>
-    {{-- display  weightlifting --}}
+    {{-- display weightlifting --}}
     <div id="weightlifting-container" class="-mt-5 pt-2"></div>
 
 
@@ -144,7 +145,8 @@
                         {{-- Serach Section --}}
                         <div class="flex-col w-1/2">
                             <div class="bg-gray-50 p-4">
-                                <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
+                                <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">
+                                    Workout List</div>
                                 <div class="flex items-center space-x-2 flex-nowrap">
                                     <!-- Category Field -->
                                     <div class="flex items-center space-x-1 flex-[1] min-w-[120px]">
@@ -175,7 +177,8 @@
                                     </div>
                                     <!-- Clear Button -->
                                     <div class="flex items-center">
-                                        <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()" type="button"
+                                        <button id="searchclearsetweightlifting_1" onclick="clearSearchWeightlifting()"
+                                            type="button"
                                             class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
                                     </div>
                                 </div>
@@ -189,10 +192,12 @@
                         {{-- Primary Category and Workouts --}}
 
                         <div class="flex-col w-1/2 bg-gray-50 p-4">
-                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create</div>
+                            <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Create
+                            </div>
                             <input type="hidden" id="weightlifting_id" name="weightlifting_id" value="">
                             <div class="flex items-center border-b mt-2">
-                                <label for="namewe_1" class="w-40 block mb-1">Workout Name <span class="text-red-500">*</span></label>
+                                <label for="namewe_1" class="w-40 block mb-1">Workout Name <span
+                                        class="text-red-500">*</span></label>
                                 <input type="text" id="namewe_1" name="namewe_1"
                                     class="w-2/3 px-3 py-3 border flex rounded mb-2" required>
 
@@ -214,10 +219,13 @@
                                 </select>
                             </div>
                             <div class="flex items-center border-b mt-2 overflow-visible">
-                                <label for="weigthwe_1" class="w-40 block mb-1">Training Load <span class="text-red-500">*</span></label>
+                                <label for="weigthwe_1" class="w-40 block mb-1">Training Load <span
+                                        class="text-red-500">*</span></label>
                                 <div class="flex items-center w-2/3">
-                                    <input type="text" id="weigthwe_1" name="weigthwe_1" class="flex-grow px-1 py-2 border border-r-0 mr-2" required>
-                                    <select name="unitwe_1" class="border bg-white py-3 px-2 w-16 text-center border-l-0">
+                                    <input type="text" id="weigthwe_1" name="weigthwe_1"
+                                        class="flex-grow px-1 py-2 border border-r-0 mr-2" required>
+                                    <select name="unitwe_1"
+                                        class="border bg-white py-3 px-2 w-16 text-center border-l-0">
                                         <option value="%">%</option>
                                         <option value="/10">/10</option>
                                         <option value="Cal">Cal</option>
@@ -226,14 +234,20 @@
                                 </div>
 
                                 <div class="relative ml-4 flex items-center">
-                                    <span onclick="toggleInfoPopup(this, event)" class="text-red-500 text-xl cursor-pointer select-none">
-                                        <svg width="20px" height="20px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#5C5F62"/>
-                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#5C5F62"/>
+                                    <span onclick="toggleInfoPopup(this, event)"
+                                        class="text-red-500 text-xl cursor-pointer select-none">
+                                        <svg width="20px" height="20px" viewBox="0 0 20 20"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z"
+                                                fill="#5C5F62" />
+                                            <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z"
+                                                fill="#5C5F62" />
                                         </svg>
                                     </span>
                                     <!-- Popup -->
-                                    <div class="hidden absolute left-[-110px] top-[45px] w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
+                                    <div
+                                        class="hidden absolute left-[-110px] top-[45px] w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                         <p><b>/10</b> – Effort out of 10</p>
                                         <p><b>%</b> – Percentage of effort</p>
                                         <p><b>Cal</b> – Number of calories</p>
@@ -244,11 +258,13 @@
                             <div class="border-b mt-2" id="duplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="setswe_1" class="w-40 block mb-1">SET <span class="text-red-500">*</span></label>
-                                        <input type="text" id="setwid_1" name="setwid_1"  class="hidden"/>
+                                        <label for="setswe_1" class="w-40 block mb-1">SET <span
+                                                class="text-red-500">*</span></label>
+                                        <input type="text" id="setwid_1" name="setwid_1" class="hidden" />
                                         <div class="relative flex items-center gap-1" id="duplicateRepsUI">
                                             <!-- Optional extra input (first one) -->
-                                            <input type="text" id="setswe_1" name="setswe_1" value="1" data-input-counter
+                                            <input type="text" id="setswe_1" name="setswe_1" value="1"
+                                                data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
@@ -258,9 +274,10 @@
                                             <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input#repswe_1').id)"
                                                 class="decrement-reps bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-s-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none" viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                <svg class="w-3 h-3 text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button>
 
@@ -273,31 +290,43 @@
                                             <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input#repswe_1').id)"
                                                 class="increment-reps bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none" viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 1v16M1 9h16" />
+                                                <svg class="w-3 h-3 text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                             <label for="repswe_1" class="text-sm mr-2">REPS</label>
 
                                             <!-- Weight Stepper (Vertical) -->
                                             <div class="relative w-24 ml-2">
-                                                <input type="text" id="setweightwe_1" name="setweightwe_1" data-input-counter
+                                                <input type="text" id="setweightwe_1" name="setweightwe_1"
+                                                    data-input-counter
                                                     class="peer w-full bg-gray-50 border border-gray-300 rounded-lg h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 pr-8 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                     placeholder="80%" required />
-                                                <div class="absolute inset-y-0 right-9 flex items-center pointer-events-none text-gray-500 dark:text-gray-400 transition-opacity duration-200 peer-placeholder-shown:opacity-0">
+                                                <div
+                                                    class="absolute inset-y-0 right-9 flex items-center pointer-events-none text-gray-500 dark:text-gray-400 transition-opacity duration-200 peer-placeholder-shown:opacity-0">
                                                     %
                                                 </div>
                                                 <div class="absolute inset-y-0 right-0 flex flex-col w-6">
-                                                    <button type="button" onclick="increment('setweightwe_1')" class="h-1/2 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
-                                                        <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 10">
-                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 9l8-8 8 8"/>
+                                                    <button type="button" onclick="increment('setweightwe_1')"
+                                                        class="h-1/2 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
+                                                        <svg class="w-2.5 h-2.5" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                            viewBox="0 0 18 10">
+                                                            <path stroke="currentColor" stroke-linecap="round"
+                                                                stroke-linejoin="round" stroke-width="2"
+                                                                d="M1 9l8-8 8 8" />
                                                         </svg>
                                                     </button>
-                                                    <button type="button" onclick="decrement('setweightwe_1')" class="h-1/2 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
-                                                        <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 10">
-                                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1l8 8 8-8"/>
+                                                    <button type="button" onclick="decrement('setweightwe_1')"
+                                                        class="h-1/2 flex items-center justify-center text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline-none">
+                                                        <svg class="w-2.5 h-2.5" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                            viewBox="0 0 18 10">
+                                                            <path stroke="currentColor" stroke-linecap="round"
+                                                                stroke-linejoin="round" stroke-width="2"
+                                                                d="M1 1l8 8 8-8" />
                                                         </svg>
                                                     </button>
                                                 </div>
@@ -330,16 +359,15 @@
                                                     stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
-                                        <input type="text" id="restredwe_1" name="restredwe_1"
-                                            placeholder="00:00" value="00:04:00"
+                                        <input type="text" id="restredwe_1" name="restredwe_1" placeholder="00:00"
+                                            value="00:04:00"
                                             class="bg-gray-50 border-x-0 restwered border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-700 text-white hover:bg-gray-700 border border-gray-600 rounded-e-lg p-3 h-11 focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -358,16 +386,15 @@
                                                     stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
-                                        <input type="text" id="restyellowwe_1" name="restyellowwe_1"
-                                            placeholder="00:00" value="00:04:00"
+                                        <input type="text" id="restyellowwe_1" name="restyellowwe_1" placeholder="00:00"
+                                            value="00:04:00"
                                             class="bg-gray-50 border-x-0 restweyellow border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -386,16 +413,15 @@
                                                     stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                             </svg>
                                         </button>
-                                        <input type="text" id="restgreenwe_1" name="restgreenwe_1"
-                                            placeholder="00:00" value="00:04:00"
+                                        <input type="text" id="restgreenwe_1" name="restgreenwe_1" placeholder="00:00"
+                                            value="00:04:00"
                                             class="bg-gray-50 border-x-0 restwegreen border-gray-300 h-11 my-2 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                             readonly required>
                                         <button type="button"
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -448,10 +474,13 @@
                             <div class="border-b mt-2" id="altduplicateSetUI">
                                 <div class="">
                                     <div class="flex items-center sets-view">
-                                        <label for="alt-repsnowe_1" class="w-60 block mb-1">SET <span class="text-red-500">*</span></label>
-                                        <div class="relative flex items-center max-w-[12rem] gap-2" id="duplicateRepsUI"> --}}
+                                        <label for="alt-repsnowe_1" class="w-60 block mb-1">SET <span
+                                                class="text-red-500">*</span></label>
+                                        <div class="relative flex items-center max-w-[12rem] gap-2"
+                                            id="duplicateRepsUI"> --}}
                                             <!-- Optional extra input (first one) -->
-                                            {{-- <input type="text" id="alt-repsnowe_1" name="alt-repsnowe_1" value="1" data-input-counter
+                                            {{-- <input type="text" id="alt-repsnowe_1" name="alt-repsnowe_1" value="1"
+                                                data-input-counter
                                                 class="w-5 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required />
 
@@ -461,14 +490,16 @@
                                             {{-- <button type="button"
                                                 onclick="decrement(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none" viewBox="0 0 18 2">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M1 1h16" />
                                                 </svg>
                                             </button> --}}
 
                                             <!-- REPS Counter Input -->
-                                            {{-- <input type="text" id="alt-repswe_1" name="alt-repswe_1" data-input-counter
+                                            {{-- <input type="text" id="alt-repswe_1" name="alt-repswe_1"
+                                                data-input-counter
                                                 class="w-7 bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block py-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 focus:outline-none"
                                                 placeholder="0" readonly required /> --}}
 
@@ -476,10 +507,10 @@
                                             {{-- <button type="button"
                                                 onclick="increment(this.parentNode.querySelector('input#alt-repswe_1').id)"
                                                 class="increment-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
-                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none" viewBox="0 0 18 18">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 1v16M1 9h16" />
+                                                <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                                                    <path stroke="currentColor" stroke-linecap="round"
+                                                        stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                                 </svg>
                                             </button>
                                         </div>
@@ -518,8 +549,7 @@
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -528,7 +558,8 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                        <label class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
+                                        <label
+                                            class="text-yellow-500 font-bold w-16 text-right pr-8">Stage&nbsp;2</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -546,8 +577,7 @@
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -557,7 +587,8 @@
 
 
                                     <div class="relative flex items-center max-w-[12rem] mb-4 py-2">
-                                        <label class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
+                                        <label
+                                            class="text-green-500 font-bold w-16 text-right pr-8">Stage&nbsp;3</label>
                                         <button type="button"
                                             onclick="decrementRest(this.parentNode.querySelector('input').id)"
                                             class="decrement-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
@@ -575,8 +606,7 @@
                                             onclick="incrementRest(this.parentNode.querySelector('input').id)"
                                             class="increment-rest bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                             <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                viewBox="0 0 18 18">
+                                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                                                 <path stroke="currentColor" stroke-linecap="round"
                                                     stroke-linejoin="round" stroke-width="2" d="M9 1v16M1 9h16" />
                                             </svg>
@@ -596,7 +626,8 @@
                                     <option value="extreme">Extreme</option>
                                 </select>
                             </div> --}}
-                        {{-- </div> --}}
+                            {{--
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -609,7 +640,8 @@
                 Cancel
             </button>
 
-            <button type="submit" id="savebtnwe" class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
+            <button type="submit" id="savebtnwe"
+                class="bg-[#FB1018] text-white py-2 px-4 rounded mr-8 hover:bg-red-700 w-24">
                 Save
             </button>
         </div>
@@ -623,7 +655,7 @@
 <script>
     // Function to update input names and IDs for the cloned element
     function updateNamesAndIds(element, index) {
-        element.querySelectorAll("input, select, button").forEach(function(el) {
+        element.querySelectorAll("input, select, button").forEach(function (el) {
             var baseName = el.name.split('_')[0];
             var baseId = el.id.split('_')[0];
             el.name = baseName + '_' + index;
@@ -659,7 +691,7 @@
             'w-24',
             'flex-shrink-0'
         );
-        removeButton.addEventListener("click", function() {
+        removeButton.addEventListener("click", function () {
             element.remove();
         });
         element.appendChild(removeButton);
@@ -686,7 +718,7 @@
         }
 
         // Reset input values in the cloned element
-        clonedElement.querySelectorAll("input").forEach(function(input) {
+        clonedElement.querySelectorAll("input").forEach(function (input) {
             input.value = '';
         });
 
@@ -694,7 +726,7 @@
         updateNamesAndIds(clonedElement, index);
 
         // Remove old buttons and add a new remove button
-        clonedElement.querySelectorAll(".duplicateBtn, .removeBtn").forEach(function(button) {
+        clonedElement.querySelectorAll(".duplicateBtn, .removeBtn").forEach(function (button) {
             button.remove();
         });
         addRemoveButtonToElement(clonedElement);
@@ -704,7 +736,7 @@
     }
 
     // Event listener for the main clone button
-    document.getElementById('cloneButton').addEventListener('click', function() {
+    document.getElementById('cloneButton').addEventListener('click', function () {
         const uiContainer = document.getElementById('uiContainer');
         const cloneDisplayContainer = document.getElementById('cloneDisplayContainer');
         const newContainer = uiContainer.cloneNode(true);
@@ -727,7 +759,7 @@
         }
 
         // Reset input values in the new container
-        newContainer.querySelectorAll("input").forEach(function(input) {
+        newContainer.querySelectorAll("input").forEach(function (input) {
             input.value = '';
         });
 
@@ -742,7 +774,7 @@
     });
 
     // Add event listeners to all duplicate buttons
-    document.querySelectorAll(".duplicateBtn").forEach(function(button) {
+    document.querySelectorAll(".duplicateBtn").forEach(function (button) {
         button.addEventListener("click", handleUiDuplication);
     });
 </script>
@@ -771,41 +803,41 @@
 <script>
     // Rest increment Increment
     function incrementRest(id) {
-    let input = document.getElementById(id);
-    let [hours, minutes, seconds] = input.value.split(':').map(Number);
+        let input = document.getElementById(id);
+        let [hours, minutes, seconds] = input.value.split(':').map(Number);
 
-    if (isNaN(hours)) hours = 0;
-    if (isNaN(minutes)) minutes = 0;
-    if (isNaN(seconds)) seconds = 0;
+        if (isNaN(hours)) hours = 0;
+        if (isNaN(minutes)) minutes = 0;
+        if (isNaN(seconds)) seconds = 0;
 
-    let totalSeconds = (hours * 3600) + (minutes * 60) + seconds + 15;
+        let totalSeconds = (hours * 3600) + (minutes * 60) + seconds + 15;
 
-    hours = Math.floor(totalSeconds / 3600);
-    minutes = Math.floor((totalSeconds % 3600) / 60);
-    seconds = totalSeconds % 60;
+        hours = Math.floor(totalSeconds / 3600);
+        minutes = Math.floor((totalSeconds % 3600) / 60);
+        seconds = totalSeconds % 60;
 
-    input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
+        input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 
 
     // Rest increment Decrement
     function decrementRest(id) {
-    let input = document.getElementById(id);
-    let [hours, minutes, seconds] = input.value.split(':').map(Number);
+        let input = document.getElementById(id);
+        let [hours, minutes, seconds] = input.value.split(':').map(Number);
 
-    if (isNaN(hours)) hours = 0;
-    if (isNaN(minutes)) minutes = 0;
-    if (isNaN(seconds)) seconds = 0;
+        if (isNaN(hours)) hours = 0;
+        if (isNaN(minutes)) minutes = 0;
+        if (isNaN(seconds)) seconds = 0;
 
-    let totalSeconds = (hours * 3600) + (minutes * 60) + seconds - 15;
-    totalSeconds = Math.max(0, totalSeconds); // Prevent negative time
+        let totalSeconds = (hours * 3600) + (minutes * 60) + seconds - 15;
+        totalSeconds = Math.max(0, totalSeconds); // Prevent negative time
 
-    hours = Math.floor(totalSeconds / 3600);
-    minutes = Math.floor((totalSeconds % 3600) / 60);
-    seconds = totalSeconds % 60;
+        hours = Math.floor(totalSeconds / 3600);
+        minutes = Math.floor((totalSeconds % 3600) / 60);
+        seconds = totalSeconds % 60;
 
-    input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
+        input.value = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
 
 
 
@@ -830,13 +862,13 @@
                 tab: selectTab,
                 _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
             },
-            success: function(response) {
-                console.log('weeeeeeee',response);
+            success: function (response) {
+                console.log('weeeeeeee', response);
                 // Extract the category_options array from the response
                 const categoryOptions = response.category_options || [];
 
                 // Clear existing options in the select elements before adding new ones
-                ['categorywe_1','categorywe_2'].forEach(id => {
+                ['categorywe_1', 'categorywe_2'].forEach(id => {
                     const categoryweelect = document.getElementById(id);
                     categoryweelect.innerHTML =
                         '<option value="" selected disabled>-- Select Category --</option>';
@@ -849,11 +881,11 @@
                 });
 
                 // Optional: Sort the options alphabetically if needed
-                ['categorywe_1','categorywe_2'].forEach(id => {
+                ['categorywe_1', 'categorywe_2'].forEach(id => {
                     sortSelectOptions(document.getElementById(id));
                 });
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error(error); // Handle error
             }
         });
@@ -906,7 +938,7 @@
                 id: selectId,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 console.log(response);
                 const workouts = response.workouts || [];
                 clearOptions(workoutSelect);
@@ -915,7 +947,7 @@
                     setWorkout(workoutSelect, workout.id, workout.workout);
                 });
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error(error);
             },
         });
@@ -984,7 +1016,7 @@
         const removeButton = document.createElement('button');
         removeButton.textContent = 'Remove';
         removeButton.className = 'remove-set bg-red-500 text-white p-2 rounded w-0';
-        removeButton.onclick = function() {
+        removeButton.onclick = function () {
             clone.remove();
         };
 
@@ -1067,7 +1099,7 @@
 
         `;
         // Add functionality to the remove button
-        setuiElement.querySelector('.remove-set').addEventListener('click', function() {
+        setuiElement.querySelector('.remove-set').addEventListener('click', function () {
             setuiElement.remove();
         });
 
@@ -1172,7 +1204,7 @@
             altcontainer.appendChild(altsetuiElement);
 
             // Add remove button functionality
-            altsetuiElement.querySelector('.altremove-button').onclick = function() {
+            altsetuiElement.querySelector('.altremove-button').onclick = function () {
                 altsetuiElement.remove();
             };
         } else {
@@ -1188,14 +1220,14 @@
 
 
     // Call getcategorywe on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         getcategorywe();
     });
 
 
 
     // Update first set weight when Training Load changes
-    document.getElementById('weigthwe_1').addEventListener('input', function() {
+    document.getElementById('weigthwe_1').addEventListener('input', function () {
         const val = this.value;
         const set1Input = document.getElementById('setweightwe_1');
         if (set1Input) {
@@ -1216,7 +1248,7 @@
         popup.classList.toggle('hidden');
     }
 
-    document.addEventListener("click", function(e) {
+    document.addEventListener("click", function (e) {
         if (!e.target.closest('.info-popup') && !e.target.matches('.text-red-500')) {
             document.querySelectorAll('.info-popup').forEach(p => p.classList.add('hidden'));
         }
@@ -1245,17 +1277,17 @@
                 date: date,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(response) {
+            success: function (response) {
                 // console.log(response);
                 allWeightliftingData = response.weightlifting;
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                    setWeightliftings(response.weightlifting, response.categoryOptions, response.daily_classes);
-                console.log('aaaaaaaaaa',response.weightlifting);
+                setWeightliftings(response.weightlifting, response.categoryOptions, response.daily_classes);
+                console.log('aaaaaaaaaa', response.weightlifting);
                 // });
             },
 
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error(error);
             },
         });
@@ -1637,7 +1669,7 @@
 
     function filterWeightlifting(date) {
         const dateOnClick = document.getElementById('selectdateweDelete').value;
-        console.log('first',dateOnClick)
+        console.log('first', dateOnClick)
 
         //console.log('bbbbbbbb',buttonId)
         let categoryId = document.getElementById("categorywe_2").value;
@@ -1663,7 +1695,7 @@
                 setWeightliftings(weightliftingArray, categoryArray, dailyClasses);
                 // Assuming response is an array of arrays
                 // response.forEach(subArray => {
-                    //setstrengths(response.Strength, response.categoryOptions);
+                //setstrengths(response.Strength, response.categoryOptions);
                 // });
             },
             error: function (xhr) {
@@ -1671,13 +1703,13 @@
             }
         });
     }
-    function clearSearchWeightlifting(){
+    function clearSearchWeightlifting() {
         const date = document.getElementById('selectdateweDelete').value;
 
         document.getElementById('categorywe_2').value = '';
         document.getElementById('workoutwe_2').value = '';
         document.getElementById('namewe_2').value = '';
-        console.log('dateeeee',date);
+        console.log('dateeeee', date);
         getWeightlifting(date);
 
     }
@@ -1708,31 +1740,31 @@
             let classButtonsHTML = '';
 
             if (availableClasses && availableClasses.length > 0) {
-                 availableClasses.forEach(cls => {
-                     // Check if assigned
-                     const isAssigned = assignedClassIds.includes(cls.id);
+                availableClasses.forEach(cls => {
+                    // Check if assigned
+                    const isAssigned = assignedClassIds.includes(cls.id);
 
-                     // Format time (e.g. 09:00:00 -> 9:00am)
-                     let timeParts = cls.time.split(':');
-                     let dateObj = new Date();
-                     dateObj.setHours(timeParts[0]);
-                     dateObj.setMinutes(timeParts[1]);
-                     let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
+                    // Format time (e.g. 09:00:00 -> 9:00am)
+                    let timeParts = cls.time.split(':');
+                    let dateObj = new Date();
+                    dateObj.setHours(timeParts[0]);
+                    dateObj.setMinutes(timeParts[1]);
+                    let timeString = dateObj.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }).toLowerCase();
 
-                     // Style: Green border/text if assigned, else Gray
-                     // Style: Green border/text if assigned, else Gray
-                     const activeClass = isAssigned
-                         ? 'border-green-600 bg-green-50 text-green-700 font-bold'
-                         : 'border-gray-300 bg-white text-gray-600';
+                    // Style: Green border/text if assigned, else Gray
+                    // Style: Green border/text if assigned, else Gray
+                    const activeClass = isAssigned
+                        ? 'border-green-600 bg-green-50 text-green-700 font-bold'
+                        : 'border-gray-300 bg-white text-gray-600';
 
-                     classButtonsHTML += `
+                    classButtonsHTML += `
                          <button type="button"
                              class="border px-3 py-1 rounded ${activeClass} hover:bg-gray-100 transition-colors text-sm whitespace-nowrap"
                              onclick="assignWorkoutToClass(${item.id}, ${cls.id}, '${isAssigned ? 'unassign' : 'assign'}', '${item.date || ''}')">
                              ${timeString}
                          </button>
                      `;
-                 });
+                });
             } else {
                 classButtonsHTML = '<span class="text-sm text-gray-500 italic">No classes for this day</span>';
             }
@@ -1823,7 +1855,7 @@
     function populateWeightliftingForm(weightliftingId) {
 
         const data = allWeightliftingData.find(item => item.id == weightliftingId);
-        console.log('dataaaaaa',data);
+        console.log('dataaaaaa', data);
 
         if (!data) {
             console.warn("No strength data found for ID:", weightliftingId);
@@ -1849,7 +1881,7 @@
         // Set weight
         document.getElementById('weigthwe_1').value = data.weight;
 
-       // Clear old duplicated sets
+        // Clear old duplicated sets
         document.getElementById('duplicate-sets_1').innerHTML = '';
         document.getElementById('setswe_1').value = data.sets[0].sets;
         document.getElementById('repswe_1').value = data.sets[0].reps;
@@ -1940,7 +1972,7 @@
         document.getElementById('savebtnwe').textContent = "Save Edit";
 
 
-     // Show Clear button
+        // Show Clear button
         document.getElementById('clearwbtn').classList.remove('hidden');
 
     }
@@ -1976,7 +2008,7 @@
             url: '{{ route('updateWeightlifting') }}',
             type: 'POST',
             data: formData,
-            success: function(response) {
+            success: function (response) {
                 // Handle the response
                 if (tab) {
                     tab.click();
@@ -1984,7 +2016,7 @@
                 alert(response.message);
                 $(formId)[0].reset();
             },
-            error: function(xhr) {
+            error: function (xhr) {
                 // Handle error
                 console.error(xhr.responseText);
             }
@@ -1998,11 +2030,11 @@
         } else if (action === 'unassign' && classId === 'all') {
             confirmMsg = "Are you sure you want to unassign this workout from ALL classes?";
         } else {
-             // For single class, we try to find the button text if possible, or generic message
-             // Since we don't easily have the time string here without passing it, generic is okay,
-             // or we rely on the specific action context.
-             const actionText = action === 'assign' ? 'assign' : 'unassign';
-             confirmMsg = `Are you sure you want to ${actionText} this workout?`;
+            // For single class, we try to find the button text if possible, or generic message
+            // Since we don't easily have the time string here without passing it, generic is okay,
+            // or we rely on the specific action context.
+            const actionText = action === 'assign' ? 'assign' : 'unassign';
+            confirmMsg = `Are you sure you want to ${actionText} this workout?`;
         }
 
         if (confirm(confirmMsg)) {
@@ -2017,20 +2049,20 @@
                     action: action,
                     date: date
                 },
-                success: function(response) {
-                     if (response.status === 'success') {
+                success: function (response) {
+                    if (response.status === 'success') {
                         // Refresh to show updated button states
                         filterWeightlifting(date);
 
                         // Also refresh classes list to show green icon if the function exists
                         if (typeof getdateName === 'function') {
-                             getdateName(date);
+                            getdateName(date);
                         }
-                     } else {
-                         alert(response.message || 'Action failed.');
-                     }
+                    } else {
+                        alert(response.message || 'Action failed.');
+                    }
                 },
-                error: function(xhr) {
+                error: function (xhr) {
                     console.error("AJAX error:", xhr.responseText);
                     alert("An error occurred while assigning the workout.");
                 }

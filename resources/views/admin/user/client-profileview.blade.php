@@ -39,8 +39,8 @@
                         </h2>
                     </div>
                     {{-- route cheacking --}}
-                    <div class="space-y-6 text-xs  rounded-lg shadow-lg bg-white p-2">
-                        <div class="text-xs">
+                    <div class="space-y-6 text-base  rounded-lg shadow-lg bg-white p-2">
+                        <div class="text-base">
                             {{-- User Profile View Page --}}
                             <div class="p-4">
                                 {{-- First Name and Last Name Row --}}
@@ -129,9 +129,9 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label for="bmr" class="text-gray-700 font-semibold block mb-1">BMR</label>
+                                        <label for="bmi" class="text-gray-700 font-semibold block mb-1">BMI</label>
                                         <div class="form-control rounded border px-4 py-2 bg-gray-100">
-                                            {{ old('bmr', isset($member) ? $member->bmr : 'N/A') }}
+                                            {{ old('bmi', isset($member) ? number_format($member->bmr, 2) : 'N/A') }}
                                         </div>
                                     </div>
                                 </div>

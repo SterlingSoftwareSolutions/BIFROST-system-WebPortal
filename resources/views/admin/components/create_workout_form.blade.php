@@ -348,7 +348,7 @@
         window.toggleGenderSelection = function(unitSelect, genderId) {
             const genderSelect = document.getElementById(genderId);
             if(genderSelect) {
-                if(unitSelect.value === 'Cal' || unitSelect.value === 'Kg') {
+                if(unitSelect.value === 'Cal') {
                     genderSelect.classList.remove('hidden');
                 } else {
                     genderSelect.classList.add('hidden');
@@ -445,7 +445,8 @@
                          <div class="flex items-center">
                             <button type="button" onclick="decrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="${prefix}_reps_${index}" name="${prefix}_reps_${index}" value="0" readonly
+                            <input type="text" id="${prefix}_reps_${index}" name="${prefix}_reps_${index}" value="" placeholder="0"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-full text-sm">
                             <button type="button" onclick="incrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
@@ -559,7 +560,7 @@
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
                                 <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
@@ -623,7 +624,8 @@
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="${prefix}_reps_${index}" name="${prefix}_reps_${index}" value="0" readonly
+                            <input type="text" id="${prefix}_reps_${index}" name="${prefix}_reps_${index}" value="" placeholder="0"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('${prefix}_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
@@ -792,7 +794,7 @@
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
                                 <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
@@ -874,7 +876,7 @@
                     <!-- REPS Column -->
                     <div class="w-32 flex items-center justify-center">
                         <button type="button" onclick="decrementValue('pyramid_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                        <input type="text" id="pyramid_reps_${index}" name="pyramid_reps_${index}" value="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                        <input type="text" id="pyramid_reps_${index}" name="pyramid_reps_${index}" value="" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                         <button type="button" onclick="incrementValue('pyramid_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                     </div>
                 </div>
@@ -916,7 +918,7 @@
                                     <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                     <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                     <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                    <p class="mb-1"><b>Kg</b> – Weight</p>
+                                    <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                     <p class="mb-1"><b>BW</b> – Body Weight</p>
                                     <p class="mb-1"><b>m</b> – Meter</p>
                                     <p><b>N/A</b> – N/A</p>
@@ -1168,7 +1170,7 @@
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
                                 <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
@@ -1202,7 +1204,7 @@
                     <div class="w-32 text-center">
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('ss_reps_main')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                            <input type="text" id="ss_reps_main" name="ss_reps_main" placeholder="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                            <input type="text" id="ss_reps_main" name="ss_reps_main" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                             <button type="button" onclick="incrementValue('ss_reps_main')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
@@ -1248,7 +1250,7 @@
                                 <div class="text-red-500 font-bold w-1/3 text-center">
                                     RSet
                                 </div>
-                                <div class="text-yellow-500 font-bold w-1/3 text-center">
+                                <div class="text-orange-500 font-bold w-1/3 text-center">
                                     RSet
                                 </div>
                                 <div class="text-green-500 font-bold w-1/3 text-center">
@@ -1288,7 +1290,7 @@
                                     </button>
 
                                     <input type="text" id="restyellows_1" name="restyellow"
-                                        value="00:04:00"
+                                        value="00:02:00"
                                         class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
                                         readonly required>
 
@@ -1308,7 +1310,7 @@
                                     </button>
 
                                     <input type="text" id="restgreens_1" name="restgreen"
-                                        value="00:04:00"
+                                        value="00:01:00"
                                         class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
                                         readonly required>
 
@@ -1391,6 +1393,11 @@
 
                       if (targetInput) {
                           targetInput.value = value;
+                          // If we are syncing units, we must trigger the change event 
+                          // to update gender toggle visibility
+                          if (field === 'unit') {
+                              targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+                          }
                       }
                  });
             };
@@ -1484,7 +1491,7 @@
                     <div class="w-32 text-center">
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-s-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">-</button>
-                            <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="0" readonly class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
+                            <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm font-bold">
                             <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 border border-gray-300 rounded-e-lg p-3 h-11 w-10 flex justify-center items-center font-bold text-lg">+</button>
                         </div>
                     </div>
@@ -1558,7 +1565,7 @@
                              <!-- Reps Control -->
                              <div class="flex items-center gap-1">
                                   <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
-                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
+                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
                                   <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
                              </div>
 
@@ -1590,7 +1597,7 @@
                      const isLastLine = arrayIndex === exerciseIds.length - 1;
 
                      // Get Defaults from Top
-                     let defaultReps = '0';
+                     let defaultReps = '';
                      let defaultLoad = '80';
                      let defaultUnit = '%';
 
@@ -1620,7 +1627,7 @@
                                   <!-- Reps -->
                                   <div class="flex items-center">
                                       <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
-                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
+                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
                                       <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
                                   </div>
 
@@ -1763,7 +1770,8 @@
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('emom_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="emom_reps_${index}" name="emom_reps_${index}" value="0" readonly
+                            <input type="text" id="emom_reps_${index}" name="emom_reps_${index}" value="" placeholder="0"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('emom_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
@@ -1866,7 +1874,7 @@
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                 <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                <p class="mb-1"><b>Kg</b> – Weight</p>
+                                <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
                                 <p class="mb-1"><b>m</b> – Meter</p>
                                 <p><b>N/A</b> – N/A</p>
@@ -1925,7 +1933,8 @@
                             <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('station_${stationIndex}_reps_${rowIndex}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex justify-center items-center">-</button>
-                            <input type="text" id="station_${stationIndex}_reps_${rowIndex}" name="station_${stationIndex}_reps_${rowIndex}" value="0" readonly
+                            <input type="text" id="station_${stationIndex}_reps_${rowIndex}" name="station_${stationIndex}_reps_${rowIndex}" value="" placeholder="0"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('station_${stationIndex}_reps_${rowIndex}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex justify-center items-center">+</button>
@@ -2066,7 +2075,7 @@
                                      <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
                                      <p class="mb-1"><b>%</b> – Percentage of effort</p>
                                      <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                     <p class="mb-1"><b>Kg</b> – Weight</p>
+                                     <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                      <p class="mb-1"><b>BW</b> – Body Weight</p>
                                      <p class="mb-1"><b>m</b> – Meter</p>
                                      <p><b>N/A</b> – N/A</p>
@@ -2209,7 +2218,8 @@
                          <div class="flex items-center justify-center">
                             <button type="button" onclick="decrementValue('round_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="round_reps_${index}" name="round_reps_${index}" value="0" readonly
+                            <input type="text" id="round_reps_${index}" name="round_reps_${index}" value="" placeholder="0"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
                             <button type="button" onclick="incrementValue('round_reps_${index}')"
                                 class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
@@ -2304,14 +2314,17 @@
     window.incrementValue = function(id) {
         const el = document.getElementById(id);
         if(el) {
-            el.value = parseInt(el.value || 0) + 1;
+            let val = parseInt(el.value) || 0;
+            el.value = val + 1;
             el.dispatchEvent(new Event('input', { bubbles: true }));
         }
     }
     window.decrementValue = function(id) {
         const el = document.getElementById(id);
-        if(el && el.value > 0) {
-            el.value = parseInt(el.value) - 1;
+        if(el) {
+            let val = parseInt(el.value) || 0;
+            if (val > 0) el.value = val - 1;
+            else el.value = 0;
             el.dispatchEvent(new Event('input', { bubbles: true }));
         }
     }

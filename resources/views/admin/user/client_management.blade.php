@@ -17,7 +17,7 @@
     @section('content')
         <!-- Main content (Dashboard) -->
         <div class="container transition-width mt-24 flex-grow mx-4" id="container">
-            <div class="breadcrumb text-sm mb-4">
+            <div class="breadcrumb text-lg mb-4">
                 <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Client
                         </strong></span></div>
                 <div class="flex ">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="bg-white p-5 rounded-lg shadow-md">
-                    <table class="w-full border-collapse mb-5 text-sm">
+                    <table class="w-full border-collapse mb-5 text-lg">
                         <thead>
                             <tr>
                                 <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
@@ -45,7 +45,7 @@
                                         <i class="fa fa-sort" aria-hidden="true"></i>
                                         <!-- Dropdown menu -->
                                         <div class="hidden dropdown absolute mt-2 right-0 w-40 bg-white border border-gray-300 shadow-md rounded-md z-10">
-                                            <ul class="text-sm">
+                                            <ul class="text-lg">
                                                 <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('on')">Subscription On</li>
                                                 <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('off')">Subscription Off</li>
                                             </ul>
