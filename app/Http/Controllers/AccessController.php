@@ -282,12 +282,17 @@ class AccessController extends Controller
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|max:255',
-                'pin' => 'required|integer|min:0',
+                'pin' => ['required', 'regex:/^[0-9]+$/', 'min:0'],
             ]);
 
             // Check if the email already exists
             if (User::where('email', $validatedData['email'])->exists()) {
                 return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
+            }
+
+            // Check if the PIN already exists
+            if (User::where('pin', $validatedData['pin'])->exists()) {
+                return redirect()->back()->withErrors(['pin' => 'The PIN has already been taken. Please choose another one.'])->withInput();
             }
             //dd($validatedData);
 

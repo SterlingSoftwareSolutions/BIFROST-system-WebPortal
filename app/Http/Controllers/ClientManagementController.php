@@ -83,7 +83,7 @@ class ClientManagementController extends Controller
                 'address' => 'required|string|max:255',
                 'height' => 'required|integer|min:0',
                 'weight' => 'required|integer|min:0',
-                'bmr' => 'required|numeric|min:0',
+                'bmi' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
                 'is_subsactive' => 'boolean',
@@ -128,7 +128,7 @@ class ClientManagementController extends Controller
             $profile->address = $validatedData['address'];
             $profile->height = $validatedData['height'];
             $profile->weight = $validatedData['weight'];
-            $profile->bmr = $validatedData['bmr'];
+            $profile->bmr = $validatedData['bmi'];
             $profile->primary_goal = $validatedData['primary-goal'];
             $profile->subscription_level = $validatedData['subscription_level'];
             $profile->is_subsactive = $validatedData['is_subsactive'];
@@ -159,7 +159,7 @@ class ClientManagementController extends Controller
                 'address' => 'required|string|max:255',
                 'height' => 'required|integer|min:0',
                 'weight' => 'required|integer|min:0',
-                'bmr' => 'required|numeric|min:0',
+                'bmi' => 'required|numeric|min:0',
                 'primary-goal' => 'required|string|max:255',
                 'subscription_level' => 'required|string|max:255',
                 'is_subsactive' => 'boolean',
@@ -210,7 +210,7 @@ class ClientManagementController extends Controller
                 'address' => $validatedData['address'],
                 'height' => $validatedData['height'],
                 'weight' => $validatedData['weight'],
-                'bmr' => $validatedData['bmr'],
+                'bmr' => $validatedData['bmi'],
                 'primary_goal' => $validatedData['primary-goal'],
                 'subscription_level' => $validatedData['subscription_level'],
                 'is_subsactive' => $validatedData['is_subsactive'],
