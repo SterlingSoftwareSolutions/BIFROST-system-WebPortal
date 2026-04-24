@@ -1434,7 +1434,7 @@ function toggleGenderInputs(selectElement) {
 
     const selected = selectElement.value;
 
-    if (selected === 'Cal' || selected === 'Kg') {
+    if (selected === 'Cal') {
         genderDiv.classList.remove('invisible');
         defaultInput.classList.add('invisible');
         defaultInput.removeAttribute('required');

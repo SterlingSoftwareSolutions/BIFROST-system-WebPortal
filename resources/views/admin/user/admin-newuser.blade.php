@@ -52,10 +52,26 @@
                     </div>
                     {{-- route cheacking --}}
                     <form
-                        aaction="{{ $action == 'edit' ? route('updateadmin', ['id' => $user->id]) : route('newaminsave') }}"
+                        action="{{ $action == 'edit' ? route('updateadmin', ['id' => $user->id]) : route('newaminsave') }}"
                         method="POST" enctype="multipart/form-data"
                         class="space-y-6 text-xs  rounded-lg shadow-lg bg-white p-2">
                         @csrf
+                        @if ($errors->any())
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    @foreach ($errors->all() as $error)
+                                        Toastify({
+                                            text: "{{ $error }}",
+                                            duration: 5000,
+                                            close: true,
+                                            gravity: "top",
+                                            position: "right",
+                                            backgroundColor: "#ef4444",
+                                        }).showToast();
+                                    @endforeach
+                                });
+                            </script>
+                        @endif
                         <div class="text-xs">
                             {{-- name and email Row --}}
                             <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
@@ -87,7 +103,8 @@
                                 <div class="w-full md:col-span-1 flex items-center space-x-2">
                                     <input type="text" id="pin" name="pin"
                                            class="form-control flex-grow border rounded px-4 py-2"
-                                           readonly
+                                           inputmode="numeric"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            value="{{ old('pin', isset($user) ? $pin : '') }}">
                                     <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
                                          data-action="{{ $action }}"
