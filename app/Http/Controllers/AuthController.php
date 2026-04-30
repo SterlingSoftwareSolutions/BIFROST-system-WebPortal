@@ -6,6 +6,8 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\View;
 
 class AuthController extends Controller
@@ -25,6 +27,8 @@ class AuthController extends Controller
                  $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
 
                 $user = User::where('pin', $pin)->first();
+
+                
 
                 if($request->portal != $user->user_type  && $user->pin == $pin){
                         return redirect()->back()->with('error', 'Please enter a correct pin number.');
@@ -108,7 +112,7 @@ class AuthController extends Controller
             ]);
 
             $pin = $request->pin_1 . $request->pin_2 . $request->pin_3 . $request->pin_4;
-
+            Log::info("mobile login pin : ".$pin);
             $user = User::where(function ($query) use ($request) {
                 if ($request->portal === 'admin') {
                     $query->whereIn('user_type', ['admin', 'super admin']);
