@@ -401,6 +401,7 @@ class MobileController extends Controller
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
                     'class_Id' => 'required|integer',
+                    'notes' => 'nullable|string',
                 ]);
 
                 if ($validator->fails()) {
@@ -448,6 +449,7 @@ class MobileController extends Controller
                     'round_number' => $roundNumber, // save only if exists
                     'exercise_time' => $exerciseTime,
                     'class_id' => $classId,
+                    'notes' => $validatedData['notes'] ?? null,
                 ]);
                 $message = 'Warm-up updated successfully';
                 Log::info('Warm-up updated', [
@@ -467,6 +469,7 @@ class MobileController extends Controller
                     'round_number' => $roundNumber, // save only if exists
                     'exercise_time' => $exerciseTime,
                     'class_id' => $classId,
+                    'notes' => $validatedData['notes'] ?? null,
                 ]);
                 $message = 'Warm-up saved successfully';
                 Log::info('New warm-up created', [
@@ -543,6 +546,7 @@ class MobileController extends Controller
                     'date' => 'required|string', // only required for AMRAP, but we will check conditionally in code
                     'exercise_time' => 'nullable|string',
                     'class_Id' => 'required|integer',
+                    'notes' => 'nullable|string',
                 ]);
 
                 if ($validator->fails()) {
@@ -594,6 +598,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Strength updated successfully';
                     Log::info('Strength updated', [
@@ -614,6 +619,7 @@ class MobileController extends Controller
                         'exercise_time' => $excerciseTime,
                         'date' => $storedDay,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Strength saved successfully';
                     Log::info('New strength record created', [
@@ -690,6 +696,7 @@ class MobileController extends Controller
                     'round_number' => 'nullable|string', // only required for AMRAP, but we will check conditionally in code
                   'exercise_time' => 'nullable|string',
                   'class_Id' => 'required|integer',
+                  'notes' => 'nullable|string',
                 ]);
 
                 if ($validator->fails()) {
@@ -743,6 +750,7 @@ class MobileController extends Controller
                         'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Weightlifting updated successfully';
                     Log::info('Weightlifting updated', [
@@ -763,6 +771,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Weightlifting saved successfully';
                     Log::info('New weightlifting record created', [
@@ -837,6 +846,7 @@ class MobileController extends Controller
                     'class_Id' => 'required|integer',
                    # 'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
+                    'notes' => 'nullable|string',
                 ]);
 
                 if ($validator->fails()) {
@@ -888,6 +898,7 @@ class MobileController extends Controller
                         //'conditioning_id' => $conditioningId,
                         'class_id' => $classId,
                       'exercise_time' => $exerciseTime,
+                      'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Conditioning updated successfully';
                     Log::info('Conditioning updated', ['workout_manager_id' => $workoutManagerId]);
@@ -905,6 +916,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Conditioning saved successfully';
                     Log::info('New conditioning record created', ['workout_manager_id' => $workoutManagerId]);
@@ -973,6 +985,7 @@ class MobileController extends Controller
                     'date' => 'required|string',
                     'class_Id' => 'required|integer',
                     'exercise_time' => 'nullable|string',
+                    'notes' => 'nullable|string',
                 ]);
 
                 if ($validator->fails()) {
@@ -1025,6 +1038,7 @@ class MobileController extends Controller
                         'round_number' => $roundNumber,
                         'exercise_time' => $exerciseTime,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Accessory updated successfully';
                     Log::info('Accessory updated', ['workout_manager_id' => $workoutManagerId,'set_number' => $setNumber]);
@@ -1042,6 +1056,7 @@ class MobileController extends Controller
                         'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
                         'class_id' => $classId,
+                        'notes' => $validatedData['notes'] ?? null,
                     ]);
                     $message = 'Accessory saved successfully';
                     Log::info('New accessory record created', ['workout_manager_id' => $workoutManagerId, 'set_number' => $setNumber]);
