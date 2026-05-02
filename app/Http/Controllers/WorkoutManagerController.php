@@ -401,24 +401,24 @@ class WorkoutManagerController extends Controller
 
 
     private function saveEmom(Request $request, $managerId) {
-        $allKeys = $request->keys();
-        foreach ($allKeys as $key) {
-            if (preg_match('/^emom_exercise_(\d+)$/', $key, $matches)) {
-                $i = $matches[1];
-                $exName = $request->input($key);
-                $wId = $this->getWorkoutLibId($exName);
+        $minuteLength = $request->input('minute_length', 1);
+        $i = 1;
+        while($request->has("emom_exercise_$i")) {
+            $exName = $request->input("emom_exercise_$i");
+            $wId = $this->getWorkoutLibId($exName);
 
-                if($wId) {
-                    Emom::create([
-                        'workout_manager_id' => $managerId,
-                        'workout_libraries_id' => $wId,
-                        'training_load' => $request->input("emom_load_$i"),
-                        'unit_type' => $request->input("emom_unit_$i"),
-                        'reps' => $request->input("emom_reps_$i"),
-                        'gender' => $request->input("emom_gender_$i"),
-                    ]);
-                }
+            if($wId) {
+                Emom::create([
+                    'workout_manager_id' => $managerId,
+                    'workout_libraries_id' => $wId,
+                    'training_load' => $request->input("emom_load_$i"),
+                    'unit_type' => $request->input("emom_unit_$i"),
+                    'reps' => $request->input("emom_reps_$i"),
+                    'gender' => $request->input("emom_gender_$i"),
+                    'exercise_time' => $minuteLength,
+                ]);
             }
+            $i++;
         }
     }
 

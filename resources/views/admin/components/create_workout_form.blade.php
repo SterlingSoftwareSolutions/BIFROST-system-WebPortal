@@ -949,54 +949,54 @@
             `;
         }
 
+        window.incrementMinuteLength = function() {
+             const el = document.getElementById('minute_length');
+             if(el) {
+                 let val = parseInt(el.value) + 1;
+                 el.value = val;
+             }
+        }
+
+        window.decrementMinuteLength = function() {
+             const el = document.getElementById('minute_length');
+             if(el && el.value > 1) {
+                 let val = parseInt(el.value) - 1;
+                 el.value = val;
+             }
+        }
+
         window.renderEmomUI = function() {
             const html = `
                 <div id="emom_container">
-                    <!-- Minutes Counter -->
-                    <div class="flex items-center mb-4 border-b pb-2 mt-2">
-                        <label class="w-60 block text-base font-semibold text-black">Minutes</label>
+                    <div class="flex items-center mb-4 border-b pb-4 mt-2 justify-between">
+                        <!-- Minutes -->
                         <div class="flex items-center">
-                            <button type="button" onclick="decrementMinuteCount()"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
-                            <input type="text" id="num_minutes" name="num_minutes" value="1" readonly
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-base font-medium">
-                            <button type="button" onclick="incrementMinuteCount()"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
-                        </div>
-                    </div>
-
-                    <!-- Headers -->
-                    <div class="flex gap-3 mb-2 px-2">
-                        <div class="w-6"></div> <!-- Number col -->
-                        <div class="flex-1 font-bold text-sm text-gray-700">Exercise <span class="text-red-500">*</span></div>
-                        <div class="w-40 font-bold text-sm text-center text-gray-700 flex items-center justify-center gap-1">
-                            Training Load <span class="text-red-500">*</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="hidden">
-                            </svg>
-                            <div class="relative">
-                                <span onclick="toggleInfoPopup(this, event)" class="cursor-pointer select-none">
-                                    <svg width="18px" height="18px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M11 12H9v-.148c0-.876.306-1.499 1-1.852.385-.195 1-.568 1-1a1.001 1.001 0 00-2 0H7c0-1.654 1.346-3 3-3s3 1 3 3-2 2.165-2 3zm-2 3h2v-2H9v2z" fill="#9CA3AF"/>
-                                        <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1116 0 8 8 0 01-16 0z" fill="#9CA3AF"/>
-                                    </svg>
-                                </span>
-                                <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
-                                    <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                    <p class="mb-1"><b>%</b> – Percentage of effort</p>
-                                    <p class="mb-1"><b>Cal</b> – Number of calories</p>
-                                    <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
-                                    <p class="mb-1"><b>BW</b> – Body Weight</p>
-                                    <p class="mb-1"><b>m</b> – Meter</p>
-                                    <p><b>N/A</b> – N/A</p>
-                                </div>
+                            <label class="w-40 block text-base font-semibold text-black">Minutes</label>
+                            <div class="flex items-center">
+                                <button type="button" onclick="decrementMinuteCount()"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
+                                <input type="text" id="num_minutes" name="num_minutes" value="1" readonly
+                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-base font-medium">
+                                <button type="button" onclick="incrementMinuteCount()"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
                             </div>
                         </div>
-                        <div class="w-28 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+
+                        <!-- Minute Length -->
+                        <div class="flex items-center">
+                            <label class="w-40 block text-base font-semibold text-black text-right pr-4">Minute Length</label>
+                            <div class="flex items-center">
+                                <button type="button" onclick="decrementMinuteLength()"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
+                                <input type="text" id="minute_length" name="minute_length" value="2" readonly
+                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-base font-medium">
+                                <button type="button" onclick="incrementMinuteLength()"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
+                            </div>
+                        </div>
                     </div>
 
-                    <div id="emom_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll">
-                        ${getEmomRowHtml(1)}
-                    </div>
+                    ${getUniversalTableHtml('emom')}
                 </div>
             `;
             container.innerHTML = html;
@@ -1776,7 +1776,6 @@
              if(el) {
                  let val = parseInt(el.value) + 1;
                  el.value = val;
-                 updateEmomRows(val);
              }
         }
 
@@ -1785,7 +1784,6 @@
              if(el && el.value > 1) {
                  let val = parseInt(el.value) - 1;
                  el.value = val;
-                 updateEmomRows(val);
              }
         }
 
@@ -2578,6 +2576,10 @@
             } else if (fmt === 'EMOM') {
                 const emoms = workout.emoms || [];
                 if(workout.number) document.getElementById('num_minutes').value = workout.number;
+                if(emoms.length > 0 && emoms[0].exercise_time) {
+                    const mlInput = document.getElementById('minute_length');
+                    if (mlInput) mlInput.value = emoms[0].exercise_time;
+                }
                  emoms.forEach((row, i) => {
                     const idx = i + 1;
                     if (idx > 1) {
@@ -2588,6 +2590,7 @@
                     const u = document.querySelector(`[name="emom_unit_${idx}"]`); if(u) u.value = row.unit_type;
                     const r = document.getElementById(`emom_reps_${idx}`); if(r) r.value = row.reps;
                 });
+
 
             } else if (fmt === 'Pyramid') {
                  const pyramids = workout.pyramids || [];
