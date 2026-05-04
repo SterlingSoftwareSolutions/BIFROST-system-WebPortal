@@ -878,7 +878,10 @@ class MobileController extends Controller
                     ->where('date', $storedDay);
 
                 /**
-                 * If AMRAP format → also check round_number
+                 * If AMRAP format → also check round_number so each round is separate.
+                 * EMOM intentionally does NOT filter by round_number here — we want
+                 * a single row per exercise that gets UPDATED on every round save,
+                 * with round_number reflecting the latest completed round (e.g. "3/3").
                  */
                 if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
                     $query->where('round_number', $roundNumber);
