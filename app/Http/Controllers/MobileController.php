@@ -97,7 +97,7 @@ class MobileController extends Controller
         }
 
         return view('mobile.user.trainingday', [
-            'dates' => $dates, // still Carbon objects — good
+            'dates' => $dates, // still Carbon objects â€” good
             'classesByDate' => $classesByDate,
             'defaultTime' => '06:00:00'
         ]);
@@ -432,7 +432,10 @@ class MobileController extends Controller
                     ->where('class_id', $classId)
                     ->where('date', $storedDay);
 
-                if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
+                if ($workoutFormatType === 'amrap') {
+                    // For AMRAP, we want to update the same record regardless of round_number
+                    // so we don't add it to the query.
+                } else if ($roundNumber !== null) {
                     $query->where('round_number', $roundNumber);
                 }
 
@@ -576,14 +579,23 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
-                    ->where('class_id', $classId)
-                    ->where('set_number', $setNumber);
-
+                    ->where('class_id', $classId);
                     /**
-                     * If AMRAP format → also check round_number
+                     * If AMRAP format â†’ do NOT check round_number or set_number
+                     * to ensure we update the same row.
                      */
-                    if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
-                        $query->where('round_number', $roundNumber);
+                    if ($workoutFormatType === 'amrap') {
+                        $query = DailyStrength::where('member_id', $memberId)
+                            ->where('workout_manager_id', $workoutManagerId)
+                            ->where('workout_format_type', $workoutFormatType)
+                            ->where('workout_format_id', $workoutFormatId)
+                            ->where('date', $storedDay)
+                            ->where('class_id', $classId);
+                    } else {
+                        $query->where('set_number', $setNumber);
+                        if ($roundNumber !== null) {
+                            $query->where('round_number', $roundNumber);
+                        }
                     }
 
                 $dailyStrength = $query->first();
@@ -727,15 +739,18 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
-                    ->where('class_id', $classId)
-                    ->where('set_number', $setNumber);
+                    ->where('class_id', $classId);
 
-                    /**
-                 * If AMRAP format → also check round_number
-                 */
-                if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
-                    $query->where('round_number', $roundNumber);
-                }
+                /**
+                  * For AMRAP: do NOT check round_number or set_number
+                  * For others: check both
+                  */
+                 if ($workoutFormatType !== 'amrap') {
+                     $query->where('set_number', $setNumber);
+                     if ($roundNumber !== null) {
+                         $query->where('round_number', $roundNumber);
+                     }
+                 }
 
                 $dailyWeightlifting = $query->first();
 
@@ -878,11 +893,9 @@ class MobileController extends Controller
                     ->where('date', $storedDay);
 
                 /**
-                 * If AMRAP format → also check round_number
+                /**
+                 * For AMRAP: do NOT filter by round_number - single row per exercise updated each round.
                  */
-                if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
-                    $query->where('round_number', $roundNumber);
-                }
 
                 $dailyConditioning = $query->first();
 
@@ -1016,14 +1029,18 @@ class MobileController extends Controller
                     ->where('workout_format_type', $workoutFormatType)
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
-                    ->where('class_id', $classId)
-                    ->where('set_number', $setNumber);
-                    /**
-                 * If AMRAP format → also check round_number
-                 */
-                if ($workoutFormatType === 'amrap' && $roundNumber !== null) {
-                    $query->where('round_number', $roundNumber);
-                }
+                    ->where('class_id', $classId);
+
+                /**
+                  * For AMRAP: do NOT check round_number or set_number
+                  * For others: check both
+                  */
+                 if ($workoutFormatType !== 'amrap') {
+                     $query->where('set_number', $setNumber);
+                     if ($roundNumber !== null) {
+                         $query->where('round_number', $roundNumber);
+                     }
+                 }
 
                 $dailyAccessory = $query->first();
 
@@ -1445,8 +1462,7 @@ class MobileController extends Controller
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
                 ->where('member_id', operator: $member->id)
-                ->with('workout.categoryOption')
-                ->with('member')
+                ->with(['workout.categoryOption', 'member', 'workoutManager.format', 'workoutManager.amraps', 'workoutManager.rounds', 'workoutManager.emoms', 'workoutManager.straights', 'workoutManager.circuits', 'workoutManager.pyramids', 'workoutManager.forTimes', 'workoutManager.intervals'])
                 ->get();
 
             if ($assigned->isEmpty()) {

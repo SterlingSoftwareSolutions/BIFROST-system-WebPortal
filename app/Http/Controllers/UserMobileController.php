@@ -1430,7 +1430,7 @@ public function getWorkouts(Request $request)
         */
         $workouts->each(function ($workout) use ($classId, $member, $dateString, $dateObj) {
 
-            $typeName = strtolower($workout->type->name ?? '');
+            $typeName = strtolower(trim($workout->type->name ?? ''));
 
                 switch ($typeName) {
                     case 'strength':
@@ -1547,13 +1547,13 @@ public function getWorkouts(Request $request)
 
                                     $isCompleted = ($dailyRepsSum >= $targetReps);
 
-                                    $set->is_completed = $isCompleted ? 1 : 0;
-                                    $set->daily_reps = $dailyRepsSum;
-                                    $set->target_reps = $targetReps;
+                                    $set->setAttribute('is_completed', $isCompleted ? 1 : 0);
+                                    $set->setAttribute('daily_reps', $dailyRepsSum);
+                                    $set->setAttribute('target_reps', $targetReps);
                                 } else {
-                                    $set->is_completed = 0;
-                                    $set->daily_reps = 0;
-                                    $set->target_reps = $set->res ?? 0;
+                                    $set->setAttribute('is_completed', 0);
+                                    $set->setAttribute('daily_reps', 0);
+                                    $set->setAttribute('target_reps', $set->res ?? 0);
                                 }
                             }
                         }
@@ -1568,7 +1568,7 @@ public function getWorkouts(Request $request)
                             ->where('workout_format_type', $formatType)
                             ->where('workout_format_id', $formatItem->id)
                             ->where('class_id', $classId)
-                            ->where('date', $dateString);
+                            ->where('date', 'LIKE', '%' . $dateString . '%');
 
                         if (
                             in_array($typeName, ['strength', 'weightlifting', 'accessory'])
@@ -1580,10 +1580,10 @@ public function getWorkouts(Request $request)
                             $isCompleted = $baseQuery->exists();
 
                             foreach ($formatItem->sets as $set) {
-                                $set->is_completed = $isCompleted ? 1 : 0;
+                                $set->setAttribute('is_completed', $isCompleted ? 1 : 0);
                             }
 
-                            $formatItem->is_completed = $isCompleted ? 1 : 0;
+                            $formatItem->setAttribute('is_completed', $isCompleted ? 1 : 0);
                             unset($formatItem->has_reps_saved);
 
                         } else {
@@ -1591,8 +1591,47 @@ public function getWorkouts(Request $request)
                             $formatId = $formatItem->id;
                             $dailyQuery = (clone $baseQuery);
 
-                            // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
-                            if ($dailyQuery->exists()) {
+                            // EMOM is time-based: completion = the timer ran and the round was saved.
+                            // We check existence rather than reps >= target, because reps reset each minute
+                            // and the user may legitimately log 0 reps while still completing the round.
+                            if ($formatType === 'emom') {
+                                $dailyRecord = $dailyQuery->first();
+                                $isCompleted = false;
+                                $roundNumber = null;
+                                $dailyRepsSum = 0;
+
+                                if ($dailyRecord) {
+                                    $dailyRepsSum = $dailyQuery->sum('reps');
+                                    $roundNumber = trim($dailyRecord->round_number);
+
+                                    if ($roundNumber && str_contains($roundNumber, '/')) {
+                                        [$done, $total] = explode('/', $roundNumber);
+                                        $isCompleted = ((int)trim($done) >= (int)trim($total));
+                                    } else {
+                                        // Fallback if no round_number but record exists
+                                        $isCompleted = true;
+                                    }
+                                                   Log::info('[getWorkouts][EMOM Check]', [
+                                    'item'               => $formatItem->workoutLibrary->name ?? 'Unknown',
+                                    'table'              => $dailyModel,
+                                    'workout_manager_id' => $workout->id,
+                                    'workout_format_id'  => $formatId,
+                                    'exists'             => $dailyRecord ? true : false,
+                                    'isCompleted'        => $isCompleted,
+                                    'round_number'       => $roundNumber,
+                                    'query_date'         => $dateString,
+                                    'db_date'            => $dailyRecord->date ?? 'N/A',
+                                ]);
+
+                                $formatItem->setAttribute('is_completed',   $isCompleted ? 1 : 0);
+                                $formatItem->setAttribute('has_reps_saved', $dailyRecord ? 1 : 0);
+                                $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
+                                $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
+                                $formatItem->setAttribute('round_number',   $roundNumber);
+                            }
+                        }
+                        // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
+                        elseif ($dailyQuery->exists()) {
                                 $dailyRepsSum = $dailyQuery->sum('reps');
                                 $targetReps = $formatItem->reps ?? 0;
 
@@ -1609,16 +1648,16 @@ public function getWorkouts(Request $request)
 
                                 $hasReps = $dailyQuery->where('reps', '>', 0)->exists();
 
-                                $formatItem->is_completed   = $isCompleted ? 1 : 0;
-                                $formatItem->has_reps_saved = $hasReps ? 1 : 0;
-                                $formatItem->daily_reps      = $dailyRepsSum;
-                                $formatItem->target_reps     = $targetReps;
+                                $formatItem->setAttribute('is_completed',   $isCompleted ? 1 : 0);
+                                $formatItem->setAttribute('has_reps_saved', $hasReps ? 1 : 0);
+                                $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
+                                $formatItem->setAttribute('target_reps',    $targetReps);
                             } else {
                                 // If no record exists in the daily table, it's definitely not completed
-                                $formatItem->is_completed   = 0;
-                                $formatItem->has_reps_saved = 0;
-                                $formatItem->daily_reps      = 0;
-                                $formatItem->target_reps     = $formatItem->reps ?? 0;
+                                $formatItem->setAttribute('is_completed',   0);
+                                $formatItem->setAttribute('has_reps_saved', 0);
+                                $formatItem->setAttribute('daily_reps',     0);
+                                $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
                             }
                         }
                     }
@@ -1641,17 +1680,10 @@ public function getWorkouts(Request $request)
             $completedFormatItems = 0;
 
             $typeWorkouts->each(function ($workout) use (&$totalFormatItems, &$completedFormatItems) {
+                $workoutTotal = 0;
+                $workoutCompleted = 0;
 
-                $formatRelations = [
-                    'rounds',
-                    'amraps',
-                    'forTimes',
-                    'intervals',
-                    'emoms',
-                    'straights',
-                    'circuits',
-                    'pyramids',
-                ];
+                $formatRelations = ['rounds', 'amraps', 'forTimes', 'intervals', 'emoms', 'straights', 'circuits', 'pyramids'];
 
                 foreach ($formatRelations as $relation) {
 
@@ -1660,32 +1692,41 @@ public function getWorkouts(Request $request)
                     }
 
                     foreach ($workout->{$relation} as $formatItem) {
-                      Log::info('[getWorkouts][Completion Check] Processing format item', [
-                            $formatItem->toArray(),  ]);
-
                         if ($relation === 'straights') {
                             if ($formatItem->sets && $formatItem->sets->isNotEmpty()) {
                                 foreach ($formatItem->sets as $set) {
-                                    $totalFormatItems++;
+                                    $workoutTotal++;
                                     if (($set->is_completed ?? 0) == 1) {
-                                        $completedFormatItems++;
+                                        $workoutCompleted++;
                                     }
                                 }
                             }
-                        }  else {
-                            $totalFormatItems++;
+                        } else {
+                            $workoutTotal++;
                             if (($formatItem->is_completed ?? 0) == 1) {
-                                $completedFormatItems++;
+                                $workoutCompleted++;
                             }
                         }
                     }
                 }
+                $workoutStatus = ($workoutTotal > 0 && $workoutCompleted === $workoutTotal) ? 'completed' : 'pending';
+                $workout->setAttribute('status', $workoutStatus);
+
+                $totalFormatItems += $workoutTotal;
+                $completedFormatItems += $workoutCompleted;
             });
 
             $typeCompletionStatus = ($totalFormatItems > 0 && $completedFormatItems === $totalFormatItems) ? 1 : 0;
 
+            Log::info('[getWorkouts][Completion Debug] Summary', [
+                'type' => $typeWorkouts->first()->type->name ?? 'Unknown',
+                'total' => $totalFormatItems,
+                'completed' => $completedFormatItems,
+                'status' => $typeCompletionStatus
+            ]);
+
             $typeWorkouts->each(function ($workout) use ($typeCompletionStatus) {
-                $workout->type_completed = $typeCompletionStatus;
+                $workout->setAttribute('type_completed', $typeCompletionStatus);
             });
 
             return $typeWorkouts;

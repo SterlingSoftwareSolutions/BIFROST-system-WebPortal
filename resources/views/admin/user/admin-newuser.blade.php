@@ -131,37 +131,37 @@
                                 </div>
                                 <div class="access-buttons w-full md:col-span-5 flex flex-wrap items-center gap-2">
                                     <div class="input-container mb-0 relative">
-                                        <input type="checkbox" name="access_fields[dashboard]" id="dashboard"/>
+                                        <input type="checkbox" name="access_fields[dashboard]" id="dashboard" {{ isset($access) && $access->dashboard == 'enable' ? 'checked' : '' }}/>
                                         <label for="dashboard" >Dashboard</label>
                                     </div>
                                     <div class="input-container mb-0">
-                                        <input type="checkbox" name="access_fields[access]" id="access"/>
+                                        <input type="checkbox" name="access_fields[access]" id="access" {{ isset($access) && $access->access == 'enable' ? 'checked' : '' }}/>
                                         <label for="access">Access</label>
                                     </div>
                                     <div class="input-container mb-0">
                                         <input type="checkbox"
-                                            name="access_fields[client_management]" id="client_management"/>
+                                            name="access_fields[client_management]" id="client_management" {{ isset($access) && $access->client_management == 'enable' ? 'checked' : '' }}/>
                                         <label for="client_management">Client Management</label>
                                     </div>
                                     <div class="input-container mb-0" >
                                         <input type="checkbox"
-                                            name="access_fields[workout_library]" id="workout_library"/>
+                                            name="access_fields[workout_library]" id="workout_library" {{ isset($access) && $access->workout_library == 'enable' ? 'checked' : '' }}/>
                                         <label for="workout_library" >Exercise Library</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[session]" id="session"/>
+                                        <input type="checkbox" name="access_fields[session]" id="session" {{ isset($access) && $access->session == 'enable' ? 'checked' : '' }}/>
                                         <label for="session">Session</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[financial]" id="financial"/>
+                                        <input type="checkbox" name="access_fields[financial]" id="financial" {{ isset($access) && $access->financial == 'enable' ? 'checked' : '' }}/>
                                         <label for="financial">Financial</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[communication]" id="communication"/>
+                                        <input type="checkbox" name="access_fields[communication]" id="communication" {{ isset($access) && $access->communication == 'enable' ? 'checked' : '' }}/>
                                         <label for="communication">Communication</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[statistics]" id="statistics"/>
+                                        <input type="checkbox" name="access_fields[statistics]" id="statistics" {{ isset($access) && $access->statistics == 'enable' ? 'checked' : '' }}/>
                                         <label for="statistics">Statistics</label>
                                     </div>
                                 </div>
