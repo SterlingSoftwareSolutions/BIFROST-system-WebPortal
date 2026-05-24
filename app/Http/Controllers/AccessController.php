@@ -89,10 +89,12 @@ class AccessController extends Controller
     public function resetPin(Request $request)
     {
         $id = $request->input('id');
+        $customPin = $request->input('pin');
         $access = Access::find($id);
 
         if (!$access) {
             return response()->json([
+                'success' => false,
                 'message' => 'Access record not found'
             ], 404);
         }
@@ -101,19 +103,33 @@ class AccessController extends Controller
 
         if (!$user) {
             return response()->json([
+                'success' => false,
                 'message' => 'User not found'
             ], 404);
         }
-        // Generate a unique 4-digit random PIN
-        do {
-            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
-        } while (User::where('pin', $pin)->exists());
+        
+        if (!empty($customPin)) {
+            // Check if the custom pin is already in use by another user
+            if (User::where('pin', $customPin)->where('id', '!=', $user->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This PIN is already in use. Please choose another one.'
+                ]);
+            }
+            $pin = $customPin;
+        } else {
+            // Generate a unique 4-digit random PIN
+            do {
+                $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+            } while (User::where('pin', $pin)->exists());
+        }
 
         // Assuming you have a 'pin' field in your User model to store the PIN
         $user->pin = $pin;
         $user->save();
 
         return response()->json([
+            'success' => true,
             'message' => 'PIN reset successfully',
             'pin' => $pin,
             'user' => $user
