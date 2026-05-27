@@ -220,6 +220,8 @@ class WorkoutManagerController extends Controller
                     'unit_type' => $request->input("round_unit_$i"),
                     'reps' => $request->input("round_reps_$i"),
                     'gender' => $request->input("round_gender_$i"),
+                    'is_for_time' => $request->has('is_for_time'),
+                    'time_to_complete' => $request->has('is_for_time') ? $request->input('time_to_complete') : null,
                 ]);
             }
             $i++;
@@ -330,9 +332,9 @@ class WorkoutManagerController extends Controller
 
                     \App\Models\StraightSet::create([
                         'straight_id' => $straight->id,
-                        'restred' => $request->restred ?? '00:00:00',
-                        'restyellow' => $request->restyellow ?? '00:00:00',
-                        'restgreen' => $request->restgreen ?? '00:00:00',
+                        'restred' => $request->restred ?? '00:04:00',
+                        'restyellow' => $request->restyellow ?? '00:02:00',
+                        'restgreen' => $request->restgreen ?? '00:01:00',
                         'workout_libraries_id' => $libId,
                         'res' => $request->input($repsKey),
                         'training_load' => $request->input($loadKey),
@@ -399,24 +401,24 @@ class WorkoutManagerController extends Controller
 
 
     private function saveEmom(Request $request, $managerId) {
-        $allKeys = $request->keys();
-        foreach ($allKeys as $key) {
-            if (preg_match('/^emom_exercise_(\d+)$/', $key, $matches)) {
-                $i = $matches[1];
-                $exName = $request->input($key);
-                $wId = $this->getWorkoutLibId($exName);
+        $minuteLength = $request->input('minute_length', 1);
+        $i = 1;
+        while($request->has("emom_exercise_$i")) {
+            $exName = $request->input("emom_exercise_$i");
+            $wId = $this->getWorkoutLibId($exName);
 
-                if($wId) {
-                    Emom::create([
-                        'workout_manager_id' => $managerId,
-                        'workout_libraries_id' => $wId,
-                        'training_load' => $request->input("emom_load_$i"),
-                        'unit_type' => $request->input("emom_unit_$i"),
-                        'reps' => $request->input("emom_reps_$i"),
-                        'gender' => $request->input("emom_gender_$i"),
-                    ]);
-                }
+            if($wId) {
+                Emom::create([
+                    'workout_manager_id' => $managerId,
+                    'workout_libraries_id' => $wId,
+                    'training_load' => $request->input("emom_load_$i"),
+                    'unit_type' => $request->input("emom_unit_$i"),
+                    'reps' => $request->input("emom_reps_$i"),
+                    'gender' => $request->input("emom_gender_$i"),
+                    'exercise_time' => $minuteLength,
+                ]);
             }
+            $i++;
         }
     }
 
@@ -452,9 +454,12 @@ class WorkoutManagerController extends Controller
                     'workout_manager_id' => $managerId,
                     'workout_libraries_id' => $wId,
                     'training_load' => $request->input("pyramid_load_$i"),
-                'unit_type' => $request->input("pyramid_unit_$i"),
+                    'unit_type' => $request->input("pyramid_unit_$i"),
                     'reps' => $request->input("pyramid_reps_$i"),
                     'gender' => $request->input("pyramid_gender_$i"),
+                    'restred' => $request->restred ?? '00:04:00',
+                    'restyellow' => $request->restyellow ?? '00:02:00',
+                    'restgreen' => $request->restgreen ?? '00:01:00',
                 ]);
                 $i++;
             }
@@ -490,6 +495,8 @@ class WorkoutManagerController extends Controller
                         'unit_type' => $unit,
                         'reps' => $reps,
                         'gender' => $gender,
+                        'is_for_time' => $request->has('is_for_time'),
+                        'time_to_complete' => $request->has('is_for_time') ? $request->input('time_to_complete') : null,
                     ]);
                 }
             }
@@ -577,10 +584,10 @@ class WorkoutManagerController extends Controller
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
 
-            // FILTER: Workout date
-            if ($date) {
-                $query->whereDate('date', $date);
-            }
+            // FILTER: Workout date (Removed per client requirement to show all regardless of date)
+            // if ($date) {
+            //     $query->whereDate('date', $date);
+            // }
 
             // EXCLUDE workout types 6 and 7
             $query->whereNotIn('type_id', [6, 7]);

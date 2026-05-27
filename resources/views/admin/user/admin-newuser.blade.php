@@ -52,10 +52,26 @@
                     </div>
                     {{-- route cheacking --}}
                     <form
-                        aaction="{{ $action == 'edit' ? route('updateadmin', ['id' => $user->id]) : route('newaminsave') }}"
+                        action="{{ $action == 'edit' ? route('updateadmin', ['id' => $user->id]) : route('newaminsave') }}"
                         method="POST" enctype="multipart/form-data"
                         class="space-y-6 text-xs  rounded-lg shadow-lg bg-white p-2">
                         @csrf
+                        @if ($errors->any())
+                            <script>
+                                document.addEventListener('DOMContentLoaded', function() {
+                                    @foreach ($errors->all() as $error)
+                                        Toastify({
+                                            text: "{{ $error }}",
+                                            duration: 5000,
+                                            close: true,
+                                            gravity: "top",
+                                            position: "right",
+                                            backgroundColor: "#ef4444",
+                                        }).showToast();
+                                    @endforeach
+                                });
+                            </script>
+                        @endif
                         <div class="text-xs">
                             {{-- name and email Row --}}
                             <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
@@ -87,7 +103,8 @@
                                 <div class="w-full md:col-span-1 flex items-center space-x-2">
                                     <input type="text" id="pin" name="pin"
                                            class="form-control flex-grow border rounded px-4 py-2"
-                                           readonly
+                                           inputmode="numeric"
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            value="{{ old('pin', isset($user) ? $pin : '') }}">
                                     <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
                                          data-action="{{ $action }}"
@@ -114,37 +131,37 @@
                                 </div>
                                 <div class="access-buttons w-full md:col-span-5 flex flex-wrap items-center gap-2">
                                     <div class="input-container mb-0 relative">
-                                        <input type="checkbox" name="access_fields[dashboard]" id="dashboard"/>
+                                        <input type="checkbox" name="access_fields[dashboard]" id="dashboard" {{ isset($access) && $access->dashboard == 'enable' ? 'checked' : '' }}/>
                                         <label for="dashboard" >Dashboard</label>
                                     </div>
                                     <div class="input-container mb-0">
-                                        <input type="checkbox" name="access_fields[access]" id="access"/>
+                                        <input type="checkbox" name="access_fields[access]" id="access" {{ isset($access) && $access->access == 'enable' ? 'checked' : '' }}/>
                                         <label for="access">Access</label>
                                     </div>
                                     <div class="input-container mb-0">
                                         <input type="checkbox"
-                                            name="access_fields[client_management]" id="client_management"/>
+                                            name="access_fields[client_management]" id="client_management" {{ isset($access) && $access->client_management == 'enable' ? 'checked' : '' }}/>
                                         <label for="client_management">Client Management</label>
                                     </div>
                                     <div class="input-container mb-0" >
                                         <input type="checkbox"
-                                            name="access_fields[workout_library]" id="workout_library"/>
+                                            name="access_fields[workout_library]" id="workout_library" {{ isset($access) && $access->workout_library == 'enable' ? 'checked' : '' }}/>
                                         <label for="workout_library" >Exercise Library</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[session]" id="session"/>
+                                        <input type="checkbox" name="access_fields[session]" id="session" {{ isset($access) && $access->session == 'enable' ? 'checked' : '' }}/>
                                         <label for="session">Session</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[financial]" id="financial"/>
+                                        <input type="checkbox" name="access_fields[financial]" id="financial" {{ isset($access) && $access->financial == 'enable' ? 'checked' : '' }}/>
                                         <label for="financial">Financial</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[communication]" id="communication"/>
+                                        <input type="checkbox" name="access_fields[communication]" id="communication" {{ isset($access) && $access->communication == 'enable' ? 'checked' : '' }}/>
                                         <label for="communication">Communication</label>
                                     </div>
                                     <div class="input-container mb-0" >
-                                        <input type="checkbox" name="access_fields[statistics]" id="statistics"/>
+                                        <input type="checkbox" name="access_fields[statistics]" id="statistics" {{ isset($access) && $access->statistics == 'enable' ? 'checked' : '' }}/>
                                         <label for="statistics">Statistics</label>
                                     </div>
                                 </div>

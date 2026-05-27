@@ -53,35 +53,35 @@
                     <form
                         aaction="{{ $action == 'edit' ? route('updatenewclient', ['id' => $member->id]) : route('newProfileclientsave') }}"
                         method="POST" enctype="multipart/form-data"
-                        class="space-y-6 text-xs  rounded-lg shadow-lg bg-white p-2">
+                        class="space-y-6 text-base  rounded-lg shadow-lg bg-white p-2">
                         @csrf
-                        <div class="text-xs">
+                        <div class="text-base">
                             {{-- firstname and lastname Row --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 md:border-b gap-4">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-12 md:border-b gap-4">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2">
                                     <label for="firstname"
                                         class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">First Name <span
                                             class="text-red-500">*</span></label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="text" id="firstname" name="firstname"
                                         class="form-control w-full md:w-full rounded px-4 py-2 border" required
                                         value="{{ old('firstname', isset($member) ? $member->firstname : '') }}">
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2">
                                     <label for="lastname"
-                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Last Name</label>
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0">Last Name</label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="text" id="lastname" name="lastname"
                                         class="form-control w-full md:w-full border rounded px-4 py-2"
                                         value="{{ old('lastname', isset($member) ? $member->lastname : '') }}">
                                 </div>
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center md:w-3/4 md:col-span-1">
                                     <label for="pin"
-                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">Pin</label>
+                                        class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0">Pin</label>
                                 </div>
-                                <div class="w-full md:col-span-1 flex items-center space-x-2">
+                                <div class="w-full md:col-span-3 flex items-center space-x-2">
                                     <input type="text" id="pin" name="pin"
                                            class="form-control flex-grow border rounded px-4 py-2"
                                            readonly
@@ -105,13 +105,13 @@
 
                             </div>
                             {{-- DOB , Gender and Age  --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 items-center md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-12 gap-4 items-center md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2">
                                     <label for="dob" class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 flex-nowrap">
                                         Date of birth <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="date" id="dob" name="dob" required
                                            class="form-control w-full border rounded px-4 py-2"
                                            value="{{ old('dob', isset($member) && $member->dob ? \Carbon\Carbon::parse($member->dob)->format('Y-m-d') : '') }}"
@@ -120,10 +120,12 @@
 
 
 
-                                <div class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 md:ml-8 md:col-span-1">
-                                    Gender
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2">
+                                    <label class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0">
+                                        Gender
+                                    </label>
                                 </div>
-                                <div class="w-full md:col-span-1 flex items-center">
+                                <div class="w-full md:col-span-2 flex items-center">
                                     <label class="mr-4">
                                         <input type="radio" id="gender-male" name="gender" value="Male" required
                                             {{ old('gender', isset($member) && $member->gender == 'Male' ? 'checked' : '') }}>
@@ -137,11 +139,11 @@
                                 </div>
 
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
-                                    <label for="age" class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                    <label for="age" class="block text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Age
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-3">
                                     <input type="number" id="age" name="age" required
                                            class="form-control w-full border rounded px-4 py-2"
                                            value="{{ old('age', isset($member) ? $member->age : '') }}" readonly>
@@ -149,37 +151,37 @@
 
                             </div>
                             {{-- Phone Number , Email , Address --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-12 gap-4 md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2">
                                     <label for="phone"
                                         class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Phone <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="tel" id="phone" name="phone" required
                                         class="w-full form-control border rounded px-4 py-2"
                                         value="{{ old('phone', isset($member) ? $member->phone : '') }}">
 
                                 </div>
                                 <div
-                                    class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1 text-gray-700 font-bold">
-                                    <label for="email" class="w-full md:w-full mb-1 md:mb-0 pr-4 ml-0 md:ml-8">
+                                    class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-2 text-gray-700 font-bold">
+                                    <label for="email" class="w-full md:w-full mb-1 md:mb-0 pr-4 ml-0">
                                         Email <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="email" id="email" name="email" required
                                         class="w-full form-control border rounded px-4 py-2"
                                         value="{{ old('email', isset($member) ? $member->email : '') }}">
                                 </div>
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center w-full md:col-span-1">
                                     <label for="address"
-                                        class="text-gray-700 font-bold w-full md:w-1/4 mb-1 md:mb-0 pr-4 ml-0 md:ml-8">
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 ml-0">
                                         Address<span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-3">
                                     <input type="text" id="address" name="address" required
                                         class="w-full form-control border rounded px-4 py-2"
                                         value="{{ old('address', isset($member) ? $member->address : '') }}">
@@ -187,41 +189,41 @@
                                 </div>
                             </div>
                             {{-- Height , Weight and BMR --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-12 gap-4 md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-2">
                                     <label for="height"
                                         class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Height (cm) <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="number" id="height" name="height" required
                                         class="form-control w-full border rounded px-4 py-2"
                                         value="{{ old('height', isset($member) ? $member->height : '') }}">
 
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-2">
                                     <label for="weight"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Weight (kg)<span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="number" id="weight" name="weight" required
                                         class="form-control w-full border rounded px-4 py-2"
                                         value="{{ old('weight', isset($member) ? $member->weight : '') }}">
 
                                 </div>
                                 <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
-                                    <label for="bmr"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
-                                        BMR <span class="text-red-500">*</span>
+                                    <label for="bmi"
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
+                                        BMI <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
-                                    <input type="number" id="bmr" name="bmr" required
+                                <div class="w-full md:col-span-3">
+                                    <input type="number" id="bmi" name="bmi" step="0.01" required
                                         class="form-control w-full border rounded px-4 py-2 outline-none" readonly
-                                        value="{{ old('bmr', isset($member) ? $member->bmr : '') }}">
+                                        value="{{ old('bmi', isset($member) ? $member->bmr : '') }}">
 
                                 </div>
                             </div>
@@ -237,6 +239,9 @@
                                         <select id="primary-goal" name="primary-goal"
                                             class="form-control w-full rounded px-4 py-2 border" required>
                                             <option value="">Select Primary Goal</option>
+                                            <option value="General Fitness"
+                                                {{ old('primary-goal', isset($member) && $member->primary_goal === 'General Fitness' ? 'selected' : '') }}>
+                                                General Fitness</option>
                                             <option value="Weight Loss"
                                                 {{ old('primary-goal', isset($member) && $member->primary_goal === 'Weight Loss' ? 'selected' : '') }}>
                                                 Weight Loss</option>
@@ -255,14 +260,14 @@
                                 </div>
                             </div>
                             {{-- Subscription Level --}}
-                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-6 gap-4 md:border-b">
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                            <div class="w-full h-full p-2 grid grid-cols-1 md:grid-cols-12 gap-4 md:border-b">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-2">
                                     <label for="subscription_level"
                                         class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Subscription Level <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <select id="subscription_level" name="subscription_level"
                                             class="form-control w-full rounded px-4 py-2 border" required>
                                             <option value="">Select Subscription Level</option>
@@ -278,25 +283,25 @@
                                         </select>
 
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-2">
                                     <label for="startdate"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
                                         Subscription start date<span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1">
+                                <div class="w-full md:col-span-2">
                                     <input type="date" id="startdate" name="startdate" required
                                         class="form-control w-full border rounded px-4 py-2"
                                         value="{{ old('startdate', isset($member) && $member->startdate ? \Carbon\Carbon::parse($member->startdate)->format('Y-m-d') : '') }}">
 
                                 </div>
-                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-1">
+                                <div class="form-group flex flex-wrap md:flex-nowrap items-center md:col-span-2">
                                     <label for="is_subsactive"
-                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4 md:ml-8">
-                                        Subscription start <span class="text-red-500">*</span>
+                                        class="text-gray-700 font-bold w-full md:w-full mb-1 md:mb-0 pr-4">
+                                        Subscription active <span class="text-red-500">*</span>
                                     </label>
                                 </div>
-                                <div class="w-full md:col-span-1 mt-1">
+                                <div class="w-full md:col-span-2 mt-1">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input type="hidden" name="is_subsactive" value="0">
                                         <input type="checkbox"
@@ -585,42 +590,33 @@
         {{-- BMI Calculator Script --}}
         <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                    // Function to calculate BMR (Mifflin–St Jeor)
-                    function calculateBMR() {
+                    // Function to calculate BMI
+                    function calculateBMI() {
                     const weight = parseFloat(document.getElementById('weight').value) || 0; // kg
                     const height = parseFloat(document.getElementById('height').value) || 0; // cm
-                    const age = parseFloat(document.getElementById('age').value) || 0;       // years
 
-                    const genderEl = document.querySelector('input[name="gender"]:checked');
-                    const gender = genderEl ? genderEl.value : null; // "Male" or "Female"
-
-                    if (weight && height && age && gender) {
-                        const base = (10 * weight) + (6.25 * height) - (5 * age);
-                        return (gender === "Male") ? (base + 5) : (base - 161);
+                    if (weight && height) {
+                        const heightInMeters = height / 100;
+                        return weight / (heightInMeters * heightInMeters);
                     }
                     return 0;
                     }
 
-                    // Update BMR when inputs change
-                    function updateBMR() {
-                    const bmrInput = document.getElementById('bmr');
-                    if (bmrInput) {
-                        const bmr = calculateBMR();
-                        bmrInput.value = bmr ? bmr.toFixed(2) : '';
+                    // Update BMI when inputs change
+                    function updateBMI() {
+                    const bmiInput = document.getElementById('bmi');
+                    if (bmiInput) {
+                        const bmi = calculateBMI();
+                        bmiInput.value = bmi ? bmi.toFixed(2) : '';
                     }
                     }
 
                     // Event listeners for inputs
-                    document.getElementById('weight')?.addEventListener('input', updateBMR);
-                    document.getElementById('height')?.addEventListener('input', updateBMR);
-                    document.getElementById('age')?.addEventListener('input', updateBMR);
-
-                    // Event listeners for gender selection
-                    document.getElementById('gender-male')?.addEventListener('change', updateBMR);
-                    document.getElementById('gender-female')?.addEventListener('change', updateBMR);
+                    document.getElementById('weight')?.addEventListener('input', updateBMI);
+                    document.getElementById('height')?.addEventListener('input', updateBMI);
 
                     // Calculate on load (useful when Laravel old() pre-fills)
-                    updateBMR();
+                    updateBMI();
                 });
         </script>
 

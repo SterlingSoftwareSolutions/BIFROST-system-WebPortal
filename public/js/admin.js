@@ -90,28 +90,64 @@ function deleteAction(id, access) {
     }
 }
 
+let currentResetUserId = null;
+
 // reset pin
 function resetAction(id, access) {
     if (access === "write") {
-        $.ajax({
-            url: "/resetpin",
-            type: "POST",
-            data: {
-                id: id,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function (response) {
-                console.log(response);
-                location.reload(); // Reload the page after successful reset
-            },
-            error: function (xhr, status, error) {
-                console.error(error); // Handle error
-            },
-        });
+        currentResetUserId = id;
+        document.getElementById('newPinInput').value = '';
+        document.getElementById('resetPinModal').style.display = 'flex';
     } else {
         alert("Error: Access type could not reset pin.");
         // Optional: Handle access denied scenario as needed
     }
+}
+
+function closeResetPinModal() {
+    document.getElementById('resetPinModal').style.display = 'none';
+    currentResetUserId = null;
+}
+
+function generateRandomPin() {
+    const pin = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('newPinInput').value = pin;
+}
+
+function saveNewPin() {
+    if (!currentResetUserId) return;
+    const pin = document.getElementById('newPinInput').value;
+    if (!pin) {
+        alert("Please enter a PIN");
+        return;
+    }
+
+    $.ajax({
+        url: "/resetpin",
+        type: "POST",
+        data: {
+            id: currentResetUserId,
+            pin: pin,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: function (response) {
+            console.log(response);
+            if (response.success === false) {
+                alert(response.message);
+            } else {
+                alert("PIN reset successfully");
+                location.reload(); // Reload the page after successful reset
+            }
+        },
+        error: function (xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                alert(xhr.responseJSON.message);
+            } else {
+                console.error(error); // Handle error
+                alert("Error resetting PIN");
+            }
+        },
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {

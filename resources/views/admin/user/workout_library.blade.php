@@ -25,9 +25,9 @@
                     <h1 class="text-2xl  font-medium font-source-sans"> Exercise Library</h1>
 
                     @if ($accessType == 'write')
-                        <button id="openPopupBtn" class="bg-black h-10 px-6 text-white rounded-md">+ ADD</button>
+                        <button id="openPopupBtn" class="bg-black h-12 px-8 text-lg font-bold text-white rounded-md shadow-md">+ ADD</button>
                     @else
-                        <button id="openPopupBtn" class="bg-black h-10 px-6 text-white rounded-md"disabled>+ ADD</button>
+                        <button id="openPopupBtn" class="bg-black h-12 px-8 text-lg font-bold text-white rounded-md shadow-md" disabled>+ ADD</button>
                     @endif
 
                     {{-- pop up view start --}}
@@ -62,7 +62,7 @@
                                     </div>
 
                                     <div class="flex items-center space-x-4">
-                                        <label for="workout" class="w-32 font-semibold">Workout <span
+                                        <label for="workout" class="w-32 font-semibold">Exercise <span
                                                 class="text-red-500">*</span></label>
                                         <input type="text" id="workout" name="workout"
                                             class="p-2 border border-gray-300 rounded flex-1">

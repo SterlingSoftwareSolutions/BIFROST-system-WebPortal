@@ -10,22 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    if (!Schema::hasTable('type')) {
-        Schema::create('type', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
+    {
+        Schema::table('circuit', function (Blueprint $table) {
+            $table->boolean('is_for_time')->default(false);
+            $table->string('time_to_complete')->nullable();
         });
     }
-}
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('type');
+        Schema::table('circuit', function (Blueprint $table) {
+            $table->dropColumn(['is_for_time', 'time_to_complete']);
+        });
     }
 };

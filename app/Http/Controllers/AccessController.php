@@ -89,10 +89,12 @@ class AccessController extends Controller
     public function resetPin(Request $request)
     {
         $id = $request->input('id');
+        $customPin = $request->input('pin');
         $access = Access::find($id);
 
         if (!$access) {
             return response()->json([
+                'success' => false,
                 'message' => 'Access record not found'
             ], 404);
         }
@@ -101,19 +103,33 @@ class AccessController extends Controller
 
         if (!$user) {
             return response()->json([
+                'success' => false,
                 'message' => 'User not found'
             ], 404);
         }
-        // Generate a unique 4-digit random PIN
-        do {
-            $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
-        } while (User::where('pin', $pin)->exists());
+        
+        if (!empty($customPin)) {
+            // Check if the custom pin is already in use by another user
+            if (User::where('pin', $customPin)->where('id', '!=', $user->id)->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This PIN is already in use. Please choose another one.'
+                ]);
+            }
+            $pin = $customPin;
+        } else {
+            // Generate a unique 4-digit random PIN
+            do {
+                $pin = str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+            } while (User::where('pin', $pin)->exists());
+        }
 
         // Assuming you have a 'pin' field in your User model to store the PIN
         $user->pin = $pin;
         $user->save();
 
         return response()->json([
+            'success' => true,
             'message' => 'PIN reset successfully',
             'pin' => $pin,
             'user' => $user
@@ -255,43 +271,36 @@ class AccessController extends Controller
     //add new admin user
     public function newAdminShow($action = 'add', $id = null)
     {
-        // Debug to see what's being passed
-        // dd($action, $id);
-
         // Fetch data if editing an existing profile
         if ($action == 'edit' && $id) {
             $user = User::findOrFail($id);
-            //$user = User::find($member->user_id);
             $pin = $user->pin;
-            //dd( $userpin);
+            $access = Access::where('user_id', $user->id)->first();
         } else {
-            // Set $member to null or create a new instance if adding a new profile
+            // Set variables to null if adding a new profile
             $user = null;
             $pin = null;
+            $access = null;
         }
-        //dd( $user);
         // Return view with data
-        return view('admin.user.admin-newuser', compact('action', 'user', 'pin'));
+        return view('admin.user.admin-newuser', compact('action', 'user', 'pin', 'access'));
     }
 
     public function addnewadmin(Request $request)
     {
         try {
-            //dd($request);
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'pin' => 'required|integer|min:0',
+                'email' => 'required|email|max:255|unique:users,email',
+                'pin' => ['required', 'regex:/^[0-9]+$/', 'min:0', 'unique:users,pin'],
+            ], [
+                'pin.unique' => 'The PIN has already been taken. Please choose another one.',
+                'email.unique' => 'The email has already been taken.'
             ]);
 
-            // Check if the email already exists
-            if (User::where('email', $validatedData['email'])->exists()) {
-                return redirect()->back()->withErrors(['email' => 'The email has already been taken.'])->withInput();
-            }
-            //dd($validatedData);
+            $pin = $validatedData['pin'];
 
-            $pin = $validatedData['pin'] ?? str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
             // Create new user
             $user = new User();
             $user->name = $validatedData['name'];
@@ -299,7 +308,6 @@ class AccessController extends Controller
             $user->pin = $pin;
             $user->user_type = 'admin';
             $user->save();
-
 
             $accessFields = $request->input('access_fields', []);
             $access = new Access();
@@ -315,8 +323,52 @@ class AccessController extends Controller
             $access->statistics = isset($accessFields['statistics']) ? 'enable' : 'disable';
             $access->save();
 
-            // Optionally, you can return a response or redirect
             return redirect()->route('admindaaccess')->with('success', 'New Admin created successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    public function updateadmin(Request $request, $id)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            // Validate incoming request data
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . $id,
+                'pin' => ['required', 'regex:/^[0-9]+$/', 'min:0', 'unique:users,pin,' . $id],
+            ], [
+                'pin.unique' => 'The PIN has already been taken. Please choose another one.',
+                'email.unique' => 'The email has already been taken.'
+            ]);
+
+            // Update user
+            $user->name = $validatedData['name'];
+            $user->email = $validatedData['email'];
+            $user->pin = $validatedData['pin'];
+            $user->save();
+
+            // Update access fields
+            $accessFields = $request->input('access_fields', []);
+            $access = Access::where('user_id', $user->id)->first();
+            if (!$access) {
+                $access = new Access();
+                $access->user_id = $user->id;
+            }
+
+            $access->dashboard = isset($accessFields['dashboard']) ? 'enable' : 'disable';
+            $access->access = isset($accessFields['access']) ? 'enable' : 'disable';
+            $access->client_management = isset($accessFields['client_management']) ? 'enable' : 'disable';
+            $access->workout_library = isset($accessFields['workout_library']) ? 'enable' : 'disable';
+            $access->session = isset($accessFields['session']) ? 'enable' : 'disable';
+            $access->financial = isset($accessFields['financial']) ? 'enable' : 'disable';
+            $access->communication = isset($accessFields['communication']) ? 'enable' : 'disable';
+            $access->statistics = isset($accessFields['statistics']) ? 'enable' : 'disable';
+            $access->save();
+
+            return redirect()->route('admindaaccess')->with('success', 'Admin updated successfully!');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()])->withInput();
         }

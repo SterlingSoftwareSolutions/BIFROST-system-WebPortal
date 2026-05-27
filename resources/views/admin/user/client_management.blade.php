@@ -17,7 +17,7 @@
     @section('content')
         <!-- Main content (Dashboard) -->
         <div class="container transition-width mt-24 flex-grow mx-4" id="container">
-            <div class="breadcrumb text-sm mb-4">
+            <div class="breadcrumb text-lg mb-4">
                 <div><a href="#" class="text-gray-500 no-underline hover:underline">Home</a> / <span><strong> Client
                         </strong></span></div>
                 <div class="flex ">
@@ -30,8 +30,56 @@
                     </div>
                 </div>
 
+          {{--
+          <!-- Dashboard Summary Blocks -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <!-- Active Members Block -->
+              <div class="bg-white rounded-md border border-gray-100 shadow-sm p-5 border-l-4 border-l-green-500 flex items-center justify-between">
+                  <div>
+                      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Active Members</p>
+                      <h3 class="text-2xl font-normal text-gray-800">{{ $activeMembersCount ?? 0 }}</h3>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-500">
+                      <i class="bi bi-person-check text-xl"></i>
+                  </div>
+              </div>
+
+              <!-- Inactive Members Block -->
+              <div class="bg-white rounded-md border border-gray-100 shadow-sm p-5 border-l-4 border-l-red-500 flex items-center justify-between">
+                  <div>
+                      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Inactive Members</p>
+                      <h3 class="text-2xl font-normal text-gray-800">{{ $inactiveMembersCount ?? 0 }}</h3>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                      <i class="bi bi-person-x text-xl"></i>
+                  </div>
+              </div>
+
+              <!-- Members Not Trained in 7 Days Block -->
+              <div class="bg-white rounded-md border border-gray-100 shadow-sm p-5 border-l-4 border-l-yellow-400 flex items-center justify-between">
+                  <div>
+                      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Not Trained (> 7 days)</p>
+                      <h3 class="text-2xl font-normal text-gray-800">{{ $notTrainedCount ?? 0 }}</h3>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-500">
+                      <i class="bi bi-exclamation-triangle text-xl"></i>
+                  </div>
+              </div>
+
+              <!-- Revenue Block -->
+              <div class="bg-white rounded-md border border-gray-100 shadow-sm p-5 border-l-4 border-l-blue-500 flex items-center justify-between">
+                  <div>
+                      <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Est. Monthly Revenue</p>
+                      <h3 class="text-2xl font-normal text-gray-800">${{ number_format($estimatedRevenue ?? 0) }}</h3>
+                  </div>
+                  <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500">
+                      <i class="bi bi-currency-dollar text-xl"></i>
+                  </div>
+              </div>
+          </div>
+          --}}
                 <div class="bg-white p-5 rounded-lg shadow-md">
-                    <table class="w-full border-collapse mb-5 text-sm">
+                    <table class="w-full border-collapse mb-5 text-lg">
                         <thead>
                             <tr>
                                 <th class="p-3 border-s-2 border-y-2 border-gray-300 bg-white text-left" dir="ltr">
@@ -45,7 +93,7 @@
                                         <i class="fa fa-sort" aria-hidden="true"></i>
                                         <!-- Dropdown menu -->
                                         <div class="hidden dropdown absolute mt-2 right-0 w-40 bg-white border border-gray-300 shadow-md rounded-md z-10">
-                                            <ul class="text-sm">
+                                            <ul class="text-lg">
                                                 <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('on')">Subscription On</li>
                                                 <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer" onclick="sortTable('off')">Subscription Off</li>
                                             </ul>
@@ -109,6 +157,46 @@
                         </tbody>
                     </table>
                 </div>
+
+                {{--
+                <div class="w-full lg:w-1/2">
+                    <div class="mt-8 flex justify-between items-center mb-4">
+                        <div class="text-base font-normal text-red-500 flex items-center">
+                            <i class="bi bi-exclamation-circle mr-2"></i> Action Required: Not Trained in Over 7 Days
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-md mb-10 border border-red-100 shadow-sm overflow-hidden p-2">
+                        @if(isset($notTrainedMembers) && $notTrainedMembers->count() > 0)
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-red-50 text-gray-800 font-semibold border border-red-50">
+                                    <tr>
+                                        <th class="px-4 py-3 font-semibold">First Name</th>
+                                        <th class="px-4 py-3 font-semibold">Last Name</th>
+                                        <th class="px-4 py-3 font-semibold">Contact Number</th>
+                                        <th class="px-4 py-3 font-semibold">Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($notTrainedMembers as $inactiveMember)
+                                        <tr class="bg-white border-b border-gray-100 hover:bg-gray-50">
+                                            <td class="px-4 py-4 text-gray-700">{{ $inactiveMember->firstname }}</td>
+                                            <td class="px-4 py-4 text-gray-700">{{ $inactiveMember->lastname }}</td>
+                                            <td class="px-4 py-4 text-gray-700">{{ $inactiveMember->phone }}</td>
+                                            <td class="px-4 py-4 text-gray-500">{{ $inactiveMember->email }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="p-8 text-center text-gray-500">
+                                <i class="bi bi-emoji-smile text-4xl text-green-500 mb-3 block"></i>
+                                <p class="text-base">All members have trained recently. Great job!</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                --}}
 
             </div>
         </div>
