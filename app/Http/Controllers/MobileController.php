@@ -580,24 +580,12 @@ class MobileController extends Controller
                     ->where('workout_format_id', $workoutFormatId)
                     ->where('date', $storedDay)
                     ->where('class_id', $classId);
-                    /**
-                     * If AMRAP format â†’ do NOT check round_number or set_number
-                     * to ensure we update the same row.
-                     */
-                    if ($workoutFormatType === 'amrap') {
-                        $query = DailyStrength::where('member_id', $memberId)
-                            ->where('workout_manager_id', $workoutManagerId)
-                            ->where('workout_format_type', $workoutFormatType)
-                            ->where('workout_format_id', $workoutFormatId)
-                            ->where('date', $storedDay)
-                            ->where('class_id', $classId);
-                    } else {
-                        $query->where('set_number', $setNumber);
-                        if ($roundNumber !== null) {
-                            $query->where('round_number', $roundNumber);
-                        }
-                    }
 
+                    $multiRowFormats = ['straight-sets', 'pyramid'];
+                    if (in_array($workoutFormatType, $multiRowFormats)) {
+                        $query->where('set_number', $setNumber);
+                    }
+                    
                 $dailyStrength = $query->first();
 
                 Log::info('Existing strength record:', ['dailyStrength' => $dailyStrength?->toArray()]);
@@ -609,6 +597,7 @@ class MobileController extends Controller
                         'weight' => $weight,
                         'date' => $storedDay,
                         'round_number' => $roundNumber,
+                        'exercise_time' => $excerciseTime,
                         'class_id' => $classId,
                         'notes' => $validatedData['notes'] ?? null,
                     ]);
@@ -741,16 +730,10 @@ class MobileController extends Controller
                     ->where('date', $storedDay)
                     ->where('class_id', $classId);
 
-                /**
-                  * For AMRAP: do NOT check round_number or set_number
-                  * For others: check both
-                  */
-                 if ($workoutFormatType !== 'amrap') {
-                     $query->where('set_number', $setNumber);
-                     if ($roundNumber !== null) {
-                         $query->where('round_number', $roundNumber);
-                     }
-                 }
+                $multiRowFormats = ['straight-sets', 'pyramid'];
+                if (in_array($workoutFormatType, $multiRowFormats)) {
+                    $query->where('set_number', $setNumber);
+                }
 
                 $dailyWeightlifting = $query->first();
 
@@ -1031,16 +1014,10 @@ class MobileController extends Controller
                     ->where('date', $storedDay)
                     ->where('class_id', $classId);
 
-                /**
-                  * For AMRAP: do NOT check round_number or set_number
-                  * For others: check both
-                  */
-                 if ($workoutFormatType !== 'amrap') {
-                     $query->where('set_number', $setNumber);
-                     if ($roundNumber !== null) {
-                         $query->where('round_number', $roundNumber);
-                     }
-                 }
+                $multiRowFormats = ['straight-sets', 'pyramid'];
+                if (in_array($workoutFormatType, $multiRowFormats)) {
+                    $query->where('set_number', $setNumber);
+                }
 
                 $dailyAccessory = $query->first();
 

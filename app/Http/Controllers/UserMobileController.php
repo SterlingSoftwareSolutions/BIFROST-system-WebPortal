@@ -1594,7 +1594,7 @@ public function getWorkouts(Request $request)
                             // EMOM is time-based: completion = the timer ran and the round was saved.
                             // We check existence rather than reps >= target, because reps reset each minute
                             // and the user may legitimately log 0 reps while still completing the round.
-                            if ($formatType === 'emom') {
+                            if (in_array($formatType, ['emom', 'rounds', 'circuit', 'intervals', 'for-time'])) {
                                 $dailyRecord = $dailyQuery->first();
                                 $isCompleted = false;
                                 $roundNumber = null;
@@ -1611,25 +1611,32 @@ public function getWorkouts(Request $request)
                                         // Fallback if no round_number but record exists
                                         $isCompleted = true;
                                     }
-                                                   Log::info('[getWorkouts][EMOM Check]', [
-                                    'item'               => $formatItem->workoutLibrary->name ?? 'Unknown',
-                                    'table'              => $dailyModel,
-                                    'workout_manager_id' => $workout->id,
-                                    'workout_format_id'  => $formatId,
-                                    'exists'             => $dailyRecord ? true : false,
-                                    'isCompleted'        => $isCompleted,
-                                    'round_number'       => $roundNumber,
-                                    'query_date'         => $dateString,
-                                    'db_date'            => $dailyRecord->date ?? 'N/A',
-                                ]);
+                                    
+                                    Log::info('[getWorkouts][Format Check]', [
+                                        'item'               => $formatItem->workoutLibrary->name ?? 'Unknown',
+                                        'table'              => $dailyModel,
+                                        'workout_manager_id' => $workout->id,
+                                        'workout_format_id'  => $formatId,
+                                        'exists'             => true,
+                                        'isCompleted'        => $isCompleted,
+                                        'round_number'       => $roundNumber,
+                                        'query_date'         => $dateString,
+                                        'db_date'            => $dailyRecord->date ?? 'N/A',
+                                    ]);
 
-                                $formatItem->setAttribute('is_completed',   $isCompleted ? 1 : 0);
-                                $formatItem->setAttribute('has_reps_saved', $dailyRecord ? 1 : 0);
-                                $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
-                                $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
-                                $formatItem->setAttribute('round_number',   $roundNumber);
+                                    $formatItem->setAttribute('is_completed',   $isCompleted ? 1 : 0);
+                                    $formatItem->setAttribute('has_reps_saved', 1);
+                                    $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
+                                    $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
+                                    $formatItem->setAttribute('round_number',   $roundNumber);
+                                } else {
+                                    $formatItem->setAttribute('is_completed',   0);
+                                    $formatItem->setAttribute('has_reps_saved', 0);
+                                    $formatItem->setAttribute('daily_reps',     0);
+                                    $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
+                                    $formatItem->setAttribute('round_number',   null);
+                                }
                             }
-                        }
                         // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
                         elseif ($dailyQuery->exists()) {
                                 $dailyRepsSum = $dailyQuery->sum('reps');
