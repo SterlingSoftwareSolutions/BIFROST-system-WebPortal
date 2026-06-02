@@ -192,9 +192,24 @@
         return rows.map(row => {
 
             const exName = (row.workout_library && row.workout_library.workout) ? row.workout_library.workout : 'Unknown Exercise';
-            const load = row.training_load || '-';
+            let load = row.training_load || '';
             const unit = row.unit_type || '';
-            let reps = row.reps || '-';
+            
+            let loadDisplay = load;
+            if (unit === 'BW' || unit === 'N/A') {
+                loadDisplay = `&mdash; ${unit}`;
+            } else {
+                loadDisplay = load ? `${load} ${unit}` : '-';
+            }
+
+            let reps = row.reps || '';
+            let repsDisplay = reps;
+            if (unit === 'Cal' || unit === 'm' || !reps || reps == 0 || reps === '-') {
+                repsDisplay = '----';
+            } else {
+                const isNumericReps = !isNaN(reps) && reps !== '';
+                repsDisplay = repsDisplay + (isNumericReps ? ' REPS' : '');
+            }
 
             // Intervals specific logic for Work/Rest
             let intervalColsHtml = '';
@@ -214,15 +229,13 @@
             `;
             }
 
-            const isNumericReps = !isNaN(reps) && reps !== '-';
-
             let mainRowHtml = `
              <div class="flex items-center text-[17px] font-weight-500 py-0.5 gap-3 md:gap-6 min-w-0">
                  <div class="flex-1 font-medium text-gray-800">${exName}</div>
-                 <div class="w-24 md:w-28 lg:w-32 text-center text-black">${load} ${unit}</div>
+                 <div class="w-24 md:w-28 lg:w-32 text-center text-black">${loadDisplay}</div>
                  ${fmt === 'Intervals'
                     ? intervalColsHtml
-                    : `<div class="w-20 md:w-24 text-right text-black uppercase">${reps} ${isNumericReps ? 'REPS' : ''}</div>`
+                    : `<div class="w-20 md:w-24 text-right text-black uppercase">${repsDisplay}</div>`
                  }
              </div>
         `;
@@ -231,14 +244,30 @@
             let nestedSetsHtml = '';
             if (fmt === 'Straight Sets' && row.sets && row.sets.length > 0) {
                 nestedSetsHtml = row.sets.map(set => {
-                    const setLoad = set.training_load || '';
+                    let setLoad = set.training_load || '';
                     const setUnit = set.unittype || '';
-                    const setReps = set.res || '';
+                    
+                    let setLoadDisplay = setLoad;
+                    if (setUnit === 'BW' || setUnit === 'N/A') {
+                        setLoadDisplay = `&mdash; ${setUnit}`;
+                    } else {
+                        setLoadDisplay = setLoad ? `${setLoad} ${setUnit}` : '-';
+                    }
+
+                    let setReps = set.res || '';
+                    let setRepsDisplay = setReps;
+                    if (setUnit === 'Cal' || setUnit === 'm' || !setReps || setReps == 0 || setReps === '-') {
+                        setRepsDisplay = '----';
+                    } else {
+                        const isNum = !isNaN(setReps) && setReps !== '';
+                        setRepsDisplay = setRepsDisplay + (isNum ? ' REPS' : '');
+                    }
+
                     return `
                      <div class="flex items-center text-[15px] font-weight-500 pl-2 border-l-2 border-gray-200 my-1 gap-3 md:gap-6 min-w-0">
                          <div class="flex-1 text-gray-500 text-[13px]">${exName} (Set)</div>
-                         <div class="w-24 md:w-28 lg:w-32 text-center text-gray-500">${setLoad} ${setUnit}</div>
-                         <div class="w-20 md:w-24 text-right text-gray-500">${setReps} REPS</div>
+                         <div class="w-24 md:w-28 lg:w-32 text-center text-gray-500">${setLoadDisplay}</div>
+                         <div class="w-20 md:w-24 text-right text-gray-500 uppercase">${setRepsDisplay}</div>
                      </div>
                 `;
                 }).join('');
