@@ -347,11 +347,84 @@
         window.toggleGenderSelection = function(unitSelect, genderId) {
             const genderSelect = document.getElementById(genderId);
             if(genderSelect) {
-                if(unitSelect.value === 'Cal') {
+                if(unitSelect.value === 'Kg') {
                     genderSelect.classList.remove('hidden');
                 } else {
                     genderSelect.classList.add('hidden');
-                    genderSelect.value = ''; // Reset
+                    genderSelect.value = '';
+                }
+            }
+
+            // Find the closest row ancestor that contains a reps input
+            // Try multiple selector strategies to support all row types
+            const row = unitSelect.closest('[id*="_row_"]')
+                     || unitSelect.closest('.flex.items-center.gap-3')
+                     || unitSelect.closest('.flex.gap-2.mb-3')
+                     || unitSelect.closest('.flex.gap-4.items-center')
+                     || unitSelect.closest('.flex.items-center.gap-0')
+                     || unitSelect.closest('.pyramid-row')
+                     || unitSelect.closest('.station-row')
+                     || unitSelect.closest('[id*="superset_row_"]')
+                     || unitSelect.parentElement?.parentElement?.parentElement;
+
+            if(row) {
+                // Handle REPS visibility based on unit type
+                const repsInput = row.querySelector('input[id*="_reps_"]');
+                if(repsInput) {
+                    const innerContainer = repsInput.parentElement;
+
+                    // Get or create a dashes element INSIDE the same container (keeps layout stable)
+                    let dashesEl = innerContainer.querySelector('.reps-dashes');
+                    if (!dashesEl) {
+                        dashesEl = document.createElement('span');
+                        dashesEl.className = 'reps-dashes text-gray-500 font-bold text-base';
+                        dashesEl.style.display = 'none';
+                        dashesEl.innerHTML = '----';
+                        innerContainer.appendChild(dashesEl);
+                    }
+
+                    if(unitSelect.value === 'Cal' || unitSelect.value === 'm') {
+                        // Hide all children except the dashes element
+                        Array.from(innerContainer.children).forEach(child => {
+                            if (!child.classList.contains('reps-dashes')) {
+                                child.style.display = 'none';
+                            }
+                        });
+                        repsInput.value = '';
+                        dashesEl.style.display = 'inline';
+                    } else {
+                        // Restore all children
+                        Array.from(innerContainer.children).forEach(child => {
+                            if (!child.classList.contains('reps-dashes')) {
+                                child.style.display = '';
+                            }
+                        });
+                        dashesEl.style.display = 'none';
+                    }
+                }
+
+                // Handle LOAD visibility based on unit type
+                const loadInput = row.querySelector('input[name*="_load_"]');
+                if(loadInput) {
+                    const loadCol = loadInput.parentElement;
+
+                    let dashesEl = loadCol.querySelector('.load-dashes');
+                    if (!dashesEl) {
+                        dashesEl = document.createElement('div');
+                        dashesEl.className = 'load-dashes flex items-center justify-center text-gray-500 font-bold w-12 h-11';
+                        dashesEl.style.display = 'none';
+                        dashesEl.innerHTML = '&mdash;';
+                        loadCol.insertBefore(dashesEl, loadInput);
+                    }
+
+                    if(unitSelect.value === 'BW' || unitSelect.value === 'N/A') {
+                        loadInput.style.display = 'none';
+                        loadInput.value = '';
+                        dashesEl.style.display = 'flex';
+                    } else {
+                        loadInput.style.display = '';
+                        dashesEl.style.display = 'none';
+                    }
                 }
             }
         }
@@ -378,7 +451,7 @@
                     <div class="w-10"></div> <!-- Number col -->
                     <div class="flex-[3] font-bold text-lg text-gray-800 min-w-0">Exercise <span class="text-red-500">*</span></div>
                     <div class="flex-1 font-bold text-lg text-center text-gray-800 min-w-[130px]">Training Load <span class="text-red-500">*</span></div>
-                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">REPS <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Volume <span class="text-red-500">*</span></div>
                     <div class="w-10"></div> <!-- Action col -->
                 </div>
 
@@ -566,7 +639,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">REPS <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Volume <span class="text-red-500">*</span></div>
                     <div class="w-10"></div> <!-- Action col -->
                 </div>
 
@@ -832,7 +905,7 @@
                             </div>
                         </div>
                          </div>
-                        <div class="w-32 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+                        <div class="w-32 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
                     </div>
 
                     <div id="pyramid_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll mb-4">
@@ -1243,7 +1316,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-[120px] flex-shrink-0 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+                    <div class="w-[120px] flex-shrink-0 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
                     <div class="w-[140px] pr-0 ml-auto"></div>
                 </div>
             `;
@@ -1629,15 +1702,21 @@
                              <div class="w-8 text-center font-bold text-gray-600 text-base">${index}</div>
 
                              <!-- Reps Control -->
-                             <div class="flex items-center gap-1">
-                                  <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
-                                  <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
-                                  <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
+                             <div class="flex items-center gap-1 relative w-22 justify-center">
+                                  <div id="reps_container_ss_reps_${index}" class="flex items-center w-full" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:none;' : 'display:flex;'}">
+                                      <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
+                                      <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
+                                      <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
+                                  </div>
+                                  <div id="dashes_ss_reps_${index}" class="w-full flex justify-center items-center h-10 text-gray-400 font-bold text-lg" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:flex;' : 'display:none;'}">
+                                      ----
+                                  </div>
                              </div>
 
                              <!-- Load Display -->
                              <div class="flex items-center gap-1">
-                                 <input type="text" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold">
+                                 <input type="text" id="load_ss_load_${index}" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || ''}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:none;' : 'display:block;'}">
+                                 <div id="dashes_load_ss_load_${index}" class="border border-gray-300 rounded p-2 h-10 w-14 flex items-center justify-center text-sm font-bold text-gray-400 bg-gray-50" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
                                  <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white text-gray-400">
                                     <option value="" disabled selected>M/F</option>
                                     <option value="Male" class="text-black">M</option>
@@ -1691,18 +1770,24 @@
                              <!-- Controls Container -->
                              <div class="flex items-center ml-auto gap-3">
                                   <!-- Reps -->
-                                  <div class="flex items-center">
-                                      <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
-                                      <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
-                                      <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
+                                  <div class="flex items-center w-22 justify-center relative">
+                                      <div id="reps_container_ss_reps_${index}${suffix}" class="flex items-center w-full" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:none;' : 'display:flex;'}">
+                                          <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
+                                          <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
+                                          <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
+                                      </div>
+                                      <div id="dashes_ss_reps_${index}${suffix}" class="w-full flex justify-center items-center h-8 text-gray-400 font-bold text-lg" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:flex;' : 'display:none;'}">
+                                          ----
+                                      </div>
                                   </div>
 
-                                  <div class="text-[10px] font-bold text-gray-500 uppercase">REPS</div>
+                                  <div class="text-[10px] font-bold text-gray-500 uppercase">VOLUME</div>
 
                                   <!-- Load -->
                                   <div class="flex items-center gap-1">
                                       <div class="relative">
-                                          <input type="text" name="ss_load_${index}${suffix}"  placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400">
+                                          <input type="text" id="load_ss_load_${index}${suffix}" name="ss_load_${index}${suffix}" value="${defaultLoad}" placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400" style="${(defaultUnit === 'BW' || defaultUnit === 'N/A') ? 'display:none;' : 'display:block;'}">
+                                          <div id="dashes_load_ss_load_${index}${suffix}" class="border border-gray-300 rounded p-1 h-8 w-14 flex items-center justify-center text-xs font-bold text-gray-400 bg-gray-50" style="${(defaultUnit === 'BW' || defaultUnit === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
                                       </div>
                                       <div class="relative">
                                          <select id="ss_gender_${index}${suffix}" name="ss_gender_${index}${suffix}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-gray-400">
@@ -1976,7 +2061,7 @@
                             </div>
                         </div>
                          </div>
-                         <div class="w-24 font-bold text-sm text-center text-gray-700">REPS <span class="text-red-500">*</span></div>
+                         <div class="w-24 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
                          <div class="min-w-[80px]"></div>
                      </div>
 
@@ -2710,6 +2795,13 @@
                     const r = document.getElementById(`ft_reps_${idx}`); if(r) r.value = row.reps;
                 });
             }
+            
+            // Trigger change event to refresh UI for all unit selects (e.g. hiding reps)
+            setTimeout(() => {
+                document.querySelectorAll('select[name*="_unit_"]').forEach(sel => {
+                    sel.dispatchEvent(new Event('change'));
+                });
+            }, 200);
 
         }, 200);
     }

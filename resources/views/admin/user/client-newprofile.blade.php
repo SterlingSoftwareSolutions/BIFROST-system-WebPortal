@@ -84,7 +84,7 @@
                                 <div class="w-full md:col-span-3 flex items-center space-x-2">
                                     <input type="text" id="pin" name="pin"
                                            class="form-control flex-grow border rounded px-4 py-2"
-                                           readonly
+                                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                            value="{{ old('pin', isset($member) ? $pin : '') }}">
                                     <div id="resetPinAction" class="form-control text-black items-center px-4 py-2 cursor-pointer bg-gray-100 rounded flex-shrink-0 flex justify-center"
                                          data-action="{{ $action }}"
