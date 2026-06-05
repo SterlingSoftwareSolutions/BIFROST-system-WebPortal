@@ -432,13 +432,6 @@ class MobileController extends Controller
                     ->where('class_id', $classId)
                     ->where('date', $storedDay);
 
-                if ($workoutFormatType === 'amrap') {
-                    // For AMRAP, we want to update the same record regardless of round_number
-                    // so we don't add it to the query.
-                } else if ($roundNumber !== null) {
-                    $query->where('round_number', $roundNumber);
-                }
-
                 $dailyWarmup = $query->first();
 
                 Log::info('Existing warmup record:', ['dailyWarmup' => $dailyWarmup?->toArray()]);
@@ -867,56 +860,27 @@ class MobileController extends Controller
                 $workoutManagerId = $validatedData['workout_manager_id'];
                 $classId = $validatedData['class_Id'];
 
-                //Check if record exists for this member + workout_manager_id + format checks + date
-                $query = DailyConditioning::where('member_id', $memberId)
-                    ->where('workout_manager_id', $workoutManagerId)
-                    ->where('workout_format_type', $workoutFormatType)
-                    ->where('workout_format_id', $workoutFormatId)
-                    ->where('class_id', $classId)
-                    ->where('date', $storedDay);
-
-                /**
-                /**
-                 * For AMRAP: do NOT filter by round_number - single row per exercise updated each round.
-                 */
-
-                $dailyConditioning = $query->first();
-
-                Log::info('Existing conditioning record:', ['dailyConditioning' => $dailyConditioning?->toArray()]);
-
-                if ($dailyConditioning) {
-                    // Update existing record
-                    $dailyConditioning->update([
-                        'reps' => $reps,
-                        'weight' => $weight,
-                        'date' => $storedDay,
-                        'round_number' => $roundNumber,
-                        //'conditioning_id' => $conditioningId,
-                        'class_id' => $classId,
-                      'exercise_time' => $exerciseTime,
-                      'notes' => $validatedData['notes'] ?? null,
-                    ]);
-                    $message = 'Conditioning updated successfully';
-                    Log::info('Conditioning updated', ['workout_manager_id' => $workoutManagerId]);
-                } else {
-                    // Create new record
-                    $dailyConditioning = DailyConditioning::create([
+                // Use updateOrCreate to prevent race conditions causing duplicate rows
+                $dailyConditioning = DailyConditioning::updateOrCreate(
+                    [
                         'member_id' => $memberId,
                         'workout_manager_id' => $workoutManagerId,
                         'workout_format_type' => $workoutFormatType,
                         'workout_format_id' => $workoutFormatId,
-                        //'conditioning_id' => $conditioningId,
+                        'class_id' => $classId,
+                        'date' => $storedDay,
+                    ],
+                    [
                         'reps' => $reps,
                         'weight' => $weight,
                         'round_number' => $roundNumber,
-                        'date' => $storedDay,
                         'exercise_time' => $exerciseTime,
-                        'class_id' => $classId,
                         'notes' => $validatedData['notes'] ?? null,
-                    ]);
-                    $message = 'Conditioning saved successfully';
-                    Log::info('New conditioning record created', ['workout_manager_id' => $workoutManagerId]);
-                }
+                    ]
+                );
+
+                $message = $dailyConditioning->wasRecentlyCreated ? 'Conditioning saved successfully' : 'Conditioning updated successfully';
+                Log::info($message, ['workout_manager_id' => $workoutManagerId]);
 
                 $responses[] = [
                     'workout_manager_id' => $workoutManagerId,

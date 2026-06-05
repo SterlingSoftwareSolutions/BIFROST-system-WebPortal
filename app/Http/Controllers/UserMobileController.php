@@ -1595,7 +1595,7 @@ public function getWorkouts(Request $request)
                             // We check existence rather than reps >= target, because reps reset each minute
                             // and the user may legitimately log 0 reps while still completing the round.
                             if (in_array($formatType, ['emom', 'rounds', 'circuit', 'intervals', 'for-time'])) {
-                                $dailyRecord = $dailyQuery->first();
+                                $dailyRecord = $dailyQuery->orderByDesc('id')->first();
                                 $isCompleted = false;
                                 $roundNumber = null;
                                 $dailyRepsSum = 0;
@@ -1895,7 +1895,8 @@ public function getWorkouts(Request $request)
         ], 200);
 
 
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
+        file_put_contents(storage_path('logs/my_debug.log'), $e->getMessage() . "\n" . $e->getTraceAsString() . "\n", FILE_APPEND);
         Log::error('getWorkouts error', [
             'error' => $e->getMessage(),
             'trace' => $e->getTraceAsString(),
