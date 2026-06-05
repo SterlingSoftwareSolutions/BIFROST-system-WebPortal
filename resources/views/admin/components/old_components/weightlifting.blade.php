@@ -249,7 +249,7 @@
                                     <div
                                         class="hidden absolute left-[-110px] top-[45px] w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                         <p><b>/10</b> – Effort out of 10</p>
-                                        <p><b>%</b> – Percentage of effort</p>
+                                        <p><b>%</b> – Percentage of 1RM</p>
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
                                     </div>
@@ -1385,7 +1385,7 @@
 
                     ${isAltRepsVisible ? `
                     <div class="flex items-center border-b">
-                        <label for="altrepsweight_${index}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
+                        <label for="altrepsweight_${index}" class="w-60 block mb-1">Volume <span class="text-red-500">*</span></label>
                         <div class="relative flex items-center">
                             <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" class="decrement-reps bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none">
                                 <svg class="w-3 h-3 text-gray-900 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 2">

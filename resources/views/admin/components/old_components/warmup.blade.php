@@ -193,7 +193,7 @@
                             </div>
 
                             <div class="flex items-center border-b mt-2">
-                                <label for="repsw_1" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
+                                <label for="repsw_1" class="w-60 block mb-1">Volume <span class="text-red-500">*</span></label>
                                 <div class="relative flex items-center max-w-[8rem] mb-2">
                                 <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)" id="decrement-repsw_1"
                                     class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
@@ -255,7 +255,7 @@
 
                                     <div class="hidden absolute left-[-100px] top-5 w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-50 info-popup font-normal normal-case">
                                         <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                        <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                        <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                         <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                         <p class="mb-1"><b>Kg</b> – Weight</p>
                                         <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -851,7 +851,7 @@
                             </select>
                         </div>
                         <div class="flex items-center border-b mt-2">
-                            <label for="repswe_${item.id}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
+                            <label for="repswe_${item.id}" class="w-60 block mb-1">Volume <span class="text-red-500">*</span></label>
                             <div class="relative flex items-center max-w-[8rem] mb-2">
                                 <!-- Decrement Button -->
                                 <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)"

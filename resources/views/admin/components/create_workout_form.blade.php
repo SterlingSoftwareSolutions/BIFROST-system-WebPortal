@@ -347,12 +347,9 @@
         window.toggleGenderSelection = function(unitSelect, genderId) {
             const genderSelect = document.getElementById(genderId);
             if(genderSelect) {
-                if(unitSelect.value === 'Kg') {
-                    genderSelect.classList.remove('hidden');
-                } else {
-                    genderSelect.classList.add('hidden');
-                    genderSelect.value = '';
-                }
+                // Disabled per user request: "no need mail femail part for kg just remove it"
+                genderSelect.classList.add('hidden');
+                genderSelect.value = '';
             }
 
             // Find the closest row ancestor that contains a reps input
@@ -630,7 +627,7 @@
                             </span>
                             <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -842,6 +839,11 @@
 
         window.renderIntervalsUI = function() {
             const html = `
+                <style>
+                    .interval-row ~ .interval-row .timer-container {
+                        visibility: hidden;
+                    }
+                </style>
                 <div id="intervals_container">
                     <!-- Intervals Counter -->
                     <div class="flex items-center mb-4 border-b pb-2 mt-2">
@@ -896,7 +898,7 @@
                             </span>
                             <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -1307,7 +1309,7 @@
                             </span>
                             <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -2052,7 +2054,7 @@
                             </span>
                             <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                 <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                 <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                 <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                 <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -2186,6 +2188,60 @@
             }
         }
 
+        window.syncIntervalTimers = function(intervalIndex, type, value) {
+            const container = document.getElementById(`interval_block_${intervalIndex}_rows`);
+            if(!container) return;
+            const inputs = container.querySelectorAll(`input.interval-${intervalIndex}-${type}-input`);
+            inputs.forEach(input => {
+                if(input.value !== value) {
+                    input.value = value;
+                }
+            });
+        }
+
+        window.incrementTime15 = function(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let parts = el.value.split(':');
+            if (parts.length === 3) {
+                let h = parseInt(parts[0]);
+                let m = parseInt(parts[1]);
+                let s = parseInt(parts[2]);
+                s += 15;
+                if(s >= 60) { s -= 60; m++; }
+                if(m >= 60) { m -= 60; h++; }
+                el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+            }
+
+            // Sync logic
+            const match = id.match(/^interval_(\d+)_(work|rest)_/);
+            if (match) {
+                syncIntervalTimers(match[1], match[2], el.value);
+            }
+        }
+
+        window.decrementTime15 = function(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            let parts = el.value.split(':');
+            if (parts.length === 3) {
+                let h = parseInt(parts[0]);
+                let m = parseInt(parts[1]);
+                let s = parseInt(parts[2]);
+                s -= 15;
+                if(s < 0) { s += 60; m--; }
+                if(m < 0) { m += 60; h--; }
+                if(h < 0) { h = 0; m = 0; s = 0; }
+                el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+            }
+
+            // Sync logic
+            const match = id.match(/^interval_(\d+)_(work|rest)_/);
+            if (match) {
+                syncIntervalTimers(match[1], match[2], el.value);
+            }
+        }
+
         window.incrementIntervalCount = function() {
              const el = document.getElementById('num_intervals');
              if(el) {
@@ -2253,7 +2309,7 @@
                                  </span>
                                  <div class="hidden w-48 bg-white border border-gray-200 shadow-lg p-3 rounded text-left text-xs z-[9999] info-popup font-normal normal-case">
                                      <p class="mb-1"><b>RPE</b> – Rate of Perceived Exertion (1-10)</p>
-                                     <p class="mb-1"><b>%</b> – Percentage of effort</p>
+                                     <p class="mb-1"><b>%</b> – Percentage of 1RM</p>
                                      <p class="mb-1"><b>Cal</b> – Number of calories</p>
                                      <p class="mb-1"><b>Kg</b> – Weight (Default Male value, Female is 75% of this on mobile app)</p>
                                      <p class="mb-1"><b>BW</b> – Body Weight</p>
@@ -2291,7 +2347,7 @@
               `;
 
              return `
-                <div class="flex items-center gap-2" id="interval_${intervalIndex}_row_${rowIndex}">
+                <div class="flex items-center gap-2 interval-row" id="interval_${intervalIndex}_row_${rowIndex}">
                     <!-- Exercise -->
                     <div class="flex-1 min-w-[100px]">
                         ${getSearchableDropdownHtml(`interval_${intervalIndex}_exercise_${rowIndex}`, '')}
@@ -2313,18 +2369,18 @@
                     </div>
 
                      <!-- Work/Rest -->
-                    <div class="flex gap-6">
+                    <div class="flex gap-6 timer-container">
                          <!-- Work -->
                          <div class="flex items-center justify-center w-28">
-                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
-                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
+                              <button type="button" onclick="decrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'work', this.value)" value="00:00:45" placeholder="00:00:00" class="interval-${intervalIndex}-work-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <button type="button" onclick="incrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
                          <div class="flex items-center justify-center w-28">
-                              <button type="button" onclick="decrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" value="00:00:00" placeholder="00:00:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
-                              <button type="button" onclick="incrementTime('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
+                              <button type="button" onclick="decrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'rest', this.value)" value="00:00:15" placeholder="00:00:00" class="interval-${intervalIndex}-rest-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <button type="button" onclick="incrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
 
@@ -2343,6 +2399,15 @@
             const rowIndex = Date.now();
 
             container.insertAdjacentHTML('beforeend', getIntervalRowHtml(intervalIndex, rowIndex));
+
+            const workInput = container.querySelector(`input.interval-${intervalIndex}-work-input`);
+            if (workInput && workInput.value) {
+                syncIntervalTimers(intervalIndex, 'work', workInput.value);
+            }
+            const restInput = container.querySelector(`input.interval-${intervalIndex}-rest-input`);
+            if (restInput && restInput.value) {
+                syncIntervalTimers(intervalIndex, 'rest', restInput.value);
+            }
         }
 
         window.removeIntervalRow = function(intervalIndex, rowIndex) {
