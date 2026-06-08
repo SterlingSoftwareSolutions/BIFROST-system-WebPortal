@@ -326,7 +326,7 @@
 
                                 <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                     <p><b>RPE</b> – Rate of Precieved Exertion(1-10)</p>
-                                    <p><b>%</b> – Percentage of effort</p>
+                                    <p><b>%</b> – Percentage of 1RM</p>
                                     <p><b>Cal</b> – Number of calories</p>
                                     <p><b>Kg</b> – Weight</p>
                                     <p><b>BW</b> – Body Weight</p>
@@ -361,7 +361,7 @@
                                     <!-- Popup (positioned relative to the ?) -->
                                     <div class="hidden absolute left-[-100px] top-5 w-44 bg-white border shadow-lg p-3 rounded text-sm z-50 info-popup">
                                         <p><b>/10</b> – Effort out of 10</p>
-                                        <p><b>%</b> – Percentage of effort</p>
+                                        <p><b>%</b> – Percentage of 1RM</p>
                                         <p><b>Cal</b> – Number of calories</p>
                                         <p><b>Kg</b> – Weight</p>
                                     </div>
@@ -1146,7 +1146,7 @@
                         </select>
                     </div>
                     <div class="flex items-center border-b mt-2">
-                        <label for="repscon_${item.id}" class="w-60 block mb-1">REPS <span class="text-red-500">*</span></label>
+                        <label for="repscon_${item.id}" class="w-60 block mb-1">Volume <span class="text-red-500">*</span></label>
                         <div class="relative flex items-center max-w-[8rem] mb-2">
                             <!-- Decrement Button -->
                             <button type="button" onclick="decrement(this.parentNode.querySelector('input').id)"
