@@ -581,6 +581,20 @@ class WorkoutManagerController extends Controller
                 });
             }
 
+            // Filter by Format
+            if ($request->has('format') && $request->format != '') {
+                $query->whereHas('format', function($q) use ($request) {
+                    $q->where('name', $request->format);
+                });
+            }
+
+            // Filter by Type
+            if ($request->has('type') && $request->type != '') {
+                $query->whereHas('type', function($q) use ($request) {
+                    $q->where('name', $request->type);
+                });
+            }
+
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
 
