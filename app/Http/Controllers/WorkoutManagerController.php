@@ -203,6 +203,15 @@ class WorkoutManagerController extends Controller
         return $lib ? $lib->id : null;
 
     }
+
+    private function formatTimeInput($timeStr) {
+        if (!$timeStr) return null;
+        if (strlen($timeStr) === 5 && strpos($timeStr, ':') !== false) {
+            return "00:" . $timeStr;
+        }
+        return $timeStr;
+    }
+
     private function saveRounds(Request $request, $managerId) {
         $count = $request->input('num_rounds', 1);
 
@@ -221,7 +230,7 @@ class WorkoutManagerController extends Controller
                     'reps' => $request->input("round_reps_$i"),
                     'gender' => $request->input("round_gender_$i"),
                     'is_for_time' => $request->has('is_for_time'),
-                    'time_to_complete' => $request->has('is_for_time') ? $request->input('time_to_complete') : null,
+                    'time_to_complete' => $request->has('is_for_time') ? $this->formatTimeInput($request->input('time_to_complete')) : null,
                 ]);
             }
             $i++;
@@ -245,8 +254,8 @@ class WorkoutManagerController extends Controller
                         'stationumber' => $intervalNum,
                         'training_load' => $request->input("interval_{$intervalNum}_load_{$rowId}"),
                         'unit_type' => $request->input("interval_{$intervalNum}_unit_{$rowId}"),
-                        'work' => $request->input("interval_{$intervalNum}_work_{$rowId}"),
-                        'rest' => $request->input("interval_{$intervalNum}_rest_{$rowId}"),
+                        'work' => $this->formatTimeInput($request->input("interval_{$intervalNum}_work_{$rowId}")),
+                        'rest' => $this->formatTimeInput($request->input("interval_{$intervalNum}_rest_{$rowId}")),
                         'gender' => $request->input("interval_{$intervalNum}_gender_{$rowId}"),
                     ]);
                 }
@@ -496,7 +505,7 @@ class WorkoutManagerController extends Controller
                         'reps' => $reps,
                         'gender' => $gender,
                         'is_for_time' => $request->has('is_for_time'),
-                        'time_to_complete' => $request->has('is_for_time') ? $request->input('time_to_complete') : null,
+                        'time_to_complete' => $request->has('is_for_time') ? $this->formatTimeInput($request->input('time_to_complete')) : null,
                     ]);
                 }
             }

@@ -244,9 +244,13 @@
             let intervalColsHtml = '';
             if (fmt === 'Intervals') {
                 const formatIntervalTime = (t) => {
-                    if (!t || t === '00:00:00') return '00:00:00 min';
-                    // If it's already in 00:00:00 format, just add min
-                    return `${t} min`;
+                    if (!t) return '00:00 min';
+                    let formatted = t;
+                    const parts = t.split(':');
+                    if (parts.length === 3 && parts[0] === '00') {
+                        formatted = parts[1] + ':' + parts[2];
+                    }
+                    return `${formatted} min`;
                 };
 
                 const work = formatIntervalTime(row.work);

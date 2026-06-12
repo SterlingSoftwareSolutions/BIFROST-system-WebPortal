@@ -2238,7 +2238,13 @@
             const el = document.getElementById(id);
             if (!el) return;
             let parts = el.value.split(':');
-            if (parts.length === 3) {
+            if (parts.length === 2) {
+                let m = parseInt(parts[0]);
+                let s = parseInt(parts[1]);
+                s += 15;
+                if(s >= 60) { s -= 60; m++; }
+                el.value = (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+            } else if (parts.length === 3) {
                 let h = parseInt(parts[0]);
                 let m = parseInt(parts[1]);
                 let s = parseInt(parts[2]);
@@ -2259,7 +2265,14 @@
             const el = document.getElementById(id);
             if (!el) return;
             let parts = el.value.split(':');
-            if (parts.length === 3) {
+            if (parts.length === 2) {
+                let m = parseInt(parts[0]);
+                let s = parseInt(parts[1]);
+                s -= 15;
+                if(s < 0) { s += 60; m--; }
+                if(m < 0) { m = 0; s = 0; }
+                el.value = (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
+            } else if (parts.length === 3) {
                 let h = parseInt(parts[0]);
                 let m = parseInt(parts[1]);
                 let s = parseInt(parts[2]);
@@ -2381,8 +2394,8 @@
                      </button>
               `;
 
-              let defaultWork = "00:00:00";
-              let defaultRest = "00:00:00";
+              let defaultWork = "00:00";
+              let defaultRest = "00:00";
 
               if (intervalIndex > 1) {
                   const firstWork = document.querySelector('.interval-1-work-input');
@@ -2418,13 +2431,13 @@
                          <!-- Work -->
                          <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'work', this.value)" value="${defaultWork}" placeholder="00:00:00" class="interval-${intervalIndex}-work-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'work', this.value)" value="${defaultWork}" placeholder="00:00" class="interval-${intervalIndex}-work-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
                          <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'rest', this.value)" value="${defaultRest}" placeholder="00:00:00" class="interval-${intervalIndex}-rest-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'rest', this.value)" value="${defaultRest}" placeholder="00:00" class="interval-${intervalIndex}-rest-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
@@ -2726,7 +2739,18 @@
                      }
                  }
 
-            } else if (fmt === 'Rounds') {
+            }
+
+            window.formatTimeForDisplay = function(timeStr) {
+                if (!timeStr) return timeStr;
+                const parts = timeStr.split(':');
+                if (parts.length === 3 && parts[0] === '00') {
+                    return parts[1] + ':' + parts[2];
+                }
+                return timeStr;
+            };
+
+            if (fmt === 'Rounds') {
                 const rounds = workout.rounds || [];
                 if (workout.number) document.getElementById('num_rounds').value = workout.number;
 
@@ -2747,7 +2771,7 @@
                             window.toggleRoundsTimer(cb);
                             const timerInput = document.getElementById('rounds_time');
                             if (timerInput && row.time_to_complete) {
-                                timerInput.value = row.time_to_complete;
+                                timerInput.value = window.formatTimeForDisplay(row.time_to_complete);
                             }
                         }
                     }
@@ -2840,8 +2864,8 @@
                                 const l = document.querySelector(`[name="interval_${blockNum}_load_${finalIdx}"]`); if(l) l.value = row.training_load;
                                 const u = document.querySelector(`[name="interval_${blockNum}_unit_${finalIdx}"]`); if(u) u.value = row.unit_type;
 
-                                const w = document.getElementById(`interval_${blockNum}_work_${finalIdx}`); if(w) w.value = row.work;
-                                const rest = document.getElementById(`interval_${blockNum}_rest_${finalIdx}`); if(rest) rest.value = row.rest;
+                                const w = document.getElementById(`interval_${blockNum}_work_${finalIdx}`); if(w) w.value = window.formatTimeForDisplay(row.work);
+                                const rest = document.getElementById(`interval_${blockNum}_rest_${finalIdx}`); if(rest) rest.value = window.formatTimeForDisplay(row.rest);
                             }
                         }, 50);
                     });
@@ -2886,7 +2910,7 @@
                                           window.toggleCircuitTimer(cb);
                                           const timerInput = document.getElementById('circuit_time');
                                           if (timerInput && row.time_to_complete) {
-                                              timerInput.value = row.time_to_complete;
+                                              timerInput.value = window.formatTimeForDisplay(row.time_to_complete);
                                           }
                                       }
                                   }
