@@ -5,7 +5,7 @@
             <div class="flex-col w-full min-w-0">
                 <div class="bg-gray-50 p-2 pt-0">
                     <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
-                    <div class="flex justify-start items-center gap-2 flex-nowrap overflow-x-auto pb-2">
+                    <div class="flex justify-center items-center gap-3 gap-y-4 flex-wrap pb-2 px-2">
 
                         <!-- Category Field -->
                         <div class="flex items-center gap-1 min-w-0">
