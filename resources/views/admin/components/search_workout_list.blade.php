@@ -5,20 +5,20 @@
             <div class="flex-col w-full min-w-0">
                 <div class="bg-gray-50 p-2 pt-0">
                     <div class="flex justify-center text-center items-center font-bold mb-3 text-2xl">Workout List</div>
-                    <div class="flex justify-center items-center gap-2 flex-wrap lg:flex-nowrap">
+                    <div class="flex justify-start items-center gap-2 flex-nowrap overflow-x-auto pb-2">
 
                         <!-- Category Field -->
                         <div class="flex items-center gap-1 min-w-0">
                             <label for="categoryw_2" class="w-15 text-md">Category</label>
                             <select id="categoryw_2" name="categoryw_2" onchange="// getworkoutw(this)"
-                                class="px-1 py-1 border rounded text-sm w-[8.25rem] lg:w-[9.5rem] max-w-full">
+                                class="px-1 py-1 border rounded text-xs w-[6.5rem] lg:w-[8rem]">
                                 <option value="" selected>-- All Categories --</option>
                             </select>
                         </div>
 
                         <!-- Exercise Field (Searchable) -->
                         <div class="flex items-center gap-1 min-w-0">
-                            <label for="workoutw_2" class="w-15 text-md pl-3">Exercise</label>
+                            <label for="workoutw_2" class="w-15 text-md">Exercise</label>
 
                             <!-- Custom Dropdown Structure -->
                             <div class="relative custom-dropdown group" id="dropdown_workoutw_2">
@@ -26,7 +26,7 @@
 
                                 <!-- TRIGGER -->
                                 <div onclick="toggleDropdownSearch('workoutw_2')"
-                                    class="px-1 py-1 border rounded text-sm flex items-center justify-between cursor-pointer bg-white w-[8rem] lg:w-[9rem] max-w-full"
+                                    class="px-1 py-1 border rounded text-xs flex items-center justify-between cursor-pointer bg-white w-[6.5rem] lg:w-[8rem]"
                                     tabindex="0">
                                     <span id="display_workoutw_2" class="text-gray-500 block truncate flex-1 min-w-0 text-left pr-2">-- All Exercises --</span>
                                     <svg class="w-3 h-3 text-gray-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -56,17 +56,46 @@
 
                         <!-- Name Field -->
                         <div class="flex items-center gap-1 min-w-0">
-                            <label for="namew_2" class="w-15 text-md pl-3">Name</label>
+                            <label for="namew_2" class="w-15 text-md">Name</label>
                             <input type="text" id="namew_2" name="namew_2"
-                                class="px-1 py-1 border rounded text-sm w-[7rem] lg:w-[8.5rem] max-w-full">
+                                class="px-1 py-1 border rounded text-xs w-[5.5rem] lg:w-[7rem]">
+                        </div>
+                        <!-- Format Field -->
+                        <div class="flex items-center gap-1 min-w-0">
+                            <label for="formatw_2" class="w-15 text-md">Format</label>
+                            <select id="formatw_2" name="formatw_2" onchange="fetchUnifiedWorkouts()"
+                                class="px-1 py-1 border rounded text-xs w-[6rem] lg:w-[7.5rem]">
+                                <option value="" selected>-- All --</option>
+                                <option value="Straight Sets">Straight Sets</option>
+                                <option value="Rounds">Rounds</option>
+                                <option value="AMRAP">AMRAP</option>
+                                <option value="EMOM">EMOM</option>
+                                <option value="Intervals">Intervals</option>
+                                <option value="Pyramid">Pyramid</option>
+                                <option value="Circuit">Circuit</option>
+                                <option value="For Time">For Time</option>
+                            </select>
                         </div>
 
-
+                        <!-- Type Field -->
+                        <div class="flex items-center gap-1 min-w-0">
+                            <label for="typew_2" class="w-15 text-md">Type</label>
+                            <select id="typew_2" name="typew_2" onchange="fetchUnifiedWorkouts()"
+                                class="px-1 py-1 border rounded text-xs w-[6rem] lg:w-[7.5rem]">
+                                <option value="" selected>-- All --</option>
+                                <option value="Warmup">Warmup</option>
+                                <option value="Strength">Strength</option>
+                                <option value="Conditioning">Conditioning</option>
+                                <option value="Weightlifting">Weightlifting</option>
+                                <option value="Accessory">Accessory</option>
+                                <option value="PR's">PR's</option>
+                            </select>
+                        </div>
 
                         <!-- Clear Button -->
                         <div class="flex items-center">
                             <button id="searchclearsetwarmup_1" onclick="// clearSearchWarmup()" type="button"
-                                class="bg-black text-white py-1 px-2 rounded text-xs">Clear</button>
+                                class="bg-black text-white py-1.5 px-3 rounded text-sm font-semibold hover:bg-gray-800 transition-colors">Clear</button>
                         </div>
 
                     </div>
@@ -303,6 +332,12 @@
         if (categoryId) params.append('category_id', categoryId);
         if (libraryId) params.append('library_id', libraryId);
         if (date) params.append('date', date);
+
+        const formatId = document.getElementById('formatw_2') ? document.getElementById('formatw_2').value : '';
+        const typeId = document.getElementById('typew_2') ? document.getElementById('typew_2').value : '';
+        
+        if (formatId) params.append('format', formatId);
+        if (typeId) params.append('type', typeId);
 
         fetch(`/workout/get-manager-list?${params.toString()}`)
             .then(response => response.json())
@@ -657,6 +692,8 @@
             clearBtn.onclick = () => {
                 document.getElementById('namew_2').value = '';
                 document.getElementById('categoryw_2').value = '';
+                if(document.getElementById('formatw_2')) document.getElementById('formatw_2').value = '';
+                if(document.getElementById('typew_2')) document.getElementById('typew_2').value = '';
                 // Fetch all will reset the UI for exercise dropdown too
                 getworkoutw_search('');
             };

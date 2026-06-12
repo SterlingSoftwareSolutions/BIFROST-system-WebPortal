@@ -354,7 +354,8 @@
 
             // Find the closest row ancestor that contains a reps input
             // Try multiple selector strategies to support all row types
-            const row = unitSelect.closest('[id*="_row_"]')
+            const row = unitSelect.closest('.exercise-controls')
+                     || unitSelect.closest('[id*="_row_"]')
                      || unitSelect.closest('.flex.items-center.gap-3')
                      || unitSelect.closest('.flex.gap-2.mb-3')
                      || unitSelect.closest('.flex.gap-4.items-center')
@@ -368,59 +369,88 @@
                 // Handle REPS visibility based on unit type
                 const repsInput = row.querySelector('input[id*="_reps_"]');
                 if(repsInput) {
-                    const innerContainer = repsInput.parentElement;
-
-                    // Get or create a dashes element INSIDE the same container (keeps layout stable)
-                    let dashesEl = innerContainer.querySelector('.reps-dashes');
-                    if (!dashesEl) {
-                        dashesEl = document.createElement('span');
-                        dashesEl.className = 'reps-dashes text-gray-500 font-bold text-base';
-                        dashesEl.style.display = 'none';
-                        dashesEl.innerHTML = '----';
-                        innerContainer.appendChild(dashesEl);
-                    }
-
-                    if(unitSelect.value === 'Cal' || unitSelect.value === 'm') {
-                        // Hide all children except the dashes element
-                        Array.from(innerContainer.children).forEach(child => {
-                            if (!child.classList.contains('reps-dashes')) {
-                                child.style.display = 'none';
-                            }
-                        });
-                        repsInput.value = '';
-                        dashesEl.style.display = 'inline';
+                    const repsId = repsInput.id;
+                    const containerEl = row.querySelector('[id="reps_container_' + repsId + '"]');
+                    const specificDashesEl = row.querySelector('[id="dashes_' + repsId + '"]');
+                    
+                    if (containerEl && specificDashesEl) {
+                        if(unitSelect.value === 'Cal' || unitSelect.value === 'm') {
+                            containerEl.style.display = 'none';
+                            specificDashesEl.style.display = 'flex';
+                            repsInput.value = '';
+                        } else {
+                            containerEl.style.display = 'flex';
+                            specificDashesEl.style.display = 'none';
+                        }
                     } else {
-                        // Restore all children
-                        Array.from(innerContainer.children).forEach(child => {
-                            if (!child.classList.contains('reps-dashes')) {
-                                child.style.display = '';
-                            }
-                        });
-                        dashesEl.style.display = 'none';
+                        const innerContainer = repsInput.parentElement;
+
+                        // Get or create a dashes element INSIDE the same container (keeps layout stable)
+                        let dashesEl = innerContainer.querySelector('.reps-dashes');
+                        if (!dashesEl) {
+                            dashesEl = document.createElement('span');
+                            dashesEl.className = 'reps-dashes text-gray-500 font-bold text-base';
+                            dashesEl.style.display = 'none';
+                            dashesEl.innerHTML = '----';
+                            innerContainer.appendChild(dashesEl);
+                        }
+
+                        if(unitSelect.value === 'Cal' || unitSelect.value === 'm') {
+                            // Hide all children except the dashes element
+                            Array.from(innerContainer.children).forEach(child => {
+                                if (!child.classList.contains('reps-dashes')) {
+                                    child.style.display = 'none';
+                                }
+                            });
+                            repsInput.value = '';
+                            dashesEl.style.display = 'inline';
+                        } else {
+                            // Restore all children
+                            Array.from(innerContainer.children).forEach(child => {
+                                if (!child.classList.contains('reps-dashes')) {
+                                    child.style.display = '';
+                                }
+                            });
+                            dashesEl.style.display = 'none';
+                        }
                     }
                 }
 
                 // Handle LOAD visibility based on unit type
                 const loadInput = row.querySelector('input[name*="_load_"]');
                 if(loadInput) {
-                    const loadCol = loadInput.parentElement;
-
-                    let dashesEl = loadCol.querySelector('.load-dashes');
-                    if (!dashesEl) {
-                        dashesEl = document.createElement('div');
-                        dashesEl.className = 'load-dashes flex items-center justify-center text-gray-500 font-bold w-12 h-11';
-                        dashesEl.style.display = 'none';
-                        dashesEl.innerHTML = '&mdash;';
-                        loadCol.insertBefore(dashesEl, loadInput);
-                    }
-
-                    if(unitSelect.value === 'BW' || unitSelect.value === 'N/A') {
-                        loadInput.style.display = 'none';
-                        loadInput.value = '';
-                        dashesEl.style.display = 'flex';
+                    const loadName = loadInput.name;
+                    const specificLoadDashesEl = row.querySelector('[id="dashes_load_' + loadName + '"]');
+                    
+                    if (specificLoadDashesEl) {
+                        if(unitSelect.value === 'BW' || unitSelect.value === 'N/A') {
+                            loadInput.style.display = 'none';
+                            specificLoadDashesEl.style.display = 'flex';
+                            loadInput.value = '';
+                        } else {
+                            loadInput.style.display = 'block';
+                            specificLoadDashesEl.style.display = 'none';
+                        }
                     } else {
-                        loadInput.style.display = '';
-                        dashesEl.style.display = 'none';
+                        const loadCol = loadInput.parentElement;
+
+                        let dashesEl = loadCol.querySelector('.load-dashes');
+                        if (!dashesEl) {
+                            dashesEl = document.createElement('div');
+                            dashesEl.className = 'load-dashes flex items-center justify-center text-gray-500 font-bold w-12 h-11';
+                            dashesEl.style.display = 'none';
+                            dashesEl.innerHTML = '&mdash;';
+                            loadCol.insertBefore(dashesEl, loadInput);
+                        }
+
+                        if(unitSelect.value === 'BW' || unitSelect.value === 'N/A') {
+                            loadInput.style.display = 'none';
+                            loadInput.value = '';
+                            dashesEl.style.display = 'flex';
+                        } else {
+                            loadInput.style.display = '';
+                            dashesEl.style.display = 'none';
+                        }
                     }
                 }
             }
@@ -448,7 +478,7 @@
                     <div class="w-10"></div> <!-- Number col -->
                     <div class="flex-[3] font-bold text-lg text-gray-800 min-w-0">Exercise <span class="text-red-500">*</span></div>
                     <div class="flex-1 font-bold text-lg text-center text-gray-800 min-w-[130px]">Training Load <span class="text-red-500">*</span></div>
-                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Volume <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Reps <span class="text-red-500">*</span></div>
                     <div class="w-10"></div> <!-- Action col -->
                 </div>
 
@@ -636,7 +666,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Volume <span class="text-red-500">*</span></div>
+                    <div class="flex-1 font-bold text-lg text-center text-gray-700 min-w-[120px]">Reps <span class="text-red-500">*</span></div>
                     <div class="w-10"></div> <!-- Action col -->
                 </div>
 
@@ -765,7 +795,7 @@
                             <div class="ml-auto flex items-center pr-2">
                                 <label class="flex items-center cursor-pointer gap-2">
                                     <input type="checkbox" id="is_for_time" name="is_for_time" value="1" onchange="toggleRoundsTimer(this)" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <span class="text-base font-semibold text-gray-700">For Time</span>
+                                    <span class="text-base font-semibold text-gray-700">Time Cap</span>
                                 </label>
                             </div>
                         </div>
@@ -907,7 +937,7 @@
                             </div>
                         </div>
                          </div>
-                        <div class="w-32 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
+                        <div class="w-32 font-bold text-sm text-center text-gray-700">Reps <span class="text-red-500">*</span></div>
                     </div>
 
                     <div id="pyramid_rows_container" class="space-y-3 max-h-[168px] overflow-y-auto pr-2 custom-scroll mb-4">
@@ -1046,7 +1076,7 @@
                     <div class="flex items-center mb-4 border-b pb-4 mt-2 justify-between">
                         <!-- Minutes -->
                         <div class="flex items-center">
-                            <label class="w-40 block text-base font-semibold text-black">Minutes</label>
+                            <label class="w-40 block text-base font-semibold text-black">Total Time</label>
                             <div class="flex items-center">
                                 <button type="button" onclick="decrementMinuteCount()"
                                     class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
@@ -1059,7 +1089,7 @@
 
                         <!-- Minute Length -->
                         <div class="flex items-center">
-                            <label class="w-40 block text-base font-semibold text-black text-right pr-4">Minute Length</label>
+                            <label class="w-40 block text-base font-semibold text-black text-right pr-4">Work Time</label>
                             <div class="flex items-center">
                                 <button type="button" onclick="decrementMinuteLength()"
                                     class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
@@ -1154,7 +1184,10 @@
 
                     if (reps) reps.value = exData.reps;
                     if (load) load.value = exData.load;
-                    if (unit) unit.value = exData.unit;
+                    if (unit) {
+                        unit.value = exData.unit;
+                        unit.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
                 });
             });
         };
@@ -1318,7 +1351,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="w-[120px] flex-shrink-0 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
+                    <div class="w-[120px] flex-shrink-0 font-bold text-sm text-center text-gray-700">Reps <span class="text-red-500">*</span></div>
                     <div class="w-[140px] pr-0 ml-auto"></div>
                 </div>
             `;
@@ -1331,13 +1364,14 @@
                     </div>
                     <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
-                            <input type="text" name="ss_load_1" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select id="ss_gender_1" name="ss_gender_1" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold text-gray-400">
+                            <input type="text" name="ss_load_1" placeholder="80" class="w-16 border border-gray-300 rounded p-2.5 h-11 text-center text-sm font-bold">
+                            <div id="dashes_load_ss_load_1" class="load-dashes flex items-center justify-center text-gray-500 font-bold w-16 h-11" style="display:none;">&mdash;</div>
+                            <select id="ss_gender_1" name="ss_gender_1" onchange="updateGenderColor(this)" class="hidden w-12 bg-white border border-gray-300 rounded px-1 h-11 text-center text-sm font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
                             </select>
-                            <select name="ss_unit_1" onchange="toggleGenderSelection(this, 'ss_gender_1')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                            <select name="ss_unit_1" onchange="toggleGenderSelection(this, 'ss_gender_1')" class="bg-white border border-gray-300 rounded px-1 h-11 text-center text-sm font-bold w-12">
                                 ${getUnitSelectOptionsHtml('%')}
                             </select>
                          </div>
@@ -1618,13 +1652,14 @@
                     </div>
                     <div class="w-[175px] flex-shrink-0 text-center">
                          <div class="flex gap-1 justify-center">
-                            <input type="text" name="ss_load_${index}" placeholder="80" class="w-16 border border-gray-300 rounded-s p-2.5 h-11 text-center text-sm font-bold">
-                            <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-gray-100 border border-gray-300 px-1 h-11 text-center text-sm font-bold text-gray-400">
+                            <input type="text" name="ss_load_${index}" placeholder="80" class="w-16 border border-gray-300 rounded p-2.5 h-11 text-center text-sm font-bold">
+                            <div id="dashes_load_ss_load_${index}" class="load-dashes flex items-center justify-center text-gray-500 font-bold w-16 h-11" style="display:none;">&mdash;</div>
+                            <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 bg-white border border-gray-300 rounded px-1 h-11 text-center text-sm font-bold text-gray-400">
                                 <option value="" disabled selected>M/F</option>
                                 <option value="Male" class="text-black">M</option>
                                 <option value="Female" class="text-black">F</option>
                             </select>
-                            <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="bg-gray-100 border border-l-0 border-gray-300 rounded-e px-1 h-11 text-center text-sm font-bold w-12">
+                            <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="bg-white border border-gray-300 rounded px-1 h-11 text-center text-sm font-bold w-12">
                                 ${getUnitSelectOptionsHtml('kg')}
                             </select>
                          </div>
@@ -1700,7 +1735,7 @@
                  return `
                     <div class="flex items-center gap-0 py-1" id="ss_row_${index}">
                          <!-- Content Part -->
-                         <div class="flex-1 flex items-center gap-4">
+                         <div class="flex-1 flex items-center gap-4 exercise-controls">
                              <div class="w-8 text-center font-bold text-gray-600 text-base">${index}</div>
 
                              <!-- Reps Control -->
@@ -1718,7 +1753,7 @@
                              <!-- Load Display -->
                              <div class="flex items-center gap-1">
                                  <input type="text" id="load_ss_load_${index}" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || ''}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:none;' : 'display:block;'}">
-                                 <div id="dashes_load_ss_load_${index}" class="border border-gray-300 rounded p-2 h-10 w-14 flex items-center justify-center text-sm font-bold text-gray-400 bg-gray-50" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
+                                 <div id="dashes_load_ss_load_${index}" class="flex items-center justify-center text-sm font-bold text-gray-400 w-14 h-10" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
                                  <select id="ss_gender_${index}" name="ss_gender_${index}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white text-gray-400">
                                     <option value="" disabled selected>M/F</option>
                                     <option value="Male" class="text-black">M</option>
@@ -1770,7 +1805,7 @@
                              <div class="flex-1 min-w-0 font-bold text-sm text-gray-800 truncate" title="${exName}">${exName}</div>
 
                              <!-- Controls Container -->
-                             <div class="flex items-center ml-auto gap-3">
+                             <div class="flex items-center ml-auto gap-3 exercise-controls">
                                   <!-- Reps -->
                                   <div class="flex items-center w-22 justify-center relative">
                                       <div id="reps_container_ss_reps_${index}${suffix}" class="flex items-center w-full" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:none;' : 'display:flex;'}">
@@ -1783,13 +1818,13 @@
                                       </div>
                                   </div>
 
-                                  <div class="text-[10px] font-bold text-gray-500 uppercase">VOLUME</div>
+                                  <div class="text-[10px] font-bold text-gray-500 uppercase">REPS</div>
 
                                   <!-- Load -->
                                   <div class="flex items-center gap-1">
                                       <div class="relative">
                                           <input type="text" id="load_ss_load_${index}${suffix}" name="ss_load_${index}${suffix}" value="${defaultLoad}" placeholder="80" class="border border-gray-300 rounded p-1 h-8 w-14 text-center text-xs font-bold text-black placeholder-gray-400" style="${(defaultUnit === 'BW' || defaultUnit === 'N/A') ? 'display:none;' : 'display:block;'}">
-                                          <div id="dashes_load_ss_load_${index}${suffix}" class="border border-gray-300 rounded p-1 h-8 w-14 flex items-center justify-center text-xs font-bold text-gray-400 bg-gray-50" style="${(defaultUnit === 'BW' || defaultUnit === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
+                                          <div id="dashes_load_ss_load_${index}${suffix}" class="flex items-center justify-center text-xs font-bold text-gray-400 w-14 h-8" style="${(defaultUnit === 'BW' || defaultUnit === 'N/A') ? 'display:flex;' : 'display:none;'}">&mdash;</div>
                                       </div>
                                       <div class="relative">
                                          <select id="ss_gender_${index}${suffix}" name="ss_gender_${index}${suffix}" onchange="updateGenderColor(this)" class="hidden border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-gray-400">
@@ -1949,7 +1984,7 @@
                             <div class="ml-auto flex items-center pr-2">
                                 <label class="flex items-center cursor-pointer gap-2">
                                     <input type="checkbox" id="circuit_is_for_time" name="is_for_time" value="1" onchange="toggleCircuitTimer(this)" class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <span class="text-base font-semibold text-gray-700">For Time</span>
+                                    <span class="text-base font-semibold text-gray-700">Time Cap</span>
                                 </label>
                             </div>
                         </div>
@@ -2063,7 +2098,7 @@
                             </div>
                         </div>
                          </div>
-                         <div class="w-24 font-bold text-sm text-center text-gray-700">Volume <span class="text-red-500">*</span></div>
+                         <div class="w-24 font-bold text-sm text-center text-gray-700">Reps <span class="text-red-500">*</span></div>
                          <div class="min-w-[80px]"></div>
                      </div>
 
@@ -2339,12 +2374,22 @@
             `;
         }
 
-             window.getIntervalRowHtml = function(intervalIndex, rowIndex) {
+         window.getIntervalRowHtml = function(intervalIndex, rowIndex) {
               let btnHtml = `
                      <button type="button" onclick="removeIntervalRow(${intervalIndex}, ${rowIndex})" class="text-red-500 hover:text-red-700 font-bold text-lg flex items-center justify-center w-8 h-8 border border-red-500 rounded bg-white">
                          &times;
                      </button>
               `;
+
+              let defaultWork = "00:00:00";
+              let defaultRest = "00:00:00";
+
+              if (intervalIndex > 1) {
+                  const firstWork = document.querySelector('.interval-1-work-input');
+                  const firstRest = document.querySelector('.interval-1-rest-input');
+                  if (firstWork) defaultWork = firstWork.value;
+                  if (firstRest) defaultRest = firstRest.value;
+              }
 
              return `
                 <div class="flex items-center gap-2 interval-row" id="interval_${intervalIndex}_row_${rowIndex}">
@@ -2373,13 +2418,13 @@
                          <!-- Work -->
                          <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'work', this.value)" value="00:00:45" placeholder="00:00:00" class="interval-${intervalIndex}-work-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_work_${rowIndex}" name="interval_${intervalIndex}_work_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'work', this.value)" value="${defaultWork}" placeholder="00:00:00" class="interval-${intervalIndex}-work-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime15('interval_${intervalIndex}_work_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                          <!-- Rest -->
                          <div class="flex items-center justify-center w-28">
                               <button type="button" onclick="decrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex items-center justify-center">-</button>
-                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'rest', this.value)" value="00:00:15" placeholder="00:00:00" class="interval-${intervalIndex}-rest-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
+                              <input type="text" id="interval_${intervalIndex}_rest_${rowIndex}" name="interval_${intervalIndex}_rest_${rowIndex}" oninput="syncIntervalTimers(${intervalIndex}, 'rest', this.value)" value="${defaultRest}" placeholder="00:00:00" class="interval-${intervalIndex}-rest-input bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-16 text-sm font-medium text-gray-900 px-0">
                               <button type="button" onclick="incrementTime15('interval_${intervalIndex}_rest_${rowIndex}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex items-center justify-center">+</button>
                          </div>
                     </div>
