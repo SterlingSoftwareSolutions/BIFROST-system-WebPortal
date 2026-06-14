@@ -1428,7 +1428,7 @@ public function getWorkouts(Request $request)
         | Warmup / completion status (your existing logic)
         |--------------------------------------------------------------------------
         */
-        $workouts->each(function ($workout) use ($classId, $member, $dateString, $dateObj) {
+        $workouts->each(function ($workout) use ($classId, $member, $dateString, $dateObj, $patterns) {
 
             $typeName = strtolower(trim($workout->type->name ?? ''));
 
@@ -1476,8 +1476,8 @@ public function getWorkouts(Request $request)
                             ->where('workout_manager_id', $workout->id)
                             ->where('workout_format_type', $formatType)
                             ->where('workout_format_id', $formatItem->id)
-                            ->where('date', $dateString)
                             ->where('class_id', $classId)
+                            ->whereIn('date', $patterns)
                             ->pluck('round_number');
 
                             Log::info('Retrieved round entries', [
@@ -1536,14 +1536,14 @@ public function getWorkouts(Request $request)
                                     ->where('workout_format_type', $formatType)
                                     ->where('workout_format_id', $set->id)
                                     ->where('class_id', $classId)
-                                    ->where('date', $dateString);
+                                    ->whereIn('date', $patterns);
 
                                 $dailyQuery = (clone $query);
                                 $existsInDaily = $dailyQuery->exists();
 
                                 if ($existsInDaily) {
                                     $dailyRepsSum = $dailyQuery->sum('reps');
-                                    $targetReps = $set->res ?? 0;
+                                    $targetReps = $set->reps ?? 0;
 
                                     $isCompleted = ($dailyRepsSum >= $targetReps);
 
@@ -1553,7 +1553,7 @@ public function getWorkouts(Request $request)
                                 } else {
                                     $set->setAttribute('is_completed', 0);
                                     $set->setAttribute('daily_reps', 0);
-                                    $set->setAttribute('target_reps', $set->res ?? 0);
+                                    $set->setAttribute('target_reps', $set->reps ?? 0);
                                 }
                             }
                         }

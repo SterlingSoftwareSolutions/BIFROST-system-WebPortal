@@ -51,9 +51,9 @@
                                     <div class="flex items-center space-x-4">
                                         <label for="category" class="w-32 font-semibold">Category <span
                                                 class="text-red-500">*</span></label>
-                                        <select id="category" name="category"
+                                        <select id="category" name="category" required
                                             class="p-2 border border-gray-300 rounded flex-1">
-                                            <option value="Select" selected>--Select--</option>
+                                            <option value="" selected>--Select--</option>
                                             @foreach ($categoryOptions as $categoryOption)
                                                 <option value="{{ $categoryOption->id }}">
                                                     {{ $categoryOption->category_name }}</option>
@@ -62,9 +62,23 @@
                                     </div>
 
                                     <div class="flex items-center space-x-4">
+                                        <label for="type" class="w-32 font-semibold">Type <span
+                                                class="text-red-500">*</span></label>
+                                        <select id="type" name="type" required
+                                            class="p-2 border border-gray-300 rounded flex-1">
+                                            <option value="" selected>--Select--</option>
+                                            <option value="warmup">Warmup</option>
+                                            <option value="strength">Strength</option>
+                                            <option value="conditioning">Conditioning</option>
+                                            <option value="weightlifting">Weightlifting</option>
+                                            <option value="test">Test</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="flex items-center space-x-4">
                                         <label for="workout" class="w-32 font-semibold">Exercise <span
                                                 class="text-red-500">*</span></label>
-                                        <input type="text" id="workout" name="workout"
+                                        <input type="text" id="workout" name="workout" required
                                             class="p-2 border border-gray-300 rounded flex-1">
                                     </div>
 
