@@ -492,6 +492,12 @@ class UserMobileController extends Controller
                 $allData = $allData->merge($records);
             }
 
+            // Also fetch Test records (1RM inputs)
+            $testRecords = \App\Models\Test::where('member_id', $member->id)
+                ->where('workout_id', $workoutId)
+                ->get();
+            $allData = $allData->merge($testRecords);
+
 
             if ($allData->isEmpty()) {
                 return response()->json([
@@ -517,7 +523,7 @@ class UserMobileController extends Controller
 
                 return [
                     'date' => $date,
-                    'reps' => (int) ($item->reps ?? 0),
+                    'reps' => (int) ($item->reps ?? ($item instanceof \App\Models\Test ? 1 : 0)),
                     'weight' => (float) $weight,
                 ];
             })->sortBy('date')->values();
@@ -535,7 +541,9 @@ class UserMobileController extends Controller
                         ]
                     ],
                     'summary' => [
-                        'total_reps' => $allData->sum('reps'),
+                        'total_reps' => $allData->sum(function($item) {
+                             return $item->reps ?? ($item instanceof \App\Models\Test ? 1 : 0);
+                        }),
                         'total_weight' => $allData->sum(function ($item) {
                             if ($item instanceof DailyWarmup) {
                                 return optional($item->workout_format)->training_load ?? 0;
@@ -550,6 +558,10 @@ class UserMobileController extends Controller
                                     $weight = optional($item->workout_format)->training_load ?? 0;
                                 } else {
                                     $weight = $item->weight ?? 0;
+                                }
+
+                                if ($item instanceof \App\Models\Test) {
+                                    return $weight;
                                 }
 
                                 $reps = $item->reps ?? 0;
@@ -850,7 +862,16 @@ class UserMobileController extends Controller
                 ->merge($weightliftingData->toBase())
                 ->merge($conditioningData->toBase())
                 ->merge($accessoryData->toBase())
-                ->sortByDesc('date')
+                ->sortByDesc(function ($item) {
+                    try {
+                        // "15/06/26 Monday" → "15/06/26"
+                        $datePart = explode(' ', $item['date'])[0];
+
+                        return \Carbon\Carbon::createFromFormat('d/m/y', $datePart)->timestamp;
+                    } catch (\Exception $e) {
+                        return 0;
+                    }
+                })
                 ->values();
 
 
@@ -1226,7 +1247,7 @@ public function getWorkouts(Request $request)
                 'categoryOptions'   => $categoryOptions,
                 'raw_tests_for_day' => $testsForDay,
                 'member'            => $member,
-                
+
             ], 200);
         }
 
@@ -1611,7 +1632,7 @@ public function getWorkouts(Request $request)
                                         // Fallback if no round_number but record exists
                                         $isCompleted = true;
                                     }
-                                    
+
                                     Log::info('[getWorkouts][Format Check]', [
                                         'item'               => $formatItem->workoutLibrary->name ?? 'Unknown',
                                         'table'              => $dailyModel,

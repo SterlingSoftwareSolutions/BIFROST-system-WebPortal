@@ -835,7 +835,7 @@ class MobileController extends Controller
                    # 'conditioning_id' => 'required|integer|exists:conditionings,id',
                     'reps' => 'nullable|integer',
                     'class_Id' => 'required|integer',
-                   # 'weight' => 'nullable|numeric',
+                    'weight' => 'nullable|numeric',
                     'exercise_time' => 'nullable|string',
                     'notes' => 'nullable|string',
                 ]);
