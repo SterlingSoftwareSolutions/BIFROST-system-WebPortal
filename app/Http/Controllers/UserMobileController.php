@@ -492,6 +492,12 @@ class UserMobileController extends Controller
                 $allData = $allData->merge($records);
             }
 
+            // Also fetch Test records (1RM inputs)
+            $testRecords = \App\Models\Test::where('member_id', $member->id)
+                ->where('workout_id', $workoutId)
+                ->get();
+            $allData = $allData->merge($testRecords);
+
 
             if ($allData->isEmpty()) {
                 return response()->json([
@@ -517,7 +523,7 @@ class UserMobileController extends Controller
 
                 return [
                     'date' => $date,
-                    'reps' => (int) ($item->reps ?? 0),
+                    'reps' => (int) ($item->reps ?? ($item instanceof \App\Models\Test ? 1 : 0)),
                     'weight' => (float) $weight,
                 ];
             })->sortBy('date')->values();
@@ -535,7 +541,9 @@ class UserMobileController extends Controller
                         ]
                     ],
                     'summary' => [
-                        'total_reps' => $allData->sum('reps'),
+                        'total_reps' => $allData->sum(function($item) {
+                             return $item->reps ?? ($item instanceof \App\Models\Test ? 1 : 0);
+                        }),
                         'total_weight' => $allData->sum(function ($item) {
                             if ($item instanceof DailyWarmup) {
                                 return optional($item->workout_format)->training_load ?? 0;
@@ -550,6 +558,10 @@ class UserMobileController extends Controller
                                     $weight = optional($item->workout_format)->training_load ?? 0;
                                 } else {
                                     $weight = $item->weight ?? 0;
+                                }
+
+                                if ($item instanceof \App\Models\Test) {
+                                    return $weight;
                                 }
 
                                 $reps = $item->reps ?? 0;
