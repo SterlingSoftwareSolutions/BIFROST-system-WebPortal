@@ -862,7 +862,15 @@ class UserMobileController extends Controller
                 ->merge($weightliftingData->toBase())
                 ->merge($conditioningData->toBase())
                 ->merge($accessoryData->toBase())
-                ->sortByDesc('date')
+                ->sortByDesc(function ($item) {
+                    try {
+                        $datePart = explode(' ', $item['date'])[0];
+                        $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
+                        return \Carbon\Carbon::createFromFormat($fmt, $datePart)->timestamp;
+                    } catch (\Exception $e) {
+                        return 0;
+                    }
+                })
                 ->values();
 
 

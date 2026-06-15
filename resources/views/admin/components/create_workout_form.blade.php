@@ -2190,15 +2190,17 @@
                 // MM:SS
                 let min = parseInt(parts[0]);
                 let sec = parseInt(parts[1]);
-                min++;
+                sec += 15;
+                if(sec >= 60) { sec -= 60; min++; }
                 el.value = (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
             } else if (parts.length === 3) {
                  // HH:MM:SS
                  let h = parseInt(parts[0]);
                  let m = parseInt(parts[1]);
                  let s = parseInt(parts[2]);
-                 m++;
-                 if(m >= 60) { m = 0; h++; }
+                 s += 15;
+                 if(s >= 60) { s -= 60; m++; }
+                 if(m >= 60) { m -= 60; h++; }
                  el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
             }
         }
@@ -2211,14 +2213,22 @@
             if (parts.length === 2) {
                 let min = parseInt(parts[0]);
                 let sec = parseInt(parts[1]);
-                if (min > 0) min--;
+                sec -= 15;
+                if(sec < 0) { 
+                    if(min > 0) { sec += 60; min--; } 
+                    else { sec = 0; min = 0; }
+                }
                 el.value = (min < 10 ? '0' + min : min) + ':' + (sec < 10 ? '0' + sec : sec);
             } else if (parts.length === 3) {
                  let h = parseInt(parts[0]);
                  let m = parseInt(parts[1]);
                  let s = parseInt(parts[2]);
-                 if (m > 0) m--;
-                 else if (h > 0) { h--; m=59; }
+                 s -= 15;
+                 if(s < 0) {
+                     if(m > 0) { s += 60; m--; }
+                     else if (h > 0) { s += 60; m = 59; h--; }
+                     else { s = 0; m = 0; h = 0; }
+                 }
                  el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
             }
         }
