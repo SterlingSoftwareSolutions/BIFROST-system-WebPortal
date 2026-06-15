@@ -864,9 +864,10 @@ class UserMobileController extends Controller
                 ->merge($accessoryData->toBase())
                 ->sortByDesc(function ($item) {
                     try {
+                        // "15/06/26 Monday" → "15/06/26"
                         $datePart = explode(' ', $item['date'])[0];
-                        $fmt = (preg_match('/\/\d{4}$/', $datePart) ? 'd/m/Y' : 'd/m/y');
-                        return \Carbon\Carbon::createFromFormat($fmt, $datePart)->timestamp;
+
+                        return \Carbon\Carbon::createFromFormat('d/m/y', $datePart)->timestamp;
                     } catch (\Exception $e) {
                         return 0;
                     }
@@ -1246,7 +1247,7 @@ public function getWorkouts(Request $request)
                 'categoryOptions'   => $categoryOptions,
                 'raw_tests_for_day' => $testsForDay,
                 'member'            => $member,
-                
+
             ], 200);
         }
 
@@ -1631,7 +1632,7 @@ public function getWorkouts(Request $request)
                                         // Fallback if no round_number but record exists
                                         $isCompleted = true;
                                     }
-                                    
+
                                     Log::info('[getWorkouts][Format Check]', [
                                         'item'               => $formatItem->workoutLibrary->name ?? 'Unknown',
                                         'table'              => $dailyModel,
