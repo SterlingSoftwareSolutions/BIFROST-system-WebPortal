@@ -353,6 +353,13 @@
                         }
                     });
                 }, 250);
+            @else
+                setTimeout(() => {
+                    let selectedDateElement = document.getElementById(selectedDate);
+                    if (selectedDateElement) {
+                        selectedDateElement.click();
+                    }
+                }, 250);
             @endif
 
             // Event listener for previous week button
