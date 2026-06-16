@@ -161,7 +161,7 @@
             <!-- Header -->
             <div class="flex justify-between items-center bg-white border-b border-gray-200 px-3 py-2">
                  <div class="font-bold text-base text-gray-800">${fmtName} <span class="text-gray-500 font-normal ml-1 text-sm">${workout.type ? '- ' + workout.type.name : ''}</span></div>
-                 <div class="flex gap-3">
+                 <div class="flex items-center gap-3">
                      <button onclick="editUnifiedWorkout(${workout.id}); openWorkoutModal()" class="text-gray-700 hover:text-black">
                         <svg class="feather feather-edit" fill="none" height="22" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
 
@@ -244,19 +244,20 @@
             let intervalColsHtml = '';
             if (fmt === 'Intervals') {
                 const formatIntervalTime = (t) => {
-                    if (!t) return '00:00 min';
+                    if (!t) return '00:00 sec';
                     let formatted = t;
                     const parts = t.split(':');
                     if (parts.length === 3 && parts[0] === '00') {
                         formatted = parts[1] + ':' + parts[2];
                     }
-                    return `${formatted} min`;
+                    return `${formatted} sec`;
                 };
 
                 const work = formatIntervalTime(row.work);
                 const rest = formatIntervalTime(row.rest);
 
                 intervalColsHtml = `
+                <div class="w-20 md:w-24 text-right text-black uppercase">${repsDisplay}</div>
                 <div class="w-32 text-center text-black text-[17px]">${work}</div>
                 <div class="w-32 text-center text-black text-[17px]">${rest}</div>
             `;
@@ -320,14 +321,6 @@
         const activeDayBtn = document.querySelector('.day.bg-\\[\\#EEE8AA\\]');
         let date = activeDayBtn ? activeDayBtn.innerText.trim() : '';
         document.getElementById('common_date').value = date;
-
-        if (!date) {
-
-            const firstDay = document.getElementById('1day');
-            if (firstDay && firstDay.innerText.trim() !== 'Day 1') {
-                date = firstDay.innerText.trim();
-            }
-        }
 
         console.log("Fetching workouts for date:", date);
 
@@ -698,6 +691,13 @@
                 document.getElementById('categoryw_2').value = '';
                 if(document.getElementById('formatw_2')) document.getElementById('formatw_2').value = '';
                 if(document.getElementById('typew_2')) document.getElementById('typew_2').value = '';
+                
+                // Unselect any selected day
+                document.querySelectorAll('.day').forEach(link => {
+                    link.classList.add("hover:bg-black", "hover:text-white");
+                    link.classList.remove("bg-[#EEE8AA]");
+                });
+                
                 // Fetch all will reset the UI for exercise dropdown too
                 getworkoutw_search('');
             };
