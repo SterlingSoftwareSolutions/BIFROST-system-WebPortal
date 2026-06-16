@@ -254,6 +254,7 @@ class WorkoutManagerController extends Controller
                         'stationumber' => $intervalNum,
                         'training_load' => $request->input("interval_{$intervalNum}_load_{$rowId}"),
                         'unit_type' => $request->input("interval_{$intervalNum}_unit_{$rowId}"),
+                        'reps' => $request->input("interval_{$intervalNum}_reps_{$rowId}"),
                         'work' => $this->formatTimeInput($request->input("interval_{$intervalNum}_work_{$rowId}")),
                         'rest' => $this->formatTimeInput($request->input("interval_{$intervalNum}_rest_{$rowId}")),
                         'gender' => $request->input("interval_{$intervalNum}_gender_{$rowId}"),
@@ -607,13 +608,13 @@ class WorkoutManagerController extends Controller
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
 
-            // FILTER: Workout date (Removed per client requirement to show all regardless of date)
-            // if ($date) {
-            //     $query->whereDate('date', $date);
-            // }
-
             // EXCLUDE workout types 6 and 7
             $query->whereNotIn('type_id', [6, 7]);
+
+            // SORTING: Prioritize workouts matching the selected date at the top
+            if ($date) {
+                $query->orderByRaw('CASE WHEN date = ? THEN 1 ELSE 0 END DESC', [$date]);
+            }
 
             $workouts = $query->orderBy('created_at', 'desc')->get();
 

@@ -244,19 +244,20 @@
             let intervalColsHtml = '';
             if (fmt === 'Intervals') {
                 const formatIntervalTime = (t) => {
-                    if (!t) return '00:00 min';
+                    if (!t) return '00:00 sec';
                     let formatted = t;
                     const parts = t.split(':');
                     if (parts.length === 3 && parts[0] === '00') {
                         formatted = parts[1] + ':' + parts[2];
                     }
-                    return `${formatted} min`;
+                    return `${formatted} sec`;
                 };
 
                 const work = formatIntervalTime(row.work);
                 const rest = formatIntervalTime(row.rest);
 
                 intervalColsHtml = `
+                <div class="w-20 md:w-24 text-right text-black uppercase">${repsDisplay}</div>
                 <div class="w-32 text-center text-black text-[17px]">${work}</div>
                 <div class="w-32 text-center text-black text-[17px]">${rest}</div>
             `;

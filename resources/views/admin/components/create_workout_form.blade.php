@@ -112,6 +112,17 @@
                 this.blur(); // Close the native dropdown immediately after selection
                 container.innerHTML = ''; // Clear existing
 
+                const modalInner = document.querySelector('#workout_modal > div');
+                if (modalInner) {
+                    if (format === 'Intervals') {
+                        modalInner.classList.remove('max-w-2xl');
+                        modalInner.classList.add('max-w-4xl');
+                    } else {
+                        modalInner.classList.remove('max-w-4xl');
+                        modalInner.classList.add('max-w-2xl');
+                    }
+                }
+
                 if (format === 'Rounds') {
                     renderRoundsUI();
                 } else if (format === 'AMRAP') {
@@ -2376,6 +2387,7 @@
                                  </div>
                              </div>
                          </div>
+                         <div class="w-24 font-bold text-sm text-center text-gray-700">Reps <span class="text-red-500">*</span></div>
                          <div class="flex gap-6">
                              <div class="w-28 font-bold text-sm text-center text-gray-700">Work</div>
                              <div class="w-28 font-bold text-sm text-center text-gray-700">Rest</div>
@@ -2433,6 +2445,24 @@
                              <select name="interval_${intervalIndex}_unit_${rowIndex}" onchange="toggleGenderSelection(this, 'interval_${intervalIndex}_gender_${rowIndex}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
                                 ${getUnitSelectOptionsHtml('%')}
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- REPS -->
+                    <div class="w-24">
+                        <div class="flex items-center justify-center relative">
+                            <div id="reps_container_interval_${intervalIndex}_reps_${rowIndex}" class="flex items-center justify-center w-full">
+                                <button type="button" onclick="decrementValue('interval_${intervalIndex}_reps_${rowIndex}')"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-6 flex justify-center items-center">-</button>
+                                <input type="text" id="interval_${intervalIndex}_reps_${rowIndex}" name="interval_${intervalIndex}_reps_${rowIndex}" value="" placeholder="0"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                    class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
+                                <button type="button" onclick="incrementValue('interval_${intervalIndex}_reps_${rowIndex}')"
+                                    class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-6 flex justify-center items-center">+</button>
+                            </div>
+                            <div id="dashes_interval_${intervalIndex}_reps_${rowIndex}" class="w-full flex justify-center items-center h-11 text-gray-400 font-bold text-lg" style="display:none;">
+                                ----
+                            </div>
                         </div>
                     </div>
 
@@ -2873,6 +2903,7 @@
                                 window.selectOption(`interval_${blockNum}_exercise_${finalIdx}`, row.workout_library.workout);
                                 const l = document.querySelector(`[name="interval_${blockNum}_load_${finalIdx}"]`); if(l) l.value = row.training_load;
                                 const u = document.querySelector(`[name="interval_${blockNum}_unit_${finalIdx}"]`); if(u) u.value = row.unit_type;
+                                const repInput = document.getElementById(`interval_${blockNum}_reps_${finalIdx}`); if(repInput) repInput.value = row.reps;
 
                                 const w = document.getElementById(`interval_${blockNum}_work_${finalIdx}`); if(w) w.value = window.formatTimeForDisplay(row.work);
                                 const rest = document.getElementById(`interval_${blockNum}_rest_${finalIdx}`); if(rest) rest.value = window.formatTimeForDisplay(row.rest);
