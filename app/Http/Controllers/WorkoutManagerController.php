@@ -608,10 +608,10 @@ class WorkoutManagerController extends Controller
             // FILTER: Show only Active workouts
             $query->where('status', '!=', 'inactive');
 
-            // FILTER: Workout date (Restored per client requirement)
-            if ($date) {
-                $query->where('date', $date);
-            }
+            // FILTER: Workout date (Removed per client requirement to not filter by day planner)
+            // if ($date) {
+            //     $query->where('date', $date);
+            // }
 
             // EXCLUDE workout types 6 and 7
             $query->whereNotIn('type_id', [6, 7]);
