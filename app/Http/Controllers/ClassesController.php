@@ -53,7 +53,7 @@ class ClassesController extends Controller
              $this->createClass($request, $request->selectdatecla);
 
              Log::info('Single class creation called successfully.');
-             return redirect()->back()->with('success', 'Class added successfully.');
+             return redirect()->back()->with('success', 'Class added successfully.')->with('last_selected_date', $request->selectdatecla);
         }
 
         $selectedDays = $request->days; // e.g., ['Mon', 'Wed']
@@ -92,9 +92,9 @@ class ClassesController extends Controller
         }
         if (count($conflicts) > 0) {
             $msg = "Created $createdCount classes. Skipped " . count($conflicts) . " due to conflicts.";
-            return redirect()->back()->with('warning', $msg);
+            return redirect()->back()->with('warning', $msg)->with('last_selected_date', $request->selectdatecla);
         }
-        return redirect()->back()->with('success', "Recursively created $createdCount classes!");
+        return redirect()->back()->with('success', "Recursively created $createdCount classes!")->with('last_selected_date', $request->selectdatecla);
     }
     // Helper function to keep code clean
     private function createClass($request, $date) {
@@ -179,16 +179,16 @@ class ClassesController extends Controller
                     }
 
                     //Log::info("repeatedly updated $updatedCount classes.");
-                    return redirect()->back()->with('success', "Class updated. Moved $updatedCount classes from $currentDayShort to $newDayShort.");
+                    return redirect()->back()->with('success', "Class updated. Moved $updatedCount classes from $currentDayShort to $newDayShort.")->with('last_selected_date', $class->date);
                 }
 
             } catch (\Exception $e) {
                 //Log::error("Error in recursive update: " . $e->getMessage());
-                return redirect()->back()->with('error', 'Class updated but failed to process recurrence: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Class updated but failed to process recurrence: ' . $e->getMessage())->with('last_selected_date', $class->date);
             }
         }
 
-        return redirect()->back()->with('success', 'Class updated successfully.');
+        return redirect()->back()->with('success', 'Class updated successfully.')->with('last_selected_date', $class->date);
     }
 
     // Delete class
