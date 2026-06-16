@@ -119,7 +119,7 @@ class WorkoutManagerController extends Controller
                 break;
         }
 
-        return redirect()->back()->with('success', $message);
+        return redirect()->back()->with('success', $message)->with('last_selected_date', $request->common_date);
     }
 
     public function update(Request $request)
@@ -196,7 +196,7 @@ class WorkoutManagerController extends Controller
             case 'Circuit': $this->saveCircuit($request, $workout->id); break;
         }
 
-        return redirect()->back()->with('success', 'Workout Updated Successfully!');
+        return redirect()->back()->with('success', 'Workout Updated Successfully!')->with('last_selected_date', $workout->date);
     }
     private function getWorkoutLibId($name) {
         $lib = WorkoutLibrary::where('workout', $name)->first();
@@ -616,7 +616,17 @@ class WorkoutManagerController extends Controller
             // EXCLUDE workout types 6 and 7
             $query->whereNotIn('type_id', [6, 7]);
 
-            $workouts = $query->orderBy('created_at', 'desc')->get();
+            // Filter by Created Date
+            if ($request->has('created_date') && $request->created_date != '') {
+                $query->whereDate('created_at', $request->created_date);
+            }
+
+            $sortOrder = $request->input('sort_order', 'desc');
+            if (!in_array(strtolower($sortOrder), ['asc', 'desc'])) {
+                $sortOrder = 'desc';
+            }
+
+            $workouts = $query->orderBy('created_at', $sortOrder)->get();
 
              //Attach Assignment Status (if date provided)
              if ($date) {
