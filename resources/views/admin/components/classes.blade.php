@@ -79,6 +79,7 @@
         <tbody class="bg-white" id="classesTableBody">
           <input type="text" name="selectdatecla" id="selectdatecla" hidden>
           <input type="text" id="selected_class_id" hidden>
+          <tr class="empty-state"><td colspan="5" class="text-center py-6 text-gray-500 font-medium">Please select a date from the Day Planner to view and manage classes.</td></tr>
         </tbody>
       </table>
     </div>

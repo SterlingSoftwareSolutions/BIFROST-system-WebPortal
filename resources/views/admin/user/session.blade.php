@@ -177,16 +177,16 @@
                             class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                             id="3day">Day 3</button>
                         <button
-                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                             id="4day">Day 4</button>
                         <button
-                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                             id="5day">Day 5</button>
                         <button
-                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover-text-white day"
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 text-start hover:bg-black hover:text-white day"
                             id="6day">Day 6</button>
                         <button
-                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover-text-white day"
+                            class="weekday border-l border-t border-b border-r border-black w-full px-2 py-3 rounded-b-md text-start hover:bg-black hover:text-white day"
                             id="7day">Day 7</button>
                     </div>
                     {{-- Classess --}}
@@ -388,9 +388,6 @@
                     //getdate(selectedDate);
                 });
             });
-
-            // Default select Current day
-            document.getElementById(selectedDate).click();
         });
 
         // Function to change the week
