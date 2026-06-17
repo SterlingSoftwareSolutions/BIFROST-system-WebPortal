@@ -2820,8 +2820,11 @@
             } else if (fmt === 'AMRAP') {
                 const amraps = workout.amraps || [];
                 if(workout.number) {
-                     let m = workout.number;
-                     document.getElementById('time_to_complete').value = (m < 10 ? '0'+m : m) + ':00';
+                     // number is now stored as total SECONDS in the database
+                     let totalSecs = parseInt(workout.number);
+                     let m = Math.floor(totalSecs / 60);
+                     let s = totalSecs % 60;
+                     document.getElementById('time_to_complete').value = (m < 10 ? '0'+m : m) + ':' + (s < 10 ? '0'+s : s);
                 }
                 amraps.forEach((row, i) => {
                     const idx = i + 1;

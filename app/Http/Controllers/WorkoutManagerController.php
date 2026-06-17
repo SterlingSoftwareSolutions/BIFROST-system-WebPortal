@@ -45,16 +45,19 @@ class WorkoutManagerController extends Controller
                 $numberValue = $request->input('num_rounds');
                 break;
             case 'AMRAP':
-               // AMRAP usually sends time like "04:00" (MM:SS).
-               // Parse to integer (minutes) for storage in 'number' column.
+               // AMRAP sends time like "09:30" (MM:SS).
+               // Convert to total SECONDS for accurate storage in 'number' column.
                 $timeStr = $request->input('time_to_complete');
                 $numberValue = 0;
                 if ($timeStr) {
                     if (strpos($timeStr, ':') !== false) {
                         $parts = explode(':', $timeStr);
-                        $numberValue = intval($parts[0]); // Take minutes
+                        $minutes = intval($parts[0]);
+                        $seconds = count($parts) > 1 ? intval($parts[1]) : 0;
+                        $numberValue = ($minutes * 60) + $seconds;
                     } else {
-                        $numberValue = intval($timeStr);
+                        // Legacy fallback: plain integer was considered minutes
+                        $numberValue = intval($timeStr) * 60;
                     }
                 }
                 break;
@@ -140,8 +143,14 @@ class WorkoutManagerController extends Controller
             case 'AMRAP':
                 $timeStr = $request->input('time_to_complete');
                 if ($timeStr) {
-                    $parts = explode(':', $timeStr);
-                    if (count($parts) >= 1) $numberValue = (int)$parts[0];
+                    if (strpos($timeStr, ':') !== false) {
+                        $parts = explode(':', $timeStr);
+                        $minutes = intval($parts[0]);
+                        $seconds = count($parts) > 1 ? intval($parts[1]) : 0;
+                        $numberValue = ($minutes * 60) + $seconds;
+                    } else {
+                        $numberValue = intval($timeStr) * 60;
+                    }
                 }
                 break;
             case 'EMOM':

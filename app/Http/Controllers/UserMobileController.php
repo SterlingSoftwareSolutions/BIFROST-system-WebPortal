@@ -1150,25 +1150,20 @@ public function getWorkouts(Request $request)
             'date_string' => $dateString,
         ]);
 
-        $testsForDay = \App\Models\Test::where('member_id', $member->id)
-            ->where(function ($q) use ($patterns) {
-                foreach ($patterns as $p) {
-                    $q->orWhere('date', 'LIKE', '%' . $p . '%');
-                }
-            })
+        $allHistoricalTests = \App\Models\Test::where('member_id', $member->id)
             ->whereNotNull('workout_libraries_id')
             ->get();
 
-        Log::info('[getWorkouts][PART A] testsForDay retrieved', [
-            'count' => $testsForDay->count(),
-            'library_ids' => $testsForDay->pluck('workout_libraries_id')->unique()->values()->toArray(),
-            'test_ids' => $testsForDay->pluck('id')->values()->toArray(),
+        Log::info('[getWorkouts][PART A] allHistoricalTests retrieved', [
+            'count' => $allHistoricalTests->count(),
+            'library_ids' => $allHistoricalTests->pluck('workout_libraries_id')->unique()->values()->toArray(),
+            'test_ids' => $allHistoricalTests->pluck('id')->values()->toArray(),
         ]);
 
         // workout_libraries_id => latest test details (latest wins)
         $testMap = [];
 
-        $testsSorted = $testsForDay->sortBy(function ($t) {
+        $testsSorted = $allHistoricalTests->sortBy(function ($t) {
             return $t->created_at ? $t->created_at->timestamp : $t->id;
         });
 
@@ -1181,6 +1176,15 @@ public function getWorkouts(Request $request)
                 'test_created_at' => $t->created_at,
             ];
         }
+
+        $testsForDay = $allHistoricalTests->filter(function ($t) use ($patterns) {
+            foreach ($patterns as $p) {
+                if (stripos($t->date, $p) !== false) return true;
+            }
+            return false;
+        })->values();
+
+
             //include data of workout library and test all in the map
         Log::info('[getWorkouts][PART A] testMap built (latest per workout_libraries_id)', [
             'testMap_keys' => array_keys($testMap),
@@ -1834,11 +1838,9 @@ public function getWorkouts(Request $request)
             ->get();
 
         if ($detailstest->isEmpty()) {
-            $detailstest = \App\Models\Test::where('member_id', $member->id)
-                ->where(function ($q) use ($dayWithDate, $dayWithDateNew) {
-                    $q->where('date', $dayWithDate)
-                      ->orWhere('date', $dayWithDateNew);
-                })
+            $latestTestIds = collect($testMap)->pluck('test_id')->toArray();
+            
+            $detailstest = \App\Models\Test::whereIn('id', $latestTestIds)
                 ->with('workout.categoryOption')
                 ->with('member')
                 ->get();
@@ -1911,7 +1913,7 @@ public function getWorkouts(Request $request)
                 'weightlifting' => $testWeightlifting,
                 'conditioning'  => $testConditioning
             ],
-            'raw_tests_for_day' => $testsForDay,
+            'raw_tests_for_day' => $detailstest,
         ], 200);
 
 
