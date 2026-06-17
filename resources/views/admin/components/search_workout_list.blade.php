@@ -92,6 +92,12 @@
                             </select>
                         </div>
 
+                        <!-- Created Date Field -->
+                        <div class="flex items-center gap-1 min-w-0">
+                            <label for="filter_created_date" class="w-15 text-md">Created</label>
+                            <input type="date" id="filter_created_date" name="filter_created_date" class="px-1 py-1 border rounded text-xs w-[7rem] lg:w-[8.5rem]" onchange="fetchUnifiedWorkouts()">
+                        </div>
+
                         <!-- Clear Button -->
                         <div class="flex items-center">
                             <button id="searchclearsetwarmup_1" onclick="// clearSearchWarmup()" type="button"
@@ -112,6 +118,18 @@
 
 <script>
     window.unifiedWorkoutsMap = {};
+    window.currentSortOrder = 'desc'; // default newest first
+
+    window.toggleSortOrder = function() {
+        if (window.currentSortOrder === 'desc') {
+            window.currentSortOrder = 'asc';
+            document.getElementById('sort_date_btn').innerHTML = 'Sort: Date &uarr;';
+        } else {
+            window.currentSortOrder = 'desc';
+            document.getElementById('sort_date_btn').innerHTML = 'Sort: Date &darr;';
+        }
+        fetchUnifiedWorkouts();
+    };
 
     // Main render function for the unified workout list
     window.renderUnifiedWorkoutList = function(workouts, classes = []) {
@@ -332,9 +350,12 @@
 
         const formatId = document.getElementById('formatw_2') ? document.getElementById('formatw_2').value : '';
         const typeId = document.getElementById('typew_2') ? document.getElementById('typew_2').value : '';
+        const filterCreatedDate = document.getElementById('filter_created_date') ? document.getElementById('filter_created_date').value : '';
         
         if (formatId) params.append('format', formatId);
         if (typeId) params.append('type', typeId);
+        if (filterCreatedDate) params.append('created_date', filterCreatedDate);
+        if (window.currentSortOrder) params.append('sort_order', window.currentSortOrder);
 
         fetch(`/workout/get-manager-list?${params.toString()}`)
             .then(response => response.json())
@@ -691,6 +712,7 @@
                 document.getElementById('categoryw_2').value = '';
                 if(document.getElementById('formatw_2')) document.getElementById('formatw_2').value = '';
                 if(document.getElementById('typew_2')) document.getElementById('typew_2').value = '';
+                if(document.getElementById('filter_created_date')) document.getElementById('filter_created_date').value = '';
                 
                 // Unselect any selected day
                 document.querySelectorAll('.day').forEach(link => {

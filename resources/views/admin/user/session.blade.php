@@ -343,6 +343,25 @@
             // Update the week and dates display
             updateWeekAndDates();
 
+            @if(session('last_selected_date'))
+                setTimeout(() => {
+                    let lastSelected = "{!! session('last_selected_date') !!}";
+                    let dayButtons = document.querySelectorAll('.day');
+                    dayButtons.forEach(function(btn) {
+                        if (btn.innerText.trim() === lastSelected.trim()) {
+                            btn.click();
+                        }
+                    });
+                }, 250);
+            @else
+                setTimeout(() => {
+                    let selectedDateElement = document.getElementById(selectedDate);
+                    if (selectedDateElement) {
+                        selectedDateElement.click();
+                    }
+                }, 250);
+            @endif
+
             // Event listener for previous week button
             document.getElementById('prevWeek').addEventListener('click', function(event) {
                 event.preventDefault();
