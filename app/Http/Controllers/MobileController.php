@@ -1402,9 +1402,23 @@ class MobileController extends Controller
 
             // Test (filtered by member)
             $detailstest = Test::whereIn('id', $getIds('test'))
-                ->where('member_id', operator: $member->id)
+                ->where('member_id', $member->id)
                 ->with(['workout.categoryOption', 'member', 'workoutManager.format', 'workoutManager.amraps', 'workoutManager.rounds', 'workoutManager.emoms', 'workoutManager.straights', 'workoutManager.circuits', 'workoutManager.pyramids', 'workoutManager.forTimes', 'workoutManager.intervals'])
                 ->get();
+
+            if ($detailstest->isEmpty()) {
+                $allHistorical = \App\Models\Test::where('member_id', $member->id)
+                    ->whereNotNull('workout_libraries_id')
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+                $latestIds = [];
+                foreach($allHistorical as $t) {
+                    $latestIds[$t->workout_libraries_id] = $t->id;
+                }
+                $detailstest = Test::whereIn('id', array_values($latestIds))
+                    ->with(['workout.categoryOption', 'member'])
+                    ->get();
+            }
 
             if ($assigned->isEmpty()) {
                 return response()->json([
@@ -1415,10 +1429,20 @@ class MobileController extends Controller
                 ]);
             }
 
+            // Fetch ALL historical tests to use for weight calculations
+            $allHistoricalTestsForMap = \App\Models\Test::where('member_id', $member->id)
+                ->whereNotNull('workout_libraries_id')
+                ->with('workout.categoryOption')
+                ->orderBy('created_at', 'asc')
+                ->get();
+
             // Create a map of [workout name + category_options_id] => weight from test
-            $testWeights = $detailstest->mapWithKeys(function ($test) {
-                $key = $test->workout->workout . '_' . $test->workout->category_options_id;
-                return [$key => $test->weight];
+            $testWeights = $allHistoricalTestsForMap->mapWithKeys(function ($test) {
+                if ($test->workout) {
+                    $key = $test->workout->workout . '_' . $test->workout->category_options_id;
+                    return [$key => $test->weight];
+                }
+                return [];
             });
 
             $detailswarmup->transform(function ($item) use ($member, $dayWithDateNew) {
@@ -1556,11 +1580,24 @@ class MobileController extends Controller
             ], 404);
         }
 
-        $test->update([
-            'weight' => $request->weight,
-            'date' => $request->date ?? $test->date,
-            'unit_type' => 'kg', // Force unit type to kg on update as per request
-        ]);
+        $today = now()->format('d/m/y l');
+
+        if (now()->isSameDay($test->created_at)) {
+            // Update if it was created today (fixing typos)
+            $test->update([
+                'weight' => $request->weight,
+                'date' => $request->date ?? $test->date,
+                'unit_type' => 'kg',
+            ]);
+        } else {
+            // Insert a new record to preserve history for achievements
+            $newTest = $test->replicate();
+            $newTest->weight = $request->weight;
+            $newTest->date = $request->date ?? $today;
+            $newTest->created_at = now();
+            $newTest->updated_at = now();
+            $newTest->save();
+        }
 
         return response()->json([
             'status' => true,
@@ -1582,30 +1619,43 @@ class MobileController extends Controller
         $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
         $dayWithDate = $date->format('d/m/y l');
 
+        $existingTest = Test::where('workout_libraries_id', $request->workout_id)
+            ->where('member_id', $request->member_id)
+            ->where('date', $dayWithDate)
+            ->first();
 
-        $workoutManager = WorkoutManager::create([
-            'workout_name' => $request->workoutname,
-            'type_id' => 7, // Default type ID for tests/measurements
-            'format_id' => 0,//no specific format type for this
-            'date' => $dayWithDate,
-            // 'number' can be left null or set if needed.
-        ]);
+        if ($existingTest) {
+            $existingTest->update([
+                'weight' => $request->weight,
+                'workoutname' => $request->workoutname,
+            ]);
+            $test = $existingTest;
+            $responseMessage = 'Weight updated successfully.';
+        } else {
+            $workoutManager = WorkoutManager::create([
+                'workout_name' => $request->workoutname,
+                'type_id' => 7, 
+                'format_id' => 0,
+                'date' => $dayWithDate,
+            ]);
 
-        $test = Test::create([
-            'workout_id'  => $request->workout_id,
-            'member_id'   => $request->member_id,
-            'weight'      => $request->weight,
-            'workoutname' => $request->workoutname,
-            'date'        => $dayWithDate,
-            'category_id' => $request->category_id ?? null,
-            'workout_manager_id' => $workoutManager->id,
-            'workout_libraries_id' => $request->workout_id,
-            'unit_type' => 'kg',
-        ]);
+            $test = Test::create([
+                'workout_id'  => $request->workout_id,
+                'member_id'   => $request->member_id,
+                'weight'      => $request->weight,
+                'workoutname' => $request->workoutname,
+                'date'        => $dayWithDate,
+                'category_id' => $request->category_id ?? null,
+                'workout_manager_id' => $workoutManager->id,
+                'workout_libraries_id' => $request->workout_id,
+                'unit_type' => 'kg',
+            ]);
+            $responseMessage = 'Weight saved successfully.';
+        }
 
         return response()->json([
             'success' => true,
-            'message' => 'Weight inserted successfully.',
+            'message' => $responseMessage,
             'data'    => $test,
         ]);
     } catch (\Throwable $e) {
