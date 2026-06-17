@@ -540,6 +540,14 @@ class UserMobileController extends Controller
                             ['label' => 'Weight (kg)', 'data' => $graphData->pluck('weight')],
                         ]
                     ],
+                    '1rm_history' => $testRecords->map(function ($t) {
+                        try {
+                            $date = \Carbon\Carbon::createFromFormat('d/m/y l', $t->date)->format('Y-m-d');
+                        } catch (\Exception $e) {
+                            $date = $t->date;
+                        }
+                        return ['date' => $date, 'weight' => (float) $t->weight];
+                    })->sortBy('date')->values(),
                     'summary' => [
                         'total_reps' => $allData->sum(function($item) {
                              return $item->reps ?? ($item instanceof \App\Models\Test ? 1 : 0);
