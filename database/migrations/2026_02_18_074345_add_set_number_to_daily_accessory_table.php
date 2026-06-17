@@ -10,22 +10,19 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    if (!Schema::hasTable('type')) {
-        Schema::create('type', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->timestamps();
+    {
+        Schema::table('daily_accessory', function (Blueprint $table) {
+            $table->integer('set_number')->nullable()->after('workout_format_id');
         });
     }
-}
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('type');
+        Schema::table('daily_accessory', function (Blueprint $table) {
+            $table->dropColumn('set_number');
+        });
     }
 };

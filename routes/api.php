@@ -43,6 +43,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthdaily']);
     Route::post('/save-weightligting-workout',  [MobileController::class, 'storeweightliftingdaily']);
     Route::post('/save-conditioning-workout',  [MobileController::class, 'storeconditioningdaily']);
+    Route::post('/save-accessory-workout',  [MobileController::class, 'storeaccessorydaily']);
 
     //profile
     Route::get('profile', [UserMobileController::class, 'viewprofile'])->name('userprofile');
@@ -57,4 +58,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('getexercises', [UserMobileController::class, 'getStrengthWorkouts'])->name('getexercise');
     Route::post('getacheivementgraph', [UserMobileController::class, 'getStrengthProgress'])->name('get.strength.details');
     Route::get('getworkouthistory', [UserMobileController::class, 'getMemberWorkoutDetails'])->name('getworkouthistory');
+
+    Route::delete('/test/delete', [UserMobileController::class, 'deleteTest'])->name('test.delete');
 });

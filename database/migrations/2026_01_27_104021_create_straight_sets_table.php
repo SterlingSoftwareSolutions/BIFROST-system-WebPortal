@@ -16,8 +16,11 @@ return new class extends Migration
             $table->foreignId('workout_libraries_id')->constrained('workout_libraries')->cascadeOnDelete();
             $table->foreignId('straight_id')->constrained('straight')->cascadeOnDelete();
             $table->integer('res')->nullable();          // reps / result
-            $table->integer('trainload')->nullable();    // training load value
+            $table->integer('training_load')->nullable();    // training load value
             $table->enum('unittype', ['%', 'Kg', 'Cal', 'RPE', 'BW', 'N/A'])->default('N/A');
+            $table->time('restred');
+            $table->time('restyellow');
+            $table->time('restgreen');
             $table->timestamps();
         });
     }

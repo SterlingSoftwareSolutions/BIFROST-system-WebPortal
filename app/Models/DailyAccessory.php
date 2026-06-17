@@ -15,15 +15,25 @@ class DailyAccessory extends Model
         'workout_manager_id',
         'workout_format_type',
         'workout_format_id',
+        'set_number',
+        'round_number',
         'reps',
         'weight',
         'date',
+        'round_number',
+        'exercise_time',
+        'class_id',
+        'notes',
     ];
 
 
     public function workoutFormat()
     {
         return $this->morphTo('workout_format', 'workout_format_type', 'workout_format_id');
+    }
+    public function workoutManager()
+    {
+        return $this->belongsTo(WorkoutManager::class, 'workout_manager_id');
     }
 
     public function accessory()
@@ -37,7 +47,7 @@ class DailyAccessory extends Model
                     ->where('member_id', $memberId)
                     ->where('date', $date)
                     ->get();
-        
+
         return $data;
     }
 }

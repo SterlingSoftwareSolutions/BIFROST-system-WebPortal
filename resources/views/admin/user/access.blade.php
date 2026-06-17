@@ -267,6 +267,31 @@
             </div>
 
         </div>
+        
+        <!-- Reset PIN Modal -->
+        <div id="resetPinModal" style="display: none;" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 items-center justify-center">
+            <div class="relative p-5 border w-96 shadow-lg rounded-md bg-white">
+                <div class="mt-3 text-center">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900">Reset PIN</h3>
+                    <div class="mt-2 px-7 py-3 text-left">
+                        <label for="newPinInput" class="block text-sm font-medium text-gray-700 mb-1">New PIN</label>
+                        <input type="text" id="newPinInput" class="px-3 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter new PIN">
+                        
+                        <div class="flex items-center justify-center my-3">
+                            <div class="flex-grow border-t border-gray-300"></div>
+                            <span class="mx-3 text-sm text-gray-400 font-medium">or</span>
+                            <div class="flex-grow border-t border-gray-300"></div>
+                        </div>
+
+                        <button type="button" onclick="generateRandomPin()" class="w-full text-sm bg-[#fd8300] hover:bg-orange-600 text-white px-4 py-2 rounded shadow transition duration-200">Generate PIN</button>
+                    </div>
+                    <div class="flex justify-center px-4 py-3 gap-3">
+                        <button onclick="saveNewPin()" class="px-4 py-2 bg-black hover:bg-gray-800 text-white text-base font-medium rounded-md w-24 transition duration-200">Save</button>
+                        <button onclick="closeResetPinModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 text-base font-medium rounded-md w-24 transition duration-200">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endsection
 
 </body>

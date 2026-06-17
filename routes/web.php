@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
+
+
+
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\StatisticsController;
@@ -108,6 +111,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/save/newadmin/{action?}/{id?}', [AccessController::class, 'newAdminShow'])->name('addnewadminedit');
     //add new admin user
     Route::post('/save/newadmin/add', [AccessController::class, 'addnewadmin'])->name('newaminsave');
+    Route::post('/save/newadmin/edit/{id}', [AccessController::class, 'updateadmin'])->name('updateadmin');
 
     // financial
     Route::get('/admin/financial', [FinancialController::class, 'viewfinancial'])->name('adminfinancial');

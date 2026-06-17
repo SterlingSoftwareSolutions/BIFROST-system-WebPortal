@@ -19,6 +19,8 @@ class Circuit extends Model
         'unit_type',
         'reps',
         'gender',
+        'is_for_time',
+        'time_to_complete',
     ];
     public function workoutManager()
     {

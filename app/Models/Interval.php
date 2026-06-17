@@ -17,6 +17,7 @@ class Interval extends Model
         'workout_libraries_id',
         'training_load',
         'unit_type',
+        'reps',
         'work',
         'rest',
         'gender',

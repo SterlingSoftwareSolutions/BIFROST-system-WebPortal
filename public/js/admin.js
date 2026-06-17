@@ -90,28 +90,64 @@ function deleteAction(id, access) {
     }
 }
 
+let currentResetUserId = null;
+
 // reset pin
 function resetAction(id, access) {
     if (access === "write") {
-        $.ajax({
-            url: "/resetpin",
-            type: "POST",
-            data: {
-                id: id,
-                _token: $('meta[name="csrf-token"]').attr("content"),
-            },
-            success: function (response) {
-                console.log(response);
-                location.reload(); // Reload the page after successful reset
-            },
-            error: function (xhr, status, error) {
-                console.error(error); // Handle error
-            },
-        });
+        currentResetUserId = id;
+        document.getElementById('newPinInput').value = '';
+        document.getElementById('resetPinModal').style.display = 'flex';
     } else {
         alert("Error: Access type could not reset pin.");
         // Optional: Handle access denied scenario as needed
     }
+}
+
+function closeResetPinModal() {
+    document.getElementById('resetPinModal').style.display = 'none';
+    currentResetUserId = null;
+}
+
+function generateRandomPin() {
+    const pin = Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('newPinInput').value = pin;
+}
+
+function saveNewPin() {
+    if (!currentResetUserId) return;
+    const pin = document.getElementById('newPinInput').value;
+    if (!pin) {
+        alert("Please enter a PIN");
+        return;
+    }
+
+    $.ajax({
+        url: "/resetpin",
+        type: "POST",
+        data: {
+            id: currentResetUserId,
+            pin: pin,
+            _token: $('meta[name="csrf-token"]').attr("content"),
+        },
+        success: function (response) {
+            console.log(response);
+            if (response.success === false) {
+                alert(response.message);
+            } else {
+                alert("PIN reset successfully");
+                location.reload(); // Reload the page after successful reset
+            }
+        },
+        error: function (xhr, status, error) {
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                alert(xhr.responseJSON.message);
+            } else {
+                console.error(error); // Handle error
+                alert("Error resetting PIN");
+            }
+        },
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -271,7 +307,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // edit function
-function edit(id, categoryName, type, workout, link) {
+function edit(id, categoryName, workout, link) {
     document.getElementById("workoutId").value = id;
     document.getElementById("workout").value = workout;
     document.getElementById("link").value = link;
@@ -281,15 +317,6 @@ function edit(id, categoryName, type, workout, link) {
     for (var i = 0; i < categorySelect.options.length; i++) {
         if (categorySelect.options[i].text === categoryName) {
             categorySelect.selectedIndex = i;
-            break;
-        }
-    }
-
-    // Set the correct type option
-    var typeSelect = document.getElementById("type");
-    for (var i = 0; i < typeSelect.options.length; i++) {
-        if (typeSelect.options[i].value === type) {
-            typeSelect.selectedIndex = i;
             break;
         }
     }
