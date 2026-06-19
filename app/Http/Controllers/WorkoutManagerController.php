@@ -29,12 +29,12 @@ class WorkoutManagerController extends Controller
             'common_format' => 'required',
             'common_date' => 'required',
         ]);
-        $type = Type::where('name', $request->common_type)->first();
+        $type = Type::query()->where(['name' => $request->common_type])->first();
         if (!$type) {
             return redirect()->back()->with('error', "Type '{$request->common_type}' not found in database. Please run seeders.");
         }
 
-        $format = Format::where('name', $request->common_format)->first();
+        $format = Format::query()->where(['name' => $request->common_format])->first();
         if (!$format) {
             return redirect()->back()->with('error', "Format '{$request->common_format}' not found in database. Please run seeders.");
         }
@@ -128,10 +128,10 @@ class WorkoutManagerController extends Controller
     public function update(Request $request)
     {
 
-        $type = Type::where('name', $request->common_type)->first();
+        $type = Type::query()->where(['name' => $request->common_type])->first();
         if (!$type) return redirect()->back()->with('error', 'Invalid Type Selected');
 
-        $format = Format::where('name', $request->common_format)->first();
+        $format = Format::query()->where(['name' => $request->common_format])->first();
         if (!$format) return redirect()->back()->with('error', 'Invalid Format Selected');
 
         // 2. Calculate 'Number' field based on format
@@ -205,10 +205,10 @@ class WorkoutManagerController extends Controller
             case 'Circuit': $this->saveCircuit($request, $workout->id); break;
         }
 
-        return redirect()->back()->with('success', 'Workout Updated Successfully!')->with('last_selected_date', $workout->date);
+        return redirect()->back()->with('success', 'Workout Updated Successfully!')->with('last_selected_date', $request->common_date);
     }
     private function getWorkoutLibId($name) {
-        $lib = WorkoutLibrary::where('workout', $name)->first();
+        $lib = WorkoutLibrary::query()->where(['workout' => $name])->first();
         return $lib ? $lib->id : null;
 
     }
@@ -307,7 +307,7 @@ class WorkoutManagerController extends Controller
                 $baseLoad = $request->input("ss_load_$k");
                 $baseUnit = $request->input("ss_unit_$k");
 
-                $straight = \App\Models\Straight::create([
+                $straight = Straight::create([
                     'workout_manager_id' => $managerId,
                     'workout_libraries_id' => $libId,
                     'training_load' => $baseLoad,
@@ -349,7 +349,7 @@ class WorkoutManagerController extends Controller
                         break;
                     }
 
-                    \App\Models\StraightSet::create([
+                    StraightSet::create([
                         'straight_id' => $straight->id,
                         'restred' => $request->restred ?? '00:04:00',
                         'restyellow' => $request->restyellow ?? '00:02:00',
@@ -540,7 +540,7 @@ class WorkoutManagerController extends Controller
             }
 
             // 2. Fetch Workouts
-            $query = WorkoutManager::with([
+            $query = WorkoutManager::query()->with([
                 'format',
                 'type',
                 'straights.workoutLibrary', 'straights.sets',
@@ -601,21 +601,21 @@ class WorkoutManagerController extends Controller
             }
 
             // Filter by Format
-            if ($request->has('format') && $request->format != '') {
+            if ($request->has('format') && $request->input('format') != '') {
                 $query->whereHas('format', function($q) use ($request) {
-                    $q->where('name', $request->format);
+                    $q->where('name', $request->input('format'));
                 });
             }
 
             // Filter by Type
-            if ($request->has('type') && $request->type != '') {
+            if ($request->has('type') && $request->input('type') != '') {
                 $query->whereHas('type', function($q) use ($request) {
-                    $q->where('name', $request->type);
+                    $q->where('name', $request->input('type'));
                 });
             }
 
             // FILTER: Show only Active workouts
-            $query->where('status', '!=', 'inactive');
+            $query->where([['status', '!=', 'inactive']]);
 
             // FILTER: Workout date (Removed per client requirement to not filter by day planner)
             // if ($date) {
@@ -635,7 +635,7 @@ class WorkoutManagerController extends Controller
                 $sortOrder = 'desc';
             }
 
-            $workouts = $query->orderBy('created_at', $sortOrder)->get();
+            $workouts = $query->orderByRaw("created_at {$sortOrder}")->get();
 
              //Attach Assignment Status (if date provided)
              if ($date) {
@@ -644,7 +644,6 @@ class WorkoutManagerController extends Controller
                     Log::info("Saved type row $realType");
                     $assignedClassIds = \App\Models\WorkoutAssign::where([
                         'workout_id' => $workout->id,
-                        'workout_type' => $realType,
                         'date' => $date
                     ])->pluck('class_id')->toArray();
 
