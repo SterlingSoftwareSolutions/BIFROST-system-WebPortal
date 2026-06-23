@@ -196,32 +196,32 @@ class ClassesController extends Controller
     {
         try {
             // Fetch all related assigned workouts
-            $assignments = WorkoutAssign::where('class_id', $id)->get();
+            $assignments = WorkoutAssign::query()->where(['class_id' => $id])->get();
 
             foreach ($assignments as $assign) {
                 // Check if this workout is assigned to any OTHER class (excluding the one being deleted)
-                $otherAssignmentsExist = WorkoutAssign::where('workout_id', $assign->workout_id)
-                    ->where('workout_type', $assign->workout_type)
-                    ->where('class_id', '!=', $id) // Exclude the class being deleted
+                $otherAssignmentsExist = WorkoutAssign::query()->where(['workout_id' => $assign->workout_id])
+                    ->where(['workout_type' => $assign->workout_type])
+                    ->where([['class_id', '!=', $id]]) // Exclude the class being deleted
                     ->exists();
 
                 // If no other classes have this workout, then mark it as unassigned
                 if (!$otherAssignmentsExist) {
                     switch ($assign->workout_type) {
                         case 'strength':
-                            Strength::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            Strength::query()->where(['id' => $assign->workout_id])->update(['is_assigned' => false]);
                             break;
                         case 'weightlifting':
-                            Weightlifting::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            Weightlifting::query()->where(['id' => $assign->workout_id])->update(['is_assigned' => false]);
                             break;
                         case 'conditioning':
-                            Conditioning::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            Conditioning::query()->where(['id' => $assign->workout_id])->update(['is_assigned' => false]);
                             break;
                         case 'warmup':
-                            Warmup::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            Warmup::query()->where(['id' => $assign->workout_id])->update(['is_assigned' => false]);
                             break;
                         case 'test':
-                            Test::where('id', $assign->workout_id)->update(['is_assigned' => false]);
+                            Test::query()->where(['id' => $assign->workout_id])->update(['is_assigned' => false]);
                             break;
                     }
                 }
@@ -252,7 +252,7 @@ class ClassesController extends Controller
         $dayName = $request->query('day');
         Log::info('Day received:', ['day' => $dayName]);
 
-        $classes = Classes::where('date', $dayName)
+        $classes = Classes::query()->where(['date' => $dayName])
                 ->orderBy('time', 'asc')
                 ->get();
 
@@ -260,21 +260,29 @@ class ClassesController extends Controller
              $checkActive = function($classId, $types) {
                  if (!is_array($types)) $types = [$types];
 
-                 $assignments = \App\Models\WorkoutAssign::where('class_id', $classId)
+                 $assignments = WorkoutAssign::query()->where(['class_id' => $classId])
                                 ->whereIn('workout_type', $types)
                                 ->get();
 
+                 $ids = [];
                  foreach($assignments as $asn) {
                      // Check if mapped to WorkoutManager
                      $wm = \App\Models\WorkoutManager::find($asn->workout_id);
                      if ($wm) {
                          if ($wm->status === 'inactive') continue; // Skip inactive
-                         return true; // Found active WM
+                         
+                         // Check if the current type still matches
+                         if ($wm->type && !in_array(strtolower($wm->type->name), $types)) {
+                             continue;
+                         }
+
+                         $ids[] = $wm->id; // Found active WM, add its ID
+                     } else {
+                         // If not found in WM, assume legacy active
+                         $ids[] = $asn->workout_id;
                      }
-                     // If not found in WM, assume legacy active
-                     return true;
                  }
-                 return false;
+                 return count($ids) > 0 ? implode(',', $ids) : false;
              };
 
              $class->is_warmup = $checkActive($class->id, 'warmup');

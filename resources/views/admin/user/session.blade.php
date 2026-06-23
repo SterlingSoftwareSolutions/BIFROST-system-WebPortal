@@ -520,6 +520,12 @@
             let selectedDateElement = document.getElementById(selectedDate);
             selectedDateElement.classList.remove("hover:bg-black", "hover:text-white");
             selectedDateElement.classList.add("bg-[#EEE8AA]");
+            
+            let cdElement = document.getElementById('common_date');
+            if (cdElement) {
+                cdElement.value = selectedDateElement.innerText.trim();
+            }
+
             // Log selected tab and date
             logSelection(tabName, selectedDate);
             if (tabName) {

@@ -1151,7 +1151,6 @@ class SessionController extends Controller
             if ($classId === 'all') {
                  WorkoutAssign::where([
                     'workout_id' => $workoutId,
-                    'workout_type' => $storedType, // Use resolved type
                     'date' => $date
                 ])->delete();
                 $message = 'Workout unassigned from all classes.';
@@ -1159,7 +1158,6 @@ class SessionController extends Controller
                 WorkoutAssign::where([
                     'class_id' => $classId,
                     'workout_id' => $workoutId,
-                    'workout_type' => $storedType, // Use resolved type
                 ])->delete();
                 $message = 'Workout unassigned successfully.';
             }

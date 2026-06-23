@@ -971,13 +971,13 @@
                                 <!-- RED -->
                                 <div class="flex items-center w-1/3">
                                     <button type="button" onclick="decrementRest('restreds_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
-                                    <input type="text" id="restreds_1" name="restred" value="00:04:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
+                                    <input type="text" id="restreds_1" name="restred" value="00:02:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
                                     <button type="button" onclick="incrementRest('restreds_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
                                 </div>
                                 <!-- YELLOW -->
                                 <div class="flex items-center w-1/3">
                                     <button type="button" onclick="decrementRest('restyellows_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
-                                    <input type="text" id="restyellows_1" name="restyellow" value="00:02:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
+                                    <input type="text" id="restyellows_1" name="restyellow" value="00:01:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
                                     <button type="button" onclick="incrementRest('restyellows_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
                                 </div>
                                 <!-- GREEN -->
@@ -1456,7 +1456,7 @@
                                     </button>
 
                                     <input type="text" id="restreds_1" name="restred"
-                                        value="00:04:00"
+                                        value="00:02:00"
                                         class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
                                         readonly required>
 
@@ -1476,7 +1476,7 @@
                                     </button>
 
                                     <input type="text" id="restyellows_1" name="restyellow"
-                                        value="00:02:00"
+                                        value="00:01:00"
                                         class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full"
                                         readonly required>
 
@@ -2513,137 +2513,7 @@
             if(row) row.remove();
         }
 
-        window.getRoundRowHtml = function(index, isLast) {
-             let btnHtml = '';
-             if (isLast) {
-                 btnHtml = `
-                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-0 py-2 flex items-center justify-center h-11 w-[50px] text-xs">
-                        + Add
-                    </button>
-                 `;
-             } else {
-                 btnHtml = `
-                    <button type="button" onclick="removeRoundRow(${index})" class="text-red-500 hover:text-red-700 font-bold text-xl flex items-center justify-center h-11 w-[50px]">
-                         X
-                    </button>
-                 `;
-             }
-
-             return `
-                <div class="flex items-center gap-3 round-row" id="round_row_${index}">
-                    <!-- Row Number -->
-                    <div class="w-7 text-center font-bold text-gray-500 row-number text-sm">
-                    </div>
-
-                    <!-- Exercise (Reduced Width) -->
-                    <!-- Exercise (Reduced Width) -->
-                    <div class="flex-1 min-w-0">
-                        ${getSearchableDropdownHtml(`round_exercise_${index}`, '')}
-                    </div>
-
-                    <!-- Training Load -->
-                    <div class="w-40">
-                        <div class="flex gap-1 justify-center">
-                            <input type="text" name="round_load_${index}" placeholder="80" class="w-12 border border-gray-300 rounded p-2.5 h-11 text-center text-sm">
-                             <select id="round_gender_${index}" name="round_gender_${index}" onchange="updateGenderColor(this)" class="hidden w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold text-gray-400">
-                                <option value="" disabled selected>M/F</option>
-                                <option value="Male" class="text-black">M</option>
-                                <option value="Female" class="text-black">F</option>
-                            </select>
-                            <select name="round_unit_${index}" onchange="toggleGenderSelection(this, 'round_gender_${index}')" class="w-12 border border-gray-300 rounded bg-white h-11 px-0 text-xs text-center font-bold">
-                                ${getUnitSelectOptionsHtml('%')}
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- REPS -->
-                    <div class="w-28">
-                         <div class="flex items-center justify-center">
-                            <button type="button" onclick="decrementValue('round_reps_${index}')"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11 w-8 flex justify-center items-center">-</button>
-                            <input type="text" id="round_reps_${index}" name="round_reps_${index}" value="" placeholder="0"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                                class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center w-12 text-sm">
-                            <button type="button" onclick="incrementValue('round_reps_${index}')"
-                                class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11 w-8 flex justify-center items-center">+</button>
-                        </div>
-                    </div>
-
-                    <!-- Action Button -->
-                    <div class="h-11 flex items-center min-w-[80px] justify-center action-col">
-                        ${btnHtml}
-                    </div>
-                </div>
-             `;
-        };
     });
-
-    // Global Helpers
-    let roundRowCounter = 1;
-
-    window.addNewRoundRow = function() {
-        const container = document.getElementById('round_rows_container');
-        // Change current last row button to Remove
-        const rows = container.querySelectorAll('.round-row');
-        if(rows.length > 0) {
-            const lastRow = rows[rows.length - 1];
-            const lastIdx = lastRow.id.replace('round_row_', '');
-            const actionCol = lastRow.querySelector('.action-col');
-            actionCol.innerHTML = `
-                <button type="button" onclick="removeRoundRow(${lastIdx})" class="text-red-500 hover:text-red-700 font-bold text-xl flex items-center justify-center h-11 w-[50px]">
-                    X
-                </button>
-            `;
-        }
-
-        const newIndex = ++roundRowCounter;
-        const newRowHtml = getRoundRowHtml(newIndex, true);
-        container.insertAdjacentHTML('beforeend', newRowHtml);
-        updateRowNumbers();
-    }
-
-    window.removeRoundRow = function(index) {
-        const row = document.getElementById(`round_row_${index}`);
-        if(row) row.remove();
-        checkLastRow();
-        updateRowNumbers();
-    }
-
-    window.checkLastRow = function() {
-        const container = document.getElementById('round_rows_container');
-        const rows = container.querySelectorAll('.round-row');
-        if (rows.length > 0) {
-            const lastRow = rows[rows.length - 1];
-            // Force it to have Add button
-             const actionCol = lastRow.querySelector('.action-col');
-             if (!actionCol.innerText.includes('Add')) {
-                 actionCol.innerHTML = `
-                    <button type="button" onclick="addNewRoundRow()" class="border border-black bg-white hover:bg-gray-50 text-black font-bold rounded px-2 py-2 flex items-center justify-center h-11 min-w-[100px] text-sm">
-                        + Add
-*                      </button>
-                 `;
-             }
-        } else {
-            // All deleted? Add one back
-            roundRowCounter = 0; // reset
-            addNewRoundRow();
-        }
-    }
-
-    window.updateRowNumbers = function() {
-        const container = document.getElementById('round_rows_container');
-        if(!container) return;
-        const rows = container.querySelectorAll('.round-row');
-        rows.forEach((row, i) => {
-            const numEl = row.querySelector('.row-number');
-            if(numEl) numEl.innerText = i + 1;
-        });
-    }
-
-    window.getRowCount = function() {
-         const container = document.getElementById('round_rows_container');
-         return container ? container.querySelectorAll('.round-row').length + 1 : 1;
-    }
 
     window.incrementRoundCount = function(id) {
         const el = document.getElementById(id);
@@ -2731,9 +2601,9 @@
                      const u1 = document.querySelector('[name="ss_unit_1"]'); if(u1) u1.value = mainStraight.unit_type;
                      const r1 = document.getElementById('ss_reps_main'); if(r1) r1.value = mainStraight.reps;
 
-                     document.getElementById('restreds_1').value = mainStraight.sets[0].restred;
-                     document.getElementById('restyellows_1').value = mainStraight.sets[0].restyellow;
-                     document.getElementById('restgreens_1').value = mainStraight.sets[0].restgreen;
+                     document.getElementById('restreds_1').value = mainStraight.sets[0].restred || '00:02:00';
+                     document.getElementById('restyellows_1').value = mainStraight.sets[0].restyellow || '00:01:00';
+                     document.getElementById('restgreens_1').value = mainStraight.sets[0].restgreen || '00:01:00';
 
                      // If Super Set
                      if (secStraight) {
@@ -2796,7 +2666,7 @@
 
                 rounds.forEach((row, i) => {
                     const idx = i + 1;
-                    if (idx > 1) window.addNewRoundRow();
+                    if (idx > 1) window.addNewUniversalRow('round');
 
                     window.selectOption(`round_exercise_${idx}`, row.workout_library.workout);
                     const l = document.querySelector(`[name="round_load_${idx}"]`); if(l) l.value = row.training_load;
