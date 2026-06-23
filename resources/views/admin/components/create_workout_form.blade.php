@@ -971,13 +971,13 @@
                                 <!-- RED -->
                                 <div class="flex items-center w-1/3">
                                     <button type="button" onclick="decrementRest('restreds_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
-                                    <input type="text" id="restreds_1" name="restred" value="00:04:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
+                                    <input type="text" id="restreds_1" name="restred" value="00:02:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
                                     <button type="button" onclick="incrementRest('restreds_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
                                 </div>
                                 <!-- YELLOW -->
                                 <div class="flex items-center w-1/3">
                                     <button type="button" onclick="decrementRest('restyellows_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s-lg p-3 h-11">-</button>
-                                    <input type="text" id="restyellows_1" name="restyellow" value="00:02:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
+                                    <input type="text" id="restyellows_1" name="restyellow" value="00:01:00" class="bg-gray-50 border-x-0 border-gray-300 h-11 text-center text-sm w-full" readonly required>
                                     <button type="button" onclick="incrementRest('restyellows_1')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e-lg p-3 h-11">+</button>
                                 </div>
                                 <!-- GREEN -->
