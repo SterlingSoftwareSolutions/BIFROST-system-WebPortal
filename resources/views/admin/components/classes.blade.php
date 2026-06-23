@@ -262,44 +262,44 @@
                 <div class="workout-icons flex flex-wrap md:flex-nowrap items-center gap-1.5 lg:gap-2 overflow-visible py-1 min-w-0">
                   
                   <!-- Warmup -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_warmup ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_warmup}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/warmup.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_warmup ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_warmup ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="Warmup">
                   </div>
 
                   <!-- Strength -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_strength ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_strength}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/strength.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_strength ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_strength ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="Strength">
                   </div>
 
                   <!-- Weightlifting -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_weightlifting ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_weightlifting}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/weightliftingnew.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_weightlifting ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_weightlifting ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="Weightlifting">
                   </div>
 
                   <!-- Conditioning -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_conditioning ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_conditioning}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/conditioning.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_conditioning ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="Conditioning">
                   </div>
 
                   <!-- Accessory -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_accessory ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_accessory}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/kettlebellB.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_accessory ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="Accessory">
                   </div>
 
                   <!-- 1RM -->
-                  <div class="p-0.5 shrink-0">
+                  <div class="p-0.5 shrink-0" ${cls.is_1rm ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_1rm}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
                     <img src="/icon/testBlack.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500' : 'border-transparent'}"
+                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_1rm ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
                       title="1RM">
                   </div>
 

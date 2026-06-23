@@ -92,11 +92,12 @@
                             </select>
                         </div>
 
-                        <!-- Created Date Field -->
+                        <!-- Created Date Field 
                         <div class="flex items-center gap-1 min-w-0">
                             <label for="filter_created_date" class="w-15 text-md">Created</label>
                             <input type="date" id="filter_created_date" name="filter_created_date" class="px-1 py-1 border rounded text-xs w-[7rem] lg:w-[8.5rem]" onchange="fetchUnifiedWorkouts()">
                         </div>
+                        -->
 
                         <!-- Clear Button -->
                         <div class="flex items-center">
@@ -107,8 +108,20 @@
                     </div>
                 </div>
 
+                <!-- Sort Toggle -->
+                <div class="flex justify-end mt-2 pr-5">
+                    <div class="flex items-center text-sm font-bold text-gray-600">
+                        <label for="sort_date_select" class="mr-1">Sort:</label>
+                        <select id="sort_date_select" onchange="window.currentSortOrder = this.value; fetchUnifiedWorkouts()"
+                            class="bg-transparent border-none outline-none cursor-pointer text-gray-600 font-bold hover:text-black focus:ring-0">
+                            <option value="desc">latest</option>
+                            <option value="asc">earliest</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Scroll Section -->
-                <div id="unified_workout_list_container" class="mt-4 max-h-[600px] overflow-y-auto overflow-x-hidden space-y-4 min-w-0">
+                <div id="unified_workout_list_container" class="mt-2 max-h-[600px] overflow-y-auto overflow-x-hidden flex flex-col gap-4 min-w-0 p-1">
                 </div>
 
             </div>
@@ -120,15 +133,81 @@
     window.unifiedWorkoutsMap = {};
     window.currentSortOrder = 'desc'; // default newest first
 
-    window.toggleSortOrder = function() {
-        if (window.currentSortOrder === 'desc') {
-            window.currentSortOrder = 'asc';
-            document.getElementById('sort_date_btn').innerHTML = 'Sort: Date &uarr;';
-        } else {
-            window.currentSortOrder = 'desc';
-            document.getElementById('sort_date_btn').innerHTML = 'Sort: Date &darr;';
+    window.selectedWorkoutIcon = null;
+    window.selectedWorkoutCardIds = [];
+
+    window.scrollToWorkout = function(workoutIdsStr, iconEl) {
+        if (!workoutIdsStr) return;
+
+        // Split comma-separated IDs into an array
+        const ids = String(workoutIdsStr).split(',');
+
+        // If clicking the same icon that is already selected
+        if (window.selectedWorkoutIcon === iconEl) {
+            // Unselect icon
+            iconEl.classList.remove('ring-2', 'ring-black', 'rounded-md');
+            window.selectedWorkoutIcon = null;
+            
+            // Unselect all cards and restore order
+            window.selectedWorkoutCardIds.forEach(id => {
+                const el = document.getElementById('workout-card-' + id);
+                if (el) {
+                    el.classList.remove('ring-4', 'ring-blue-400', 'z-10', 'relative');
+                    el.classList.add('border-gray-300');
+                    el.style.order = ''; // reset order
+                }
+            });
+            window.selectedWorkoutCardIds = [];
+
+            // Scroll container back to top
+            const container = document.getElementById('unified_workout_list_container');
+            if (container) {
+                container.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            return;
         }
-        fetchUnifiedWorkouts();
+
+        // If another icon is selected, clear its state
+        if (window.selectedWorkoutIcon) {
+            window.selectedWorkoutIcon.classList.remove('ring-2', 'ring-black', 'rounded-md');
+        }
+        if (window.selectedWorkoutCardIds.length > 0) {
+             window.selectedWorkoutCardIds.forEach(id => {
+                 const prevEl = document.getElementById('workout-card-' + id);
+                 if (prevEl) {
+                     prevEl.classList.remove('ring-4', 'ring-blue-400', 'z-10', 'relative');
+                     prevEl.classList.add('border-gray-300');
+                     prevEl.style.order = ''; // reset order
+                 }
+             });
+        }
+
+        // Select the new icon
+        if (iconEl) {
+            iconEl.classList.add('ring-2', 'ring-black', 'rounded-md');
+            window.selectedWorkoutIcon = iconEl;
+        }
+        window.selectedWorkoutCardIds = ids;
+
+        const container = document.getElementById('unified_workout_list_container');
+
+        // Highlight and bring cards to top
+        ids.forEach(id => {
+            const el = document.getElementById('workout-card-' + id);
+            if (el) {
+                el.style.order = '-1'; // Bring to top
+                
+                // Persistent highlight effect
+                el.classList.add('ring-4', 'ring-blue-400', 'z-10', 'relative');
+                el.classList.remove('border-gray-300');
+            }
+        });
+
+        // Scroll container to top
+        if (container) {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     // Main render function for the unified workout list
@@ -175,7 +254,7 @@
 
             // --- 3. Build Card HTML ---
             html += `
-        <div class="border border-gray-300 rounded-lg mb-4 bg-white shadow-sm overflow-hidden text-sm">
+        <div id="workout-card-${workout.id}" class="border border-gray-300 rounded-lg bg-white shadow-sm overflow-hidden text-sm transition-all duration-500 shrink-0">
             <!-- Header -->
             <div class="flex justify-between items-center bg-white border-b border-gray-200 px-3 py-2">
                  <div class="font-bold text-base text-gray-800">${fmtName} <span class="text-gray-500 font-normal ml-1 text-sm">${workout.type ? '- ' + workout.type.name : ''}</span></div>
@@ -713,12 +792,6 @@
                 if(document.getElementById('formatw_2')) document.getElementById('formatw_2').value = '';
                 if(document.getElementById('typew_2')) document.getElementById('typew_2').value = '';
                 if(document.getElementById('filter_created_date')) document.getElementById('filter_created_date').value = '';
-                
-                // Unselect any selected day
-                document.querySelectorAll('.day').forEach(link => {
-                    link.classList.add("hover:bg-black", "hover:text-white");
-                    link.classList.remove("bg-[#EEE8AA]");
-                });
                 
                 // Fetch all will reset the UI for exercise dropdown too
                 getworkoutw_search('');
