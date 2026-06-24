@@ -1133,9 +1133,9 @@
                 data[setIndex] = {};
 
                 // Check for single view inputs (legacy names)
-                const singleReps = document.getElementById(`ss_reps_${setIndex}`);
-                const singleLoad = document.querySelector(`[name="ss_load_${setIndex}"]`);
-                const singleUnit = document.querySelector(`[name="ss_unit_${setIndex}"]`);
+                const singleReps = row.querySelector(`[id="ss_reps_${setIndex}"]`);
+                const singleLoad = row.querySelector(`[name="ss_load_${setIndex}"]`);
+                const singleUnit = row.querySelector(`[name="ss_unit_${setIndex}"]`);
 
                 if (singleReps && singleLoad) {
                     // Start at index 1 for the first exercise
@@ -1150,9 +1150,9 @@
                 // We iterate until we stop finding inputs
                 let exIndex = 1;
                 while(true) {
-                    const reps = document.getElementById(`ss_reps_${setIndex}_${exIndex}`);
-                    const load = document.querySelector(`[name="ss_load_${setIndex}_${exIndex}"]`);
-                    const unit = document.querySelector(`[name="ss_unit_${setIndex}_${exIndex}"]`);
+                    const reps = row.querySelector(`[id="ss_reps_${setIndex}_${exIndex}"]`);
+                    const load = row.querySelector(`[name="ss_load_${setIndex}_${exIndex}"]`);
+                    const unit = row.querySelector(`[name="ss_unit_${setIndex}_${exIndex}"]`);
 
                     if (reps && load) {
                         data[setIndex][exIndex] = {
