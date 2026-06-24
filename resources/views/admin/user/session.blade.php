@@ -295,10 +295,12 @@
     </div>
 
     {{-- Workout Create/Edit Modal --}}
-    <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-center justify-center overflow-y-auto py-8">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
+    <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden flex-col items-center overflow-y-auto">
+        <div class="flex-grow min-h-[40px] w-full"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative shrink-0">
             @include('admin.components.create_workout_form')
         </div>
+        <div class="flex-grow min-h-[40px] w-full"></div>
     </div>
 
     @endsection

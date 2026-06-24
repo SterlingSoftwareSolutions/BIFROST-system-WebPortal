@@ -22,13 +22,13 @@ export default {
         '8xl': ['6.125rem', { lineHeight: '1.125' }],
         '9xl': ['8.125rem', { lineHeight: '1.125' }],
       },
-      colors:{
-        "littlegreen":"#31C7A2",
-        'lightyellow':"#FAF9F0",
-        'lightgrey':"#F4F4F4",
-        'darkyellow':"#FBBA15",
-        'prograsblue':'#14BEFD',
-        'weightgrey':'#3C3D3F',
+      colors: {
+        "littlegreen": "#31C7A2",
+        'lightyellow': "#FAF9F0",
+        'lightgrey': "#F4F4F4",
+        'darkyellow': "#FBBA15",
+        'prograsblue': '#14BEFD',
+        'weightgrey': '#3C3D3F',
       },
       //  screens: {
       //   '11inch': { 'max': '1366px' }, // 11-inch MacBook Air
