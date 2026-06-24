@@ -2,6 +2,15 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
 }
 
+/* Global Text Size Overrides (Increase by ~4px) */
+.text-xs { font-size: 1rem !important; line-height: 1.5rem !important; }
+.text-sm { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+.text-base { font-size: 1.25rem !important; line-height: 1.75rem !important; }
+.text-lg { font-size: 1.375rem !important; line-height: 2rem !important; }
+.text-xl { font-size: 1.5rem !important; line-height: 2rem !important; }
+.text-2xl { font-size: 1.75rem !important; line-height: 2.25rem !important; }
+.text-3xl { font-size: 2.125rem !important; line-height: 2.5rem !important; }
+
 /* Customize scrollbar width */
 .scrollbar::-webkit-scrollbar {
     width: 4px;

@@ -1,3 +1,4 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,7 +38,3 @@
         @apply text-[26px] leading-[36px];
     }
 }
-
-@import "~@fortawesome/fontawesome-free/css/all.min.css";
-
-
