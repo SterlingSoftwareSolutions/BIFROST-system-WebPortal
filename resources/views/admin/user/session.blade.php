@@ -295,8 +295,8 @@
     </div>
 
     {{-- Workout Create/Edit Modal --}}
-    <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-center justify-center overflow-y-auto py-8">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative">
+    <div id="workout_modal" class="fixed inset-0 bg-black bg-opacity-50 z-[1000] hidden items-start justify-center overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 relative my-10">
             @include('admin.components.create_workout_form')
         </div>
     </div>

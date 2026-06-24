@@ -1140,8 +1140,8 @@
                 if (singleReps && singleLoad) {
                     // Start at index 1 for the first exercise
                     data[setIndex][1] = {
-                        reps: singleReps.value || singleReps.getAttribute('placeholder'),
-                        load: singleLoad.value || singleLoad.getAttribute('placeholder'),
+                        reps: singleReps.value,
+                        load: singleLoad.value,
                         unit: singleUnit ? singleUnit.value : '%'
                     };
                 }
@@ -1156,8 +1156,8 @@
 
                     if (reps && load) {
                         data[setIndex][exIndex] = {
-                            reps: reps.value || reps.getAttribute('placeholder'),
-                            load: load.value || load.getAttribute('placeholder'),
+                            reps: reps.value,
+                            load: load.value,
                             unit: unit ? unit.value : '%'
                         };
                         exIndex++;
@@ -1749,18 +1749,6 @@
                          <div class="flex-1 flex items-center gap-4 exercise-controls">
                              <div class="w-8 text-center font-bold text-gray-600 text-base">${index}</div>
 
-                             <!-- Reps Control -->
-                             <div class="flex items-center gap-1 relative w-22 justify-center">
-                                  <div id="reps_container_ss_reps_${index}" class="flex items-center w-full" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:none;' : 'display:flex;'}">
-                                      <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
-                                      <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
-                                      <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
-                                  </div>
-                                  <div id="dashes_ss_reps_${index}" class="w-full flex justify-center items-center h-10 text-gray-400 font-bold text-lg" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:flex;' : 'display:none;'}">
-                                      ----
-                                  </div>
-                             </div>
-
                              <!-- Load Display -->
                              <div class="flex items-center gap-1">
                                  <input type="text" id="load_ss_load_${index}" name="ss_load_${index}" value="${document.querySelector('[name=ss_load_1]')?.value || ''}" placeholder="80" class="border border-gray-300 rounded p-2 h-10 w-14 text-center text-sm font-bold" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'BW' || document.querySelector('[name=ss_unit_1]')?.value === 'N/A') ? 'display:none;' : 'display:block;'}">
@@ -1773,6 +1761,18 @@
                                  <select name="ss_unit_${index}" onchange="toggleGenderSelection(this, 'ss_gender_${index}')" class="border border-gray-300 rounded h-10 w-12 text-center text-sm font-bold bg-white">
                                      ${getUnitSelectOptionsHtml(document.querySelector('[name=ss_unit_1]')?.value || '%')}
                                  </select>
+                             </div>
+
+                             <!-- Reps Control -->
+                             <div class="flex items-center gap-1 relative w-22 justify-center">
+                                  <div id="reps_container_ss_reps_${index}" class="flex items-center w-full" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:none;' : 'display:flex;'}">
+                                      <button type="button" onclick="decrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-l-md rounded-r-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">-</button>
+                                      <input type="text" id="ss_reps_${index}" name="ss_reps_${index}" value="${document.getElementById('ss_reps_main')?.value || ''}" placeholder="${document.getElementById('ss_reps_main')?.value || 0}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="bg-transparent border-none h-10 w-12 text-center text-sm font-bold focus:ring-0 text-gray-800">
+                                      <button type="button" onclick="incrementValue('ss_reps_${index}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-r-md rounded-l-none h-10 w-10 flex justify-center items-center font-bold text-xl text-gray-700">+</button>
+                                  </div>
+                                  <div id="dashes_ss_reps_${index}" class="w-full flex justify-center items-center h-10 text-gray-400 font-bold text-lg" style="${(document.querySelector('[name=ss_unit_1]')?.value === 'Cal' || document.querySelector('[name=ss_unit_1]')?.value === 'm') ? 'display:flex;' : 'display:none;'}">
+                                      ----
+                                  </div>
                              </div>
                          </div>
                     </div>
@@ -1817,20 +1817,6 @@
 
                              <!-- Controls Container -->
                              <div class="flex items-center ml-auto gap-3 exercise-controls">
-                                  <!-- Reps -->
-                                  <div class="flex items-center w-22 justify-center relative">
-                                      <div id="reps_container_ss_reps_${index}${suffix}" class="flex items-center w-full" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:none;' : 'display:flex;'}">
-                                          <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
-                                          <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
-                                          <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
-                                      </div>
-                                      <div id="dashes_ss_reps_${index}${suffix}" class="w-full flex justify-center items-center h-8 text-gray-400 font-bold text-lg" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:flex;' : 'display:none;'}">
-                                          ----
-                                      </div>
-                                  </div>
-
-                                  <div class="text-[10px] font-bold text-gray-500 uppercase">REPS</div>
-
                                   <!-- Load -->
                                   <div class="flex items-center gap-1">
                                       <div class="relative">
@@ -1848,6 +1834,20 @@
                                           <select name="ss_unit_${index}${suffix}" onchange="toggleGenderSelection(this, 'ss_gender_${index}${suffix}')" class="border border-gray-300 rounded h-8 w-12 text-center text-[10px] font-bold bg-white focus:outline-none px-0 text-black">
                                               ${getUnitSelectOptionsHtml(defaultUnit)}
                                           </select>
+                                      </div>
+                                  </div>
+
+                                  <div class="text-[10px] font-bold text-gray-500 uppercase ml-2">REPS</div>
+
+                                  <!-- Reps -->
+                                  <div class="flex items-center w-22 justify-center relative">
+                                      <div id="reps_container_ss_reps_${index}${suffix}" class="flex items-center w-full" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:none;' : 'display:flex;'}">
+                                          <button type="button" onclick="decrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-s p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">-</button>
+                                          <input type="text" id="ss_reps_${index}${suffix}" name="ss_reps_${index}${suffix}" value="${defaultReps}" placeholder="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="border-y border-gray-300 h-8 w-10 text-center text-xs font-bold text-black placeholder-gray-400">
+                                          <button type="button" onclick="incrementValue('ss_reps_${index}${suffix}')" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-e p-1 h-8 w-6 flex justify-center items-center font-bold text-lg">+</button>
+                                      </div>
+                                      <div id="dashes_ss_reps_${index}${suffix}" class="w-full flex justify-center items-center h-8 text-gray-400 font-bold text-lg" style="${(defaultUnit === 'Cal' || defaultUnit === 'm') ? 'display:flex;' : 'display:none;'}">
+                                          ----
                                       </div>
                                   </div>
                              </div>
