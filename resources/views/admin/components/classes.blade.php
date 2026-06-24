@@ -277,9 +277,9 @@
 
                   <!-- Weightlifting -->
                   <div class="p-0.5 shrink-0" ${cls.is_weightlifting ? `onclick="event.stopPropagation(); window.scrollToWorkout('${cls.is_weightlifting}', this);" class="cursor-pointer transition-colors duration-300"` : ''}>
-                    <img src="/icon/weightliftingnew.png"
-                      class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md p-0.5 ${cls.is_weightlifting ? 'border-green-500 cursor-pointer' : 'border-transparent'}"
-                      title="Weightlifting">
+                    <div class="w-5 h-5 lg:w-6 lg:h-6 border-2 rounded-md overflow-hidden flex items-center justify-center ${cls.is_weightlifting ? 'border-green-500 cursor-pointer' : 'border-transparent'}" title="Weightlifting">
+                      <img src="/icon/weightliftingnew.png" class="w-full h-full object-contain scale-125">
+                    </div>
                   </div>
 
                   <!-- Conditioning -->
