@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::table('pyramid', function (Blueprint $table) {
 
-            $table->string('restred')->nullable();
-            $table->string('restyellow')->nullable();
-            $table->string('restgreen')->nullable();
+            // $table->string('restred')->nullable();
+            // $table->string('restyellow')->nullable();
+            // $table->string('restgreen')->nullable();
 
         });
     }
