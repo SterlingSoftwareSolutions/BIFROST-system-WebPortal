@@ -1580,9 +1580,16 @@ public function getWorkouts(Request $request)
 
                                     $isCompleted = ($dailyRepsSum >= $targetReps);
 
+                                    // Also fetch the last saved weight for this set
+                                    $dailyRecord = (clone $query)->orderBy('id', 'desc')->first();
+                                    $savedWeight = $dailyRecord ? $dailyRecord->weight : null;
+
                                     $set->setAttribute('is_completed', $isCompleted ? 1 : 0);
                                     $set->setAttribute('daily_reps', $dailyRepsSum);
                                     $set->setAttribute('target_reps', $targetReps);
+                                    if ($savedWeight !== null) {
+                                        $set->setAttribute('daily_weight', (float) $savedWeight);
+                                    }
                                 } else {
                                     $set->setAttribute('is_completed', 0);
                                     $set->setAttribute('daily_reps', 0);

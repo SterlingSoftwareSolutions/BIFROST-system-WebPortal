@@ -14,6 +14,7 @@ class DailyWarmup extends Model
         'warmup_id',
         'workout_manager_id',
         'reps',
+        'weight',
         'round_number',
         'date',
         'workout_format_type',
