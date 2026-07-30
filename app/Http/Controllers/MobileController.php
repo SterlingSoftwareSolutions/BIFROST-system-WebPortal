@@ -397,6 +397,7 @@ class MobileController extends Controller
                     'workout_format_type' => 'required|string|in:rounds,amrap,for-time,intervals,emom,straight-sets,circuit,pyramid',
                     'workout_format_id' => 'required|integer',
                     'reps' => 'required|integer',
+                    'weight' => 'nullable|numeric',
                     'round_number' => 'nullable|string',
                     'date' => 'required|string',
                     'exercise_time' => 'nullable|string',
@@ -418,6 +419,7 @@ class MobileController extends Controller
                 $storedDay = $validatedData['date'];
                 $exerciseTime = $validatedData['exercise_time'] ?? null;
                 $roundNumber = $validatedData['round_number'] ?? null;
+                $weight = $validatedData['weight'] ?? null;
                 $workoutFormatType = $validatedData['workout_format_type'];
                 $workoutFormatId = $validatedData['workout_format_id'];
                 $classId = $validatedData['class_Id'];
@@ -439,10 +441,11 @@ class MobileController extends Controller
             if ($dailyWarmup) {
                 $dailyWarmup->update([
                     'reps' => $validatedData['reps'],
+                    'weight' => $weight,
                     'date' => $storedDay,
                     'workout_format_type' => $workoutFormatType,
                     'workout_format_id' => $workoutFormatId,
-                    'round_number' => $roundNumber, // save only if exists
+                    'round_number' => $roundNumber,
                     'exercise_time' => $exerciseTime,
                     'class_id' => $classId,
                     'notes' => $validatedData['notes'] ?? null,
@@ -458,11 +461,12 @@ class MobileController extends Controller
                 $dailyWarmup = DailyWarmup::create([
                     'member_id' => $memberId,
                     'reps' => $validatedData['reps'],
+                    'weight' => $weight,
                     'date' => $storedDay,
                     'workout_manager_id' => $validatedData['workout_manager_id'],
                     'workout_format_type' => $workoutFormatType,
                     'workout_format_id' => $workoutFormatId,
-                    'round_number' => $roundNumber, // save only if exists
+                    'round_number' => $roundNumber,
                     'exercise_time' => $exerciseTime,
                     'class_id' => $classId,
                     'notes' => $validatedData['notes'] ?? null,

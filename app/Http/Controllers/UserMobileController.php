@@ -1580,9 +1580,16 @@ public function getWorkouts(Request $request)
 
                                     $isCompleted = ($dailyRepsSum >= $targetReps);
 
+                                    // Also fetch the last saved weight for this set
+                                    $dailyRecord = (clone $query)->orderBy('id', 'desc')->first();
+                                    $savedWeight = $dailyRecord ? $dailyRecord->weight : null;
+
                                     $set->setAttribute('is_completed', $isCompleted ? 1 : 0);
                                     $set->setAttribute('daily_reps', $dailyRepsSum);
                                     $set->setAttribute('target_reps', $targetReps);
+                                    if ($savedWeight !== null) {
+                                        $set->setAttribute('daily_weight', (float) $savedWeight);
+                                    }
                                 } else {
                                     $set->setAttribute('is_completed', 0);
                                     $set->setAttribute('daily_reps', 0);
@@ -1662,12 +1669,19 @@ public function getWorkouts(Request $request)
                                     $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
                                     $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
                                     $formatItem->setAttribute('round_number',   $roundNumber);
+
+                                    // Attach the user's actual completion time (exercise_time).
+                                    // This is set by the app when saving and lets the mobile show
+                                    // the real elapsed time after a refresh instead of the admin limit.
+                                    $formatItem->setAttribute('exercise_time', $dailyRecord->exercise_time ?? null);
+
                                 } else {
                                     $formatItem->setAttribute('is_completed',   0);
                                     $formatItem->setAttribute('has_reps_saved', 0);
                                     $formatItem->setAttribute('daily_reps',     0);
                                     $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
                                     $formatItem->setAttribute('round_number',   null);
+                                    $formatItem->setAttribute('exercise_time',  null);
                                 }
                             }
                         // Only proceed with rep logic/logging if the user has actually logged something for this exercise today
