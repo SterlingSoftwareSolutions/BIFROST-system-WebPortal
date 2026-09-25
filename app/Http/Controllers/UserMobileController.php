@@ -1082,18 +1082,31 @@ public function getWorkouts(Request $request)
             'date_string' => $dateString,
         ]);
 
+        $score = null;
         try {
-            // Convert "20/02/26 Friday" -> proper YYYY-MM-DD
-            $dateObj = Carbon::createFromFormat('d/m/y l', $request->date);
-            $formattedDate = $dateObj->format('Y-m-d');
+            // Workout screen sends date like "25/09/26 Friday" (dd/mm/yy DayName)
+            // Readiness screen saves selected_day like "Friday 25/09/2026" (DayName DD/MM/YYYY)
+            // We need to convert to match the readiness format before querying.
+            $dateForScore = Carbon::createFromFormat('d/m/y l', $dateString);
+            // Reconstruct in the same format readiness uses: "Friday 25/09/2026"
+            $selectedDayStr = $dateForScore->format('l d/m/Y');
 
-            // Query the scores table using the correct column (e.g., created_at)
+            Log::info('[getWorkouts] Searching for readiness score', [
+                'original_date' => $dateString,
+                'searching_selected_day' => $selectedDayStr,
+                'user_id' => $user->id,
+            ]);
+
+            // Query WITH class_id filter to get the exact score for this class
             $score = $user->scores()
-                ->whereDate('created_at', $formattedDate)  // <- replace 'created_at' if your column name differs
+                ->where('selected_day', $selectedDayStr)
+                ->where('class_id', $classId)
                 ->first();
 
+            Log::info('[getWorkouts] Score result', ['score' => $score ? $score->score : 'NOT FOUND']);
         } catch (\Exception $e) {
-            $score = null; // if the date parsing fails, just set score as null
+            Log::warning('[getWorkouts] Failed to fetch readiness score: ' . $e->getMessage());
+            $score = null;
         }
 
         /*

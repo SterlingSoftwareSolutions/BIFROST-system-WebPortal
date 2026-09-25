@@ -105,36 +105,45 @@ class MobileController extends Controller
 
     public function getClassSlots(Request $request)
     {
-        $time = $request->query('time');
+        $mode = $request->query('mode', 'current'); // 'current' | 'previous'
         $today = Carbon::now()->startOfDay();
         $slots = [];
 
+        // For 'previous' week, start 7 days ago; for 'current', start today
+        $startOffset = $mode === 'previous' ? -7 : 0;
+
         for ($i = 0; $i < 7; $i++) {
-            $date = $today->copy()->addDays($i);
+            $date = $today->copy()->addDays($startOffset + $i);
+            $dayWithDate = $date->format('d/m/y l');
 
-            $class = Classes::where('date', $date->format('d/m/y l'))
-                ->where('time', $time)
-                ->first();
+            $classes = Classes::where('date', $dayWithDate)
+                ->orderBy('time', 'asc')
+                ->get();
 
-            $userReservation = null;
-            if ($class) {
-                $userReservation = \App\Models\ReservationSession::where('user_id', auth()->id())
+            $classItems = $classes->map(function ($class) {
+                $isReserved = \App\Models\ReservationSession::where('user_id', auth()->id())
                     ->where('classes_id', $class->id)
                     ->exists();
-            }
+
+                return [
+                    'id'       => $class->id,
+                    'time'     => \Carbon\Carbon::parse($class->time)->format('g:i A'),
+                    'duration' => $class->duration,
+                    'spots'    => $class->availablespots ?? $class->spots,
+                    'reserved' => $isReserved,
+                ];
+            });
 
             $slots[] = [
-                'id' => $class?->id,
-                'date' => $date->format('d/m/Y'),
+                'date'     => $date->format('d/m/Y'),
                 'day_name' => $date->format('l'),
                 'is_today' => $date->isToday(),
-                'class' => $class ? [
-                    'time' => \Carbon\Carbon::parse($class->time)->format('g:i A'),
-                    'duration' => $class->duration,
-                    'spots' => $class->spots,
-                ] : null,
-                'reserved' => $userReservation,
+                'classes'  => $classItems,
             ];
+        }
+
+        if ($mode === 'previous') {
+            $slots = array_reverse($slots);
         }
 
         return response()->json($slots);
@@ -266,30 +275,60 @@ class MobileController extends Controller
         return view("mobile.user.readinessscore", compact('dayWithDate', 'userscore'));
     }
 
-    // store Score
+    // store Score — returns JSON so the new readiness page can use AJAX
     public function storescore(Request $request)
     {
         $validatedData = $request->validate([
-            'selected_day' => 'required|string',
-            'sleep_input' => 'required|string',
+            'selected_day'    => 'required|string',
+            'sleep_input'     => 'required|string',
             'alertness_input' => 'required|string',
-            'excitement_input' => 'required|string',
-            'stress_input' => 'required|string',
-            'soreness_input' => 'required|string',
-            'score' => 'required|integer',
+            'excitement_input'=> 'required|string',
+            'stress_input'    => 'required|string',
+            'soreness_input'  => 'required|string',
+            'score'           => 'required|integer',
         ]);
 
         $user = $request->user();
 
-        // Find an existing score for the same user and date, or create a new one
         $score = $user->scores()->updateOrCreate(
             ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
             $validatedData
         );
 
+        if ($request->expectsJson() || $request->wantsJson() || $request->header('Accept') === 'application/json') {
+            return response()->json(['success' => true, 'data' => $score]);
+        }
         return redirect()->route('mobile.workout')->with('success', 'Score saved successfully.');
     }
 
+    // Get existing score for web readiness page (AJAX)
+    public function getScoreWeb(Request $request)
+    {
+        $user = Auth::user();
+        $selectedDay = $request->input('selected_day');
+
+        if (!$selectedDay) {
+            return response()->json(['success' => false, 'message' => 'No day provided.'], 400);
+        }
+
+        $score = $user->scores()
+            ->where('selected_day', $selectedDay)
+            ->first();
+
+        if ($score) {
+            return response()->json(['success' => true, 'data' => $score]);
+        }
+        return response()->json(['success' => false, 'message' => 'No score found.'], 404);
+    }
+
+
+    public function getWorkoutListWeb(Request $request)
+    {
+        $request->merge([
+            'user_id' => Auth::id()
+        ]);
+        return app(\App\Http\Controllers\UserMobileController::class)->getWorkouts($request);
+    }
 
     public function workout()
     {
@@ -308,71 +347,14 @@ class MobileController extends Controller
         // Combine day name and date
         $dayWithDate = $formattedDate . ' ' . $dayName;
 
-        //get warmup details for specific date
-        $tabwarmup = 'warmup';
-        $date = $dayWithDate;
-        $detailswarmup = Warmup::where('date', $dayWithDate)
-            ->where('is_assigned', 1)
-            ->with('workouts')
-            ->with('workouts.categoryOption')
-            ->get();
+        // Attempt to find the user's reserved class for this date, or fallback to their most recent reservation
+        $reservedSession = \App\Models\ReservationSession::where('user_id', Auth::id())
+            ->where('is_reserved', 1)
+            ->latest()
+            ->first();
+        $classId = $reservedSession ? $reservedSession->classes_id : 1;
 
-        // //get strength details for specific date
-        $tabstrength = 'strength';
-        $date = $dayWithDate;
-        $detailsstrength = Strength::where('date', $date)
-            ->where('is_assigned', 1)
-            ->with('sets')
-            ->with('sets.strengthing')
-            ->with('workout')
-            ->with('workout.categoryOption')
-            ->get();
-
-        //get conditioning details for specific date
-        $tabconditioning = 'conditioning';
-        $date = $dayWithDate;
-        $detailsconditioning = Conditioning::where('date', $date)
-            ->where('is_assigned', 1)
-            ->with('workout')
-            ->with('workout.categoryOption')
-            ->get();
-
-        //  //get warup details for specific date
-        $tabweightweight = 'weightlifting';
-        $date = $dayWithDate;
-        $detailsweight = Weightlifting::where('date', $date)
-            ->where('is_assigned', 1)
-            ->with('sets')
-            ->with('sets.weightlifting')
-            ->with('workouts')
-            ->with('workouts.categoryOption')
-            ->get();
-
-        //get warup details for specific date
-        $tabconditioning = 'conditioning';
-        $date = $dayWithDate;
-        $detailsconditioning = Conditioning::where('date', $date)
-            ->with('workout')
-            ->get();
-
-        $tabtest = 'Test';
-        $date = $dayWithDate;
-        $detailstest = Test::where('date', $date)
-            ->with('workout')
-            ->with('workouts.categoryOption')
-            ->with('member')
-            ->get();
-
-
-        //  foreach ($detailsweight as $weightlifting) {
-        //     foreach ($weightlifting->sets as $set) {
-        //         dd($set->sets, $set->reps); // Dump and display the values of sets and reps
-        //     }
-        // }
-
-        //dd($detailsstrength);
-
-        return view('mobile.user.workout', compact('dayWithDate', 'detailswarmup', 'detailsstrength', 'detailsconditioning', 'detailsweight', 'detailstest','detailsconditioning'));
+        return view('mobile.user.workout', compact('dayWithDate', 'classId'));
     }
 
     //store daily warmup workout after clicking
@@ -1671,5 +1653,64 @@ class MobileController extends Controller
     }
 }
 
+    // -------------------------------------------------------
+    // New pages: Achievements, Profile, Settings, History Data
+    // -------------------------------------------------------
+
+    public function achievements()
+    {
+        return view('mobile.user.achievements');
+    }
+
+    public function profilePage()
+    {
+        return view('mobile.user.profile');
+    }
+
+    public function settingsPage()
+    {
+        // Placeholder — renders a simple settings shell
+        return view('mobile.user.settings');
+    }
+
+    /**
+     * Web-based history data endpoint (for users without a Sanctum token).
+     * Proxies the same logic as UserMobileController@getMemberWorkoutDetails.
+     */
+    public function historyData()
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->getMemberWorkoutDetails();
+    }
+
+    public function getExercisesData()
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->getStrengthWorkouts();
+    }
+
+    public function getAchievementGraphData(Request $request)
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->getStrengthProgress($request);
+    }
+
+    public function profileData()
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->viewprofile();
+    }
+
+    public function storeProfileImage(Request $request)
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->profileImageStore($request);
+    }
+
+    public function storeMonthlyImages(Request $request)
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        return app(\App\Http\Controllers\UserMobileController::class)->store($request);
+    }
 
 }

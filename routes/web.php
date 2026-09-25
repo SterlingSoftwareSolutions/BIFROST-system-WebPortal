@@ -308,8 +308,10 @@ Route::post('/cancel', [MobileController::class, 'cancel'])->name('class.cancel'
 
 Route::get('/mobile/readinessscore', [MobileController::class, 'readinessscore'])->name('mobile.readinessscore');
 Route::post('/mobile/store-readiness', [MobileController::class, 'storescore'])->name('mobile.storescore');
+Route::post('/mobile/get-score', [MobileController::class, 'getScoreWeb']);
 
 // get workout data
+Route::post('/mobile/get-workout-list', [MobileController::class, 'getWorkoutListWeb']);
 Route::post('/mobile/class-manager', [ClientManagementController::class, 'getdata'])->name('mobile.class-manager');
 Route::get('/mobile/workout', [MobileController::class, 'workout'])->name('mobile.workout');
 Route::post('/warmup-daily',  [MobileController::class, 'storewarmupdaily']);
@@ -319,6 +321,19 @@ Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthd
 
 Route::get('/mobile/workouttimer', [MobileController::class, 'workouttimer'])->name('mobile.workouttimer');
 Route::get('/mobile/histroyview', [MobileController::class, 'histroyview'])->name('mobile.histroyview');
+Route::get('/mobile/history-data', [MobileController::class, 'historyData'])->name('mobile.history-data');
+
+// New pages matching mobile app
+Route::get('/mobile/achievements', [MobileController::class, 'achievements'])->name('mobile.achievements');
+Route::get('/mobile/profile', [MobileController::class, 'profilePage'])->name('mobile.profile');
+Route::get('/mobile/settings', [MobileController::class, 'settingsPage'])->name('mobile.settings');
+
+// Web Proxy Routes for Data
+Route::get('/mobile/data/exercises', [MobileController::class, 'getExercisesData']);
+Route::post('/mobile/data/achievement-graph', [MobileController::class, 'getAchievementGraphData']);
+Route::get('/mobile/data/profile', [MobileController::class, 'profileData']);
+Route::post('/mobile/data/profile-image', [MobileController::class, 'storeProfileImage']);
+Route::post('/mobile/data/monthly-images', [MobileController::class, 'storeMonthlyImages']);
 
 // Display the forget password form
 Route::get('forgot/password', function () {
