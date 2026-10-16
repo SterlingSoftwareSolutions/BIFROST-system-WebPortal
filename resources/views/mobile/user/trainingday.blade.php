@@ -1,215 +1,350 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('mobile.layout.mobile-layout')
 
-<head>
-    <!-- Meta tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-    <meta name="csrf-token" content="{{ csrf_token() }}"> <!-- CSRF token -->
-    <!-- Include jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <!-- Include Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+@push('head-styles')
+<style>
+    .training-bg {
+        min-height: calc(100vh - 120px);
+        background-image: url('{{ asset('img/valhalla-bg.jpg') }}');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 16px;
+    }
 
-<body>
-    <!-- Extend mobile layout -->
-    @extends('mobile.layout.mobile-layout')
+    /* Week toggle */
+    .week-toggle-wrap {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 12px;
+    }
+    .week-toggle-wrap.right { justify-content: flex-end; }
 
-    <!-- Define content section -->
-    @section('content')
-        <div class="w-full flex flex-col justify-between min-h-screen h-full ">
-            <!-- Background image container -->
-            <div class="flex-grow items-center justify-center m-0 p-4 bg-cover bg-center bg-no-repeat"
-                style="background-image: url('{{ asset('img/valhalla-bg.jpg') }}');">
-                <!-- Day buttons container -->
-                <div class="flex flex-col justify-center items-center gap-2.5 pt-32 text-white">
-                    {{-- Time Slot Buttons --}}
-                    <div class="flex justify-center gap-2 mb-6 pt-10">
-                        @foreach(['06:00:00' => '6am', '09:00:00' => '9am', '12:00:00' => '12pm', '17:00:00' => '5pm'] as $timeVal => $label)
-                            <button onclick="filterByTime('{{ $timeVal }}')"
-                                class="border border-black text-white rounded-lg px-4 py-2 font-semibold hover:bg-gray-200 hover:text-black transition">
-                                {{ $label }}<br>class
-                            </button>
-                        @endforeach
-                    </div>
-                    <!-- Loop through days -->
-                    {{-- @php
-                        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-                    @endphp
-                    @foreach ($days as $index => $day)
-                        @php
-                            $date = $dates[$index];
-                            $isSelected = $date == $selectedDay ? 'border-white' : 'border-black';
-                        @endphp
-                        <!-- Day button -->
-                        <button id="{{ strtolower($date) }}" onclick="selctDate(this)">
-                            <div
-                                class="day bg-transparent border w-72 {{ $isSelected }} hover:border-white text-white p-5 rounded-lg flex flex-col gap-2 justify-between items-center transition duration-300 ease-in-out">
-                                <div class="w-full flex justify-between items-center">
-                                    <span class="day-name text-lg font-bold">{{ $day }}</span>
-                                    <span class="date text-sm" id="{{ strtolower($day) }}-date">{{ $date }}</span>
-                                </div>
-                                <div class="w-full flex justify-between items-center">
-                                    <span class="slots text-sm text-white">20 slots available</span>
-                                    <span class="text-sm text-white px-3 py-1 rounded-xl border border-white">Reserve</span>
-                                </div>
-                            </div>
-                        </button>
-                    @endforeach --}}
-                    <div id="classSlots" class="flex flex-col justify-center items-center gap-2.5 text-white">
-                        @foreach($dates as $date)
-                            @php
-                                $formatted = $date->format('d/m/Y');
-                                $class = $classesByDate[$formatted] ?? null;
-                                $isToday = $date->isToday();
-                            @endphp
+    .week-toggle-btn {
+        display: flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: #fff; border-radius: 8px;
+        padding: 6px 14px; font-size: 12px; font-weight: 700;
+        cursor: pointer; letter-spacing: 0.5px;
+        transition: background 0.2s;
+    }
+    .week-toggle-btn:hover { background: rgba(255,255,255,0.16); }
+    .week-toggle-btn .arrow { font-size: 18px; font-weight: 900; }
 
-                            <div
-                            class="day bg-transparent border w-72 {{ $isToday ? 'border-white' : 'border-black' }} text-white p-5 rounded-lg flex flex-col gap-2 justify-between items-center cursor-pointer"
-                            id="{{ $formatted }}"
-                            onclick="selectDate(this)">
-                                <div class="w-full flex justify-between items-center">
-                                    <span class="day-name text-lg font-bold">{{ $date->format('l') }}</span>
-                                    <span class="date text-sm">{{ $formatted }}</span> <!-- Now 23/06/2025 -->
-                                </div>
-                                <div class="w-full flex justify-between items-center">
-                                    @if($class)
-                                        <span class="slots text-sm text-white">{{ $class->spots }} spots available</span>
+    /* Class time pills */
+    .time-pills {
+        display: flex; gap: 8px;
+        overflow-x: auto; padding: 0 0 12px;
+        scrollbar-width: none;
+    }
+    .time-pills::-webkit-scrollbar { display: none; }
+    .time-pill {
+        flex-shrink: 0;
+        border: 1px solid rgba(0,0,0,0.5);
+        color: #fff; border-radius: 8px;
+        padding: 8px 16px; font-size: 13px; font-weight: 600;
+        cursor: pointer; text-align: center;
+        background: rgba(0,0,0,0.3);
+        transition: background 0.2s, border-color 0.2s;
+        white-space: nowrap;
+    }
+    .time-pill:hover, .time-pill.active {
+        background: rgba(255,255,255,0.15);
+        border-color: #fff;
+    }
 
-                                        @php
-                                            $userReservation = \App\Models\ReservationSession::where('user_id', Auth::id())
-                                                ->where('classes_id', $class->id)
-                                                ->first();
-                                        @endphp
+    /* Day cards */
+    .day-cards { display: flex; flex-direction: column; gap: 10px; }
 
-                                        @if($userReservation)
-                                            {{-- Cancel Button --}}
-                                            <form action="{{ route('class.cancel') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="class_id" value="{{ $class->id }}">
-                                                <button type="submit" class="text-sm text-white px-3 py-1 rounded-xl border border-red-300 hover:bg-red-500 hover:text-white transition">
-                                                    X
-                                                </button>
-                                            </form>
-                                        @else
-                                            {{-- Reserve Button --}}
-                                            <form action="{{ route('class.reserve') }}" method="POST">
-                                                @csrf
-                                                <input type="hidden" name="class_id" value="{{ $class->id }}">
-                                                <button type="submit" class="text-sm text-white px-3 py-1 rounded-xl border border-white hover:bg-white hover:text-black transition">
-                                                    Reserve
-                                                </button>
-                                            </form>
-                                        @endif
-                                    @else
-                                        <span class="slots text-sm text-red-300">No class</span>
-                                        <span class="text-sm text-white px-3 py-1 rounded-xl border border-white">--</span>
-                                    @endif
+    .day-card {
+        background: rgba(0,0,0,0.45);
+        border: 1px solid rgba(0,0,0,0.6);
+        border-radius: 10px;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        display: flex; align-items: center; gap: 0;
+    }
+    .day-card.selected {
+        border-color: #fff !important;
+        border-width: 2px;
+        background: rgba(255,255,255,0.06);
+    }
+    .day-card-body {
+        flex: 1; display: flex; justify-content: space-between; align-items: center;
+    }
+    .day-card-left { display: flex; flex-direction: column; gap: 4px; }
+    .day-name { color: #fff; font-size: 15px; font-weight: 700; }
+    .day-spots { color: #fff; font-size: 12px; margin-top: 4px; }
+    .day-no-class { color: #f87171; font-size: 12px; margin-top: 4px; }
+    .day-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .day-date { color: #ccc; font-size: 12px; }
 
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
+    .reserve-btn {
+        border: 1px solid #fff; border-radius: 6px;
+        color: #fff; font-size: 12px; font-weight: 700;
+        padding: 4px 10px; background: transparent; cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+    }
+    .reserve-btn:hover { background: #fff; color: #000; }
+    .reserve-btn.cancel { border-color: #f87171; color: #f87171; }
+    .reserve-btn.cancel:hover { background: #f87171; color: #fff; }
+    .reserve-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Arrow to go to readiness */
+    .day-arrow {
+        width: 36px; min-width: 36px;
+        border-left: 1px solid rgba(0,0,0,0.5);
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 22px; font-weight: 700;
+        cursor: pointer; padding-left: 8px;
+        transition: color 0.2s;
+    }
+    .day-arrow:hover { color: rgba(255,255,255,0.7); }
+
+    /* Loading state */
+    .loading-state {
+        display: flex; align-items: center; justify-content: center;
+        color: #fff; padding: 40px; font-size: 14px; gap: 10px;
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="training-bg">
+
+    {{-- Week Toggle --}}
+    <div class="week-toggle-wrap" id="weekToggleWrap">
+        <button class="week-toggle-btn" id="weekToggleBtn" onclick="toggleWeek()">
+            <span class="arrow">‹</span>
+            <span id="weekToggleLabel">Previous Week</span>
+        </button>
+    </div>
+
+    {{-- Class time pills (Rendered dynamically) --}}
+    <div class="time-pills" id="timePills">
+        <!-- Dynamic content goes here -->
+    </div>
+
+    {{-- Day cards container --}}
+    <div class="day-cards" id="dayCards">
+        <div class="loading-state">
+            <i class="fas fa-spinner fa-spin"></i> Loading schedule...
         </div>
-    @endsection
+    </div>
+</div>
+@endsection
 
-    <!-- JavaScript -->
-    <script>
-        // Function to select date
-        document.addEventListener('DOMContentLoaded', function() {
-            window.selectDate = function selectDate(dayDiv) {
-                const day = dayDiv.id;
-                console.log("Selected:", day);
+@push('scripts')
+<script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                // Send AJAX
-                $.ajax({
-                    url: "/select-day",
-                    type: "POST",
-                    data: {
-                        day: day,
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(response) {
-                        console.log(response);
+let weekMode = 'current';     // 'current' | 'previous'
+let selectedDayIndex = -1;    
+let selectedClassIndex = 0;
 
-                        // Reset all borders
-                        document.querySelectorAll('.day').forEach(div => {
-                            div.classList.remove('border-white');
-                            div.classList.add('border-black');
-                        });
+let scheduleData = [];
 
-                        // Highlight selected
-                        dayDiv.classList.remove('border-black');
-                        dayDiv.classList.add('border-white');
+function toggleWeek() {
+    weekMode = weekMode === 'current' ? 'previous' : 'current';
 
-                        // Redirect
-                        window.location.href = '/mobile/readinessscore';
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error:", error);
-                    }
-                });
-            };
+    const wrap = document.getElementById('weekToggleWrap');
+    const label = document.getElementById('weekToggleLabel');
+    const arrow = document.querySelector('#weekToggleBtn .arrow');
+
+    if (weekMode === 'previous') {
+        wrap.classList.add('right');
+        label.textContent = 'Current Week';
+        arrow.textContent = '›';
+    } else {
+        wrap.classList.remove('right');
+        label.textContent = 'Previous Week';
+        arrow.textContent = '‹';
+    }
+
+    selectedDayIndex = -1;
+    selectedClassIndex = 0;
+    loadSchedule();
+}
+
+async function loadSchedule() {
+    document.getElementById('dayCards').innerHTML =
+        '<div class="loading-state"><i class="fas fa-spinner fa-spin"></i> Loading schedule...</div>';
+    document.getElementById('timePills').innerHTML = '';
+
+    try {
+        const resp = await fetch(`/get-class-slots?mode=${weekMode}`, {
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
         });
+        const slots = await resp.json();
+        scheduleData = slots;
 
-        function filterByTime(time) {
-            $.ajax({
-                url: '/get-class-slots',
-                type: 'GET',
-                data: { time: time },
-                success: function(response) {
-                    const container = document.getElementById('classSlots');
-                    container.innerHTML = '';
-
-                    response.forEach(slot => {
-                        const hasClass = !!slot.class;
-
-                        const isTodayClass = slot.is_today ? 'border-white' : 'border-black';
-
-                        const reserveHtml = hasClass
-                            ? (slot.reserved
-                                ? `<form method="POST" action="/cancel">
-                                        <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                                        <input type="hidden" name="class_id" value="${slot.id}">
-                                        <button type="submit" class="text-sm text-white px-3 py-1 rounded-xl border border-red-300 hover:bg-red-500 hover:text-white transition">X</button>
-                                </form>`
-                                : `<form method="POST" action="/reserve">
-                                        <input type="hidden" name="_token" value="${$('meta[name="csrf-token"]').attr('content')}">
-                                        <input type="hidden" name="class_id" value="${slot.id}">
-                                        <button type="submit" class="text-sm text-white px-3 py-1 rounded-xl border border-white hover:bg-white hover:text-black transition">Reserve</button>
-                                </form>`)
-                            : `<span class="text-sm text-white px-3 py-1 rounded-xl border border-white">--</span>`;
-
-                        const html = `
-                            <div class="day bg-transparent border w-72 ${isTodayClass} text-white p-5 rounded-lg flex flex-col gap-2 justify-between items-center cursor-pointer">
-                                <div class="w-full flex justify-between items-center">
-                                    <span class="day-name text-lg font-bold">${slot.day_name}</span>
-                                    <span class="date text-sm">${slot.date}</span>
-                                </div>
-                                <div class="w-full flex justify-between items-center">
-                                    ${hasClass
-                                        ? `<span class="slots text-sm text-white">${slot.class.spots} spots available</span>`
-                                        : `<span class="slots text-sm text-red-300">No class</span>`}
-                                    ${reserveHtml}
-                                </div>
-                            </div>
-                        `;
-
-                        container.innerHTML += html;
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching time slots:', error);
-                }
-            });
+        // Auto-select today
+        if (selectedDayIndex === -1) {
+            const todayIdx = slots.findIndex(s => s.is_today);
+            selectedDayIndex = todayIdx >= 0 ? todayIdx : 0;
         }
 
-    </script>
-</body>
+        renderUI();
+    } catch (e) {
+        document.getElementById('dayCards').innerHTML =
+            '<div class="loading-state" style="color:#f87171;">Failed to load schedule.</div>';
+    }
+}
 
-</html>
+function renderUI() {
+    renderPills();
+    renderCards();
+}
+
+function renderPills() {
+    const container = document.getElementById('timePills');
+    if (!scheduleData || scheduleData.length === 0 || selectedDayIndex < 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const currentDay = scheduleData[selectedDayIndex];
+    if (!currentDay.classes || currentDay.classes.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+
+    container.innerHTML = currentDay.classes.map((cls, idx) => {
+        const isActive = idx === selectedClassIndex;
+        return `
+            <button class="time-pill ${isActive ? 'active' : ''}" onclick="selectClassPill(${idx})">
+                ${cls.time}<br>class
+            </button>
+        `;
+    }).join('');
+}
+
+function selectClassPill(idx) {
+    selectedClassIndex = idx;
+    renderUI();
+}
+
+function renderCards() {
+    const container = document.getElementById('dayCards');
+    if (!scheduleData || scheduleData.length === 0) {
+        container.innerHTML = '<div class="loading-state">No schedule found.</div>';
+        return;
+    }
+
+    container.innerHTML = scheduleData.map((day, i) => {
+        const isSelected = i === selectedDayIndex;
+        // If it's the selected day, use the selectedClassIndex. Else use the first class (0).
+        const classIdxToUse = isSelected ? selectedClassIndex : 0;
+        const cls = day.classes ? day.classes[classIdxToUse] : null;
+        const hasClass = !!cls;
+
+        let spotsHtml = hasClass
+            ? `<span class="day-spots">${cls.spots} spots available</span>`
+            : `<span class="day-no-class">No class</span>`;
+
+        let reserveHtml = '';
+        if (hasClass) {
+            if (cls.reserved) {
+                reserveHtml = `<button class="reserve-btn cancel" onclick="handleCancel(event, ${cls.id}, ${i}, ${classIdxToUse})">✕ Cancel</button>`;
+            } else if (cls.spots > 0) {
+                reserveHtml = `<button class="reserve-btn" onclick="handleReserve(event, ${cls.id}, ${i}, ${classIdxToUse})">Reserve</button>`;
+            } else {
+                reserveHtml = `<button class="reserve-btn" disabled>Full</button>`;
+            }
+        } else {
+            reserveHtml = `<span style="color:#6b7280;font-size:18px;">–</span>`;
+        }
+
+        return `
+            <div class="day-card ${isSelected ? 'selected' : ''}" id="card-${i}" onclick="selectCard(${i})">
+                <div class="day-card-body">
+                    <div class="day-card-left">
+                        <span class="day-name">${day.day_name}</span>
+                        ${spotsHtml}
+                    </div>
+                    <div class="day-card-right">
+                        <span class="day-date">${day.date}</span>
+                        ${reserveHtml}
+                    </div>
+                </div>
+                <div class="day-arrow" onclick="goToReadiness(event, ${i})">›</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectCard(idx) {
+    selectedDayIndex = idx;
+    selectedClassIndex = 0; // reset class selection for new day
+    renderUI();
+}
+
+async function handleReserve(e, classId, dayIdx, classIdx) {
+    e.stopPropagation();
+    if (!classId) return;
+    try {
+        const resp = await fetch('/reserve', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            body: JSON.stringify({ class_id: classId })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            scheduleData[dayIdx].classes[classIdx].reserved = true;
+            scheduleData[dayIdx].classes[classIdx].spots = data.remainingSpots;
+            renderCards();
+        } else {
+            alert(data.message || 'Could not reserve.');
+        }
+    } catch (e) { alert('Error reserving class.'); }
+}
+
+async function handleCancel(e, classId, dayIdx, classIdx) {
+    e.stopPropagation();
+    if (!classId) return;
+    try {
+        const resp = await fetch('/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+            body: JSON.stringify({ class_id: classId })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            scheduleData[dayIdx].classes[classIdx].reserved = false;
+            scheduleData[dayIdx].classes[classIdx].spots = data.remainingSpots;
+            renderCards();
+        } else {
+            alert(data.message || 'Could not cancel.');
+        }
+    } catch (e) { alert('Error cancelling class.'); }
+}
+
+async function goToReadiness(e, dayIdx) {
+    e.stopPropagation();
+    const slot = scheduleData[dayIdx];
+    const classIdx = dayIdx === selectedDayIndex ? selectedClassIndex : 0;
+    const cls = slot && slot.classes ? slot.classes[classIdx] : null;
+
+    if (!cls) {
+        alert('No class available for this day.');
+        return;
+    }
+    if (dayIdx !== selectedDayIndex) {
+        selectCard(dayIdx);
+    }
+    // Store selected day via AJAX then redirect
+    try {
+        await fetch('/select-day', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+            body: JSON.stringify({ day: slot.date, class_id: cls.id })
+        });
+    } catch(e) {}
+    window.location.href = '/mobile/readinessscore';
+}
+
+// Init on page load
+document.addEventListener('DOMContentLoaded', () => loadSchedule());
+</script>
+@endpush

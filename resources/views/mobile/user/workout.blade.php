@@ -1,1168 +1,710 @@
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- Include jQuery -->
+@extends('mobile.layout.mobile-layout')
+@section('content')
+    @push('scripts')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Document</title>
-</head>
+    @endpush
+    <style>
+        html,body{overflow:hidden!important;height:100vh!important;max-height:100vh!important;}
+        .mob-content{height:100vh!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;}
+        @keyframes spin{100%{transform:rotate(360deg);}}
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+        @keyframes popIn{from{transform:scale(0.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+        @keyframes bannerIn{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+        @keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(242,153,74,.4);}50%{box-shadow:0 0 0 12px rgba(242,153,74,0);}}
+        @keyframes countdownPulse{0%{transform:scale(1);opacity:1;}50%{transform:scale(1.15);opacity:.8;}100%{transform:scale(1);opacity:1;}}
+        input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+        input[type="number"]{-moz-appearance:textfield;}
+        .cscroll::-webkit-scrollbar{display:none;}.cscroll{-ms-overflow-style:none;scrollbar-width:none;}
+        /* Cards */
+        .wk-card{background:transparent;border-radius:0;padding:12px;margin-bottom:12px;border:1px solid transparent;position:relative;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+        .wk-card.selected{border-color:transparent;}
+        .wk-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+        .wk-fmt{color:#fff;font-size:16px;font-weight:bold;letter-spacing:.5px;}
+        .wk-pbadge{background:rgba(255,255,255,.15);border-radius:12px;padding:2px 10px;color:#fff;font-size:13px;font-weight:600;}
+        .wk-rhdr{color:#F2994A;font-size:14px;font-weight:bold;min-width:28px;text-align:center;}
+        /* Exercise row */
+        .ex-row{display:flex;align-items:center;padding:0;background:transparent;border-radius:0;margin-bottom:0;gap:8px;}
+        .active-ex-row{background:rgba(255,255,255,0.15);border-radius:8px;border:1px solid rgba(255,255,255,0.3);margin:0 -12px;padding:8px 12px;}
+        .ex-name{flex:2;color:#fff;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-left:12px;}
+        .wbox{background:#fff;border-radius:4px;padding:2px 6px;color:#000;font-size:14px;min-width:60px;display:flex;align-items:center;justify-content:center;flex:1;text-align:center;white-space:nowrap;margin:0;}
+        .rbox{background:#fff;border-radius:4px;padding:2px 6px;color:#000;font-size:14px;width:30px;text-align:center;}
+        .rbtn-wrap{display:flex;align-items:center;flex:1;justify-content:flex-end;padding-right:10px;}
+        .rbtn{background:transparent;border:none;color:#fff;font-size:18px;font-weight:800;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1;}
+        .rbtn:hover{background:rgba(255,255,255,.1);}
+        .badge-done{color:#22c55e;font-size:11px;font-weight:800;letter-spacing:1px;margin-left:4px;}
+        .badge-fail{color:#ef4444;font-size:11px;font-weight:800;letter-spacing:1px;margin-left:4px;}
+        /* Set groups */
+        .set-num{color:#fff;font-size:13px;font-weight:700;width:24px;text-align:center;flex-shrink:0;}
+        .set-grp{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.15);}
+        /* Inline timer block */
+        .card-timer{background:rgba(0,0,0,.3);border-radius:10px;padding:10px 14px;display:flex;flex-direction:column;align-items:center;margin-bottom:10px;}
+        .ct-time{color:#fff;font-size:36px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1;}
+        .ct-label{color:rgba(255,255,255,.45);font-size:10px;font-weight:700;letter-spacing:2px;margin-top:4px;}
+        .ct-phase{font-size:11px;font-weight:800;letter-spacing:1.5px;margin-top:4px;text-transform:uppercase;}
+        .ct-btns{display:flex;gap:8px;margin-top:10px;width:100%;}
+        .ctbtn{flex:1;padding:8px 0;border-radius:8px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:.5px;text-align:center;}
+        .ctbtn:hover{background:rgba(255,255,255,.15);}
+        .ctbtn.primary{background:#fff;color:#000;border-color:#fff;}
+        .ctbtn.danger{background:rgba(239,68,68,.15);border-color:#ef4444;color:#ef4444;}
+        /* Station block */
+        .stn-block{background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px;margin-bottom:8px;}
+        .stn-lbl{color:rgba(255,255,255,.4);font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;}
+        /* Group Rows */
+        .grp-row{display:flex;flex-direction:row;align-items:stretch;margin-bottom:12px;position:relative;}
+        .grp-num{width:32px;display:flex;align-items:flex-start;justify-content:center;padding-top:4px;color:#fff;font-weight:900;font-size:16px;}
+        .grp-exs{flex:1;display:flex;flex-direction:column;}
+        /* Interval styles - full width dividers are now handled inline between groups */
+        /* Pyramid */
+        .pyr-row-wrap{width:100%;padding:4px 0;margin-bottom:2px;cursor:pointer;transition:background .15s;}
+        /* Rest timer strip */
+        .rest-strip{background:rgba(0,0,0,.4);border-radius:8px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+        /* Complete banner */
+        .wk-banner{position:absolute;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1.5px solid rgba(242,153,74,0.3);border-radius:0;pointer-events:none;animation:bannerIn .35s cubic-bezier(.34,1.56,.64,1) forwards;}
+        .wk-banner-circle{width:60px;height:60px;border-radius:50%;background:#F2994A;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(242,153,74,.4);margin-bottom:10px;}
+        .wk-banner-txt{color:#ffffff;font-size:22px;font-weight:800;letter-spacing:.8px;text-shadow:0 2px 6px rgba(0,0,0,.8);text-transform:lowercase;font-family:inherit;margin:0;line-height:1.2;text-align:center;}
+        /* Incomplete banner */
+        .fail-banner{position:absolute;inset:0;z-index:50;background:rgba(0,0,0,.7);border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+        .fail-circle{width:56px;height:56px;border-radius:50%;background:#ef4444;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:22px;color:#fff;font-weight:900;}
+        /* Countdown overlay in-card */
+        .cd-overlay{position:absolute;inset:0;z-index:60;background:rgba(0,0,0,.85);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-direction:column;}
+        .cd-num{color:#fff;font-size:64px;font-weight:900;line-height:1;animation:countdownPulse .8s ease-in-out;}
+        /* Bottom bar */
+        #bbar{display:none;}
+        /* Notes modal */
+        .nmod-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;animation:fadeIn .15s;}
+        .nmod-box{background:#111;border-radius:16px;padding:20px;width:290px;border:1px solid rgba(255,255,255,.12);animation:popIn .2s;}
+        .nmod-title{color:#fff;font-size:16px;font-weight:700;margin-bottom:14px;text-align:center;}
+        .nmod-input{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;font-size:14px;padding:10px;min-height:90px;resize:none;font-family:inherit;box-sizing:border-box;}
+        .nmod-input::placeholder{color:rgba(255,255,255,.3);}
+        .nmod-actions{display:flex;gap:10px;margin-top:14px;}
+        .nmod-cancel{flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;color:rgba(255,255,255,.6);font-size:13px;font-weight:700;cursor:pointer;}
+        .nmod-save{flex:2;padding:10px;background:#fff;border:none;border-radius:8px;color:#000;font-size:13px;font-weight:800;cursor:pointer;}
+        /* App alert */
+        .app-msg-overlay{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;animation:fadeIn .15s;}
+        .app-msg-box{background:#1c1c1e;border-radius:14px;width:280px;border:1px solid rgba(255,255,255,.1);animation:popIn .2s;}
+        .app-msg-content{padding:20px 16px;text-align:center;}
+        .app-msg-title{color:#fff;font-size:16px;font-weight:700;margin-bottom:6px;}
+        .app-msg-body{color:rgba(255,255,255,.75);font-size:13px;line-height:1.4;}
+        .app-msg-footer{border-top:1px solid rgba(255,255,255,.15);}
+        .app-msg-ok{width:100%;padding:12px;background:transparent;border:none;font-size:16px;font-weight:500;cursor:pointer;border-radius:0 0 14px 14px;}
+        /* Phase colors */
+        .phase-w{color:#22c55e;}.phase-r{color:#ef4444;}.phase-idle{color:rgba(255,255,255,.5);}
+    </style>
 
-<body class=" overflow-y-auto">
-    @extends('mobile.layout.mobile-layout')
-    @section('content')
-        <div class="w-full flex flex-col justify-between min-h-screen h-full ">
-            <div class="flex-grow w-full flex items-center justify-center m-0 p-4 bg-cover bg-center bg-no-repeat"
-                style="background-image: url('{{ asset('img/valhalla-bg.jpg') }}');">
-                <div id="ring" class="border border-gray-600 rounded-3xl flex items-start">
-                    <div class="flex w-full flex-col justify-center items-center gap-2.5 p-5 text-white">
+    <div id="wk-bg" style="flex:1;background-image:url('{{ asset('img/valhalla-bg.jpg') }}');background-size:cover;background-position:center;padding:6px 5px 0 5px;display:flex;flex-direction:column;overflow:hidden;">
+        <div id="wk-ring" style="flex:1;border:5px solid #4B5563;border-radius:8px;padding:16px 8px 8px 8px;margin:1px 1px 10px 1px;display:flex;flex-direction:column;overflow:hidden;position:relative;transition:border-color .3s;background:transparent;">
 
-                        {{-- Category Icons (Static) --}}
-                        {{-- Category Icons (Static) --}}
-                        <div class="flex gap-4 justify-start mb-6 overflow-x-auto w-full px-2">
-                            {{-- Warmup --}}
-                            <button
-                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-warmup" data-icon-white="{{ asset('icon/warmupwhite.png') }}"
-                                data-icon-black="{{ asset('icon/warmup.png') }}">
-                                <img src="{{ asset('icon/warmupwhite.png') }}" alt="Warmup Icon"
-                                    class="w-5 h-5 mb-1 icon-img">
-                                <span class="text-xs leading-tight text-center">Warm<br>Up</span>
-                            </button>
+            {{-- Category tabs --}}
+            <div id="cat-tabs" style="display:flex;flex-direction:row;justify-content:center;align-items:center;height:60px;min-height:60px;margin-bottom:10px;gap:6px;overflow-x:auto;scrollbar-width:none;"></div>
 
-                            {{-- Strength --}}
-                            <button
-                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-strength" data-icon-white="{{ asset('icon/strengthwhite.png') }}"
-                                data-icon-black="{{ asset('icon/strength.png') }}">
-                                <img src="{{ asset('icon/strengthwhite.png') }}" alt="Strength Icon"
-                                    class="w-5 h-5 mb-1 icon-img">
-                                <span class="text-xs leading-tight text-center">Strength</span>
-                            </button>
-
-                            {{-- Weightlifting --}}
-                            <button
-                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-weightlifting"
-                                data-icon-white="{{ asset('icon/weightliftingWhite.png') }}"
-                                data-icon-black="{{ asset('icon/weightlifting.png') }}">
-                                <img src="{{ asset('icon/weightliftingWhite.png') }}" alt="Weightlifting Icon"
-                                    class="w-5 h-5 mb-1 icon-img">
-                                <span class="text-xs leading-tight text-center">Weight<br>Lifting</span>
-                            </button>
-
-                            {{-- Conditioning --}}
-                            <button
-                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-conditioning"
-                                 data-icon-white="{{ asset('icon/conditioningWhite.png') }}"
-                                data-icon-black="{{ asset('icon/conditioning.png') }}">
-                                <img src="{{ asset('icon/conditioningWhite.png') }}" alt="Conditioning Icon"
-                                    class="w-5 h-5 mb-1 icon-img">
-                                <span class="text-xs leading-tight text-center">Condi<br>tioning</span>
-                            </button>
-
-                            {{-- Test --}}
-                            <button
-                                class="category-tab flex flex-col items-center justify-center w-16 h-16 border border-white rounded-lg px-1 py-2 bg-black bg-opacity-50 text-white hover:bg-opacity-80 transition duration-300 ease-in-out transform hover:scale-105 text-xs text-center break-words leading-tight"
-                                data-target="#section-test" data-icon-white="{{ asset('icon/testWhite.png') }}"
-                                data-icon-black="{{ asset('icon/test.png') }}">
-                                <img src="{{ asset('icon/testWhite.png') }}" alt="Test Icon" class="w-5 h-5 mb-1 icon-img">
-                                <span class="text-xs leading-tight text-center">Test</span>
-                            </button>
-                        </div>
-                        {{-- Category Workout Sections --}}
-
-                        <div id="categoryDisplayZone">
-                            {{-- Warmup --}}
-                            <div id="section-warmup" class="category-section">
-                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                    @if ($detailswarmup->isEmpty())
-                                        <p class="text-white text-center">No warm-up workouts assigned.</p>
-                                    @else
-                                        <table class="w-full text-white ">
-                                            <thead class="justify-between">
-                                                <tr>
-                                                    <th class="py-2">Workout</th>
-                                                    <th class="px-2">Weight</th>
-                                                    <th class="px-2">Rep</th>
-                                                    <th class="col-span-2"></th>
-
-                                                </tr>
-                                            </thead>
-                                            <tbody class="table-body">
-                                                @foreach ($detailswarmup as $warmupdetail)
-                                                    <tr class="border-b border-gray-300">
-                                                        {{-- Category --}}
-                                                        <td class="py-4" onclick="savewarmup(this)"
-                                                            data-workout-id="{{ $warmupdetail->id }}"
-                                                            data-daily-warmup-id="">
-                                                            {{ $warmupdetail->workouts->categoryOption->category_name }} -
-                                                            {{ $warmupdetail->workouts->workout }}</td>
-
-                                                        {{-- Workout --}}
-                                                        {{-- <td class="py-4 workouts">{{ $warmupdetail->workouts->workout }}</td> --}}
-                                                        {{-- Weight --}}
-                                                        <td class="py-4 text-center">{{ $warmupdetail->weight }}</td>
-                                                        {{-- Reps --}}
-                                                        <td class="py-4">
-                                                            <div class="flex items-center justify-center space-x-4">
-                                                                <button class="px-2 py-1 text-white"
-                                                                    onclick="decrementValue(this)">-</button>
-                                                                <span
-                                                                    class="w-16 bg-white text-black text-center rounded border-none p-1 reps">{{ $warmupdetail->reps }}</span>
-                                                                <button class="px-2 py-1 text-white"
-                                                                    onclick="incrementValue(this)">+</button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- Strength --}}
-                            <div id="section-strength" class="category-section hidden">
-                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                    {{-- Actual Strength Content --}}
-                                    <div class="content p-4 text-white">
-
-                                        @if ($detailsstrength->isEmpty())
-                                            <p class="text-center text-white">No assigned strength workouts.</p>
-                                        @else
-                                            @foreach ($detailsstrength as $strengthIndex => $strengthdetail)
-                                                <div class="content p-4 mt-3 text-white border border-gray-600 rounded-3xl" id="ringdiv">
-                                                    <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                        <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                            data-target="#primary-weight-{{ $strengthIndex }}">
-                                                            {{ $strengthdetail->workout?->categoryOption?->category_name ?? 'No Category' }}
-                                                            -
-                                                            {{ $strengthdetail->workout?->workout ?? 'Unnamed Workout' }}
-                                                        </button>
-                                                    </div>
-
-                                                    {{-- Primary Table --}}
-                                                    <div id="primary-weight-{{ $strengthIndex }}"
-                                                        class="table-body primary-body">
-                                                        @php
-                                                            // Get max number of sets from all related setdetails
-                                                            $maxSetDetail = $strengthdetail->sets
-                                                                ->sortByDesc('sets')
-                                                                ->first();
-                                                            $numberOfSets = $maxSetDetail->sets ?? 0;
-                                                            $baseWeight = $strengthdetail->weight ?? 0;
-                                                            $totalPercentageIncrease = 0.7;
-                                                            $percentageIncreasePerSet =
-                                                                $numberOfSets > 1
-                                                                    ? $totalPercentageIncrease / ($numberOfSets - 1)
-                                                                    : 0;
-                                                            $percentages = array_map(
-                                                                fn($i) => 0.3 + $percentageIncreasePerSet * $i,
-                                                                range(0, $numberOfSets - 1),
-                                                            );
-
-                                                            // Build reps list per set index
-                                                            $repsList = [];
-                                                            $setIndex = 0;
-                                                            foreach ($strengthdetail->sets as $setDetail) {
-                                                                for ($i = 0; $i < $setDetail->sets; $i++) {
-                                                                    $repsList[$setIndex] = $setDetail->reps;
-                                                                    $setIndex++;
-                                                                }
-                                                            }
-                                                        @endphp
-
-                                                        @if ($numberOfSets > 0)
-                                                            <table class="w-full text-white tablee my-4">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th class="px-2">Set</th>
-                                                                        <th class="px-2">Weight</th>
-                                                                        <th class="px-2">Rep</th>
-                                                                        <th></th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                                        @php
-                                                                            $setPercentage =
-                                                                                $percentages[$setNumber - 1] ?? 0.3;
-                                                                            $calculatedWeight =
-                                                                                $baseWeight * $setPercentage;
-                                                                            $reps = $repsList[$setNumber - 1] ?? '-';
-                                                                        @endphp
-                                                                        <tr class="border-b border-gray-300">
-                                                                            <td class="py-4">{{ $setNumber }}</td>
-                                                                            <td id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                class="py-4 text-center">
-                                                                                {{ number_format($calculatedWeight, 2) }}
-                                                                            </td>
-                                                                            <td class="py-4">
-                                                                                <div
-                                                                                    class="flex items-center justify-center space-x-4">
-                                                                                    <button class="px-2 py-1 text-white"
-                                                                                        onclick="decrementValue(this)">-</button>
-                                                                                    <span
-                                                                                        class="w-16 h-7 bg-white text-black text-center rounded border-none p-1"
-                                                                                        id="repsValue{{ $strengthIndex }}-{{ $setNumber }}">
-                                                                                        {{ $reps }}
-                                                                                    </span>
-                                                                                    <button class="px-2 py-1 text-white"
-                                                                                        onclick="incrementValue(this)">+</button>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td class="py-4">
-                                                                                <label
-                                                                                    class="inline-flex items-center cursor-pointer">
-                                                                                    <input type="checkbox"
-                                                                                        id="toggleTimerStrength{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                        class="sr-only peer timer-checkbox"
-                                                                                        data-rest-time="{{ $strengthdetail->rest }}"
-                                                                                        data-restred="{{ $strengthdetail->restred }}"
-                                                                                        data-restyellow="{{ $strengthdetail->restyellow }}"
-                                                                                        data-restgreen="{{ $strengthdetail->restgreen }}"
-                                                                                        data-strength-detail-id="{{ $strengthdetail->id }}"
-                                                                                        data-type="Primary"
-                                                                                        data-weight-id="weight-{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                        onclick="saveStrengthWorkout(this)">
-                                                                                    <div id="toggleBackground{{ $strengthIndex }}-{{ $setNumber }}"
-                                                                                        class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                                    </div>
-                                                                                </label>
-                                                                            </td>
-                                                                        </tr>
-                                                                    @endfor
-                                                                </tbody>
-                                                            </table>
-                                                        @else
-                                                            <p class="text-center text-sm text-white mt-4">No sets assigned for
-                                                                this workout.</p>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @endif
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-                            {{-- Weightlifting --}}
-                            <div id="section-weightlifting" class="category-section hidden">
-                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                    {{-- Dynamic Weightlifting Content --}}
-                                    <div class="content pt-4 text-white">
-
-                                        @if ($detailsweight->isEmpty())
-                                            <p class="text-center text-white">No assigned weightlifting workouts.</p>
-                                        @else
-                                            @foreach ($detailsweight as $weightIndex => $weightdetail)
-                                                <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                    <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                        data-target="#primary-weight-{{ $weightIndex }}">
-                                                        {{ $weightdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
-                                                        -
-                                                        {{ $weightdetail->workouts?->workout ?? 'Unnamed Workout' }}
-                                                    </button>
-                                                </div>
-
-                                                {{-- Primary Table --}}
-                                                <div id="primary-weight-{{ $weightIndex }}"
-                                                    class="table-body primary-body">
-                                                    @php
-                                                        $baseWeight = $weightdetail->weight ?? 0;
-                                                        $totalPercentageIncrease = 0.7;
-
-                                                        // Get max sets
-                                                        $maxSetDetail = $weightdetail->sets
-                                                            ->sortByDesc('sets')
-                                                            ->first();
-                                                        $numberOfSets = $maxSetDetail->sets ?? 0;
-
-                                                        // Weight increments
-                                                        $percentageIncreasePerSet =
-                                                            $numberOfSets > 1
-                                                                ? $totalPercentageIncrease / ($numberOfSets - 1)
-                                                                : 0;
-                                                        $percentages = array_map(
-                                                            fn($i) => 0.3 + $percentageIncreasePerSet * $i,
-                                                            range(0, $numberOfSets - 1),
-                                                        );
-
-                                                        // Reps per set
-                                                        $repsList = [];
-                                                        $setIndex = 0;
-                                                        foreach ($weightdetail->sets as $setDetail) {
-                                                            for ($i = 0; $i < $setDetail->sets; $i++) {
-                                                                $repsList[$setIndex] = $setDetail->reps;
-                                                                $setIndex++;
-                                                            }
-                                                        }
-                                                    @endphp
-
-                                                    @if ($numberOfSets > 0)
-                                                        <table class="w-full text-white tablee my-4">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th class="px-2">Set</th>
-                                                                    <th class="px-2">Weight</th>
-                                                                    <th class="px-2">Rep</th>
-                                                                    <th></th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @for ($setNumber = 1; $setNumber <= $numberOfSets; $setNumber++)
-                                                                    @php
-                                                                        $setPercentage =
-                                                                            $percentages[$setNumber - 1] ?? 0.3;
-                                                                        $calculatedWeight =
-                                                                            $baseWeight * $setPercentage;
-                                                                        $reps = $repsList[$setNumber - 1] ?? '-';
-                                                                    @endphp
-                                                                    <tr class="border-b border-gray-300">
-                                                                        <td class="py-4">{{ $setNumber }}</td>
-                                                                        <td class="py-4 text-center">
-                                                                            {{ number_format($calculatedWeight, 2) }}
-                                                                        </td>
-                                                                        <td class="py-4">
-                                                                            <div
-                                                                                class="flex items-center justify-center space-x-4">
-                                                                                <button class="px-2 py-1 text-white"
-                                                                                    onclick="decrementValue(this)">-</button>
-                                                                                <span
-                                                                                    class="w-16 h-7 bg-white text-black text-center rounded border-none p-1">
-                                                                                    {{ $reps }}
-                                                                                </span>
-                                                                                <button class="px-2 py-1 text-white"
-                                                                                    onclick="incrementValue(this)">+</button>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td class="py-4">
-                                                                            <label
-                                                                                class="inline-flex items-center cursor-pointer">
-                                                                                <input type="checkbox"
-                                                                                    id="toggleTimerWeight{{ $weightIndex }}-{{ $setNumber }}"
-                                                                                    class="sr-only peer timer-checkbox"
-                                                                                    data-rest-time="{{ $weightdetail->rest ?? 0 }}"
-                                                                                    data-restred="{{ $weightdetail->restredwe }}"
-                                                                                    data-restyellow="{{ $weightdetail->restyellowwe }}"
-                                                                                    data-restgreen="{{ $weightdetail->restgreenwe }}"
-                                                                                    data-strength-detail-id="{{ $weightdetail->id }}">
-                                                                                <div id="toggleBackground{{ $weightIndex }}-{{ $setNumber }}"
-                                                                                    class="relative w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all">
-                                                                                </div>
-                                                                            </label>
-                                                                        </td>
-                                                                    </tr>
-                                                                @endfor
-                                                            </tbody>
-                                                        </table>
-                                                    @else
-                                                        <p class="text-center text-sm text-white mt-4">No sets assigned for
-                                                            this workout.</p>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-                                        @endif
-
-                                    </div>
-                                </div>
-                            </div>
-
-
-
-
-                            {{-- Conditioning --}}
-                            <div id="section-conditioning" class="category-section hidden">
-                                <div>
-                                    <div>
-                                        <div class="justify-center items-center text-white text-center h-full pt-20">
-                                            <div class="text-xl mb-5">Conditioning</div>
-                                            @if (isset($detailsconditioning[0]->amrap) && $detailsconditioning[0]->amrap == 1)
-                                                <div class="text-base mb-5">AMRAP</div>
-                                            @else
-                                                <div class="text-base mb-5">Rounds</div>
-                                            @endif
-                                            @if (isset($detailsconditioning[0]->workout->categoryOption->category_name))
-                                                <div class="text-base mb-12">
-                                                    {{ $detailsconditioning[0]->workout->categoryOption->category_name }}
-                                                </div>
-                                            @endif
-
-                                            <div class="border-b border-white mb-12"></div>
-                                            <div class="mb-16 text-xl">
-                                                <table class="w-full text-white tablee">
-                                                    <thead class="justify-between">
-                                                        <tr>
-                                                            <th class="py-2">Workout</th>
-                                                            <th class="py-2">Rep</th>
-                                                            <th class="py-2">Weight</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody class="table-body"> <!-- Initially hidden table body -->
-                                                        @foreach ($detailsconditioning as $index => $conditioningdetail)
-                                                            <tr class="border-b border-gray-300">
-                                                                <td class="py-4">
-                                                                    {{ $conditioningdetail->workout->workout }}</td>
-                                                                <td class="py-4 workouts">{{ $conditioningdetail->reps }}
-                                                                </td>
-                                                                <td class="py-4">
-                                                                    <input type="text"
-                                                                        value="{{ $conditioningdetail->weight }}"
-                                                                        class="w-24 h-8 text-center text-3xl text-black">
-                                                                </td>
-                                                                <td id="timeToComplete-{{ $index }}"
-                                                                    class="py-4 hidden">
-                                                                    {{ $conditioningdetail->time_to_complete }} </td>
-
-                                                            </tr>
-                                                        @endforeach
-                                                        <!-- Add more rows as needed -->
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                            <div class="flex justify-center items-center mb-10">
-                                                <button id="decreaseRounds"
-                                                    class="bg-transparent border border-white text-3xl text-white w-16 h-20 cursor-pointer"
-                                                    onclick="decrementValue(this)">-</button>
-                                                <input id="roundsInput"
-                                                    value="{{ isset($conditioningdetail->rounds) ? $conditioningdetail->rounds : '' }}"
-                                                    min="1" class="w-24 h-20 text-center text-3xl text-black">
-
-                                                <button id="increaseRounds"
-                                                    class="bg-transparent border border-white text-3xl text-white w-16 h-20 cursor-pointer"
-                                                    onclick="incrementValue(this)">+</button>
-                                            </div>
-                                            <div class="mb-0">
-                                                <div class="text-base mb-2">TIME TO COMPLETE</div>
-                                                <div id="timer" class="text-5xl text-black bg-white p-2">00:00:00
-                                                </div>
-                                                {{-- <div class="flex w-full">
-                                                        <button id="startButton" class="w-1/2 h-16 bg-green-600 text-white cursor-pointer ">START</button>
-                                                        <button id="stopButton" class="w-1/2 h-16 bg-red-600 text-white cursor-pointer">STOP</button>
-                                                    </div>   --}}
-                                            </div>
-                                        </div>
-                                        <div id="popup"
-                                            class="fixed -inset-96 bg-black bg-opacity-70 flex justify-center items-center z-50 cursor-pointer">
-                                            <div class="bg-white rounded-full w-48 h-48 flex justify-center items-center text-2xl text-black text-center"
-                                                onclick="startCountdown()">
-                                                Ready?
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            {{-- Test --}}
-                            <div id="section-test" class="category-section hidden">
-                                <div class="w-full p-8 bg-black text-xs bg-opacity-50 rounded-lg mb-6">
-                                    @if ($detailstest->isEmpty())
-                                        <p class="text-center text-white">No test records assigned.</p>
-                                    @else
-                                        @foreach ($detailstest as $testIndex => $testdetail)
-                                            <div class="flex flex-col justify-center items-center gap-2.5 pt-5">
-                                                <button class="px-4 py-2 rounded primary-btn bg-white text-black"
-                                                    data-target="#primary-weight-{{ $testIndex }}">
-                                                    {{ $testdetail->workouts?->categoryOption?->category_name ?? 'No Category' }}
-                                                    -
-                                                    {{ $testdetail->workouts?->workout ?? 'Unnamed Workout' }}
-                                                </button>
-                                            </div>
-                                            <div class="flex flex-col items-center justify-center gap-2 pt-4">
-                                                <p class="text-center text-white font-bold text-lg">1 REP MAX</p>
-
-                                                <div class="flex items-center gap-2">
-                                                    <input type="number"
-                                                        class="w-32 md:w-48 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black text-center text-lg"
-                                                        placeholder="Enter weight" />
-                                                    <span class="text-white text-sm">kg</span>
-                                                </div>
-
-                                                <button
-                                                    class="mt-3 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-all">
-                                                    Save
-                                                </button>
-                                            </div>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div>
-
-
-                            <button id="resetButton" class="px-4 rounded w-full">REST TIMER</button>
-
-                            <div id="timerest"
-                                class="timer text-center w-full bg-orange-600 p-4 rounded-lg text-2xl mb-8 mt-5">
-                                00:00:00
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {{-- Loader --}}
+            <div id="loader" style="display:none;text-align:center;padding:40px 0;color:#fff;">
+                <svg style="animation:spin 1s linear infinite;height:32px;width:32px;margin:0 auto;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle style="opacity:.25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path style="opacity:.75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <p style="margin-top:16px;font-weight:700;letter-spacing:2px;font-size:12px;">LOADING WORKOUTS...</p>
             </div>
 
-            <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                    const sets = document.querySelectorAll('.set');
-
-                    sets.forEach(set => {
-                        const plusButton = set.querySelector('.plus');
-                        const minusButton = set.querySelector('.minus');
-                        const input = set.querySelector('.quantity input');
-
-                        plusButton.addEventListener('click', () => {
-                            input.value = parseInt(input.value) + 1;
-                        });
-
-                        minusButton.addEventListener('click', () => {
-                            if (parseInt(input.value) > 0) {
-                                input.value = parseInt(input.value) - 1;
-                            }
-                        });
-                    });
-
-                    const resetButton = document.querySelector('.reset-timer');
-                    resetButton.addEventListener('click', () => {
-                        // Timer reset logic goes here
-                        console.log('Timer reset');
-                    });
-                });
-            </script>
-
-            {{-- increase decrease quntity function --}}
-            <script>
-                function incrementValue(element) {
-                    var span = element.parentNode.querySelector('span');
-                    var value = parseInt(span.textContent, 10);
-                    value = isNaN(value) ? 0 : value;
-                    value++;
-                    span.textContent = value;
-                }
-
-                function decrementValue(element) {
-                    var span = element.parentNode.querySelector('span');
-                    var value = parseInt(span.textContent, 10);
-                    value = isNaN(value) ? 0 : value;
-                    value = value <= 0 ? 0 : value - 1;
-                    span.textContent = value;
-                }
-            </script>
-            {{-- end increase decrease quntity function --}}
-
-
-            {{-- drop down script --}}
-            <script>
-                document.querySelectorAll('.toggle-icon').forEach(icon => {
-                    icon.addEventListener('click', function() {
-                        // Determine the element to toggle
-                        let toggleTarget;
-
-                        // Check if the next sibling is a table or look for the '.content' div
-                        const parentDiv = this.closest('div');
-                        const table = parentDiv.nextElementSibling; // For Warmup section
-                        const content = parentDiv.parentElement.querySelector(
-                            '.content'); // For Strength and Weightlifting
-
-                        if (table && table.tagName === 'TABLE') {
-                            // If it's the Warmup section
-                            toggleTarget = table;
-                        } else if (content) {
-                            // If it's Strength or Weightlifting
-                            toggleTarget = content;
-                        }
-
-                        // Toggle the visibility
-                        if (toggleTarget) {
-                            if (toggleTarget.classList.contains('hidden')) {
-                                toggleTarget.classList.remove('hidden');
-                                this.classList.remove('fa-chevron-down');
-                                this.classList.add('fa-minus');
-                            } else {
-                                toggleTarget.classList.add('hidden');
-                                this.classList.remove('fa-minus');
-                                this.classList.add('fa-chevron-down');
-                            }
-                        }
-                    });
-                });
-            </script>
-            {{-- end drop down script --}}
-
-
-            {{-- strenght save and colur change --}}
-            <script>
-                let timerIntervals = {};
-                let elapsedTimes = {};
-                const timerThresholds = {};
-
-                function startTimer(setNumber, red, yellow, green) {
-                    const redSec = parseTimeToSeconds(red);
-                    const yellowSec = parseTimeToSeconds(yellow);
-                    const greenSec = parseTimeToSeconds(green);
-
-                    timerThresholds[setNumber] = {
-                        red: redSec,
-                        yellow: yellowSec,
-                        green: greenSec
-                    };
-                    elapsedTimes[setNumber] = 0;
-
-                    runStageTimer(setNumber, 'red');
-                }
-
-                function runStageTimer(setNumber, stage) {
-                    const {
-                        red,
-                        yellow,
-                        green
-                    } = timerThresholds[setNumber];
-                    let stageLimit = 0;
-
-                    // Set stage color
-                    const timerElement = document.getElementById(`timerest`);
-                    const ringElement = document.getElementById(`ringdiv`);
-                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
-
-                    // Clean up previous styles
-                    if (timerElement && toggleBackground) {
-                        timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                        ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
-                            'border-green-600');
-                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                    }
-
-                    console.log('changeTimerColor', timerElement, ringElement, toggleBackground);
-                    // Determine current stage limits and color
-                    switch (stage) {
-                        case 'red':
-                            stageLimit = red;
-                            timerElement?.classList.add('bg-red-600');
-                            ringElement?.classList.add('border-red-600');
-                            toggleBackground?.classList.add('bg-red-600');
-                            break;
-                        case 'yellow':
-                            stageLimit = yellow;
-                            timerElement?.classList.add('bg-yellow-600');
-                            ringElement?.classList.add('border-yellow-600');
-                            toggleBackground?.classList.add('bg-yellow-600');
-                            break;
-                        case 'green':
-                            stageLimit = green;
-                            timerElement?.classList.add('bg-green-600');
-                            ringElement?.classList.add('border-green-600');
-                            toggleBackground?.classList.add('bg-green-600');
-                            break;
-                    }
-
-                    let remainingTime = stageLimit;
-
-                    // Initial display
-                    updateTimerDisplay(setNumber, remainingTime);
-
-                    timerIntervals[setNumber] = setInterval(() => {
-                        remainingTime--;
-
-                        updateTimerDisplay(setNumber, remainingTime);
-
-                        if (remainingTime <= 0) {
-                            clearInterval(timerIntervals[setNumber]);
-
-                            if (stage === 'red') {
-                                runStageTimer(setNumber, 'yellow');
-                            } else if (stage === 'yellow') {
-                                runStageTimer(setNumber, 'green');
-                            } else if (stage === 'green') {
-                                beep(3);
-                                activeTimerSetNumber = null;
-                            }
-                        }
-                    }, 1000);
-                }
-
-
-
-                function parseTimeToSeconds(timeStr) {
-                    if (!timeStr) return 0;
-
-                    const parts = timeStr.split(':').map(Number);
-                    if (parts.length === 3) {
-                        const [hours, minutes, seconds] = parts;
-                        return hours * 3600 + minutes * 60 + seconds;
-                    } else if (parts.length === 2) {
-                        const [minutes, seconds] = parts;
-                        return minutes * 60 + seconds;
-                    } else if (parts.length === 1) {
-                        return Number(parts[0]);
-                    }
-
-                    return 0;
-                }
-
-                function stopTimer(setNumber) {
-                    clearInterval(timerIntervals[setNumber]);
-                }
-
-                function resetTimer(setNumber) {
-                    clearInterval(timerIntervals[setNumber]);
-                    elapsedTimes[setNumber] = 0;
-                    updateTimerDisplay(setNumber, elapsedTimes[setNumber]);
-
-                    const ringElement = document.getElementById(`ringdiv`);
-                    if (ringElement) {
-                        ringElement.classList.remove('border-red-600', 'border-yellow-600', 'border-green-600');
-                        ringElement.classList.add('border-orange-600');
-                    }
-
-                    const timerElement = document.getElementById(`timerest`);
-                    if (timerElement) {
-                        timerElement.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                        timerElement.classList.add('bg-orange-600');
-                    }
-
-                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
-                    if (toggleBackground) {
-                        toggleBackground.classList.remove('bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                        toggleBackground.classList.add('bg-gray-600');
-                    }
-                }
-
-                function updateTimerDisplay(setNumber, secondsRemaining) {
-                    const minutes = Math.floor(secondsRemaining / 60);
-                    const seconds = secondsRemaining % 60;
-                    const displayMinutes = minutes < 10 ? '0' + minutes : minutes;
-                    const displaySeconds = seconds < 10 ? '0' + seconds : seconds;
-
-                    const timerElement = document.getElementById(`timerest`);
-                    if (timerElement) {
-                        timerElement.textContent = `00:${displayMinutes}:${displaySeconds}`;
-                    }
-                }
-
-                function changeTimerColor(setNumber, seconds) {
-                    const timerElement = document.getElementById(`timerest`);
-                    const ringElement = document.getElementById(`ringdiv`);
-                    const toggleBackground = document.getElementById(`toggleBackground${setNumber}`);
-
-
-                    console.log('changeTimerColor', timerElement, ringElement);
-
-                    if (!timerThresholds[setNumber]) return;
-
-                    const {
-                        red,
-                        yellow,
-                        green
-                    } = timerThresholds[setNumber];
-
-                    if (timerElement && toggleBackground) {
-                        timerElement.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                        ringElement.classList.remove('border-orange-600', 'border-red-600', 'border-yellow-600',
-                            'border-green-600');
-                        toggleBackground.classList.remove('bg-orange-600', 'bg-red-600', 'bg-yellow-600', 'bg-green-600');
-                        //removeBgClasses(toggleBackground);
-
-                        if (seconds <= red) {
-                            timerElement.classList.add('bg-red-600');
-                            ringElement.classList.add('border-red-600');
-                            toggleBackground.classList.add('bg-red-600');
-                        } else if (seconds <= yellow) {
-                            timerElement.classList.add('bg-yellow-600');
-                            ringElement.classList.add('border-yellow-600');
-                            toggleBackground.classList.add('bg-yellow-600');
-                        } else if (seconds <= green) {
-                            timerElement.classList.add('bg-green-600');
-                            ringElement.classList.add('border-green-600');
-                            toggleBackground.classList.add('bg-green-600');
-                        }
-                    }
-                }
-
-                function beep(times) {
-                    for (let i = 0; i < times; i++) {
-                        setTimeout(() => {
-                            const audio = new Audio('/audio/beep.mp3');
-                            audio.play();
-                        }, i * 1000);
-                    }
-                }
-                let activeTimerSetNumber = null;
-                document.querySelectorAll('.tablee').forEach((table) => {
-                    const checkboxes = table.querySelectorAll('.timer-checkbox');
-                    if (checkboxes.length > 0) {
-                        checkboxes.forEach((checkbox) => {
-                            checkbox.addEventListener('change', (event) => {
-                                const id = checkbox
-                                    .id; // e.g. toggleTimerStrength0-1 or toggleTimerWeight0-1
-                                const typeMatch = id.match(/^toggleTimer(Strength|Weight)/);
-                                const type = typeMatch ? typeMatch[1] : 'Unknown';
-                                const setNumber = id.replace(`toggleTimer${type}`, '');
-
-                                if (event.target.checked) {
-                                    if (activeTimerSetNumber !== null && activeTimerSetNumber !==
-                                        setNumber) {
-                                        alert(
-                                            "One rest is already on. Please stop it before starting a new one."
-                                        );
-                                        checkbox.checked = false;
-                                        return;
-                                    }
-
-                                    const red = checkbox.dataset.restred;
-                                    const yellow = checkbox.dataset.restyellow;
-                                    const green = checkbox.dataset.restgreen;
-
-                                    activeTimerSetNumber = setNumber;
-                                    startTimer(setNumber, red, yellow, green);
-                                } else {
-                                    stopTimer(setNumber);
-                                    resetTimer(setNumber);
-
-                                    if (activeTimerSetNumber === setNumber) {
-                                        activeTimerSetNumber = null;
-                                    }
-                                }
-
-                                // Optional branching if you need different saving logic
-                                if (type === 'Strength') {
-                                    saveStrengthWorkout(checkbox);
-                                } else if (type === 'Weight') {
-                                    saveWeightWorkout(checkbox);
-                                }
-                            });
-                        });
-                    }
-                });
-
-                function removeBgClasses(element) {
-                    [...element.classList].forEach(cls => {
-                        if (cls.startsWith('bg-')) {
-                            element.classList.remove(cls);
-                        }
-                    });
-                }
-
-                // Function to be called when a checkbox is clicked
-                function saveStrengthWorkout(checkbox) {
-                    if (checkbox.dataset.processed) {
-                        console.log('Already processed, skipping...');
-                        return;
-                    }
-
-                    checkbox.dataset.processed = true; // Mark as processed to prevent re-entry
-
-                    // Check if the checkbox is checked
-                    if (checkbox.checked) {
-                        // Find the closest row
-                        const row = checkbox.closest('tr');
-                        if (!row) {
-                            console.error('Row not found');
-                            return;
-                        }
-
-                        // Get the set number
-                        const setNumberElement = row.querySelector('td:first-child');
-                        if (!setNumberElement) {
-                            console.error('Set number element not found');
-                            return;
-                        }
-                        const setNumber = setNumberElement.textContent.trim(); // Assuming set number is in the first <td>
-
-                        // Get the type from the checkbox data attribute
-                        const type = checkbox.getAttribute('data-type');
-
-                        // Extract the strengthIndex from the parent container of the checkbox
-                        const strengthIndex = checkbox.closest('.table-body').id.match(/-(\d+)/)[1];
-
-                        // Get the reps value based on type
-                        const repsElement = type === 'Primary' ?
-                            row.querySelector(`#repsValue${strengthIndex}-${setNumber}`) :
-                            row.querySelector(`#alt-repsValue${strengthIndex}-${setNumber}`);
-                        const reps = repsElement ? repsElement.textContent.trim() : null;
-
-                        // Get the weight or alternative weight value based on type
-                        const weightId = type === 'Primary' ? `weight-${strengthIndex}-${setNumber}` :
-                            `alweight-${strengthIndex}-${setNumber}`;
-                        const weightElement = document.getElementById(weightId);
-                        const weight = weightElement ? weightElement.textContent.trim() : null;
-
-                        // Get the strength ID from the checkbox's data attribute
-                        const strengthId = checkbox.getAttribute('data-strength-detail-id');
-
-                        // Get the rest time from the checkbox data attribute
-                        const restTime = checkbox.getAttribute('data-rest-time');
-
-                        if (!strengthId) {
-                            console.error('Strength ID not found');
-                            return;
-                        }
-
-                        // Make the AJAX request
-                        $.ajax({
-                            url: "/save-strength-workout",
-                            type: "POST",
-                            data: {
-                                strength_id: strengthId,
-                                reps: reps,
-                                weight: weight,
-                                type: type, // Ensure type is included
-                                _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                            },
-                            success: function(response) {
-                                console.log('Success:', response.message);
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('Error:', error);
-                            },
-                            complete: function() {
-                                // Reset processed state after request completes to allow future processing
-                                checkbox.dataset.processed = false;
-                            }
-                        });
-                    }
-                }
-            </script>
-
-
-            {{-- end strenght save and colur change --}}
-
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    document.querySelectorAll('.primary-btn').forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            const targetId = button.getAttribute('data-target');
-                            const primaryBody = document.querySelector(targetId); // Primary table body
-                            const altBody = document.querySelector(targetId.replace('#primary-',
-                                '#alt-')); // Alternate table body
-
-                            if (primaryBody && altBody) {
-                                primaryBody.classList.remove('hidden');
-                                primaryBody.classList.add('block');
-                                altBody.classList.add('hidden');
-                                altBody.classList.remove('block');
-                            } else {
-                                console.error(`Element with ID ${targetId} or its alternate not found.`);
-                            }
-                        });
-                    });
-
-                    document.querySelectorAll('.alt-btn').forEach(function(button) {
-                        button.addEventListener('click', function() {
-                            const targetId = button.getAttribute('data-target');
-                            const altBody = document.querySelector(targetId); // Alternate table body
-                            const primaryBody = document.querySelector(targetId.replace('#alt-',
-                                '#primary-')); // Primary table body
-
-                            if (primaryBody && altBody) {
-                                altBody.classList.remove('hidden');
-                                altBody.classList.add('block');
-                                primaryBody.classList.add('hidden');
-                                primaryBody.classList.remove('block');
-                            } else {
-                                console.error(`Element with ID ${targetId} or its primary not found.`);
-                            }
-                        });
-                    });
-                });
-
-
-
-
-                function toggleContent(icon) {
-                    const content = icon.closest('.w-full').querySelector('.content');
-                    content.classList.toggle('hidden');
-                    if (content.classList.contains('hidden')) {
-                        icon.classList.remove('fa-chevron-up');
-                        icon.classList.add('fa-chevron-down');
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-up');
-                    }
-                }
-            </script>
-
-
-            {{-- warm up  save --}}
-            <script>
-                //save warm-up after toching
-                function savewarmup(element) {
-                    var workoutId = element.getAttribute('data-workout-id');
-                    var dailyWarmupId = element.getAttribute('data-daily-warmup-id');
-                    var reps = $(element).closest('tr').find('.reps').text().trim();
-                    console.log('Workout ID:', workoutId);
-                    console.log('Reps:', reps);
-
-                    $.ajax({
-                        url: dailyWarmupId ? "/warmup-daily/" + dailyWarmupId : "/warmup-daily",
-                        type: dailyWarmupId ? "PUT" : "POST",
-                        data: {
-                            warmup_id: workoutId,
-                            reps: reps,
-                            _token: $('meta[name="csrf-token"]').attr('content') // Include CSRF token
-                        },
-                        success: function(response) {
-                            console.log(response);
-
-                            //set saved daily warmup-id to warmup workout
-                            if (response.daily_warmup_id) {
-                                element.setAttribute('data-daily-warmup-id', response.daily_warmup_id);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error(error); // Handle error
-                        }
-                    });
-                }
-            </script>
-            {{-- end warumup save --}}
-
-            <script>
-                document.querySelectorAll('.category-tab').forEach(button => {
-                    button.addEventListener('click', () => {
-                        const targetId = button.dataset.target;
-
-                        // Hide all sections
-                        document.querySelectorAll('.category-section').forEach(section =>
-                            section.classList.add('hidden')
-                        );
-                        document.querySelector(targetId).classList.remove('hidden');
-
-                        // Reset all tabs
-                        document.querySelectorAll('.category-tab').forEach(tab => {
-                            tab.classList.remove('bg-white', 'text-black');
-                            tab.classList.add('bg-black', 'bg-opacity-50', 'text-white');
-
-                            const icon = tab.querySelector('.icon-img');
-                            if (icon && tab.dataset.iconWhite) {
-                                icon.src = tab.dataset.iconWhite;
-                            }
-                        });
-
-                        // Set active styles
-                        button.classList.remove('bg-black', 'bg-opacity-50', 'text-white');
-                        button.classList.add('bg-white', 'text-black');
-
-                        const icon = button.querySelector('.icon-img');
-                        if (icon && button.dataset.iconBlack) {
-                            icon.src = button.dataset.iconBlack;
-                        }
-                    });
-                });
-
-                function incrementValue(btn) {
-                    const span = btn.parentElement.querySelector('.reps');
-                    span.innerText = parseInt(span.innerText) + 1;
-                }
-
-                function decrementValue(btn) {
-                    const span = btn.parentElement.querySelector('.reps');
-                    span.innerText = Math.max(0, parseInt(span.innerText) - 1);
-                }
-            </script>
-            <script>
-                class Timer {
-                    constructor(displayElement) {
-                        this.displayElement = displayElement;
-                        this.seconds = 0;
-                        this.timer = null;
-                    }
-
-                    updateDisplay() {
-                        const hrs = Math.floor(this.seconds / 3600);
-                        const mins = Math.floor((this.seconds % 3600) / 60);
-                        const secs = this.seconds % 60;
-                        this.displayElement.textContent =
-                            `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-                    }
-
-                    start() {
-                        clearInterval(this.timer);
-                        this.timer = setInterval(() => {
-                            this.seconds++;
-                            this.updateDisplay();
-                        }, 1000);
-                    }
-
-                    stop() {
-                        clearInterval(this.timer);
-                    }
-
-                    reset(seconds) {
-                        this.seconds = seconds;
-                        this.updateDisplay();
-                    }
-                }
-
-                const timerDisplay = document.getElementById('timer');
-                const timer = new Timer(timerDisplay);
-
-                function startCountdown() {
-                    const popup = document.getElementById('popup');
-                    const popupContent = popup.querySelector('.bg-white');
-                    popup.classList.remove(
-                        'cursor-pointer'); // Remove the pointer cursor during the countdown to prevent multiple clicks
-                    popupContent.onclick = null;
-
-                    let countdown = 10;
-                    const countdownInterval = setInterval(() => {
-                        if (countdown > 0) {
-                            popupContent.textContent = countdown;
-                            countdown--;
-                        } else {
-                            clearInterval(countdownInterval);
-                            popupContent.textContent = 'Go!';
-                            setTimeout(() => {
-                                popup.classList.add('hidden');
-                                const timeToComplete = parseInt(document.querySelector('#timeToComplete-0')
-                                    .textContent, 10);
-                                console.log(timeToComplete)
-                                timer.reset(timeToComplete); // Start timer with the time_to_complete value
-                                timer.start();
-                            }, 1000);
-                        }
-                    }, 1000);
-                }
-
-                const increaseRoundsButton = document.getElementById('increaseRounds');
-                const decreaseRoundsButton = document.getElementById('decreaseRounds');
-                const roundsInput = document.getElementById('roundsInput');
-
-                increaseRoundsButton.addEventListener('click', () => {
-                    roundsInput.value = parseInt(roundsInput.value) + 1;
-                });
-
-                decreaseRoundsButton.addEventListener('click', () => {
-                    if (roundsInput.value > 1) {
-                        roundsInput.value = parseInt(roundsInput.value) - 1;
-                    }
-                });
-
-                function incrementValue(element) {
-                    var span = element.parentNode.querySelector('input');
-                    var value = parseInt(span.value, 10);
-                    value = isNaN(value) ? 0 : value;
-                    value++;
-                    span.value = value;
-                }
-
-                function decrementValue(element) {
-                    var span = element.parentNode.querySelector('input');
-                    var value = parseInt(span.value, 10);
-                    value = isNaN(value) ? 0 : value;
-                    value = value <= 0 ? 0 : value - 1;
-                    span.value = value;
-                }
-            </script>
-
-        @endsection
-</body>
-
-</html>
+            {{-- Workouts list --}}
+            <div id="wk-list" class="cscroll" style="flex:1;display:flex;flex-direction:column;overflow-y:auto;padding-bottom:80px;"></div>
+
+            {{-- Bottom action bar --}}
+            <div id="bbar" style="position:absolute;bottom:0;left:0;right:0;flex-direction:row;align-items:stretch;z-index:20;background:#111;border-top:1px solid rgba(255,255,255,.15);padding:8px 6px;min-height:68px;gap:6px;">
+                <button id="btn-left" onclick="handleLeft()" style="flex:1.1;display:flex;align-items:center;justify-content:center;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,.45);background:#1a1a1a;color:#fff;font-weight:800;font-size:12px;cursor:pointer;letter-spacing:.3px;min-width:0;text-align:center;">COMPLETE<br>ROUND</button>
+                <button id="btn-center" onclick="handleCenter()" style="flex:1.5;display:flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid #CD7F32;background:#CD7F32;color:#fff;font-weight:900;font-size:15px;cursor:pointer;padding:6px;letter-spacing:1px;text-align:center;">START</button>
+                <button id="btn-right" onclick="handleRight()" style="flex:1.1;display:flex;align-items:center;justify-content:center;padding:6px;border-radius:8px;border:1px solid rgba(255,255,255,.45);background:#1a1a1a;color:#fff;font-weight:800;font-size:12px;cursor:pointer;letter-spacing:.3px;min-width:0;text-align:center;">COMPLETE<br>WORKOUT</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Notes modal --}}
+    <div id="nmod" class="nmod-overlay" style="display:none;">
+        <div class="nmod-box">
+            <div class="nmod-title">Workout Notes</div>
+            <textarea id="nmod-input" class="nmod-input" placeholder="Enter feedback or notes..."></textarea>
+            <div class="nmod-actions">
+                <button class="nmod-cancel" onclick="closeNotes()">Cancel</button>
+                <button class="nmod-save" onclick="confirmComplete()">Save &amp; Complete</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ── BLADE VARS ─────────────────────────────────────────────────
+    const DAY   = @json($dayWithDate);
+    const CLSID = @json($classId);
+    const MEMID = @json($memberId);
+    const CSRF  = document.querySelector('meta[name="csrf-token"]').content;
+
+    const TABS = [
+      {id:'warmup',  iw:'{{ asset("icon/warmupwhite.png") }}',  ib:'{{ asset("icon/warmup.png") }}'},
+      {id:'strength',iw:'{{ asset("icon/strengthwhite.png") }}', ib:'{{ asset("icon/strength.png") }}'},
+      {id:'weightlifting',iw:'{{ asset("icon/weightliftingWhite.png") }}',ib:'{{ asset("icon/weightlifting.png") }}',sc:1.3},
+      {id:'conditioning',iw:'{{ asset("icon/conditioningWhite.png") }}',ib:'{{ asset("icon/conditioning.png") }}'},
+      {id:'accessory',iw:'{{ asset("icon/accessoryWhite.png") }}',ib:'{{ asset("icon/accessory.png") }}'},
+      {id:'1rm',iw:null,ib:null},
+    ];
+
+    // ── STATE ──────────────────────────────────────────────────────
+    let tab='warmup', wData={}, selId=null, wkStatus='ready', notes='';
+    const TS={};          // timerState per workout id
+    const RST={};         // rest timer state (straightsets/pyramid keys)
+    const CT={};          // completedToggles
+    const pyrWarningVisible = {};
+    let ormEx=[],ormRec=[],ormLoaded=false,ormSelId=null,ormSelName='',ormWt='';
+
+    // ── INIT ───────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded',()=>{ buildTabs(); fetchWk(); });
+
+    // ── TABS ───────────────────────────────────────────────────────
+    function buildTabs(){
+      const c=document.getElementById('cat-tabs'); c.innerHTML='';
+      TABS.forEach(t=>{
+        const act=t.id===tab;
+        const btn=document.createElement('button');
+        btn.onclick=()=>setTab(t.id);
+        Object.assign(btn.style,{flex:'1',aspectRatio:'1',maxWidth:'56px',minWidth:'40px',borderRadius:'12px',border:'2px solid #fff',display:'flex',justifyContent:'center',alignItems:'center',cursor:'pointer',transition:'all .2s',padding:'0',backgroundColor:act?'#fff':'rgba(0,0,0,0.7)'});
+        if(t.id==='1rm'){btn.innerHTML=`<span style="color:${act?'#000':'#fff'};font-weight:900;font-size:14px;">1RM</span>`;}
+        else{const sc=t.sc?`scale(${t.sc})`:'scale(1)';btn.innerHTML=`<img src="${act?t.ib:t.iw}" stylewidth:28px;height:28px;object-fit:contain;transform:${sc};display:block;" loading="lazy">`;}
+        c.appendChild(btn);
+      });
+    }
+
+    function setTab(tid){
+      pauseAll(tab);
+      tab=tid; selId=null; wkStatus='ready';
+      buildTabs();
+      if(tid==='1rm'){render1RM();}else{renderList();}
+    }
+
+    // ── FETCH ──────────────────────────────────────────────────────
+    async function fetchWk(){
+      document.getElementById('loader').style.display='block';
+      document.getElementById('wk-list').innerHTML='';
+      try{
+        const r=await fetch('/mobile/get-workout-list',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify({date:DAY,class_id:CLSID})});
+        const d=await r.json();
+        if(d.status&&d.workouts){const w=d.workouts;wData={warmup:w.Warmup||w.warmup||[],strength:w.Strength||w.strength||[],weightlifting:w.Weightlifting||w.weightlifting||[],conditioning:w.Conditioning||w.conditioning||[],accessory:w.Accessory||w.accessory||[],test:d.test||[],member:d.member||null};}
+        else{wData={warmup:[],strength:[],weightlifting:[],conditioning:[],accessory:[],test:[],member:null};}
+      }catch(e){console.error(e);}
+      document.getElementById('loader').style.display='none';
+      renderList();
+    }
+
+    // ── RENDER LIST ────────────────────────────────────────────────
+    function renderList(){
+      const cont=document.getElementById('wk-list');
+      const bbar=document.getElementById('bbar');
+      cont.innerHTML='';
+      bbar.style.display='none';
+      const list=wData[tab]||[];
+      if(!list.length){cont.innerHTML='<div style="display:flex;align-items:center;justify-content:center;margin-top:80px;"><div style="color:#fff;font-size:14px;font-weight:600;letter-spacing:1px;">No Workouts.</div></div>';return;}
+      bbar.style.display='flex';
+      if(!selId&&list.length)selId=list[0].id;
+      list.forEach((w,i)=>{cont.insertAdjacentHTML('beforeend',cardFor(w,i));});
+      list.forEach(w=>{const el=document.getElementById('wk-'+w.id);if(el)el.onclick=()=>selWk(w.id);});
+      updBbar(); updSel();
+    }
+
+    // ── FORMAT KEY ─────────────────────────────────────────────────
+    function fmtKey(w){if(w.format&&w.format.slug)return w.format.slug;if(w.format&&w.format.name)return w.format.name.toLowerCase().replace(/\s+/g,'-');return 'unknown';}
+
+    // ── HELPERS ────────────────────────────────────────────────────
+    function exName(ex){return ex?.workout_library?.workout||ex?.workoutLibrary?.workout||ex?.exercise_name||ex?.workout_name||'Exercise';}
+    function gender(){const m=wData.member;if(!m)return null;const g=String(m.gender||'').toLowerCase();if(g.startsWith('f')||g==='2')return'female';if(g.startsWith('m')||g==='1')return'male';return null;}
+    function fmt(s){const m=Math.floor(Math.abs(s)/60);const sec=Math.abs(s)%60;return`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+    function parseSec(raw){if(!raw)return 0;if(typeof raw==='number')return raw>0?Math.floor(raw):0;const str=String(raw).trim();if(!str||str==='00:00:00')return 0;const p=str.split(':').map(Number);if(p.length===3)return p[0]*3600+p[1]*60+p[2];if(p.length===2)return p[0]*60+p[1];if(p.length===1&&!isNaN(p[0]))return p[0];return 0;}
+    function getAmrapSec(w){
+      if(!w) return 0;
+      const raw = w.time_to_complete || (w.amraps && w.amraps[0] && w.amraps[0].time_to_complete) || w.work || (w.amraps && w.amraps[0] && w.amraps[0].work);
+      if(raw){
+        const s = parseSec(raw);
+        if(s > 0) return s;
+      }
+      const num = Number(w.number ?? 0);
+      return num > 0 ? num : 0;
+    }
+    function getReadinessPenalty(scoreData) {
+      if (scoreData && scoreData.score !== undefined && scoreData.score !== null) {
+        const readiness = Number(scoreData.score);
+        if (!isNaN(readiness) && readiness < 96) {
+          const drops = Math.ceil((96 - readiness) / 5);
+          return Math.min(drops, 10) / 100;
+        }
+      }
+      return 0;
+    }
+    function dispWt(load,unit,testWeight=0,missedReps=0){
+      const u=(unit||'%').trim().toUpperCase();
+      if(u==='BW'||u==='N/A'||u==='NA')return u;
+      if(load===undefined||load===null||load==='')return'---';
+      const numLoad=Number(load);
+      if(isNaN(numLoad))return'---';
+      if(numLoad===0&&u==='%')return'---';
+      const g=window.wData&&window.wData.member?(String(window.wData.member.gender||'').toLowerCase().startsWith('f')||window.wData.member.gender=='2'?'female':'male'):null;
+      const sd=window.wData&&window.wData.score?window.wData.score:null;
+      if(u==='%'){
+        const pen=getReadinessPenalty(sd)+(missedReps*0.03);
+        const eff=Math.max(0,(numLoad/100)-pen);
+        return Math.round((testWeight||0)*eff)+" KG";
+      }
+      let fw=numLoad;
+      if(u==='KG'&&g==='female')fw=numLoad*0.75;
+      return Math.round(fw)+" "+u;
+    }
+    function calcWt(load,unit,testWeight=0,missedReps=0){const s=dispWt(load,unit,testWeight,missedReps);const m=String(s).match(/[\d.]+/);return m?Math.round(parseFloat(m[0])):0;}
+
+    // ── CARD FACTORY ───────────────────────────────────────────────
+    function cardFor(w,i){
+      const fk=fmtKey(w);
+      switch(fk){
+        case'straight-sets':return cardSS(w);
+        case'rounds':       return cardRounds(w);
+        case'amrap':        return cardAmrap(w);
+        case'for-time':     return cardFT(w);
+        case'emom':         return cardEmom(w);
+        case'intervals':    return cardIntervals(w);
+        case'circuit':      return cardCircuit(w);
+        case'pyramid':      return cardPyramid(w);
+        default:            return cardGeneric(w,fk);
+      }
+    }
+</script>
+
+    {{-- ============================================================ --}}
+    {{-- MODULAR FORMATS & TIMERS ARCHITECTURE                        --}}
+    {{-- ============================================================ --}}
+    {{-- Formats & Common Card Builders --}}
+    @include('mobile.formats.common-styles')
+    @include('mobile.formats.straight-sets')
+    @include('mobile.formats.pyramid')
+    @include('mobile.formats.rounds')
+    @include('mobile.formats.amrap')
+    @include('mobile.formats.for-time')
+    @include('mobile.formats.emom')
+    @include('mobile.formats.intervals')
+    @include('mobile.formats.circuit')
+    @include('mobile.formats.generic')
+
+    {{-- Timers & Engine Partial Modules --}}
+    @include('mobile.timers.timer-beeps')
+    @include('mobile.timers.countdown-overlay')
+    @include('mobile.timers.rest-timer')
+    @include('mobile.timers.rounds-timer')
+    @include('mobile.timers.amrap-timer')
+    @include('mobile.timers.for-time-timer')
+    @include('mobile.timers.emom-timer')
+    @include('mobile.timers.interval-timer')
+    @include('mobile.timers.circuit-timer')
+    @include('mobile.timers.timer-renderer')
+
+<script>
+    // ── SELECTION ──────────────────────────────────────────────────
+    function selWk(id){if(selId===id)return;selId=id;wkStatus='ready';renderList();}
+    function updSel(){
+      (wData[tab]||[]).forEach(w=>{
+        const el=document.getElementById('wk-'+w.id);if(!el)return;
+        if(w.id===selId){el.classList.add('selected');['rounds-tmr','ft-tmr','int-tmr'].forEach(p=>{const tb=document.getElementById(p+'-'+w.id);if(tb)tb.style.display='';});}
+        else{el.classList.remove('selected');['rounds-tmr','ft-tmr','int-tmr'].forEach(p=>{const tb=document.getElementById(p+'-'+w.id);if(tb)tb.style.display='none';});}
+      });
+    }
+
+    // ── BOTTOM BAR ─────────────────────────────────────────────────
+    function updBbar(){
+      const list=wData[tab]||[];
+      const bbar=document.getElementById('bbar');if(!bbar)return;
+      if(!list.length||tab==='1rm'){bbar.style.display='none';return;}
+      bbar.style.display='flex';
+      const w=list.find(x=>x.id===selId);if(!w)return;
+      const fk=fmtKey(w);
+      const ts=TS[w.id]||{};
+      const bl=document.getElementById('btn-left');
+      const bc=document.getElementById('btn-center');
+      const br=document.getElementById('btn-right');
+      // Sync completion status with workout data
+      if(w.type_completed==1 || w.status==='completed' || ts.allDone || ts.phase==='done'){
+        wkStatus='completed';
+      }
+      // Left
+      const roundFmts=['rounds','amrap','circuit','intervals','emom','pyramid','straight-sets'];
+      if(roundFmts.includes(fk)){const lbl={'straight-sets':'COMPLETE<br>SET','intervals':'COMPLETE<br>INTERVAL'};bl.innerHTML=lbl[fk]||'COMPLETE<br>ROUND';bl.style.display='flex';}else{bl.style.display='none';}
+      // Center (timer display or START)
+      updCenterBtn(w,fk,ts);
+      // Right
+      const hasStarted = ts.running || ts.paused || (ts.elapsed > 0) || Object.keys(RST).some(k=>k.startsWith(`rest-${w.id}-`)||k.startsWith(`pyr-${w.id}-`));
+      if(wkStatus==='completed'){br.innerHTML='COMPLETED';br.style.borderColor='rgba(255,255,255,.3)';br.style.color='rgba(255,255,255,.4)';br.disabled=false;}
+      else if(wkStatus==='incompleted'){br.innerHTML='INCOMPLETE';br.style.borderColor='#fca5a5';br.style.color='#fca5a5';br.disabled=true;}
+      else{br.innerHTML=hasStarted?'COMPLETE<br>EARLY':'COMPLETE<br>WORKOUT';br.style.borderColor='rgba(255,255,255,.45)';br.style.color='#fff';br.disabled=false;}
+      // Ring border color — grey by default (matching mobile app), coloured only when active timer is running
+      const ring=document.getElementById('wk-ring');
+      if(ring){
+        if(wkStatus==='completed'||wkStatus==='incompleted'){
+            ring.style.borderColor='#4B5563';
+        } else{
+          // For straight-sets: grey ring (like mobile app). Color only for timer-based formats when running.
+          const timerFmts=['rounds','amrap','for-time','emom','intervals','circuit'];
+          const isTimerRunning=ts.running||ts.paused;
+          if(fk==='straight-sets'){
+            // Check if any rest timer is active
+            const activeKey=Object.keys(RST).find(k=>k.startsWith(`rest-${w.id}-`)&&RST[k]?.running);
+            ring.style.borderColor=activeKey?RST[activeKey].color:'#4B5563';
+          } else if(timerFmts.includes(fk)&&isTimerRunning){
+            const fc={rounds:'#3b82f6',amrap:'#F2994A','for-time':'#8b5cf6',emom:'#22c55e',intervals:'#22c55e',circuit:'#f97316'};
+            ring.style.borderColor=fc[fk]||'#4B5563';
+          } else if(fk==='pyramid'){
+            const hasPyrRest=Object.keys(RST).find(k=>k.startsWith(`pyr-${w.id}-`)&&RST[k]?.running);
+            ring.style.borderColor=hasPyrRest?(RST[hasPyrRest].color||'#CD7F32'):'#4B5563';
+          } else{
+            ring.style.borderColor='#4B5563';
+          }
+        }
+      }
+    }
+
+
+    // ── BUTTON HANDLERS ────────────────────────────────────────────
+    function handleLeft(){
+      const list=wData[tab]||[];const w=list.find(x=>x.id===selId);if(!w)return;
+      const fk=fmtKey(w);const ts=TS[w.id]||{};
+      if(fk==='rounds'){
+          if(!ts.running && !ts.allDone) { showMsg('Notice', "Please click 'START' to begin your workout."); return; }
+          if(ts.limit>0 && ts.elapsed>=ts.limit && ts.completedRounds<w.number) { showMsg('Notice', "Workout incomplete."); return; }
+          ts.completedRounds=(ts.completedRounds||0)+1;
+          const el=document.getElementById('rounds-prog-'+w.id);
+          if(el)el.textContent=`${ts.completedRounds}${w.number>0?'/'+w.number:''}`;
+          const pbar=document.getElementById('rounds-pbar-'+w.id);
+          if(pbar)pbar.style.width=`${w.number>0?(ts.completedRounds/w.number)*100:0}%`;
+          saveCondWk(w, null, null, null, fmt(ts.elapsed||0), null);
+          if(w.number>0&&ts.completedRounds>=w.number){ ts.allDone=true; finishRounds(w.id,true); }
+      }
+      else if(fk==='amrap'){
+          ts.rounds=(ts.rounds||0)+1;
+          const el=document.getElementById('amrap-rounds-'+w.id);
+          if(el)el.textContent=`${ts.rounds}`;
+          const rProgress = `${ts.rounds}/${ts.totalRounds||1}`;
+          const left = Math.max(0, (ts.limit||0) - (ts.elapsed||0));
+          const timeStr = fmt(left);
+          saveCondWk(w, null, null, rProgress, timeStr, null);
+      }
+      else if(fk==='intervals')skipInt(w.id);
+      else if(fk==='circuit'){
+        if(ts.allDone || w.type_completed==1 || w.status==='completed') return;
+        const exs = w.circuits || [];
+        const sMap = {};
+        exs.forEach(ex => {
+          const sn = ex.stationumber ?? ex.station_number ?? ex.station ?? 1;
+          if (!sMap[sn]) sMap[sn] = [];
+          sMap[sn].push(ex);
+        });
+        const sns = Object.keys(sMap).sort((a,b) => a - b);
+        
+        // Find the first uncompleted station
+        const uncompletedStation = sns.find(sn => {
+          return !(w.type_completed == 1 || sMap[sn].every(ex => 
+            ex.is_completed == 1 || !!CT[`${w.id}-stn-${sn}`] || !!CT[`${w.id}-${ex.id}`]
+          ));
+        });
+
+        if (uncompletedStation !== undefined) {
+          CT[`${w.id}-stn-${uncompletedStation}`] = true;
+          (sMap[uncompletedStation] || []).forEach(ex => {
+            CT[`${w.id}-${ex.id}`] = true;
+            ex.is_completed = 1;
+          });
+          const timeStr = ts.elapsed > 0 ? fmt(ts.elapsed) : '00:00';
+          saveCircuitStation(w, uncompletedStation, timeStr);
+          
+          const compCount = sns.filter(sn => {
+            return w.type_completed == 1 || sMap[sn].every(ex => 
+              ex.is_completed == 1 || !!CT[`${w.id}-stn-${sn}`] || !!CT[`${w.id}-${ex.id}`]
+            );
+          }).length;
+          
+          ts.completedStations = compCount;
+          const prg = document.getElementById('circuit-prog-' + w.id);
+          if (prg) prg.textContent = `${compCount}/${Math.max(sns.length, 1)}`;
+          
+          if (compCount >= sns.length && sns.length > 0) {
+            ts.allDone = true;
+            finishCircuit(w.id, true);
+          } else {
+            renderList();
+          }
+        }
+      }
+      else if(fk==='emom')skipEmom(w.id);
+      else if(fk==='pyramid'){
+        const ak=Object.keys(RST).find(k=>k.startsWith(`pyr-${w.id}-`)&&RST[k]?.running);
+        if(ak){finishPyrRest(w.id,ak,true);return;}
+        const rows=w.pyramids||w.pyramid||[];
+        const fp=rows.find(r=>!CT[`${w.id}-${r.id}`]&&r.is_completed!=1);
+        if(fp) startPyrRest(w.id,fp.id);
+      }
+      else if(fk==='straight-sets')completeSS(w);
+    }
+
+    function handleCenter(){
+      const list=wData[tab]||[];const w=list.find(x=>x.id===selId);if(!w)return;
+      const ts=TS[w.id]||{};
+      if(wkStatus==='completed'||w.type_completed==1||w.status==='completed'||ts.allDone||ts.phase==='done') return;
+      const fk=fmtKey(w);
+      if(fk==='pyramid'){
+        const ak=Object.keys(RST).find(k=>k.startsWith(`pyr-${w.id}-`)&&RST[k]?.running);
+        if(ak){finishPyrRest(w.id,ak,true);return;}
+        const rows=w.pyramids||w.pyramid||[];
+        const fp=rows.find(r=>!CT[`${w.id}-${r.id}`]&&r.is_completed!=1);
+        if(fp) startPyrRest(w.id,fp.id);
+      }
+      else if(fk==='straight-sets'){
+        const ak=Object.keys(RST).find(k=>k.startsWith(`rest-${w.id}-`)&&RST[k]?.running);
+        if(ak){const si=ak.split('-')[2];doneRest(w.id,parseInt(si));return;}
+        startSS(w);
+      }
+      else if(fk==='rounds')startRounds(w.id);
+      else if(fk==='amrap')startAmrap(w.id);
+      else if(fk==='for-time')startFT(w.id);
+      else if(fk==='emom')startEmom(w.id);
+      else if(fk==='intervals')startInt(w.id);
+      else if(fk==='circuit'){
+        const isForTime = Number(w.is_for_time||0)===1 || Number(w.is_fortime||0)===1 || Number(w.for_time||0)===1 || (w.circuits||[]).some(e=>Number(e.is_for_time||0)===1 || Number(e.is_fortime||0)===1 || Number(e.for_time||0)===1);
+        if(!isForTime) return;
+        startCircuit(w.id);
+      }
+    }
+
+    function handleRight(){if(wkStatus==='incompleted')return;openNotes();}
+
+    // ── BANNER ─────────────────────────────────────────────────────
+    function showBanner(wId,fmtLabel,ok,timeTaken){
+      const ts=TS[wId]=TS[wId]||{};
+      const list=wData[tab]||[];
+      const w=list.find(x=>x.id===wId);
+      if(ok){
+         ts.allDone=true;
+         if(timeTaken) ts.timeTaken=timeTaken;
+         if(w){ w.type_completed=1; w.status='completed'; }
+         const el=document.getElementById('banner-'+wId);
+         if(el) el.innerHTML=bannerHtml(fmtLabel);
+      }
+      else{
+        const el=document.getElementById('banner-'+wId);
+        if(el) el.innerHTML=`<div class="fail-banner"><div class="fail-circle">!</div><div style="color:#fca5a5;font-size:18px;font-weight:800;letter-spacing:.5px;">INCOMPLETE</div></div>`;
+      }
+    }
+
+    // ── PAUSE ALL ──────────────────────────────────────────────────
+    function pauseAll(t){(wData[t]||[]).forEach(w=>{const ts=TS[w.id];if(ts&&ts.running){clearInterval(ts.interval);ts.interval=null;ts._autoPaused=true;}});}
+
+    // ── NOTES MODAL ────────────────────────────────────────────────
+    function openNotes(){document.getElementById('nmod-input').value=notes;document.getElementById('nmod').style.display='flex';}
+    function closeNotes(){document.getElementById('nmod').style.display='none';}
+    async function confirmComplete(){
+      notes=document.getElementById('nmod-input').value;closeNotes();
+      const list=wData[tab]||[];const w=list.find(x=>x.id===selId);if(!w)return;
+      const fk=fmtKey(w);const ts=TS[w.id]||{};const timeStr=ts.elapsed>0?fmt(ts.elapsed):'00:00';
+      if(ts.interval){clearInterval(ts.interval);ts.interval=null;ts.running=false;}
+      try{
+        if(['straight-sets','pyramid'].includes(fk)){
+          await saveStrengthWk(w,timeStr);
+        } else if(fk==='amrap'){
+          const forcedRounds = ts.totalRounds > 0 ? ts.totalRounds : (ts.rounds > 0 ? ts.rounds : 1);
+          ts.rounds = forcedRounds;
+          const rProgress = `${forcedRounds}/${ts.totalRounds || forcedRounds || 1}`;
+          await saveCondWk(w, null, null, rProgress, timeStr, notes);
+          const el = document.getElementById('amrap-rounds-' + w.id);
+          if (el) el.textContent = `${ts.rounds}`;
+          (w.amraps||[]).forEach(ex => { ex.is_completed = 1; });
+        } else{
+          await saveCondWk(w,null,null,null,timeStr,notes);
+        }
+        ts.allDone=true;
+        ts.timeTaken=timeStr;
+        if(fk==='emom'){
+          ts.phase='done';ts.completedRounds=ts.totalRounds;
+          const prg=document.getElementById('emom-prog-'+w.id);if(prg)prg.textContent=`${ts.totalRounds}/${ts.totalRounds}`;
+          const pbar=document.getElementById('emom-pbar-'+w.id);if(pbar)pbar.style.width='100%';
+          const exCont=document.getElementById('emom-ex-cont-'+w.id);if(exCont)exCont.style.background='transparent';
+        }
+        w.type_completed=1;
+        w.status='completed';
+        wkStatus='completed';
+        showBanner(w.id,fk,true,timeStr);
+        updBbar();
+        showMsg('Success','Workout saved successfully!');
+        renderList();
+      }catch(e){console.error(e);showMsg('Error','Failed to save workout.',true);}
+    }
+
+    // ── API HELPERS ────────────────────────────────────────────────
+    function dayStr(){const p=String(DAY).split(' ');if(p.length>=2){const dp=p[0].split('/');if(dp.length===3)return`${p[1]} ${dp[0]}/${dp[1]}/20${dp[2]}`;}return DAY;}
+
+    async function saveStrengthWk(w,timeStr){
+      const fk=fmtKey(w);
+      let ep='/save-strength-workout';
+      if(tab==='warmup') ep='/warmup-daily';
+      else if(tab==='weightlifting') ep='/save-weightlifting-workout';
+      else if(tab==='conditioning') ep='/save-conditioning-workout';
+      else if(tab==='accessory') ep='/save-accessory-workout';
+
+      if(fk==='pyramid'){
+        const rows=w.pyramids||w.pyramid||[];
+        if(!rows.length)return;
+        const payload=rows.map((row,idx)=>{
+          const u=(row.unittype||row.unit_type||w.unit_type||'%').trim().toUpperCase();
+          const ld=row.training_load??row.weight??w.training_load??0;
+          const wgt=calcWt(ld,u,row.test_weight??w.test_weight??0);
+          const reps=parseInt(row.reps_progress??row.reps??0)||0;
+          return {
+            workout_manager_id:w.id,
+            workout_format_type:'pyramid',
+            workout_format_id:row.id,
+            reps:reps,
+            weight:wgt,
+            date:dayStr(),
+            set_number:idx+1,
+            round_number:`${idx+1}/${rows.length}`,
+            exercise_time:timeStr||'00:00',
+            class_Id:CLSID,
+            notes:notes||null
+          };
+        });
+        if(!payload.length)return;
+        await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify(payload)});
+        return;
+      }
+
+      const straights=w.straights||[];if(!straights.length)return;
+      const payload=[];
+      straights.forEach(ex=>{(ex.sets||[]).forEach((s,si)=>{
+        const el=document.getElementById(`reps-${w.id}-${ex.id||0}-${s.id||si}`);
+        const reps=el?parseInt(el.textContent||'0'):parseInt(s.daily_reps||s.reps_progress||s.reps||0)||0;
+        const u=s.unittype||s.unit_type||ex.unittype||ex.unit_type||'%';
+        const ld=s.training_load??ex.training_load??ex.weight??0;
+        const wgt=s.daily_weight!=null?s.daily_weight:calcWt(ld,u,ex.test_weight||0);
+        const wFormatId=(w.format?.slug==='straight-sets'||!w.format)?(s.id||ex.id||0):(ex.id||0);
+        payload.push({workout_manager_id:w.id,workout_format_type:w.format?.slug||'straight-sets',workout_format_id:wFormatId,reps,set_number:si+1,weight:wgt,date:dayStr(),exercise_time:timeStr,class_Id:CLSID,notes:notes||null});
+      });});
+      if(!payload.length)return;
+      await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify(payload)});
+    }
+
+    async function saveCircuitStation(w, stationNum, timeStr){
+      const exs = w.circuits || [];
+      const sExercises = exs.filter(ex => (ex.stationumber ?? ex.station_number ?? ex.station ?? 1) == stationNum);
+      if(!sExercises.length) return;
+      const dateStr = dayStr();
+      let ep='/save-conditioning-workout';
+      if(tab==='warmup') ep='/warmup-daily';
+      else if(tab==='strength') ep='/save-strength-workout';
+      else if(tab==='weightlifting') ep='/save-weightlifting-workout';
+      else if(tab==='accessory') ep='/save-accessory-workout';
+
+      const payload = sExercises.map(ex => ({
+        workout_manager_id: w.id,
+        workout_format_type: 'circuit',
+        workout_format_id: ex.id || 0,
+        reps: parseInt(ex.reps_progress ?? ex.res ?? ex.reps ?? 0) || 0,
+        round_number: String(stationNum),
+        weight: calcWt(ex.training_load ?? 0, ex.unit_type || '%', ex.test_weight ?? 0),
+        date: dateStr,
+        exercise_time: timeStr || '00:00',
+        class_Id: CLSID,
+        notes: null
+      }));
+      try {
+        await fetch(ep, {method:'POST', headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF}, body:JSON.stringify(payload)});
+      } catch(e) { console.error('Error saving circuit station:', e); }
+    }
+
+    async function saveCondWk(w,exId,reps,roundNum,timeStr,notes2){
+      const exs=w.rounds||w.amraps||w.for_times||w.emoms||w.intervals||w.circuits||w.pyramids||[];
+      const fk=fmtKey(w);const dateStr=dayStr();
+      const ts = TS[w.id] || {};
+
+      let ep='/save-conditioning-workout';
+      if(tab==='warmup') ep='/warmup-daily';
+      else if(tab==='strength') ep='/save-strength-workout';
+      else if(tab==='weightlifting') ep='/save-weightlifting-workout';
+      else if(tab==='accessory') ep='/save-accessory-workout';
+
+      const payload=(exs.length>0?exs:[w]).map(ex=>{
+         let rNum = roundNum || null;
+         if (!rNum && fk === 'rounds' && ts.completedRounds !== undefined) rNum = `${ts.completedRounds}/${w.number||0}`;
+         else if (!rNum && ['intervals','emom'].includes(fk) && ts.round !== undefined) {
+             const cR = ts.phase === 'done' ? ts.totalRounds : Math.max(0, ts.round - 1);
+             rNum = `${cR}/${ts.totalRounds||0}`;
+         }
+         else if (!rNum && ts.round !== undefined) rNum = `${ts.round}/${ts.totalRounds||0}`;
+         else if (!rNum && ts.rounds !== undefined) rNum = `${ts.rounds}/${ts.totalRounds||1}`;
+         
+         return {
+           workout_manager_id:w.id,
+           workout_format_type:fk,
+           workout_format_id:ex.id||0,
+           reps:reps!==null?parseInt(reps)||0:parseInt(ex.reps)||0,
+           round_number:rNum,
+           weight:calcWt(ex.training_load??0,ex.unit_type||'%',ex.test_weight||0),
+           date:dateStr,
+           exercise_time:timeStr||'00:00',
+           class_Id:CLSID,
+           notes:notes2||null
+         };
+      });
+      if(!payload.length)return;
+      await fetch(ep,{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify(payload)});
+    }
+
+    // ── APP ALERT ──────────────────────────────────────────────────
+    function showMsg(title,msg,err=false){
+      const ex=document.getElementById('app-msg');if(ex)ex.remove();
+      const c=err?'#ff453a':'#0a84ff';
+      document.body.insertAdjacentHTML('beforeend',`<div class="app-msg-overlay" id="app-msg"><div class="app-msg-box"><div class="app-msg-content"><div class="app-msg-title">${title}</div><div class="app-msg-body">${msg}</div></div><div class="app-msg-footer"><button class="app-msg-ok" style="color:${c};" onclick="document.getElementById('app-msg').remove()">OK</button></div></div></div>`);
+    }
+
+    // ── 1RM TAB ────────────────────────────────────────────────────
+    async function render1RM(){
+      const cont=document.getElementById('wk-list');const bbar=document.getElementById('bbar');
+      if(bbar)bbar.style.display='none';
+      cont.innerHTML='<div style="color:#fff;text-align:center;padding:30px 0;font-size:12px;letter-spacing:2px;font-weight:700;">LOADING...</div>';
+      if(!ormLoaded){await Promise.all([fetchOrmEx(),fetchOrmRec()]);ormLoaded=true;}
+      renderOrm();
+    }
+    async function fetchOrmEx(){try{const r=await fetch('/mobile/data/workout-library');const d=await r.json();ormEx=d.data||[];}catch(e){}}
+    async function fetchOrmRec(){try{const r=await fetch('/mobile/data/1rm-list');const d=await r.json();ormRec=d.data||[];}catch(e){}}
+    function renderOrm(){
+      const cont=document.getElementById('wk-list');
+      const opts=ormEx.map(e=>`<option value="${e.id}" data-name="${e.workout}" ${e.id==ormSelId?'selected':''}>${e.workout}${e.category?' · '+e.category:''}</option>`).join('');
+      const recs=ormRec.length===0?'<div style="color:#f5f5f5;text-align:center;padding:20px 0;font-size:13px;">No 1RM records yet.</div>':ormRec.map(r=>`<div style="display:flex;flex-direction:row;align-items:center;padding:8px 12px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,.04);"><div style="width:50%;font-weight:600;color:#f5f5f5;font-size:13px;">${r.workoutname||'Exercise'}</div><div style="flex:2;text-align:center;color:rgba(255,255,255,.35);font-size:11px;">1 REP<br>MAX</div><div style="flex:2;display:flex;flex-direction:row;justify-content:flex-end;align-items:center;"><span style="font-weight:600;color:#f5f5f5;margin-right:3px;font-size:13px;">${r.weight}</span><span style="color:rgba(255,255,255,.4);font-size:11px;">KG</span></div><button onclick="del1RM(${r.id})" style="background:transparent;border:none;border-radius:12px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;margin-left:8px;cursor:pointer;color:#fff;font-weight:700;font-size:13px;flex-shrink:0;padding:0;">✕</button></div>`).join('');
+      cont.innerHTML=`<div style="width:100%;height:100%;display:flex;flex-direction:column;background:rgba(0,0,0,.45);border-radius:12px;overflow:hidden;">
+        <div style="flex-shrink:0;display:flex;flex-direction:row;justify-content:space-between;gap:10px;padding:12px 10px 0 10px;align-items:center;">
+          <div style="flex:1.2;position:relative;"><select id="orm-sel" onchange="ormSelId=this.value;ormSelName=this.options[this.selectedIndex]?.dataset?.name||'';" style="width:100%;appearance:none;background:#fff;color:#000;padding:10px 28px 10px 12px;border-radius:8px;font-size:13px;font-weight:700;border:none;outline:none;cursor:pointer;"><option value="">Select Exercise</option>${opts}</select><span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#000;pointer-events:none;font-size:11px;font-weight:700;">▼</span></div>
+          <div style="display:flex;flex-direction:row;align-items:center;gap:8px;flex-shrink:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;line-height:1.2;"><span style="color:#fff;font-size:10px;font-weight:700;">1 REP</span><span style="color:#fff;font-size:10px;font-weight:700;">MAX</span></div>
+            <input id="orm-wt" type="number" min="0" step=".5" placeholder="KG" value="${ormWt}" oninput="ormWt=this.value" style="width:72px;height:46px;border:1px solid #fff;border-radius:8px;background:#fff;color:#000;font-size:16px;font-weight:500;text-align:center;outline:none;">
+            <span style="color:#fff;font-size:16px;">kg</span>
+          </div>
+        </div>
+        <div style="flex-shrink:0;padding:10px 10px 14px 10px;"><button onclick="save1RM()" style="width:100%;padding:13px 32px;border-radius:8px;border:1px solid #fff;background:transparent;color:#fff;font-size:13px;font-weight:700;cursor:pointer;">Save</button></div>
+        <div class="cscroll" style="flex:1;overflow-y:auto;padding:0 10px 16px 10px;">${recs}</div>
+      </div>`;
+    }
+    async function save1RM(){
+      const wt=parseFloat(document.getElementById('orm-wt')?.value||'0');
+      if(!ormSelId){showMsg('Oops','Please select an exercise.',true);return;}
+      if(!wt||wt<=0){showMsg('Oops','Please enter a valid weight.',true);return;}
+      if(!MEMID){showMsg('Error','Member profile not found.',true);return;}
+      try{
+        const r=await fetch('/mobile/1rm/insert',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify({workout_id:parseInt(ormSelId),member_id:MEMID,weight:wt,workoutname:ormSelName,selected_day:dayStr()})});
+        const d=await r.json();
+        if(d.success){showMsg('Success',d.message||'Saved!');ormWt='';ormSelId=null;ormSelName='';await fetchOrmRec();renderOrm();}
+        else{showMsg('Error',d.message||'Failed.',true);}
+      }catch(e){showMsg('Error','Network error.',true);}
+    }
+    async function del1RM(id){
+      if(!confirm('Delete this 1RM record?'))return;
+      try{const r=await fetch('/mobile/1rm/delete',{method:'DELETE',headers:{'Content-Type':'application/json','X-CSRF-TOKEN':CSRF},body:JSON.stringify({test_id:id})});const d=await r.json();if(d.success){ormRec=ormRec.filter(r=>r.id!==id);renderOrm();}else{showMsg('Error',d.message||'Could not delete.',true);}}catch(e){}
+    }
+    </script>
+@endsection
+

@@ -73,7 +73,7 @@
                                 <option value="Intervals">Intervals</option>
                                 <option value="Pyramid">Pyramid</option>
                                 <option value="Circuit">Circuit</option>
-                                <option value="For Time">For Time</option>
+                                <!-- <option value="For Time">For Time</option> -->
                             </select>
                         </div>
 
@@ -225,6 +225,13 @@
         `;
             return;
         }
+
+        // Sort workouts: Assigned first, then unassigned
+        workouts.sort((a, b) => {
+            const aAssigned = (a.assigned_class_ids && a.assigned_class_ids.length > 0) ? 1 : 0;
+            const bAssigned = (b.assigned_class_ids && b.assigned_class_ids.length > 0) ? 1 : 0;
+            return bAssigned - aAssigned; // 1 (assigned) comes before 0 (unassigned)
+        });
 
         let html = '';
         workouts.forEach(workout => {
