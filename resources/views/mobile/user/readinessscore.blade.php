@@ -343,13 +343,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dayWithDate = document.getElementById('rsDateDisplay').textContent.trim();
 
     // Try to restore class_id from session via page data
-    window._classId = null; // Will be set by server if needed
+    window._classId = {{ $classId ?? 'null' }};
 
     try {
         const resp = await fetch('/mobile/get-score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-            body: JSON.stringify({ selected_day: dayWithDate })
+            body: JSON.stringify({ selected_day: dayWithDate, class_id: window._classId })
         });
         if (resp.ok) {
             const data = await resp.json();

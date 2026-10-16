@@ -318,6 +318,8 @@ Route::post('/warmup-daily',  [MobileController::class, 'storewarmupdaily']);
 Route::put('/warmup-daily/{id}', [MobileController::class, 'storewarmupdaily'])->name('warmup.daily.update');
 
 Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthdaily']);
+Route::post('/save-weightlifting-workout', [MobileController::class, 'storeweightliftingdaily']);
+Route::post('/save-conditioning-workout', [MobileController::class, 'storeconditioningdaily']);
 
 Route::get('/mobile/workouttimer', [MobileController::class, 'workouttimer'])->name('mobile.workouttimer');
 Route::get('/mobile/histroyview', [MobileController::class, 'histroyview'])->name('mobile.histroyview');
@@ -332,8 +334,16 @@ Route::get('/mobile/settings', [MobileController::class, 'settingsPage'])->name(
 Route::get('/mobile/data/exercises', [MobileController::class, 'getExercisesData']);
 Route::post('/mobile/data/achievement-graph', [MobileController::class, 'getAchievementGraphData']);
 Route::get('/mobile/data/profile', [MobileController::class, 'profileData']);
+Route::post('/mobile/data/update-profile', [MobileController::class, 'updateProfileData']);
 Route::post('/mobile/data/profile-image', [MobileController::class, 'storeProfileImage']);
 Route::post('/mobile/data/monthly-images', [MobileController::class, 'storeMonthlyImages']);
+
+// 1RM (Test) Routes
+Route::post('/mobile/1rm/insert', [MobileController::class, 'insertWeight'])->name('mobile.1rm.insert');
+Route::post('/mobile/1rm/update', [MobileController::class, 'updateWeight'])->name('mobile.1rm.update');
+Route::delete('/mobile/1rm/delete', [MobileController::class, 'deleteTestWeb'])->name('mobile.1rm.delete');
+Route::get('/mobile/data/workout-library', [MobileController::class, 'getWorkoutLibraryData'])->name('mobile.data.workout-library');
+Route::get('/mobile/data/1rm-list', [MobileController::class, 'get1RMList'])->name('mobile.data.1rm-list');
 
 // Display the forget password form
 Route::get('forgot/password', function () {

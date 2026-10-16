@@ -238,9 +238,10 @@ class MobileController extends Controller
     {
         // Retrieve the day from the request
         $day = $request->day;
+        $classId = $request->class_id;
 
         // Store the day in the session
-        session(['selected_day' => $day]);
+        session(['selected_day' => $day, 'class_id' => $classId]);
 
         // Retrieve the day from the session
         $storedDay = session('selected_day');
@@ -254,6 +255,7 @@ class MobileController extends Controller
     {
         // Retrieve the day from the session
         $storedDay = session('selected_day');
+        $classId = session('class_id'); // Get class_id from session
 
         if (!$storedDay) {
             $storedDay = Carbon::now()->format('d/m/Y');
@@ -269,10 +271,13 @@ class MobileController extends Controller
         $dayWithDate = $dayName . ' ' . $formattedDate;
         $user = Auth::user()->id;
 
-        $userscore = UserScore::where('user_id', $user)->where('selected_day', $dayWithDate)->first();
-        // dd($userscore);
+        $query = UserScore::where('user_id', $user)->where('selected_day', $dayWithDate);
+        if ($classId) {
+            $query->where('class_id', $classId);
+        }
+        $userscore = $query->first();
 
-        return view("mobile.user.readinessscore", compact('dayWithDate', 'userscore'));
+        return view("mobile.user.readinessscore", compact('dayWithDate', 'userscore', 'classId'));
     }
 
     // store Score — returns JSON so the new readiness page can use AJAX
@@ -286,12 +291,13 @@ class MobileController extends Controller
             'stress_input'    => 'required|string',
             'soreness_input'  => 'required|string',
             'score'           => 'required|integer',
+            'class_id'        => 'nullable|integer',
         ]);
 
         $user = $request->user();
 
         $score = $user->scores()->updateOrCreate(
-            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day']],
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'], 'class_id' => $validatedData['class_id'] ?? null],
             $validatedData
         );
 
@@ -311,9 +317,13 @@ class MobileController extends Controller
             return response()->json(['success' => false, 'message' => 'No day provided.'], 400);
         }
 
-        $score = $user->scores()
-            ->where('selected_day', $selectedDay)
-            ->first();
+        $query = $user->scores()->where('selected_day', $selectedDay);
+        
+        if ($request->has('class_id') && $request->class_id) {
+            $query->where('class_id', $request->class_id);
+        }
+
+        $score = $query->first();
 
         if ($score) {
             return response()->json(['success' => true, 'data' => $score]);
@@ -347,14 +357,22 @@ class MobileController extends Controller
         // Combine day name and date
         $dayWithDate = $formattedDate . ' ' . $dayName;
 
-        // Attempt to find the user's reserved class for this date, or fallback to their most recent reservation
+        // Attempt to find the user's reserved class for this date
         $reservedSession = \App\Models\ReservationSession::where('user_id', Auth::id())
             ->where('is_reserved', 1)
             ->latest()
             ->first();
-        $classId = $reservedSession ? $reservedSession->classes_id : 1;
 
-        return view('mobile.user.workout', compact('dayWithDate', 'classId'));
+        if ($reservedSession) {
+            $classId = $reservedSession->classes_id;
+        } else {
+            $todayClass = \App\Models\Classes::where('date', 'LIKE', '%' . $formattedDate . '%')->first();
+            $classId = $todayClass ? $todayClass->id : 1;
+        }
+
+        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
+
+        return view('mobile.user.workout', compact('dayWithDate', 'classId', 'memberId'));
     }
 
     //store daily warmup workout after clicking
@@ -1203,9 +1221,9 @@ class MobileController extends Controller
 
         $user = $request->user();
 
-        // Find an existing score for the same user and date, or create a new one
+        // Find an existing score for the same user, date, and class, or create a new one
         $score = $user->scores()->updateOrCreate(
-            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'],'class_id' => $validatedData['class_id']],
+            ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'], 'class_id' => $validatedData['class_id']],
             $validatedData
         );
 
@@ -1499,6 +1517,7 @@ class MobileController extends Controller
 
             $score = $user->scores()
                 ->where('selected_day', $request->selected_day)
+                ->where('class_id', $request->class_id)
                 ->first();
 
             $categoryOptions = CategoryOption::select('id', 'category_name')->get();
@@ -1515,6 +1534,54 @@ class MobileController extends Controller
                         'category_option_name' => $item->categoryOption->category_name ?? null,
                     ];
                 });
+
+            // ---------------------------------------------------------
+            // PARITY FIX: Fetch WorkoutManager workouts assigned to this class/date
+            // ---------------------------------------------------------
+            $wmIds = \App\Models\WorkoutAssign::where('class_id', $classId)
+                ->where(function ($q) use ($shortDateTwo, $shortDateFour, $dayWithDate, $dayWithDateNew, $dayNameFirst, $dayNameFirstNew) {
+                    $q->where('date', 'LIKE', '%' . $shortDateTwo . '%')
+                      ->orWhere('date', 'LIKE', '%' . $shortDateFour . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayWithDate . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayWithDateNew . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayNameFirst . '%')
+                      ->orWhere('date', 'LIKE', '%' . $dayNameFirstNew . '%');
+                })
+                ->whereNotNull('workout_manager_id')
+                ->pluck('workout_manager_id')
+                ->unique()
+                ->toArray();
+
+            if (!empty($wmIds)) {
+                $wmWorkouts = \App\Models\WorkoutManager::with([
+                    'format',
+                    'type',
+                    'straights.workoutLibrary.categoryOption', 'straights.sets',
+                    'rounds.workoutLibrary.categoryOption',
+                    'intervals.workoutLibrary.categoryOption',
+                    'amraps.workoutLibrary.categoryOption',
+                    'emoms.workoutLibrary.categoryOption',
+                    'pyramids.workoutLibrary.categoryOption',
+                    'circuits.workoutLibrary.categoryOption',
+                    'forTimes.workoutLibrary.categoryOption'
+                ])
+                ->whereIn('id', $wmIds)
+                ->where('status', 'active')
+                ->get();
+
+                foreach ($wmWorkouts as $wm) {
+                    $typeName = strtolower($wm->type->name ?? '');
+                    if ($typeName === 'warmup') {
+                        $detailswarmup->push($wm);
+                    } else if ($typeName === 'strength') {
+                        $detailsstrength->push($wm);
+                    } else if ($typeName === 'conditioning') {
+                        $detailsconditioning->push($wm);
+                    } else if ($typeName === 'weightlifting') {
+                        $detailsweight->push($wm);
+                    }
+                }
+            }
 
             return response()->json([
                 'success' => true,
@@ -1713,4 +1780,125 @@ class MobileController extends Controller
         return app(\App\Http\Controllers\UserMobileController::class)->store($request);
     }
 
+    /**
+     * Delete a Test/1RM record (web proxy).
+     */
+    public function deleteTestWeb(Request $request)
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+
+        $request->validate(['test_id' => 'required|integer']);
+
+        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
+        if (!$memberId) {
+            return response()->json(['success' => false, 'message' => 'Member not found.'], 404);
+        }
+
+        $test = Test::where('id', $request->test_id)
+            ->where('member_id', $memberId)
+            ->first();
+
+        if (!$test) {
+            return response()->json(['success' => false, 'message' => 'Record not found.'], 404);
+        }
+
+        $test->delete();
+
+        return response()->json(['success' => true, 'message' => 'Record deleted.']);
+    }
+
+    /**
+     * Return workout library list for 1RM exercise selector.
+     */
+    public function getWorkoutLibraryData()
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+
+        $exercises = WorkoutLibrary::with('categoryOption')
+            ->orderBy('workout')
+            ->get()
+            ->map(fn($w) => [
+                'id'       => $w->id,
+                'workout'  => $w->workout,
+                'category_option_id' => $w->category_option_id,
+                'category' => $w->categoryOption?->category_name ?? '',
+            ]);
+
+        return response()->json(['success' => true, 'data' => $exercises]);
+    }
+
+    /**
+     * Return the current user's 1RM list.
+     */
+    public function get1RMList(Request $request)
+    {
+        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+
+        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
+        if (!$memberId) return response()->json(['success' => false, 'data' => []]);
+
+        $allHistoricalTests = Test::where('member_id', $memberId)
+            ->whereNotNull('workout_libraries_id')
+            ->whereNotNull('weight')
+            ->get();
+        
+        // Group by workout_libraries_id to get the latest test per exercise
+        $testMap = [];
+        $testsSorted = $allHistoricalTests->sortBy(function ($t) {
+            try {
+                return \Carbon\Carbon::createFromFormat('d/m/y l', $t->date)->timestamp;
+            } catch (\Exception $e) {
+                return 0;
+            }
+        });
+
+        foreach ($testsSorted as $t) {
+            $testMap[$t->workout_libraries_id] = $t;
+        }
+
+        $latestTestIds = collect($testMap)->pluck('id')->toArray();
+
+        $tests = Test::whereIn('id', $latestTestIds)
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn($t) => [
+                'id'         => $t->id,
+                'workoutname'=> $t->workoutname,
+                'weight'     => $t->weight,
+                'unit_type'  => $t->unit_type ?? 'kg',
+                'date'       => $t->date,
+            ])
+            ->values();
+
+        return response()->json(['success' => true, 'data' => $tests]);
+    }
+
+    public function updateProfileData(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['status' => 'error', 'message' => 'Not authenticated'], 401);
+        }
+
+        if ($request->has('username')) {
+            $user->name = $request->username;
+            $user->save();
+        }
+
+        $member = \App\Models\Newprofile::where('user_id', $user->id)->first();
+        if ($member) {
+            if ($request->has('firstname')) $member->firstname = $request->firstname;
+            if ($request->has('lastname')) $member->lastname = $request->lastname;
+            if ($request->has('primary_goal')) $member->primary_goal = $request->primary_goal;
+            if ($request->has('subscription_level')) $member->subscription_level = $request->subscription_level;
+            if ($request->has('height')) $member->height = $request->height;
+            if ($request->has('weight')) $member->weight = $request->weight;
+            if ($request->has('phone')) $member->phone = $request->phone;
+            if ($request->has('address')) $member->address = $request->address;
+            if ($request->has('bmr')) $member->bmr = $request->bmr;
+            $member->save();
+        }
+
+        return app(\App\Http\Controllers\MobileController::class)->profileData();
+    }
 }
