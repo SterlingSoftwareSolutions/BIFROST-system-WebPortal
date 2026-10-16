@@ -76,20 +76,21 @@
             flex: 1;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            gap: 3px;
+            gap: 2px;
             text-decoration: none;
             color: rgba(255,255,255,0.4);
-            font-size: 10px; font-weight: 500;
-            letter-spacing: 0.5px;
+            font-size: 9px; font-weight: 500;
+            letter-spacing: 0.3px;
             transition: color 0.2s;
-            padding: 6px 4px 8px;
+            padding: 6px 2px 8px;
             position: relative;
+            white-space: nowrap;
         }
-        .mob-nav-item i { font-size: 20px; transition: color 0.2s; }
+        .mob-nav-item i { font-size: 18px; transition: color 0.2s; }
         .mob-nav-item.active { color: #fff; }
         .mob-nav-item.active::before {
             content: '';
-            position: absolute; top: 0; left: 20%; right: 20%;
+            position: absolute; top: 0; left: 15%; right: 15%;
             height: 2px;
             background: #fff;
             border-radius: 0 0 2px 2px;
@@ -105,27 +106,26 @@
     </div>
 
     {{-- Fixed Header --}}
-    <header class="mob-header">
-        <img src="{{ asset('images/valhalla-mobile-logo.png') }}" alt="BIFROST" class="mob-header-logo">
+    <header class="mob-header" style="display: flex; align-items: center;">
+        <!-- Left: Back Button -->
+        <div style="flex: 1; display: flex; justify-content: flex-start;">
+            <button class="mob-back-btn" onclick="handleGlobalBack()" style="background:none; border:none; color:#fff; font-size: 20px; padding: 4px; cursor:pointer;">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+        </div>
 
-        <span class="mob-header-title">
-            @if(Request::is('mobile/trainingday')) CLASSES
-            @elseif(Request::is('mobile/readinessscore')) READINESS
-            @elseif(Request::is('mobile/workout') || Request::is('mobile/workouttimer')) WORKOUT
-            @elseif(Request::is('mobile/histroyview')) HISTORY
-            @elseif(Request::is('mobile/achievements')) ACHIEVEMENTS
-            @elseif(Request::is('mobile/profile')) PROFILE
-            @elseif(Request::is('mobile/settings')) SETTINGS
-            @else BIFROST
-            @endif
-        </span>
+        <!-- Center: Logo -->
+        <div style="flex: 1; display: flex; justify-content: center;">
+            <img src="{{ asset('images/valhalla-mobile-logo.png') }}" alt="BIFROST" class="mob-header-logo">
+        </div>
 
-        <div class="mob-header-actions">
+        <!-- Right: Power Button -->
+        <div style="flex: 1; display: flex; justify-content: flex-end;">
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">
                 @csrf
                 <input type="hidden" name="type" value="mobile">
             </form>
-            <button class="mob-logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Logout">
+            <button class="mob-logout-btn" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" title="Logout" style="background:none; border:none; cursor:pointer; color:#ef4444; font-size: 18px; padding: 4px;">
                 <i class="fas fa-power-off"></i>
             </button>
         </div>
@@ -148,7 +148,11 @@
         </a>
         <a href="{{ route('mobile.achievements') }}" class="mob-nav-item {{ Request::is('mobile/achievements') ? 'active' : '' }}">
             <i class="fas fa-trophy"></i>
-            <span>Achieve</span>
+            <span>Achievements</span>
+        </a>
+        <a href="{{ route('mobile.settings') }}" class="mob-nav-item {{ Request::is('mobile/settings') ? 'active' : '' }}">
+            <i class="fas fa-gear"></i>
+            <span>Settings</span>
         </a>
         <a href="{{ route('mobile.profile') }}" class="mob-nav-item {{ Request::is('mobile/profile') ? 'active' : '' }}">
             <i class="fas fa-user"></i>
@@ -161,6 +165,16 @@
             const overlay = document.getElementById('loadingOverlay');
             setTimeout(() => overlay.classList.add('hide'), 150);
         });
+    </script>
+    <script>
+        window.currentActiveModal = null;
+        function handleGlobalBack() {
+            if (window.currentActiveModal && typeof window.closeModal === 'function') {
+                window.closeModal(window.currentActiveModal);
+            } else {
+                window.history.back();
+            }
+        }
     </script>
     @stack('scripts')
 </body>
