@@ -74,8 +74,24 @@
       clearInterval(ts.interval);
       ts.interval = null;
       ts.running = false;
-      showBanner(wId, 'circuit', ok, fmt(ts.elapsed));
-      if(wId === selId){
+      if(ts.elapsed > 0){
+        ts.timeTaken = fmt(ts.elapsed);
+      }
+      const list = wData[tab] || [];
+      const w = list.find(x => x.id == wId);
+      if(ok && w){
+        w.type_completed = 1;
+        w.status = 'completed';
+        ts.allDone = true;
+        (w.circuits || []).forEach(ex => { 
+          ex.is_completed = 1; 
+          if(!ex.exercise_time || ex.exercise_time === '00:00'){
+            ex.exercise_time = ts.timeTaken || fmt(ts.elapsed);
+          }
+        });
+      }
+      showBanner(wId, 'circuit', ok, ts.timeTaken || fmt(ts.elapsed));
+      if(wId == selId){
         wkStatus = ok ? 'completed' : 'incompleted';
         updBbar();
       }

@@ -37,9 +37,41 @@ use App\Models\Emom;
 use App\Models\Straight;
 use App\Models\Circuit;
 use App\Models\Pyramid;
+use App\Models\User;
 
 class MobileController extends Controller
 {
+    /**
+     * Resolves the current mobile client user.
+     * Checks 'mobile' guard first, then session('mobile_user_id'),
+     * then 'web' guard if user_type is 'client', with Auth::user() fallback.
+     */
+    public function getMobileUser()
+    {
+        if (Auth::guard('mobile')->check()) {
+            return Auth::guard('mobile')->user();
+        }
+        if (session('mobile_user_id')) {
+            $user = User::find(session('mobile_user_id'));
+            if ($user) return $user;
+        }
+        if (Auth::guard('web')->check() && Auth::guard('web')->user()->user_type === 'client') {
+            return Auth::guard('web')->user();
+        }
+        return Auth::user();
+    }
+
+    public function getMobileUserId()
+    {
+        $u = $this->getMobileUser();
+        return $u ? $u->id : null;
+    }
+
+    public function isMobileAuth()
+    {
+        return $this->getMobileUser() !== null;
+    }
+
     //
     public function login()
     {
@@ -120,8 +152,9 @@ class MobileController extends Controller
                 ->orderBy('time', 'asc')
                 ->get();
 
-            $classItems = $classes->map(function ($class) {
-                $isReserved = \App\Models\ReservationSession::where('user_id', auth()->id())
+            $userId = $this->getMobileUserId();
+            $classItems = $classes->map(function ($class) use ($userId) {
+                $isReserved = \App\Models\ReservationSession::where('user_id', $userId)
                     ->where('classes_id', $class->id)
                     ->exists();
 
@@ -165,8 +198,13 @@ class MobileController extends Controller
             ], 400);
         }
 
+        $userId = $this->getMobileUserId();
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'Please login to reserve.'], 401);
+        }
+
         // Check if user already reserved this class
-        $existing = ReservationSession::where('user_id', Auth::id())
+        $existing = ReservationSession::where('user_id', $userId)
             ->where('classes_id', $class->id)
             ->first();
 
@@ -179,7 +217,7 @@ class MobileController extends Controller
 
         // Create reservation
         $reservation = ReservationSession::create([
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'classes_id' => $class->id,
             'is_reserved' => true
         ]);
@@ -209,7 +247,12 @@ class MobileController extends Controller
             'class_id' => 'required|exists:classes,id',
         ]);
 
-        $reservation = ReservationSession::where('user_id', Auth::id())
+        $userId = $this->getMobileUserId();
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'Please login.'], 401);
+        }
+
+        $reservation = ReservationSession::where('user_id', $userId)
             ->where('classes_id', $request->class_id)
             ->first();
 
@@ -251,11 +294,15 @@ class MobileController extends Controller
     }
 
     // Readinessscore page view
-    public function readinessscore()
+    public function readinessscore(Request $request)
     {
+        $classId = $request->query('class_id') ?? $request->input('class_id') ?? session('class_id');
+        if ($classId) {
+            session(['class_id' => (int) $classId]);
+        }
+
         // Retrieve the day from the session
         $storedDay = session('selected_day');
-        $classId = session('class_id'); // Get class_id from session
 
         if (!$storedDay) {
             $storedDay = Carbon::now()->format('d/m/Y');
@@ -269,9 +316,10 @@ class MobileController extends Controller
 
         // Combine day name and date
         $dayWithDate = $dayName . ' ' . $formattedDate;
-        $user = Auth::user()->id;
+        $user = $this->getMobileUser();
+        $userId = $user ? $user->id : null;
 
-        $query = UserScore::where('user_id', $user)->where('selected_day', $dayWithDate);
+        $query = UserScore::where('user_id', $userId)->where('selected_day', $dayWithDate);
         if ($classId) {
             $query->where('class_id', $classId);
         }
@@ -294,7 +342,10 @@ class MobileController extends Controller
             'class_id'        => 'nullable|integer',
         ]);
 
-        $user = $request->user();
+        $user = $this->getMobileUser();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 401);
+        }
 
         $score = $user->scores()->updateOrCreate(
             ['user_id' => $user->id, 'selected_day' => $validatedData['selected_day'], 'class_id' => $validatedData['class_id'] ?? null],
@@ -310,7 +361,10 @@ class MobileController extends Controller
     // Get existing score for web readiness page (AJAX)
     public function getScoreWeb(Request $request)
     {
-        $user = Auth::user();
+        $user = $this->getMobileUser();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'No user found.'], 404);
+        }
         $selectedDay = $request->input('selected_day');
 
         if (!$selectedDay) {
@@ -334,14 +388,24 @@ class MobileController extends Controller
 
     public function getWorkoutListWeb(Request $request)
     {
-        $request->merge([
-            'user_id' => Auth::id()
-        ]);
+        $user = $this->getMobileUser();
+        if ($user) {
+            $request->setUserResolver(function () use ($user) {
+                return $user;
+            });
+            $request->merge([
+                'user_id' => $user->id
+            ]);
+        }
         return app(\App\Http\Controllers\UserMobileController::class)->getWorkouts($request);
     }
 
-    public function workout()
+    public function workout(Request $request)
     {
+        $classId = $request->query('class_id') 
+            ?? $request->input('class_id') 
+            ?? session('class_id');
+
         $storedDay = session('selected_day');
 
         if (!$storedDay) {
@@ -349,28 +413,44 @@ class MobileController extends Controller
             session(['selected_day' => $storedDay]);
         }
 
-        // Format the stored day to the desired format
-        $date = Carbon::createFromFormat('d/m/Y', $storedDay);
-        $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
-        $formattedDate = $date->format('d/m/y'); // Format the date
-
-        // Combine day name and date
-        $dayWithDate = $formattedDate . ' ' . $dayName;
-
-        // Attempt to find the user's reserved class for this date
-        $reservedSession = \App\Models\ReservationSession::where('user_id', Auth::id())
-            ->where('is_reserved', 1)
-            ->latest()
-            ->first();
-
-        if ($reservedSession) {
-            $classId = $reservedSession->classes_id;
-        } else {
-            $todayClass = \App\Models\Classes::where('date', 'LIKE', '%' . $formattedDate . '%')->first();
-            $classId = $todayClass ? $todayClass->id : 1;
+        try {
+            $date = Carbon::createFromFormat('d/m/Y', $storedDay);
+            $dayName = $date->format('l'); // Get the full day name (e.g., Monday)
+            $formattedDate = $date->format('d/m/y'); // Format the date
+            $dayWithDate = $formattedDate . ' ' . $dayName;
+        } catch (\Exception $e) {
+            $dayWithDate = Carbon::now()->format('d/m/y l');
+            $formattedDate = Carbon::now()->format('d/m/y');
         }
 
-        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
+        if ($classId) {
+            session(['class_id' => (int) $classId]);
+            $cls = \App\Models\Classes::find($classId);
+            if ($cls && $cls->date) {
+                $dayWithDate = $cls->date;
+            }
+        } else {
+            $userId = $this->getMobileUserId();
+            // Attempt to find the user's reserved class for this date
+            $reservedSession = \App\Models\ReservationSession::where('user_id', $userId)
+                ->where('is_reserved', 1)
+                ->whereHas('classes', function ($q) use ($formattedDate) {
+                    $q->where('date', 'LIKE', '%' . $formattedDate . '%');
+                })
+                ->latest()
+                ->first();
+
+            if ($reservedSession) {
+                $classId = $reservedSession->classes_id;
+            } else {
+                $todayClass = \App\Models\Classes::where('date', 'LIKE', '%' . $formattedDate . '%')->first();
+                $classId = $todayClass ? $todayClass->id : 1;
+            }
+            session(['class_id' => (int) $classId]);
+        }
+
+        $userId = $this->getMobileUserId();
+        $memberId = Newprofile::where('user_id', $userId)->value('id');
 
         return view('mobile.user.workout', compact('dayWithDate', 'classId', 'memberId'));
     }
@@ -381,7 +461,7 @@ class MobileController extends Controller
     try {
         Log::info('storewarmupdaily function called.');
 
-        $userId = Auth::id();
+        $userId = $this->getMobileUserId();
         $memberId = Newprofile::where('user_id', $userId)->value('id');
         Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
@@ -511,7 +591,7 @@ class MobileController extends Controller
         try {
             Log::info('storestrengthdaily function called.');
 
-            $userId = Auth::id();
+            $userId = $this->getMobileUserId();
             $memberId = Newprofile::where('user_id', $userId)->value('id');
             Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
@@ -657,7 +737,7 @@ class MobileController extends Controller
         try {
             Log::info('storeweightliftingdaily function called.');
 
-            $userId = Auth::id();
+            $userId = $this->getMobileUserId();
             $memberId = Newprofile::where('user_id', $userId)->value('id');
             Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
@@ -805,7 +885,7 @@ class MobileController extends Controller
         try {
             Log::info('storeconditioningdaily function called.');
 
-            $userId = Auth::id();
+            $userId = $this->getMobileUserId();
             $memberId = Newprofile::where('user_id', $userId)->value('id');
             Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
@@ -914,7 +994,7 @@ class MobileController extends Controller
     {
         try {
 
-            $userId = Auth::id();
+            $userId = $this->getMobileUserId();
             $memberId = Newprofile::where('user_id', $userId)->value('id');
             Log::info('Authenticated user ID: ' . $userId . ', Member ID: ' . $memberId);
 
@@ -1147,7 +1227,7 @@ class MobileController extends Controller
             $mode = 'current';
         }
 
-        $userId = Auth::user()->id;
+        $userId = $this->getMobileUserId();
         $dates = [];
 
         if ($mode === 'previous') {
@@ -1669,7 +1749,15 @@ class MobileController extends Controller
     ]);
 
     try {
-        $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
+        try {
+            $date = Carbon::createFromFormat('l d/m/Y', $request->selected_day);
+        } catch (\Exception $e) {
+            try {
+                $date = Carbon::createFromFormat('d/m/y l', $request->selected_day);
+            } catch (\Exception $e2) {
+                $date = Carbon::parse($request->selected_day);
+            }
+        }
         $dayWithDate = $date->format('d/m/y l');
 
         $existingTest = Test::where('workout_libraries_id', $request->workout_id)
@@ -1744,39 +1832,51 @@ class MobileController extends Controller
      * Web-based history data endpoint (for users without a Sanctum token).
      * Proxies the same logic as UserMobileController@getMemberWorkoutDetails.
      */
-    public function historyData()
+    public function historyData(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
-        return app(\App\Http\Controllers\UserMobileController::class)->getMemberWorkoutDetails();
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        $request->setUserResolver(fn() => $user);
+        return app(\App\Http\Controllers\UserMobileController::class)->getMemberWorkoutDetails($request);
     }
 
     public function getExercisesData()
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        request()->setUserResolver(fn() => $user);
         return app(\App\Http\Controllers\UserMobileController::class)->getStrengthWorkouts();
     }
 
     public function getAchievementGraphData(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        $request->setUserResolver(fn() => $user);
         return app(\App\Http\Controllers\UserMobileController::class)->getStrengthProgress($request);
     }
 
     public function profileData()
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        request()->setUserResolver(fn() => $user);
         return app(\App\Http\Controllers\UserMobileController::class)->viewprofile();
     }
 
     public function storeProfileImage(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        $request->setUserResolver(fn() => $user);
         return app(\App\Http\Controllers\UserMobileController::class)->profileImageStore($request);
     }
 
     public function storeMonthlyImages(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $user = $this->getMobileUser();
+        if (!$user) return response()->json(['status' => 'error'], 401);
+        $request->setUserResolver(fn() => $user);
         return app(\App\Http\Controllers\UserMobileController::class)->store($request);
     }
 
@@ -1785,24 +1885,28 @@ class MobileController extends Controller
      */
     public function deleteTestWeb(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $userId = $this->getMobileUserId();
+        if (!$userId) return response()->json(['status' => 'error'], 401);
 
         $request->validate(['test_id' => 'required|integer']);
 
-        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
-        if (!$memberId) {
-            return response()->json(['success' => false, 'message' => 'Member not found.'], 404);
+        $memberId = Newprofile::where('user_id', $userId)->value('id');
+
+        $testQuery = Test::where('id', $request->test_id);
+        if ($memberId) {
+            $testQuery->where(function($q) use ($memberId, $userId) {
+                $q->where('member_id', $memberId)->orWhere('member_id', $userId);
+            });
+        } else {
+            $testQuery->where('member_id', $userId);
         }
 
-        $test = Test::where('id', $request->test_id)
-            ->where('member_id', $memberId)
-            ->first();
-
-        if (!$test) {
+        $record = $testQuery->first();
+        if (!$record) {
             return response()->json(['success' => false, 'message' => 'Record not found.'], 404);
         }
 
-        $test->delete();
+        $record->delete();
 
         return response()->json(['success' => true, 'message' => 'Record deleted.']);
     }
@@ -1812,16 +1916,16 @@ class MobileController extends Controller
      */
     public function getWorkoutLibraryData()
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
-
         $exercises = WorkoutLibrary::with('categoryOption')
             ->orderBy('workout')
             ->get()
             ->map(fn($w) => [
-                'id'       => $w->id,
-                'workout'  => $w->workout,
-                'category_option_id' => $w->category_option_id,
-                'category' => $w->categoryOption?->category_name ?? '',
+                'id'                  => $w->id,
+                'workout'             => $w->workout,
+                'type'                => $w->type,
+                'category_options_id' => $w->category_options_id,
+                'category_option_id'  => $w->category_options_id,
+                'category'            => $w->categoryOption?->category_name ?? '',
             ]);
 
         return response()->json(['success' => true, 'data' => $exercises]);
@@ -1832,34 +1936,41 @@ class MobileController extends Controller
      */
     public function get1RMList(Request $request)
     {
-        if (!Auth::check()) return response()->json(['status' => 'error'], 401);
+        $userId = $this->getMobileUserId();
+        if (!$userId) return response()->json(['status' => 'error'], 401);
 
-        $memberId = Newprofile::where('user_id', Auth::id())->value('id');
-        if (!$memberId) return response()->json(['success' => false, 'data' => []]);
+        $memberId = Newprofile::where('user_id', $userId)->value('id');
 
-        $allHistoricalTests = Test::where('member_id', $memberId)
-            ->whereNotNull('workout_libraries_id')
-            ->whereNotNull('weight')
-            ->get();
+        $allHistoricalTests = Test::where(function($q) use ($memberId, $userId) {
+            if ($memberId) {
+                $q->where('member_id', $memberId)->orWhere('member_id', $userId);
+            } else {
+                $q->where('member_id', $userId);
+            }
+        })
+        ->whereNotNull('weight')
+        ->get();
         
-        // Group by workout_libraries_id to get the latest test per exercise
+        // Group by workout_libraries_id / workout_id / workoutname to get the latest test per exercise
         $testMap = [];
         $testsSorted = $allHistoricalTests->sortBy(function ($t) {
             try {
-                return \Carbon\Carbon::createFromFormat('d/m/y l', $t->date)->timestamp;
-            } catch (\Exception $e) {
-                return 0;
-            }
+                if (!empty($t->date)) {
+                    return \Carbon\Carbon::createFromFormat('d/m/y l', $t->date)->timestamp;
+                }
+            } catch (\Exception $e) {}
+            return $t->created_at ? $t->created_at->timestamp : $t->id;
         });
 
         foreach ($testsSorted as $t) {
-            $testMap[$t->workout_libraries_id] = $t;
+            $key = $t->workout_libraries_id ?: ($t->workout_id ?: $t->workoutname);
+            $testMap[$key] = $t;
         }
 
         $latestTestIds = collect($testMap)->pluck('id')->toArray();
 
         $tests = Test::whereIn('id', $latestTestIds)
-            ->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->get()
             ->map(fn($t) => [
                 'id'         => $t->id,
@@ -1875,7 +1986,7 @@ class MobileController extends Controller
 
     public function updateProfileData(Request $request)
     {
-        $user = Auth::user();
+        $user = $this->getMobileUser();
         if (!$user) {
             return response()->json(['status' => 'error', 'message' => 'Not authenticated'], 401);
         }

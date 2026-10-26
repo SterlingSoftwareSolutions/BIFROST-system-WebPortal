@@ -5,63 +5,119 @@
       const bc = document.getElementById('btn-center');
       if(!bc) return;
 
-      if(fk === 'circuit'){
-        const isForTime = Number(w.is_for_time||0)===1 || Number(w.is_fortime||0)===1 || Number(w.for_time||0)===1 || (w.circuits||[]).some(e=>Number(e.is_for_time||0)===1 || Number(e.is_fortime||0)===1 || Number(e.for_time||0)===1);
-        if(!isForTime){
+      if(fk === 'rounds'){
+        if(!hasRoundsTimer(w, ts)){
           bc.style.background = '#CD7F32';
           bc.style.borderColor = '#CD7F32';
-          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">00:00</span>`;
+          bc.style.cursor = 'default';
+          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">--:--</span>`;
+          return;
+        }
+      }
+
+      if(fk === 'circuit'){
+        if(!hasCircuitTimer(w, ts)){
+          bc.style.background = '#CD7F32';
+          bc.style.borderColor = '#CD7F32';
+          bc.style.cursor = 'default';
+          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">--:--</span>`;
           return;
         }
       }
 
       const isComp = (wkStatus==='completed' || w.type_completed==1 || w.status==='completed' || ts.allDone || ts.phase==='done');
       if(isComp){
-        let compSec = ts.elapsed || 0;
-        if(compSec <= 0 && ts.timeTaken){
-          compSec = parseSec(ts.timeTaken);
+        // Formats without workout-level timers (pyramid, straight-sets) hide timer when completed and display '--:--' (matching mobile app)
+        if(fk === 'pyramid' || fk === 'straight-sets'){
+          bc.style.background = '#CD7F32';
+          bc.style.borderColor = '#CD7F32';
+          bc.style.cursor = 'default';
+          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">--:--</span>`;
+          return;
         }
-        if(compSec <= 0){
-          if(fk === 'emom'){
+
+        if(fk === 'rounds' && !hasRoundsTimer(w, ts)){
+          bc.style.background = '#CD7F32';
+          bc.style.borderColor = '#CD7F32';
+          bc.style.cursor = 'default';
+          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">--:--</span>`;
+          return;
+        }
+        if(fk === 'circuit' && !hasCircuitTimer(w, ts)){
+          bc.style.background = '#CD7F32';
+          bc.style.borderColor = '#CD7F32';
+          bc.style.cursor = 'default';
+          bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">--:--</span>`;
+          return;
+        }
+
+        let compSec = 0;
+        const lim = ts.limit > 0 ? ts.limit : (parseSec(w.time_to_complete || (w.rounds && w.rounds[0] && w.rounds[0].time_to_complete) || (w.circuits && w.circuits[0] && w.circuits[0].time_to_complete) || 0));
+
+        if(fk === 'emom'){
+          if(ts.timeTaken && ts.timeTaken !== '00:00'){
+            compSec = parseSec(ts.timeTaken);
+          } else if(ts.phaseLeft !== undefined && ts.phaseLeft > 0){
+            compSec = ts.phaseLeft;
+          } else {
             const exs = w.emoms || [];
-            const tr = Number(w.number) > 0 ? Number(w.number) : (exs.length || 1);
-            const rawTime = exs[0]?.exercise_time ?? 1;
-            let rd = 60;
-            const strTime = String(rawTime).trim();
-            if(strTime.includes(':')){
-              const p = strTime.split(':').map(Number);
-              if(p.length === 3) rd = (p[0]||0) * 3600 + (p[1]||0) * 60 + (p[2]||0);
-              else if(p.length === 2) rd = (p[0]||0) * 60 + (p[1]||0);
-            } else {
-              const nt = Number(strTime);
-              if(!isNaN(nt) && nt > 0) rd = nt > 10 ? nt : nt * 60;
+            const completedEx = exs.find(e => e.exercise_time && e.exercise_time !== '00:00');
+            if (completedEx && (isComp || w.type_completed == 1 || w.status === 'completed')) {
+              compSec = parseSec(completedEx.exercise_time);
             }
-            compSec = tr * rd;
-          } else if(fk === 'amrap'){
+          }
+        } else if(fk === 'intervals'){
+          compSec = 0;
+        } else if(fk === 'circuit'){
+          if(ts.timeTaken && ts.timeTaken !== '00:00'){
+            compSec = parseSec(ts.timeTaken);
+          } else if(ts.elapsed > 0){
+            compSec = ts.elapsed;
+          } else {
+            let maxSec = -1;
+            let bestTime = null;
+            (w.circuits || []).forEach(e => {
+              if(e.exercise_time && e.exercise_time !== '00:00'){
+                const s = parseSec(e.exercise_time);
+                if(s >= maxSec){
+                  maxSec = s;
+                  bestTime = e.exercise_time;
+                }
+              }
+            });
+            if(bestTime){
+              compSec = parseSec(bestTime);
+            }
+          }
+        } else {
+          if(ts.timeTaken && ts.timeTaken !== '00:00'){
+            compSec = parseSec(ts.timeTaken);
+          } else if(ts.elapsed > 0){
+            compSec = lim > 0 ? Math.max(0, lim - ts.elapsed) : ts.elapsed;
+          }
+        }
+        if(compSec <= 0 && fk !== 'emom' && fk !== 'intervals' && fk !== 'circuit'){
+          if(fk === 'amrap'){
             compSec = getAmrapSec(w);
-          } else if(fk === 'intervals'){
-            const fe = (w.intervals || [])[0] || {};
-            const wS = parseSec(fe.work || w.work) || 40;
-            const rS = parseSec(fe.rest || w.rest) || 20;
-            const tr = w.number || (w.intervals || []).length || 1;
-            compSec = tr * (wS + rS);
           } else if(fk === 'rounds'){
             const first = (w.rounds || []).find(ex => ex.exercise_time && ex.exercise_time !== '00:00');
-            compSec = first ? parseSec(first.exercise_time) : (parseSec(w.time_to_complete) || (ts.limit > 0 ? ts.limit : 0));
-          } else if(fk === 'circuit'){
-            const first = (w.circuits || []).find(ex => ex.exercise_time && ex.exercise_time !== '00:00');
             compSec = first ? parseSec(first.exercise_time) : (parseSec(w.time_to_complete) || (ts.limit > 0 ? ts.limit : 0));
           } else if(fk === 'for-time'){
             compSec = ts.limit > 0 ? ts.limit : parseSec(w.time_to_complete);
           } else if(w.time_to_complete){
             compSec = parseSec(w.time_to_complete);
-          } else if(w.exercise_time){
+          } else if(w.exercise_time && w.exercise_time !== '00:00'){
             compSec = parseSec(w.exercise_time);
           }
         }
+
+        const formatted = (compSec > 0) ? fmt(compSec) : '--:--';
+        const timeDisp = (formatted === '00:00') ? '--:--' : formatted;
+
         bc.style.background = '#CD7F32';
         bc.style.borderColor = '#CD7F32';
-        bc.innerHTML = `<span style="font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;">${fmt(compSec)}</span>`;
+        bc.style.cursor = 'default';
+        bc.innerHTML = `<span style="font-size:22px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums;color:#fff;">${timeDisp}</span>`;
         return;
       }
 
@@ -108,6 +164,14 @@
         let tv = ts.phaseLeft || 0;
         if(['rounds','for-time','circuit'].includes(fk)) tv = ts.limit > 0 ? Math.max(0, ts.limit - ts.elapsed) : ts.elapsed;
         else if(fk === 'amrap') tv = Math.max(0, ts.limit - ts.elapsed);
+
+        if(fk === 'intervals'){
+          const isWork = ts.phase === 'work';
+          const phaseTxt = isWork ? 'WORK' : 'REST';
+          bc.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;line-height:1.1;"><span style="font-size:14px;font-weight:700;color:#fff;letter-spacing:2px;margin-bottom:2px;">${phaseTxt}</span><span style="font-size:22px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums;">${fmt(tv)}</span></div>`;
+          return;
+        }
+
         bc.innerHTML = `<span style="font-size:22px;font-weight:900;font-variant-numeric:tabular-nums;">${fmt(tv)}</span>`;
         return;
       }

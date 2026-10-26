@@ -38,8 +38,6 @@ class AuthController extends Controller
                 }
 
             if ($user) {
-                // Log the user in
-                Auth::login($user);
                 if ($request->type == "mobile") {
                     if ($user->user_type == "client") {
                         if ($request->wantsJson()) {
@@ -50,13 +48,17 @@ class AuthController extends Controller
                                 'user' => $user,
                                 'token' => $token
                             ], 200);
-                        }else {
+                        } else {
+                            Auth::guard('mobile')->login($user);
+                            session(['mobile_user_id' => $user->id]);
                             return redirect()->route('mobile.trainingday');
                         }
                     } else {
                         return redirect()->back()->with('error', 'Please enter a correct pin number.');
                     }
                 } elseif ($request->type == "web") {
+                    // Log the web user in
+                    Auth::guard('web')->login($user);
                     if ($user->user_type == "admin" || $user->user_type == "super admin") {
                         return redirect()->route('admin.dashboard');
                     } elseif ($user->user_type == "client") {
@@ -89,15 +91,15 @@ class AuthController extends Controller
     // log out
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        // Clear all session data
-        session()->flush();
-
-        if ($request->type == "web") {
-            return redirect('/'); // Redirect to the homepage or any other page
-        } elseif ($request->type == "mobile") {
+        if ($request->type == "mobile") {
+            Auth::guard('mobile')->logout();
+            session()->forget('mobile_user_id');
+            session()->forget('class_id');
+            session()->forget('selected_day');
             return redirect('/mobile/login');
+        } else {
+            Auth::guard('web')->logout();
+            return redirect('/');
         }
     }
 

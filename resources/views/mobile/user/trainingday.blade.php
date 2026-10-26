@@ -4,108 +4,209 @@
 <style>
     .training-bg {
         min-height: calc(100vh - 120px);
-        background-image: url('{{ asset('img/valhalla-bg.jpg') }}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
+        position: relative;
         padding: 16px;
     }
+    .training-bg::before {
+        content: '';
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 64px;
+        background-image: url('{{ asset('img/valhalla-bg.jpg') }}');
+        background-size: cover;
+        background-position: center top;
+        z-index: 0;
+        pointer-events: none;
+    }
 
-    /* Week toggle */
+    @media (max-width: 480px) {
+        .training-bg::before {
+            top: 52px;
+            bottom: 58px;
+        }
+    }
+
+    .week-toggle-wrap,
+    .time-pills,
+    .day-cards {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Week toggle matching mobile training.tsx */
     .week-toggle-wrap {
         display: flex;
         justify-content: flex-start;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }
     .week-toggle-wrap.right { justify-content: flex-end; }
 
     .week-toggle-btn {
-        display: flex; align-items: center; gap: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.4);
-        color: #fff; border-radius: 8px;
-        padding: 6px 14px; font-size: 12px; font-weight: 700;
-        cursor: pointer; letter-spacing: 0.5px;
+        border: 1px solid #ffffff;
+        color: #ffffff;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
         transition: background 0.2s;
     }
     .week-toggle-btn:hover { background: rgba(255,255,255,0.16); }
-    .week-toggle-btn .arrow { font-size: 18px; font-weight: 900; }
+    .week-toggle-btn .arrow {
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 1;
+    }
 
-    /* Class time pills */
+    /* Class time pills matching classBtn in mobile training.tsx */
     .time-pills {
-        display: flex; gap: 8px;
-        overflow-x: auto; padding: 0 0 12px;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 0 0 14px;
         scrollbar-width: none;
     }
     .time-pills::-webkit-scrollbar { display: none; }
     .time-pill {
         flex-shrink: 0;
-        border: 1px solid rgba(0,0,0,0.5);
-        color: #fff; border-radius: 8px;
-        padding: 8px 16px; font-size: 13px; font-weight: 600;
-        cursor: pointer; text-align: center;
-        background: rgba(0,0,0,0.3);
-        transition: background 0.2s, border-color 0.2s;
+        border: 1px solid #000000;
+        color: #ffffff;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        text-align: center;
+        background: transparent;
+        transition: border-color 0.2s;
         white-space: nowrap;
+        min-width: 48px;
     }
     .time-pill:hover, .time-pill.active {
-        background: rgba(255,255,255,0.15);
-        border-color: #fff;
+        border: 2px solid #ffffff;
+        background: transparent;
+    }
+    .time-pill.placeholder {
+        cursor: default;
+        pointer-events: none;
+        background: transparent;
     }
 
-    /* Day cards */
-    .day-cards { display: flex; flex-direction: column; gap: 10px; }
+    /* Day cards matching card / selectedCard in mobile training.tsx */
+    .day-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
 
     .day-card {
-        background: rgba(0,0,0,0.45);
-        border: 1px solid rgba(0,0,0,0.6);
-        border-radius: 10px;
+        background: transparent;
+        border: 1px solid #000000;
+        border-radius: 8px;
         padding: 14px 16px;
         cursor: pointer;
-        transition: border-color 0.2s, background 0.2s;
-        display: flex; align-items: center; gap: 0;
+        transition: border-color 0.2s;
+        display: flex;
+        align-items: stretch;
+        gap: 0;
     }
     .day-card.selected {
-        border-color: #fff !important;
-        border-width: 2px;
-        background: rgba(255,255,255,0.06);
+        border: 2px solid #FFFFFF !important;
+        background: transparent;
     }
     .day-card-body {
-        flex: 1; display: flex; justify-content: space-between; align-items: center;
+        flex: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-right: 12px;
     }
-    .day-card-left { display: flex; flex-direction: column; gap: 4px; }
-    .day-name { color: #fff; font-size: 15px; font-weight: 700; }
-    .day-spots { color: #fff; font-size: 12px; margin-top: 4px; }
-    .day-no-class { color: #f87171; font-size: 12px; margin-top: 4px; }
-    .day-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
-    .day-date { color: #ccc; font-size: 12px; }
+    .day-card-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .day-name {
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+    .day-spots {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 400;
+        margin-top: 6px;
+        width: 150px;
+    }
+    .day-no-class {
+        color: #e57373;
+        font-size: 12px;
+        font-weight: 400;
+        margin-top: 6px;
+        width: 150px;
+    }
+    .day-card-right { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-end; 
+        justify-content: center;
+    }
+    .day-date {
+        color: #cccccc;
+        font-size: 12px;
+        font-weight: 400;
+        margin-bottom: 8px;
+    }
 
     .reserve-btn {
-        border: 1px solid #fff; border-radius: 6px;
-        color: #fff; font-size: 12px; font-weight: 700;
-        padding: 4px 10px; background: transparent; cursor: pointer;
+        border: 1px solid #ffffff;
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: bold;
+        padding: 4px 10px;
+        background: transparent;
+        cursor: pointer;
         transition: background 0.2s, color 0.2s;
     }
-    .reserve-btn:hover { background: #fff; color: #000; }
+    .reserve-btn:hover { background: #ffffff; color: #000000; }
     .reserve-btn.cancel { border-color: #f87171; color: #f87171; }
-    .reserve-btn.cancel:hover { background: #f87171; color: #fff; }
+    .reserve-btn.cancel:hover { background: #f87171; color: #ffffff; }
     .reserve-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* Arrow to go to readiness */
+    /* Arrow column matching arrowColumn in mobile training.tsx */
     .day-arrow {
-        width: 36px; min-width: 36px;
-        border-left: 1px solid rgba(0,0,0,0.5);
-        display: flex; align-items: center; justify-content: center;
-        color: #fff; font-size: 22px; font-weight: 700;
-        cursor: pointer; padding-left: 8px;
-        transition: color 0.2s;
+        width: 36px;
+        min-width: 36px;
+        border-left: 1px solid #000000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        padding-left: 8px;
+        transition: opacity 0.2s;
     }
-    .day-arrow:hover { color: rgba(255,255,255,0.7); }
+    .day-arrow:hover { opacity: 0.7; }
 
     /* Loading state */
     .loading-state {
-        display: flex; align-items: center; justify-content: center;
-        color: #fff; padding: 40px; font-size: 14px; gap: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        padding: 40px;
+        font-size: 14px;
+        gap: 10px;
     }
 </style>
 @endpush
@@ -145,6 +246,18 @@ let selectedClassIndex = 0;
 
 let scheduleData = [];
 
+// Matches mobile app isToday helper exactly
+function isToday(dateString) {
+    if (!dateString) return false;
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const yyyy = String(today.getFullYear());
+
+    const clean = String(dateString).trim();
+    return clean === `${dd}/${mm}/${yyyy}` || clean === `${yyyy}-${mm}-${dd}`;
+}
+
 function toggleWeek() {
     weekMode = weekMode === 'current' ? 'previous' : 'current';
 
@@ -179,10 +292,14 @@ async function loadSchedule() {
         const slots = await resp.json();
         scheduleData = slots;
 
-        // Auto-select today
-        if (selectedDayIndex === -1) {
-            const todayIdx = slots.findIndex(s => s.is_today);
+        // Auto-select today using device local date (matching React Native mobile app)
+        if (selectedDayIndex === -1 || selectedDayIndex >= slots.length) {
+            let todayIdx = slots.findIndex(s => isToday(s.date));
+            if (todayIdx === -1) {
+                todayIdx = slots.findIndex(s => s.is_today);
+            }
             selectedDayIndex = todayIdx >= 0 ? todayIdx : 0;
+            selectedClassIndex = 0;
         }
 
         renderUI();
@@ -200,13 +317,14 @@ function renderUI() {
 function renderPills() {
     const container = document.getElementById('timePills');
     if (!scheduleData || scheduleData.length === 0 || selectedDayIndex < 0) {
-        container.innerHTML = '';
+        container.innerHTML = '<div class="time-pill placeholder">--.--</div>';
         return;
     }
     
     const currentDay = scheduleData[selectedDayIndex];
     if (!currentDay.classes || currentDay.classes.length === 0) {
-        container.innerHTML = '';
+        // When no class on selected day, show --.-- pill matching mobile app exactly
+        container.innerHTML = '<div class="time-pill placeholder">--.--</div>';
         return;
     }
 
@@ -253,7 +371,7 @@ function renderCards() {
                 reserveHtml = `<button class="reserve-btn" disabled>Full</button>`;
             }
         } else {
-            reserveHtml = `<span style="color:#6b7280;font-size:18px;">–</span>`;
+            reserveHtml = `<span style="color:#fff;font-size:20px;line-height:1;margin-right:2px;">–</span>`;
         }
 
         return `
@@ -341,10 +459,18 @@ async function goToReadiness(e, dayIdx) {
             body: JSON.stringify({ day: slot.date, class_id: cls.id })
         });
     } catch(e) {}
-    window.location.href = '/mobile/readinessscore';
+    window.location.href = '/mobile/readinessscore?class_id=' + cls.id;
 }
 
 // Init on page load
 document.addEventListener('DOMContentLoaded', () => loadSchedule());
+
+// Auto-refresh schedule when user switches back to this tab
+window.addEventListener('focus', () => loadSchedule());
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        loadSchedule();
+    }
+});
 </script>
 @endpush

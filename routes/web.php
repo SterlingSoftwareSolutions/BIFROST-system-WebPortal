@@ -320,6 +320,7 @@ Route::put('/warmup-daily/{id}', [MobileController::class, 'storewarmupdaily'])-
 Route::post('/save-strength-workout',  [MobileController::class, 'storestrengthdaily']);
 Route::post('/save-weightlifting-workout', [MobileController::class, 'storeweightliftingdaily']);
 Route::post('/save-conditioning-workout', [MobileController::class, 'storeconditioningdaily']);
+Route::post('/save-accessory-workout', [MobileController::class, 'storeaccessorydaily']);
 
 Route::get('/mobile/workouttimer', [MobileController::class, 'workouttimer'])->name('mobile.workouttimer');
 Route::get('/mobile/histroyview', [MobileController::class, 'histroyview'])->name('mobile.histroyview');

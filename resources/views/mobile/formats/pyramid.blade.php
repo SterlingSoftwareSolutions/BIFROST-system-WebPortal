@@ -4,6 +4,12 @@
 
     function cardPyramid(w){
       const rows = w.pyramids || w.pyramid || [];
+      rows.forEach(r => {
+        if(r.is_completed == 1 || w.type_completed == 1 || w.status === 'completed' || !!CT[`${w.id}-${r.id}`]){
+          r.is_completed = 1;
+          CT[`${w.id}-${r.id}`] = true;
+        }
+      });
       const doneC = rows.filter(r => r.is_completed == 1 || !!CT[`${w.id}-${r.id}`] || w.type_completed == 1).length;
       let allD = (w.type_completed == 1 || w.status === 'completed' || (rows.length > 0 && doneC >= rows.length));
       const ts = TS[w.id] = TS[w.id] || { elapsed: 0, running: false, paused: false, interval: null, allDone: allD };
@@ -53,24 +59,24 @@
         const repsVal = row.reps_progress ?? row.reps ?? 0;
 
         return `<div class="pyr-row-wrap" id="pyr-row-${w.id}-${row.id}" onclick="event.stopPropagation();pyrClick(${w.id},${row.id})"
-          style="width:100%;padding:4px 0;margin-bottom:2px;cursor:pointer;${isActive ? 'background:rgba(255,255,255,0.15);border-radius:8px;' : ''}">
-          <div style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-height:30px;">
-            <div style="flex:2;text-align:left;color:#fff;font-size:14px;font-weight:600;padding-left:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          style="width:100%;padding:3px 0;margin-bottom:2px;cursor:pointer;${isActive ? 'background:rgba(255,255,255,0.15);border-radius:6px;' : ''}">
+          <div style="display:flex;flex-direction:row;align-items:center;justify-content:space-between;width:100%;min-height:26px;">
+            <div style="flex:2;text-align:left;color:#fff;font-size:12px;font-weight:600;padding-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
               ${workoutName}
             </div>
-            <div style="flex:1;text-align:right;color:#fff;font-size:13px;font-weight:600;padding-right:0;font-variant-numeric:tabular-nums;">
+            <div style="flex:1;text-align:right;color:#fff;font-size:12px;font-weight:600;padding-right:0;font-variant-numeric:tabular-nums;">
               ${weightDisp}
             </div>
-            <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;padding-right:10px;transform:translateX(12px);">
+            <div style="flex:1;display:flex;justify-content:flex-end;align-items:center;padding-right:8px;transform:translateX(12px);">
               ${Number(repsVal) === 0 ? `
-                <span style="background:transparent;color:#fff;font-size:16px;font-weight:600;min-width:28px;text-align:center;padding:0 4px;display:inline-block;">---</span>
+                <span style="background:transparent;color:#fff;font-size:12px;font-weight:600;min-width:26px;text-align:center;padding:0 2px;display:inline-block;">---</span>
               ` : `
-                <span style="background:#fff;color:#000;padding:2px 4px;border-radius:4px;font-size:14px;font-weight:bold;min-width:28px;text-align:center;display:inline-block;line-height:1.2;">${repsVal}</span>
+                <span style="background:#fff;color:#000;padding:2px 4px;border-radius:4px;font-size:12px;font-weight:bold;min-width:26px;text-align:center;display:inline-block;line-height:1.2;">${repsVal}</span>
               `}
             </div>
-            <div style="width:35px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <div style="width:30px;height:26px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               ${isSetCompleted ? `
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
               ` : ''}
@@ -110,14 +116,23 @@
       const doneC = rows.filter(r => !!CT[`${w.id}-${r.id}`] || r.is_completed == 1).length;
       const allDone = rows.length > 0 && doneC >= rows.length;
       if(allDone){
+        w.type_completed = 1;
+        w.status = 'completed';
+        rows.forEach(r => { r.is_completed = 1; CT[`${w.id}-${r.id}`] = true; });
+        if(TS[w.id]) TS[w.id].allDone = true;
         showBanner(w.id, 'pyramid', true);
         if(w.id === selId){
           wkStatus = 'completed';
+          updBbar();
         }
       }
     }
 
     async function savePyramidRow(w, row, rowIndex, rowsCount){
+      const tk = `${w.id}-${row.id}`;
+      CT[tk] = true;
+      row.is_completed = 1;
+
       let ep = '/save-strength-workout';
       if(tab === 'warmup') ep = '/warmup-daily';
       else if(tab === 'weightlifting') ep = '/save-weightlifting-workout';
@@ -137,7 +152,7 @@
         workout_format_id: row.id,
         reps: reps,
         weight: wgt,
-        date: dayStr(),
+        date: typeof workoutDayStr === 'function' ? workoutDayStr() : DAY,
         set_number: setNumber,
         round_number: roundNumber,
         class_Id: CLSID,
@@ -146,13 +161,19 @@
 
       try{
         console.log('Saving PYRAMID row payload:', payload);
-        await fetch(ep, {
+        const res = await fetch(ep, {
           method: 'POST',
           headers: {'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF},
           body: JSON.stringify(payload)
         });
+        const data = await res.json().catch(() => null);
+        if(!res.ok || (data && data.success === false)) {
+          console.error('[savePyramidRow] Failed:', data);
+          throw new Error(data?.message || data?.error || 'Save failed');
+        }
       }catch(err){
         console.error('Failed to save pyramid row:', err);
+        throw err;
       }
     }
 </script>
