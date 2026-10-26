@@ -42,12 +42,18 @@
             
             playTimerBeep(1000, 0.35);
             const timeStr = '00:00';
-            const rProgress = `${ts.rounds || 0}/${ts.totalRounds || 1}`;
-            saveCondWk(w, null, null, rProgress, timeStr, null);
+            const finalRounds = (ts.rounds > 0) ? ts.rounds : 1;
+            const finalTotal = (ts.totalRounds > 0) ? ts.totalRounds : finalRounds;
+            const rProgress = `${Math.max(finalRounds, finalTotal)}/${finalTotal}`;
+            try {
+              await saveCondWk(w, null, null, rProgress, timeStr, null);
+            } catch(e) {
+              console.error('Error saving AMRAP completion:', e);
+            }
             
             w.type_completed = 1;
             w.status = 'completed';
-            (w.amraps || []).forEach(ex => { ex.is_completed = 1; });
+            (w.amraps || []).forEach(ex => { ex.is_completed = 1; ex.round_number = rProgress; });
             
             showBanner(wId, 'amrap', true, fmt(ts.elapsed));
             if(wId === selId){

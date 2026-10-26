@@ -94,10 +94,15 @@
       const completedRoundNum = ts.round;
       ts.completedRounds = (ts.completedRounds || 0) + 1;
       const isFinal = ts.completedRounds >= ts.totalRounds;
-      const timeStr = fmt(ts.roundDuration || 60);
+      const stoppedSec = Math.max(0, ts.phaseLeft !== undefined ? ts.phaseLeft : (ts.roundDuration || 60));
+      const timeStr = fmt(stoppedSec);
       const rProgress = `${completedRoundNum}/${ts.totalRounds}`;
 
-      saveCondWk(w, null, null, rProgress, timeStr, null);
+      try {
+        await saveCondWk(w, null, null, rProgress, timeStr, null);
+      } catch(e) {
+        console.error('Error saving EMOM round:', e);
+      }
 
       const prg = document.getElementById('emom-prog-' + wId);
       if (prg) prg.textContent = `${ts.completedRounds}/${ts.totalRounds}`;
@@ -110,11 +115,19 @@
         ts.running = false;
         ts.phase = 'done';
         ts.allDone = true;
+        ts.timeTaken = timeStr;
+        w.type_completed = 1;
+        w.status = 'completed';
+        (w.emoms || []).forEach(ex => {
+          ex.is_completed = 1;
+          ex.round_number = rProgress;
+          ex.exercise_time = timeStr;
+        });
 
         const exCont = document.getElementById('emom-ex-cont-' + wId);
         if (exCont) exCont.style.background = 'transparent';
 
-        showBanner(wId, 'emom', true, fmt(ts.elapsed));
+        showBanner(wId, 'emom', true, timeStr);
         if (wId === selId) {
           wkStatus = 'completed';
           updBbar();

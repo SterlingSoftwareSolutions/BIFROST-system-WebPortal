@@ -28,6 +28,9 @@
           if(totalR > 0 && dbCr >= totalR) allD = true;
         }
       }
+      if(allD && dbCr === 0 && totalR > 0) {
+        dbCr = totalR;
+      }
 
       const ts = TS[w.id] = TS[w.id] || {
         elapsed: 0,
@@ -43,10 +46,16 @@
         allDone: allD
       };
 
-      if(allD || ts.allDone || ts.phase === 'done'){
+      if(ts.completedRounds === 0 && dbCr > 0) ts.completedRounds = dbCr;
+      if(allD || ts.allDone || ts.phase === 'done' || (totalR > 0 && (ts.completedRounds || 0) >= totalR)){
         ts.allDone = true;
         ts.phase = 'done';
-        ts.completedRounds = totalR;
+        if(totalR > 0 && (ts.completedRounds || 0) < totalR) ts.completedRounds = totalR;
+      }
+
+      const firstExWithTime = exs.find(e => e.exercise_time && e.exercise_time !== '00:00');
+      if(firstExWithTime && !ts.timeTaken) {
+        ts.timeTaken = firstExWithTime.exercise_time;
       }
 
       const isComp = (w.type_completed == 1 || w.status === 'completed' || ts.allDone || ts.phase === 'done');
@@ -56,11 +65,11 @@
 
       // 1RM missing warning
       const hasMissing1RM = exs.some(ex => String(ex.unit_type || "%").trim() === "%" && (ex.training_load > 0 || ex.weight > 0) && (!ex.test_weight || ex.test_weight === 0));
-      const warnHtml = hasMissing1RM ? `<div style="color:#fca5a5; font-size:13px; margin-bottom:12px; padding:0 4px;">⚠️ Please add your 1RM for accurate weight calculation.</div>` : '';
+      const warnHtml = hasMissing1RM ? `<div style="color:#fca5a5; font-size:12px; margin-bottom:8px; padding:0 4px;">⚠️ Please add your 1RM for accurate weight calculation.</div>` : '';
 
       // Progress bar (matching mobile app 8px height, rounded 5px)
       const pbarWidth = totalR > 0 ? Math.min(100, (cr / totalR) * 100) : 0;
-      const pbarHtml = `${warnHtml}<div style="height:8px; width:100%; background:rgba(255,255,255,0.2); border-radius:5px; margin-bottom:12px; overflow:hidden;"><div id="emom-pbar-${w.id}" style="height:100%; width:${pbarWidth}%; background:#FFFFFF; border-radius:5px; transition:width 0.3s ease;"></div></div>`;
+      const pbarHtml = `${warnHtml}<div style="height:6px; width:100%; background:rgba(255,255,255,0.2); border-radius:4px; margin-bottom:10px; overflow:hidden;"><div id="emom-pbar-${w.id}" style="height:100%; width:${pbarWidth}%; background:#FFFFFF; border-radius:4px; transition:width 0.3s ease;"></div></div>`;
 
       // Exercise rows
       const isWorkPhase = ts.phase === 'work';

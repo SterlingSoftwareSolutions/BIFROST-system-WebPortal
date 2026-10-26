@@ -21,6 +21,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Warmup;
 use Illuminate\Support\Str;
 use App\Models\Test;
@@ -28,9 +29,17 @@ use App\Models\Test;
 
 class UserMobileController extends Controller
 {
+    public function getAuthUser($request = null)
+    {
+        return ($request ? $request->user() : null)
+            ?: Auth::guard('mobile')->user()
+            ?: (session('mobile_user_id') ? \App\Models\User::find(session('mobile_user_id')) : null)
+            ?: Auth::user();
+    }
+
     public function viewprofile()
     {
-        $user = Auth::user(); // Get the currently authenticated user
+        $user = $this->getAuthUser(); // Get the currently authenticated mobile user
 
         if (!$user) {
             // If the user is not authenticated, return an unauthorized JSON response
@@ -43,7 +52,8 @@ class UserMobileController extends Controller
         $member = Newprofile::where('user_id', $user->id)->first();
 
         // Determine profile image (image_paths is a STRING like "profile/xxx.jpg")
-        $profileImage = ($member && !empty($member->image_paths))
+        $hasCustomAvatar = $member && !empty($member->image_paths) && $member->image_paths !== '[]' && Storage::disk('public')->exists(ltrim($member->image_paths, '/'));
+        $profileImage = $hasCustomAvatar
             ? asset('storage/' . ltrim($member->image_paths, '/'))
             : asset('storage/default-profile.png');
 
@@ -71,9 +81,9 @@ class UserMobileController extends Controller
                 return [
                     'id' => $item->id,
                     'month' => Carbon::parse($item->month)->format('F Y'),
-                    'front_image' => $item->front_image ? asset('storage/' . $item->front_image) : null,
-                    'side_image' => $item->side_image ? asset('storage/' . $item->side_image) : null,
-                    'back_image' => $item->back_image ? asset('storage/' . $item->back_image) : null,
+                    'front_image' => ($item->front_image && Storage::disk('public')->exists($item->front_image)) ? asset('storage/' . $item->front_image) : null,
+                    'side_image' => ($item->side_image && Storage::disk('public')->exists($item->side_image)) ? asset('storage/' . $item->side_image) : null,
+                    'back_image' => ($item->back_image && Storage::disk('public')->exists($item->back_image)) ? asset('storage/' . $item->back_image) : null,
                     'created_at' => $item->created_at,
                 ];
             });
@@ -117,30 +127,17 @@ class UserMobileController extends Controller
             if (!$request->hasFile('front_image')) {
                 throw new Exception('Front image file is missing');
             }
-
-            $frontFile = $request->file('front_image');
-
-            $frontImagePath = $frontFile->store('images', 'public');
-
+            $frontImagePath = $this->storeOptimizedImage($request->file('front_image'), 'images');
 
             if (!$request->hasFile('side_image')) {
                 throw new Exception('Side image file is missing');
             }
-
-            $sideFile = $request->file('side_image');
-
-            $sideImagePath = $sideFile->store('images', 'public');
-
+            $sideImagePath = $this->storeOptimizedImage($request->file('side_image'), 'images');
 
             if (!$request->hasFile('back_image')) {
                 throw new Exception('Back image file is missing');
             }
-
-            $backFile = $request->file('back_image');
-
-            $backImagePath = $backFile->store('images', 'public');
-
-
+            $backImagePath = $this->storeOptimizedImage($request->file('back_image'), 'images');
 
             $monthlyImage = MonthlyImage::create([
                 'month' => $request->month,
@@ -184,7 +181,7 @@ class UserMobileController extends Controller
                     'profile_image' => 'required|image|mimes:jpg,jpeg,png|max:10240',
                 ]);
 
-                $path = $request->file('profile_image')->store('profile', 'public'); // profile/xxx.jpg
+                $path = $this->storeOptimizedImage($request->file('profile_image'), 'profile');
 
                 // if user already has row -> update, else -> insert
                 $profile = Newprofile::updateOrCreate(
@@ -192,13 +189,75 @@ class UserMobileController extends Controller
                     ['image_paths' => $path]
                 );
 
+                $fullUrl = asset('storage/' . $path);
+
                 return response()->json([
+                    'status' => 'success',
                     'success' => true,
                     'message' => 'Profile photo saved.',
-                    'profile_image_url' => asset('storage/' . $path),
+                    'profile_image_url' => $fullUrl,
+                    'image_url' => $fullUrl,
                     'data' => $profile,
                 ]);
             }
+
+    /**
+     * Store and optimize an uploaded image to a web/mobile friendly compressed JPEG
+     */
+    protected function storeOptimizedImage($file, $folder = 'images')
+    {
+        $filename = \Illuminate\Support\Str::random(40) . '.jpg';
+        $fullDir = storage_path('app/public/' . trim($folder, '/'));
+        if (!file_exists($fullDir)) {
+            @mkdir($fullDir, 0755, true);
+        }
+        $targetPath = $fullDir . '/' . $filename;
+
+        $filePath = $file->getRealPath();
+        $imageInfo = @getimagesize($filePath);
+
+        if ($imageInfo) {
+            $src = null;
+            switch ($imageInfo[2]) {
+                case IMAGETYPE_JPEG:
+                    $src = @imagecreatefromjpeg($filePath);
+                    break;
+                case IMAGETYPE_PNG:
+                    $src = @imagecreatefrompng($filePath);
+                    break;
+                case IMAGETYPE_WEBP:
+                    $src = @imagecreatefromwebp($filePath);
+                    break;
+            }
+
+            if ($src) {
+                $origWidth = imagesx($src);
+                $origHeight = imagesy($src);
+                $maxWidth = 1200;
+                $maxHeight = 1600;
+
+                $width = $origWidth;
+                $height = $origHeight;
+                if ($width > $maxWidth || $height > $maxHeight) {
+                    $ratio = min($maxWidth / $width, $maxHeight / $height);
+                    $width = (int)round($width * $ratio);
+                    $height = (int)round($height * $ratio);
+                }
+
+                $dst = imagecreatetruecolor($width, $height);
+                $white = imagecolorallocate($dst, 255, 255, 255);
+                imagefill($dst, 0, 0, $white);
+                imagecopyresampled($dst, $src, 0, 0, 0, 0, $width, $height, $origWidth, $origHeight);
+                imagejpeg($dst, $targetPath, 80);
+                imagedestroy($dst);
+                imagedestroy($src);
+
+                return trim($folder, '/') . '/' . $filename;
+            }
+        }
+
+        return $file->store($folder, 'public');
+    }
 
 
 
@@ -253,7 +312,7 @@ class UserMobileController extends Controller
 
     public function getStrengthProgresssssssssss(Request $request)
     {
-        $user = Auth::user();
+        $user = $this->getAuthUser($request);
 
         if (!$user) {
             return response()->json([
@@ -416,7 +475,7 @@ class UserMobileController extends Controller
 
     public function getStrengthProgress(Request $request)
     {
-        $user = Auth::user();
+        $user = $this->getAuthUser($request);
 
         if (!$user) {
             return response()->json([
@@ -592,10 +651,10 @@ class UserMobileController extends Controller
     }
 
 
-    public function getMemberWorkoutDetails(Request $request)
+    public function getMemberWorkoutDetails(Request $request = null)
     {
         try {
-            $user = Auth::user();
+            $user = $this->getAuthUser($request);
             $member = Newprofile::where('user_id', $user->id)->first();
 
             if (!$member) {
@@ -899,7 +958,7 @@ class UserMobileController extends Controller
     public function getMemberProfile()
     {
         try {
-            $user = Auth::user();
+            $user = $this->getAuthUser();
 
             // Check authentication
             if (!$user) {
@@ -961,7 +1020,7 @@ class UserMobileController extends Controller
     public function updateMemberProfile(Request $request)
     {
         try {
-            $user = Auth::user();
+            $user = $this->getAuthUser($request);
 
             if (!$user) {
                 return response()->json([
@@ -1062,7 +1121,13 @@ public function getWorkouts(Request $request)
             'date'     => 'required|string', // e.g. "13/02/26 Friday"
         ]);
 
-        $user = $request->user();
+        $user = $this->getAuthUser($request) ?: \App\Models\User::find($request->input('user_id'));
+        if (!$user) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Unauthenticated.'
+            ], 401);
+        }
         $member = Newprofile::where('user_id', $user->id)->first();
 
         if (!$member) {
@@ -1568,9 +1633,24 @@ public function getWorkouts(Request $request)
                             ? round(($roundsDone / $roundsTotal) * 100)
                             : 0;
 
+                        $isCompleted = ($roundsTotal > 0 && $roundsDone >= $roundsTotal) || ($roundsDone > 0 && $roundEntries->isNotEmpty());
+                        $formatItem->setAttribute('is_completed', $isCompleted ? 1 : 0);
                         $formatItem->rounds_done = $roundsDone;
                         $formatItem->rounds_total = $roundsTotal;
                         $formatItem->completion_percent = $completionPercent;
+
+                        $lastRecord = $dailyModel::where('member_id', $member->id)
+                            ->where('workout_manager_id', $workout->id)
+                            ->where('workout_format_type', $formatType)
+                            ->where('workout_format_id', $formatItem->id)
+                            ->where('class_id', $classId)
+                            ->whereIn('date', $patterns)
+                            ->orderByDesc('id')
+                            ->first();
+                        if ($lastRecord) {
+                            $formatItem->setAttribute('exercise_time', $lastRecord->exercise_time ?? null);
+                            $formatItem->setAttribute('has_reps_saved', 1);
+                        }
                     }
                     elseif (($workout->format->slug ?? '') === 'straight-sets') {
 
@@ -1621,7 +1701,12 @@ public function getWorkouts(Request $request)
                             ->where('workout_format_type', $formatType)
                             ->where('workout_format_id', $formatItem->id)
                             ->where('class_id', $classId)
-                            ->where('date', 'LIKE', '%' . $dateString . '%');
+                            ->where(function ($q) use ($patterns, $dateString) {
+                                $q->where('date', 'LIKE', '%' . $dateString . '%');
+                                foreach ($patterns as $p) {
+                                    $q->orWhere('date', 'LIKE', '%' . $p . '%');
+                                }
+                            });
 
                         if (
                             in_array($typeName, ['strength', 'weightlifting', 'accessory'])
@@ -1644,10 +1729,9 @@ public function getWorkouts(Request $request)
                             $formatId = $formatItem->id;
                             $dailyQuery = (clone $baseQuery);
 
-                            // EMOM is time-based: completion = the timer ran and the round was saved.
-                            // We check existence rather than reps >= target, because reps reset each minute
-                            // and the user may legitimately log 0 reps while still completing the round.
-                            if (in_array($formatType, ['emom', 'rounds', 'circuit', 'intervals', 'for-time'])) {
+                            // Time/Round-based formats (EMOM, Rounds, Circuit, Intervals, For-Time, AMRAP, Pyramid):
+                            // completion is verified through round progress and timer execution records.
+                            if (in_array($formatType, ['emom', 'rounds', 'circuit', 'intervals', 'for-time', 'amrap', 'pyramid', 'pyramids'])) {
                                 $dailyRecord = $dailyQuery->orderByDesc('id')->first();
                                 $isCompleted = false;
                                 $roundNumber = null;
@@ -1657,7 +1741,11 @@ public function getWorkouts(Request $request)
                                     $dailyRepsSum = $dailyQuery->sum('reps');
                                     $roundNumber = trim($dailyRecord->round_number);
 
-                                    if ($roundNumber && str_contains($roundNumber, '/')) {
+                                    if (in_array($formatType, ['circuit', 'pyramid', 'pyramids'])) {
+                                        // For circuit and pyramid formats, each exercise/layer is an independent format item.
+                                        // An existing record in daily table for this format item indicates it was completed.
+                                        $isCompleted = true;
+                                    } elseif ($roundNumber && str_contains($roundNumber, '/')) {
                                         [$done, $total] = explode('/', $roundNumber);
                                         $isCompleted = ((int)trim($done) >= (int)trim($total));
                                     } else {
@@ -1680,21 +1768,26 @@ public function getWorkouts(Request $request)
                                     $formatItem->setAttribute('is_completed',   $isCompleted ? 1 : 0);
                                     $formatItem->setAttribute('has_reps_saved', 1);
                                     $formatItem->setAttribute('daily_reps',     $dailyRepsSum);
+                                    $formatItem->setAttribute('reps_progress',  $dailyRecord->reps ?? $dailyRepsSum);
                                     $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
                                     $formatItem->setAttribute('round_number',   $roundNumber);
 
                                     // Attach the user's actual completion time (exercise_time).
                                     // This is set by the app when saving and lets the mobile show
                                     // the real elapsed time after a refresh instead of the admin limit.
-                                    $formatItem->setAttribute('exercise_time', $dailyRecord->exercise_time ?? null);
+                                    $savedTime = ($dailyRecord->exercise_time && $dailyRecord->exercise_time !== '00:00')
+                                        ? $dailyRecord->exercise_time
+                                        : ($formatItem->getOriginal('exercise_time') ?? null);
+                                    $formatItem->setAttribute('exercise_time', $savedTime);
 
                                 } else {
                                     $formatItem->setAttribute('is_completed',   0);
                                     $formatItem->setAttribute('has_reps_saved', 0);
                                     $formatItem->setAttribute('daily_reps',     0);
+                                    $formatItem->setAttribute('reps_progress',  $formatItem->reps ?? 0);
                                     $formatItem->setAttribute('target_reps',    $formatItem->reps ?? 0);
                                     $formatItem->setAttribute('round_number',   null);
-                                    $formatItem->setAttribute('exercise_time',  null);
+                                    $formatItem->setAttribute('exercise_time',  $formatItem->getOriginal('exercise_time') ?? null);
                                 }
                             }
                         // Only proceed with rep logic/logging if the user has actually logged something for this exercise today

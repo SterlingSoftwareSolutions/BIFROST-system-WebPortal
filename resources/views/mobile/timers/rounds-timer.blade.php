@@ -5,8 +5,8 @@
       const w = list.find(x => x.id === wId);
       if(!w) return;
       const ts = TS[wId];
-      if(ts.running) return;
-      const lim = parseSec(w.time_to_complete || (w.rounds && w.rounds[0] && w.rounds[0].time_to_complete)) || 600;
+      if(!hasRoundsTimer(w, ts)) return;
+      const lim = parseSec(w.time_to_complete || (w.rounds && w.rounds[0] && w.rounds[0].time_to_complete)) || 0;
       ts.limit = lim;
       countdown10(wId, () => {
         ts.running = true;
@@ -29,7 +29,15 @@
       clearInterval(ts.interval);
       ts.interval = null;
       ts.running = false;
-      showBanner(wId, 'rounds', ok, fmt(ts.elapsed));
+      const list = wData[tab] || [];
+      const w = list.find(x => x.id === wId);
+      if(ok && w){
+        w.type_completed = 1;
+        w.status = 'completed';
+        (w.rounds || []).forEach(ex => { ex.is_completed = 1; });
+      }
+      const dispTime = (ts.limit > 0) ? fmt(Math.max(0, ts.limit - (ts.elapsed || 0))) : fmt(ts.elapsed || 0);
+      showBanner(wId, 'rounds', ok, dispTime);
       if(wId === selId){
         wkStatus = ok ? 'completed' : 'incompleted';
         updBbar();

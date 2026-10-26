@@ -29,6 +29,7 @@
 
       if(!phases.length){
         CT[tk] = true;
+        if(row) row.is_completed = 1;
         const rowIndex = rows.findIndex(r => r.id === rowId);
         savePyramidRow(w, row, rowIndex, rows.length);
         checkAllPyrDone(w);
@@ -87,6 +88,7 @@
       CT[tk] = true;
 
       if(row){
+        row.is_completed = 1;
         const rowIndex = rows.findIndex(r => r.id === rowId);
         savePyramidRow(w, row, rowIndex, rows.length);
       }

@@ -2,89 +2,235 @@
 
 @push('head-styles')
 <style>
-    /* ===== READINESS SCORE — exact match of React Native readiness.tsx ===== */
+    /* ===== READINESS SCORE — responsive mobile match of React Native readiness.tsx ===== */
     .rs-bg {
         min-height: calc(100vh - 120px);
+        position: relative;
+        padding: 10px 14px;
+    }
+    .rs-bg::before {
+        content: '';
+        position: fixed;
+        top: 56px;
+        left: 0;
+        right: 0;
+        bottom: 64px;
         background-image: url('{{ asset('img/valhalla-bg.jpg') }}');
         background-size: cover;
-        background-position: center;
-        padding: 16px;
+        background-position: center top;
+        z-index: 0;
+        pointer-events: none;
+    }
+    @media (max-width: 480px) {
+        .rs-bg::before {
+            top: 52px;
+            bottom: 58px;
+        }
+    }
+
+    .rs-header,
+    .rs-row,
+    .rs-score-box,
+    .rs-actions {
+        position: relative;
+        z-index: 1;
     }
 
     /* Header */
-    .rs-header { text-align: center; margin-bottom: 28px; margin-top: 10px; }
-    .rs-title  { color: #fff; font-size: 22px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; }
-    .rs-date   { color: #cfcfcf; font-size: 14px; font-weight: 600; margin-top: 6px; letter-spacing: 0.8px; }
+    .rs-header {
+        text-align: center;
+        margin-bottom: 12px;
+        margin-top: 4px;
+    }
+    .rs-title {
+        color: #fff;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: 1.2px;
+        text-transform: uppercase;
+    }
+    .rs-date {
+        color: #cfcfcf;
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: 3px;
+        letter-spacing: 0.5px;
+    }
 
     /* Row */
-    .rs-row { width: 100%; margin-bottom: 16px; }
-    .rs-label { color: #fff; font-size: 15px; text-align: center; margin-bottom: 4px; }
+    .rs-row {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto 8px;
+    }
+    .rs-label {
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 3px;
+    }
 
     /* Option row — scale buttons side by side */
-    .rs-option-row { display: flex; align-items: center; justify-content: center; gap: 0; }
-    .rs-option-btn {
-        flex: 1; height: 40px; border: none;
-        color: #fff; font-weight: 600; font-size: 14px;
-        cursor: pointer; transition: opacity 0.2s;
-        display: flex; align-items: center; justify-content: center;
+    .rs-option-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
     }
-    .rs-option-btn:first-child  { border-radius: 6px 0 0 6px; }
-    .rs-option-btn:last-of-type { border-radius: 0 6px 6px 0; }
+    .rs-option-btn {
+        flex: 1;
+        height: 32px;
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        font-size: 12px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rs-option-btn:first-child  { border-radius: 5px 0 0 5px; }
+    .rs-option-btn:last-of-type { border-radius: 0 5px 5px 0; }
     .rs-option-btn.selected {
         background: transparent !important;
         border: 1px solid #fff;
     }
     .rs-info-btn {
-        background: none; border: none; color: #fff;
-        font-size: 18px; cursor: pointer; padding: 0 6px; margin-left: 6px;
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        padding: 0 4px;
+        margin-left: 4px;
         flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .rs-desc { color: #ccc; font-size: 13px; text-align: center; margin-top: 8px; }
+    .rs-desc {
+        color: #ccc;
+        font-size: 11px;
+        text-align: center;
+        margin-top: 3px;
+        min-height: 14px;
+        line-height: 1.2;
+    }
 
     /* Score box */
     .rs-score-box {
-        border: 1px solid #fff; border-radius: 8px;
-        padding: 20px; text-align: center;
-        width: 50%; margin: 24px auto;
+        border: 1px solid #fff;
+        border-radius: 6px;
+        padding: 8px 14px;
+        text-align: center;
+        width: 44%;
+        max-width: 140px;
+        margin: 10px auto;
     }
-    .rs-score-label { color: #fff; font-size: 14px; }
-    .rs-score-value { color: #fff; font-size: 28px; font-weight: 700; }
+    .rs-score-label {
+        color: #fff;
+        font-size: 11px;
+        letter-spacing: 0.8px;
+    }
+    .rs-score-value {
+        color: #fff;
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-top: 2px;
+    }
 
     /* Actions row */
-    .rs-actions { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0 24px; }
+    .rs-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin: 8px 0 16px;
+    }
     .rs-save-btn {
-        padding: 14px 32px; border-radius: 8px;
-        border: none; color: #fff; font-size: 16px; font-weight: 700;
-        cursor: pointer; background: transparent;
+        padding: 10px 24px;
+        border: none;
+        background: transparent;
+        color: #fff;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        letter-spacing: 0.8px;
         transition: opacity 0.2s;
     }
-    .rs-save-btn.saved { background: rgba(100,100,100,0.6); opacity: 0.6; cursor: not-allowed; }
-    .rs-nav-btn {
-        width: 56px; height: 48px; border-radius: 8px;
-        border: 1px solid #fff; background: rgba(255,255,255,0.06);
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; color: #fff; font-size: 22px; text-decoration: none;
+    .rs-save-btn:hover {
+        opacity: 0.8;
     }
-    .rs-nav-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
+    .rs-save-btn.saved {
+        color: #888;
+        cursor: not-allowed;
+    }
+    .rs-nav-btn {
+        width: 44px;
+        height: 38px;
+        border-radius: 6px;
+        border: 1px solid #fff;
+        background: rgba(255,255,255,0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #fff;
+        font-size: 18px;
+        text-decoration: none;
+    }
+    .rs-nav-btn:hover {
+        background: rgba(255,255,255,0.14);
+        color: #fff;
+    }
 
     /* Info Modal */
     .rs-modal-overlay {
-        display: none; position: fixed; inset: 0;
-        background: rgba(0,0,0,0.4); z-index: 9999;
-        align-items: flex-start; justify-content: center; padding-top: 70px;
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 9999;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: 70px;
     }
     .rs-modal-overlay.show { display: flex; }
-    .rs-modal-box { background: #fff; border-radius: 10px; width: 80%; max-width: 340px; overflow: hidden; }
+    .rs-modal-box {
+        background: #fff;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 340px;
+        overflow: hidden;
+    }
     .rs-modal-header {
-        background: #000; color: #fff; padding: 10px 16px;
-        font-weight: 700; font-size: 18px; text-align: center;
+        background: #000;
+        color: #fff;
+        padding: 10px 16px;
+        font-weight: 700;
+        font-size: 18px;
+        text-align: center;
     }
     .rs-modal-body { padding: 16px; }
     .rs-modal-body p { font-size: 14px; margin: 0 0 8px; }
-    .rs-modal-footer { background: #eee; padding: 10px; text-align: center; }
+    .rs-modal-footer {
+        background: #eee;
+        padding: 10px;
+        text-align: center;
+    }
     .rs-modal-close {
-        background: #6c757d; color: #fff; border: none; border-radius: 6px;
-        padding: 8px 16px; font-weight: 600; cursor: pointer;
+        background: #6c757d;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
     }
 </style>
 @endpush
@@ -112,9 +258,7 @@
                 data-value="{{ $val }}"
                 onclick="selectOption(this, 'sleep')">{{ $val }}</button>
             @endforeach
-            <button type="button" class="rs-info-btn" style="opacity:0;pointer-events:none;">
-                <i class="fas fa-info-circle"></i>
-            </button>
+            <div class="rs-info-btn" style="opacity:0;pointer-events:none;"></div>
         </div>
         <div class="rs-desc" id="desc-sleep"></div>
     </div>
@@ -133,8 +277,13 @@
                 data-value="{{ $val }}"
                 onclick="selectOption(this, 'alertness')">{{ $val }}</button>
             @endforeach
-            <button type="button" class="rs-info-btn" onclick="openInfoModal('alertness')">
-                <i class="fas fa-info-circle"></i>
+            <button type="button" class="rs-info-btn" onclick="openInfoModal('alertness')" aria-label="Info">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                    <path d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z" stroke="#ffffff" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M220 220h32v116" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M208 340h56" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <circle cx="248" cy="156" r="20" fill="#ffffff"/>
+                </svg>
             </button>
         </div>
         <div class="rs-desc" id="desc-alertness"></div>
@@ -154,8 +303,13 @@
                 data-value="{{ $val }}"
                 onclick="selectOption(this, 'excitement')">{{ $val }}</button>
             @endforeach
-            <button type="button" class="rs-info-btn" onclick="openInfoModal('excitement')">
-                <i class="fas fa-info-circle"></i>
+            <button type="button" class="rs-info-btn" onclick="openInfoModal('excitement')" aria-label="Info">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                    <path d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z" stroke="#ffffff" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M220 220h32v116" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M208 340h56" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <circle cx="248" cy="156" r="20" fill="#ffffff"/>
+                </svg>
             </button>
         </div>
         <div class="rs-desc" id="desc-excitement"></div>
@@ -175,8 +329,13 @@
                 data-value="{{ $val }}"
                 onclick="selectOption(this, 'stress')">{{ $val }}</button>
             @endforeach
-            <button type="button" class="rs-info-btn" onclick="openInfoModal('stress')">
-                <i class="fas fa-info-circle"></i>
+            <button type="button" class="rs-info-btn" onclick="openInfoModal('stress')" aria-label="Info">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                    <path d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z" stroke="#ffffff" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M220 220h32v116" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M208 340h56" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <circle cx="248" cy="156" r="20" fill="#ffffff"/>
+                </svg>
             </button>
         </div>
         <div class="rs-desc" id="desc-stress"></div>
@@ -196,8 +355,13 @@
                 data-value="{{ $val }}"
                 onclick="selectOption(this, 'soreness')">{{ $val }}</button>
             @endforeach
-            <button type="button" class="rs-info-btn" onclick="openInfoModal('soreness')">
-                <i class="fas fa-info-circle"></i>
+            <button type="button" class="rs-info-btn" onclick="openInfoModal('soreness')" aria-label="Info">
+                <svg width="20" height="20" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+                    <path d="M248 64C146.39 64 64 146.39 64 248s82.39 184 184 184 184-82.39 184-184S349.61 64 248 64z" stroke="#ffffff" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M220 220h32v116" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <path d="M208 340h56" stroke="#ffffff" stroke-linecap="round" stroke-miterlimit="10" stroke-width="32" fill="none"/>
+                    <circle cx="248" cy="156" r="20" fill="#ffffff"/>
+                </svg>
             </button>
         </div>
         <div class="rs-desc" id="desc-soreness"></div>
@@ -212,7 +376,7 @@
     {{-- Actions: SAVE + arrow to workout --}}
     <div class="rs-actions">
         <button id="saveBtn" class="rs-save-btn" onclick="handleSave()">SAVE</button>
-        <a id="navBtn" href="{{ route('mobile.workout') }}" class="rs-nav-btn" style="display:none;">
+        <a id="navBtn" href="{{ route('mobile.workout', ['class_id' => $classId]) }}" class="rs-nav-btn" style="display:none;">
             <i class="fas fa-chevron-right"></i>
         </a>
     </div>
@@ -234,6 +398,8 @@
 @push('scripts')
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+const _urlParams = new URLSearchParams(window.location.search);
+window._classId = {{ $classId ?? 'null' }} || (_urlParams.get('class_id') ? parseInt(_urlParams.get('class_id')) : null);
 
 // ---- State ----
 const state = { sleep: null, alertness: null, excitement: null, stress: null, soreness: null };
@@ -316,6 +482,12 @@ async function handleSave() {
         class_id: window._classId || null,
     };
 
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'SAVING...';
+    }
+
     try {
         const resp = await fetch('{{ route("mobile.storescore") }}', {
             method: 'POST',
@@ -325,15 +497,23 @@ async function handleSave() {
         const data = await resp.json();
         if (resp.ok || data.success) {
             hasScore = true;
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.textContent = 'SAVED';
-            saveBtn.classList.add('saved');
-            saveBtn.disabled = true;
-            document.getElementById('navBtn').style.display = 'flex';
+            sessionStorage.setItem('show_saved_success', '1');
+            const targetUrl = window._classId 
+                ? ('/mobile/workout?class_id=' + window._classId + '&saved=1')
+                : '/mobile/workout?saved=1';
+            window.location.href = targetUrl;
         } else {
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'SAVE';
+            }
             alert(data.message || 'Could not save. Please try again.');
         }
     } catch(e) {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'SAVE';
+        }
         alert('Error saving score. Please try again.');
     }
 }
@@ -342,8 +522,10 @@ async function handleSave() {
 document.addEventListener('DOMContentLoaded', async () => {
     const dayWithDate = document.getElementById('rsDateDisplay').textContent.trim();
 
-    // Try to restore class_id from session via page data
-    window._classId = {{ $classId ?? 'null' }};
+    // Try to restore class_id from session via page data or URL query
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlClassId = urlParams.get('class_id');
+    window._classId = {{ $classId ?? 'null' }} || (urlClassId ? parseInt(urlClassId) : null);
 
     try {
         const resp = await fetch('/mobile/get-score', {
@@ -389,7 +571,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 saveBtn.textContent = 'SAVED';
                 saveBtn.classList.add('saved');
                 saveBtn.disabled = true;
-                document.getElementById('navBtn').style.display = 'flex';
+                const navBtn = document.getElementById('navBtn');
+                if (window._classId) navBtn.href = '/mobile/workout?class_id=' + window._classId;
+                navBtn.style.display = 'flex';
                 // Update score display
                 if (d.score !== undefined) {
                     document.getElementById('scoreDisplay').textContent = d.score + '%';
